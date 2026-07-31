@@ -1894,3 +1894,208 @@ entero: **484 tokens de salida contra ~75 de una vuelta normal**. Negarlo salvó
 el disco; el gasto ya estaba hecho.
 
 > Cuando le niegas algo a un agente, ya pagaste por que lo pensara.
+
+---
+
+## Nivel 6b — Memoria persistente y Skills
+
+> ⚠️ **Este bloque está a medias, y se dice para que no se olvide.**
+> Las lecciones de la **memoria** (pasos 1 a 5, sesiones 16 a 21) siguen
+> pendientes de escribir: están sueltas dentro de `PROGRESO.md`. Se numerarán
+> **L6b.1 a L6b.29**.
+> Las de **Skills** (paso 6, sesión 22) empiezan en **L6b.30**, para no tener
+> que renumerar nada después.
+
+### L6b.30 — Una herramienta extiende lo que el agente HACE; una skill, lo que SABE
+
+Y lo que las confunde es que la skill llega **montada en** una herramienta
+(`leer_skill`). No es la misma cosa: esa herramienta no consulta el mundo, no
+cambia nada, no puede fallar por red y no necesita permiso. Solo trae texto.
+
+> **La herramienta es el camión. La skill es lo que va en el camión.**
+
+La prueba de que son cosas distintas: una skill puede llegar **sin ninguna
+herramienta** — un `CLAUDE.md` que se carga entero al arrancar también es
+conocimiento en un `.md`. Lo que aporta la herramienta no es la skill: es el
+**bajo demanda**.
+
+### L6b.31 — Una skill no solo agrega datos: cambia de qué es RESPONSABLE el agente
+
+Sin la skill, ante *"¿necesito autorización para cambiar 50 millones?"* el
+agente contestó: *"soy un asistente de tasas de cambio, **no de regulaciones
+bancarias**; consulte con su banco"*.
+
+Con `normas-cambiarias` cargada, la misma pregunta **entra en su trabajo** y la
+resuelve completa.
+
+> Al escribir una skill no estás rellenando un hueco de información. Estás
+> **ampliando el alcance** de lo que el agente acepta atender.
+
+### L6b.32 — Una skill que el modelo puede adivinar es una skill que no se puede medir
+
+Es el error del *"¿qué es una variable?"* de la sesión 3, con otra ropa: si el
+modelo contesta igual de bien sin el archivo, la prueba no demuestra nada
+aunque el texto afirme que sí.
+
+Por eso las cuatro skills se llenaron de **datos arbitrarios**: umbrales de
+5.000 y 20.000, margen de 0,4 %, un nombre de archivo `cierre-AAAA-MM`. Nadie
+los puede deducir.
+
+> **Antes de medir una skill, comprueba que el modelo no la sepa ya.** Y
+> compruébalo corriendo, no razonando.
+
+### L6b.33 — Una medición "antes" deja de ser el antes en el instante en que cambias lo que mide, y no avisa
+
+`linea_base.py` se escribió sin skills y llamaba al agente a secas. Al conectar
+el menú al system prompt **por defecto**, ese mismo archivo, con el mismo
+nombre, habría seguido corriendo y midiendo otra cosa. Nada habría fallado.
+
+El arreglo fue un modo explícito (`--con`) que se imprime en pantalla y queda
+escrito en el registro.
+
+> **Guarda la CONFIGURACIÓN junto al número.** Un número sin su configuración
+> miente por su cuenta, sin que nadie mienta.
+
+### L6b.34 — La misma señal puede significar lo contrario según el modo
+
+El script buscaba pedacitos de texto que solo existen dentro de los `.md`. Sin
+skills, encontrarlos significa **"se lo inventó"**. Con skills, encontrarlos
+significa **"funcionó"**.
+
+El detector no cambió ni una línea — y aun así el rótulo llegó a gritar
+`🚨 SEÑALES ENCONTRADAS SIN SKILL` sobre un acierto.
+
+> **Lo que cambia al cambiar la configuración no es la medición: es lo que la
+> medición SIGNIFICA.** Los rótulos también son parte del instrumento.
+
+### L6b.35 — El impuesto de un menú se puede predecir gratis, y sale exacto
+
+`count_tokens` dijo que el menú de 4 fichas más la herramienta costaría
+**+849 tokens por vuelta**. La corrida real: 4.913 → 5.762. **+849.**
+
+> Primera vez en el curso que un costo se **predice** en vez de descubrirse en
+> la factura. Y costó $0,00.
+
+### L6b.36 — Skills solo es más barato si el modelo es selectivo, y eso depende de un texto que escribes tú
+
+| Estrategia | tokens por vuelta |
+|---|---|
+| pegar todo el conocimiento siempre | 8.800 |
+| skills, cargando una | ~6.700 |
+| skills, cargando las cuatro | **9.649** |
+
+Cargar casi todas sale **más caro que no haber hecho nada**: pagaste el menú de
+más.
+
+> ⭐ **El punto de equilibrio no lo decide el código: lo deciden las
+> descripciones.** Es la primera vez que la calidad de un texto tuyo tiene un
+> precio calculable.
+
+### L6b.37 — Entre dos skills que se pisan, la frontera se escribe en las DOS direcciones
+
+`reporte-mensual` dice *"no cubre el cierre de año"*; `cierre-de-ano` dice *"el
+formato está en reporte-mensual"*. Ante *"ármame el reporte de diciembre"* el
+modelo cargó **las dos en la misma vuelta**.
+
+Es exactamente lo que se hizo con los criterios C4, C5 y C7 al escribir C9: dos
+cosas que se solapan no se separan eligiendo una, sino **escribiendo dónde está
+la línea, en cada una de las dos**.
+
+### L6b.38 — El texto que escribe el modelo nunca se convierte en una ruta
+
+La versión obvia de `leer_skill` pega el nombre a la carpeta. Con eso,
+`leer_skill("../../.env")` **devuelve la API key**.
+
+El nombre solo sirve para BUSCAR en la lista que ya se leyó. Lo que no está en
+la lista, no existe.
+
+> **Todo argumento escrito por el modelo que termina tocando el disco se valida
+> contra una lista blanca, no contra una ruta.**
+
+### L6b.39 — Un archivo de texto puede hacer que el agente llame a una función
+
+`normas-cambiarias.md` decía *"convierte a dólares con la TRM ANTES de decidir
+el tramo"*, y el agente fue a buscar `trm()` y `convertir()`. Cuatro vueltas,
+encadenadas por una frase que **no es código**.
+
+> El conocimiento no solo responde preguntas: **dirige el uso de las
+> herramientas.**
+
+### L6b.40 — Una skill puede crear una necesidad de cálculo que el harness no cubre
+
+El margen del 0,4 % lo trajo el `.md`. No existía antes. Y el modelo **hizo esa
+división de cabeza y falló por 14,15 USD** (~44.000 pesos), teniendo `convertir`
+disponible en la misma vuelta.
+
+> ⭐ **Al agregar conocimiento, pregúntate qué cuentas nuevas implica y si hay
+> herramienta para ellas.** Una regla que exige aritmética mental es una regla
+> que se va a incumplir en silencio.
+
+### L6b.41 — Un defecto de comportamiento arreglado sin tocar una línea de código
+
+El margen se corrigió editando `normas-cambiarias.md`: se pasó de *"margen
+sobre la tasa"* (que obliga a dividir) a *"factor sobre el resultado"* (que
+`convertir` sí puede hacer). Cero Python.
+
+En la corrida siguiente aparecieron **dos llamadas a `convertir`** y la cifra
+exacta, 15.898,25.
+
+> Esa es la ganancia de fondo del paso 6, y no es el ahorro de tokens: **el
+> conocimiento salió del `.py` y ahora lo puede editar quien sepa del negocio.**
+
+### L6b.42 — Un examen que mezcla dos preguntas no mide ninguna de las dos
+
+*"¿Puedo hacerlo de una o necesito autorización?"* pregunta por el permiso,
+**no** pide una cotización. Cuando el agente dejó de aplicar el margen, había
+dos explicaciones que encajaban igual de bien: se abstuvo, o juzgó bien que ahí
+no tocaba cotizar. **Con esa pregunta era imposible distinguirlas.**
+
+La pregunta 5 —*"cotízame… con el margen aplicado"*— solo tiene dos salidas
+posibles, y por eso sí sirvió.
+
+> **Una prueba que admite dos explicaciones no es una prueba: es una anécdota.**
+
+### L6b.43 — Dos veces en la misma sesión, la prueba estaba mal y el agente tenía razón
+
+- *"Ármame el reporte de diciembre"*, un 31 de julio → **"esa fecha está en el
+  futuro"**. Cierto: la pregunta era imposible.
+- La pregunta 3 mezclaba dos cosas (L6b.42).
+
+Las dos las encontró **la corrida**, no la revisión.
+
+> Es la sesión 17 otra vez: **cuando una respuesta razonable reprueba, el
+> sospechoso es el examen.** Y el que escribe el examen es el mismo que revisa —
+> por eso hay que correrlo.
+
+### L6b.44 — Lo que decide CÓMO va a correr el programa se lee antes de que el programa empiece
+
+`--con` se leía a mitad del archivo, y `anotar("inicio")`, treinta líneas más
+arriba, ya lo necesitaba: `NameError` apenas arrancaba.
+
+> Si un parámetro configura la corrida, **siempre habrá algo más arriba que ya
+> lo quería.** Los argumentos se leen de primeras.
+
+### L6b.45 — "¿Ya la cargué?" es una propiedad de la conversación, no de la skill
+
+El freno de la doble carga vive en `ejecutar_agente`, no dentro de
+`skills.leer_skill()`. La misma skill, en la conversación siguiente, hay que
+volverla a cargar.
+
+Si el freno viviera dentro de la función, la función tendría memoria entre
+llamadas — y una función pura dejaría de serlo, con todo lo que eso cuesta para
+probarla gratis.
+
+> **Antes de poner un estado dentro de una función, pregunta a qué pertenece de
+> verdad.**
+
+### L6b.46 — Que el costo suba no es una regresión
+
+Con skills, las tres preguntas que las necesitaban pasaron de $0,0344 a $0,0777
+en total. Pero antes eran baratas **porque no hacían nada**: la del umbral
+costaba una vuelta y decía *"pregunte en su banco"*; después costó cuatro y
+entregó tramo, margen y cifra final.
+
+> **Un agente que empieza a hacer el trabajo empieza a costar.** Escríbelo
+> ANTES de medir, o mañana leerás "subió el costo" y sacarás la conclusión
+> contraria.
+

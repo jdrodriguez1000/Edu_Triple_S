@@ -1576,3 +1576,226 @@ nuevo**. Y cada una se juzgó con **una sola muestra**.
 **Cuando cada parche destapa el siguiente, lo que falta no es un parche mejor: es
 el instrumento de medida** — la rúbrica y el juez de §8. Reconocer que un método
 se agotó vale más que una ronda más.
+
+---
+
+## 12. Skills — conocimiento que vive fuera del código
+
+**Escrita en la sesión 22 (nivel 6b, paso 6).** Es la sección más portable de
+esta guía: **no depende de este curso ni del agente de divisas.** Sirve tal cual
+en cualquier proyecto con agentes, en Python o en TypeScript.
+
+### 12.a Qué es, y en qué se diferencia de una herramienta
+
+> **Una herramienta extiende lo que el agente puede HACER.
+> Una skill extiende lo que el agente SABE.**
+
+Una skill es un archivo de texto (`.md`) con dos partes: una **ficha** arriba
+(nombre + descripcion) y un **cuerpo** abajo. La ficha viaja siempre en el
+system prompt; el cuerpo solo cuando el modelo lo pide.
+
+| | Herramienta | Skill |
+|---|---|---|
+| Qué es | **código** que se ejecuta | **texto** que se lee |
+| Produce | un dato nuevo, o un cambio real | conocimiento en el prompt |
+| Entre corridas | **cambia** (el clima, la TRM) | **no cambia** hasta que la edites |
+| Efectos secundarios | puede tenerlos | **ninguno** |
+| Se puede deshacer | a veces **no** | siempre: no pasó nada |
+| Necesita permiso | a veces sí | **nunca** |
+| Cómo falla | red, 404, timeout | el modelo escoge **la equivocada** |
+| Quién la escribe | un programador | **quien sepa del tema** |
+
+⚠️ **Lo que las confunde:** la skill se ENTREGA por una herramienta
+(`leer_skill`). No confundas el vehículo con la carga. **La herramienta es el
+camión; la skill es lo que va en el camión.**
+
+Y una skill puede llegar sin ninguna herramienta: un `CLAUDE.md` que se carga
+entero al arrancar también es conocimiento en un `.md`. Lo que aporta la
+herramienta no es la skill: es el **bajo demanda**.
+
+### 12.b 🚨 Cuándo usar una skill — el árbol de decisión
+
+```
+¿El conocimiento se necesita en CASI TODAS las preguntas?
+   SÍ  -> va en el SYSTEM PROMPT. No es una skill.
+   NO  -> sigue
+
+¿Cabe todo junto en el prompt sin arruinarte?
+   SÍ y son pocos -> pégalo todo. Sigue siendo más barato que el mecanismo.
+   NO             -> sigue
+
+¿Puedes CURAR la lista a mano (menos de ~20 documentos)?
+   SÍ  -> SKILLS. Escoge el modelo, de una lista que escribes tú.
+   NO  -> RAG. Escoge un buscador, por parecido de significado.
+```
+
+**Los tres escalones del eje vertical:** `pegarlo todo → Skills → RAG`.
+No te saltes escalones: RAG está muy sobrevendido y es el más caro de los tres.
+
+**Las dos señales de que una skill es la respuesta correcta:**
+
+1. **Grande y esporádico.** Si es corto va en el system; si se usa siempre,
+   también.
+2. **El modelo NO lo puede adivinar.** Reglas internas, umbrales, formatos,
+   procedimientos de tu empresa. Si el modelo contesta igual de bien sin el
+   archivo, la skill sobra.
+
+**Y la ganancia que casi nadie menciona, que suele ser la de verdad:** el
+conocimiento sale del `.py`. **Lo edita alguien que no programa.** Un defecto de
+comportamiento se arregla sin tocar código ni desplegar.
+
+### 12.c 💰 El punto de equilibrio — calcúlalo ANTES, es gratis
+
+Una skill **no se carga y se va**: entra como `tool_result` y **se reenvía en
+cada vuelta siguiente**. Y el menú se paga en todas las vueltas, se use o no.
+
+Medición real de la sesión 22 (4 skills, ~1 página cada una, Haiku 4.5):
+
+| | tokens por vuelta |
+|---|---|
+| Sin skills | 4.894 |
+| Menú de 4 fichas + la herramienta | **+849 (+17,3 %)** |
+| Los 4 cuerpos completos | 3.906 |
+
+| Estrategia | Costo por vuelta |
+|---|---|
+| Pegarlo todo siempre | 4.894 + 3.906 = **8.800** |
+| Skills, cargando **una** | **~6.700** |
+| Skills, cargando **las cuatro** | **9.649** |
+
+> 🚨 **Si el agente termina cargando casi todas, sale MÁS CARO que no haber
+> hecho nada** — pagaste el menú de más.
+>
+> **Skills gana mientras el modelo sea selectivo. Y eso no lo decide el código:
+> lo deciden las descripciones que escribes.**
+
+**Cómo medirlo sin gastar** (ver §5.b): `count_tokens` con y sin el menú.
+En la sesión 22 predijo **+849** y la corrida real dio **+849 exacto**.
+
+### 12.d Formato del archivo — plantilla copiable
+
+Una carpeta `skills/`, un `.md` por skill. Nombres **sin tildes, sin ñ y sin
+espacios**: ese nombre lo escribe el modelo y termina siendo un nombre de
+archivo.
+
+```markdown
+---
+nombre: normas-cambiarias
+descripcion: Reglas internas para autorizar operaciones -- sobre qué monto se
+  necesita firma, qué monedas se aceptan y qué margen se cobra. Úsala ANTES de
+  cotizar, aprobar o rechazar cualquier operación con un monto de por medio.
+  No contiene formatos de reporte ni reglas de fin de año.
+---
+
+# Título
+
+> ⚠️ Si las reglas son inventadas o internas, DILO aquí arriba.
+
+## Reglas con números, no párrafos
+
+| Monto | Qué se necesita |
+|---|---|
+| hasta USD 5.000 | nada |
+| USD 5.000 a 20.000 | autorización de tesorería |
+```
+
+**Ficha y cuerpo son dos textos con dos públicos:**
+
+| | La ficha | El cuerpo |
+|---|---|---|
+| Cuándo viaja | **siempre** | solo si la escogen |
+| Está escrita para | **DECIDIR** | **OBEDECER** |
+
+### 12.e Las tres reglas de la `descripcion`
+
+**1. Di CUÁNDO usarla, no QUÉ es.** Un título no es una descripción.
+
+- ❌ `Información sobre las normas cambiarias.`
+- ✅ `Úsala antes de aprobar o rechazar una operación por monto.`
+
+**2. Entre skills confundibles, di qué NO contiene**, y en las dos direcciones.
+Es lo mismo que las notas de frontera entre criterios de una rúbrica (§8).
+Sin eso, dos skills que se pisan hacen que el modelo cargue solo una.
+
+**3. Corta, pero no tacaña.** 2–4 líneas. Se paga en cada vuelta, pero **una
+elección equivocada cuesta más que los tokens de la ficha**.
+
+### 12.f El cuerpo se escribe para ser OBEDECIDO, no leído
+
+- ❌ *"Es importante tener en cuenta que los montos elevados suelen requerir
+  controles adicionales…"*
+- ✅ *"Sobre USD 10.000: requiere autorización del jefe de tesorería."*
+
+La segunda se puede desobedecer y **se nota**. La primera no se puede
+desobedecer porque no dice nada — y por lo tanto tampoco se puede evaluar.
+
+⚠️ **Y no escribas una regla que exija una cuenta mental.** Si la skill obliga a
+calcular, dile con qué herramienta. Ver 12.i.
+
+### 12.g Las cuatro decisiones del harness
+
+| Decisión | Qué se hizo | Por qué |
+|---|---|---|
+| **Dónde va el menú** | en el **SYSTEM**, no en la descripción de `leer_skill` | una descripción solo pesa cuando el modelo YA considera llamarla. En el system la ve siempre |
+| **Nombre inexistente** | error que **lista los válidos** | un error que el modelo lee se arregla solo; uno mudo lo hace inventar |
+| **Pedirla dos veces** | freno con un `set` **por conversación** | sin él, el mismo texto se paga otra vez × todas las vueltas que falten |
+| **Cuándo se lee la carpeta** | **una vez, al arrancar** | las fichas no cambian mientras corre. Precio: agregar un `.md` exige reiniciar |
+
+⭐ El freno de "ya la cargué" vive **en la conversación**, no dentro de la
+función. *"¿Ya la cargué?"* no es una propiedad de la skill: es de esta
+conversación. Si viviera dentro, la función pura dejaría de serlo.
+
+### 12.h 🚨 El candado de seguridad — no es opcional
+
+La versión obvia sería pegar el nombre a la carpeta. Con eso:
+
+```
+leer_skill("../../.env")   ->   devuelve tu API key
+```
+
+**El modelo escribe ese argumento: es texto que viene de afuera, y el texto de
+afuera nunca se convierte en una ruta.** El nombre solo sirve para BUSCAR en la
+lista que ya se leyó; lo que no está en la lista, no existe.
+
+> **Regla general, más allá de skills: todo argumento que escribe el modelo y
+> termina tocando el disco se valida contra una lista blanca, no contra una
+> ruta.**
+
+### 12.i Los modos de falla, y cuál da miedo
+
+| Falla | ¿Se nota? |
+|---|---|
+| Carga la equivocada | sí, en el registro |
+| Carga solo una de un par | sí, falta media respuesta |
+| Carga todas "por si acaso" | sí, el costo se dispara |
+| 🚨 **No carga ninguna y contesta igual de seguro** | **NO** |
+| 🚨 **La skill exige una cuenta y la hace de cabeza** | **NO** |
+
+El último apareció en la sesión 22 y no lo había anticipado nadie: la skill
+introdujo un margen del 0,4 % que antes no existía, y el modelo **hizo la
+división mentalmente y falló por 14 USD** teniendo la calculadora al lado.
+
+> ⭐ **Una skill puede crear una necesidad de cálculo que el harness no tiene
+> cubierta.** Cuando agregues conocimiento, pregúntate qué cuentas nuevas
+> implica y si hay herramienta para ellas.
+
+### 12.j El procedimiento completo, en orden
+
+1. **Escribe las skills** con datos que el modelo no pueda adivinar.
+2. **LÍNEA BASE:** corre las preguntas **sin** las skills. Si ya las contesta
+   bien, las skills no prueban nada. *(Ver §8: una prueba que pasa sin el
+   arreglo no prueba el arreglo.)*
+3. **Mide gratis** con `count_tokens` el impuesto del menú y el peso de cada
+   cuerpo. Calcula el punto de equilibrio.
+4. **Conecta** (12.g y 12.h) y corre las MISMAS preguntas con el menú puesto.
+5. **Compara las LLAMADAS, no solo las respuestas.** Lo que se mide es qué
+   cargó y cuántas veces, no si el texto suena bien.
+6. **Arregla desde el `.md`** y vuelve a correr solo el caso que falló.
+
+⚠️ **Y guarda el MODO junto al número.** Una corrida "antes" deja de ser el
+antes en el instante en que cambias lo que mide, **y no avisa**. En la sesión 22
+el script de línea base habría seguido corriendo con el mismo nombre midiendo
+otra cosa, y su rótulo llegó a llamar "🚨 inventó algo" a un acierto.
+
+> **Una medición no vale sola: vale contra la configuración con la que se tomó.**
+

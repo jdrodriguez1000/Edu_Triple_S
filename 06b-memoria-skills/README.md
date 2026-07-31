@@ -261,10 +261,10 @@ historial.**
 → **Dónde vive el archivo de memoria es una decisión de seguridad, no de
 comodidad.**
 
-📌 **Estado del repo (sesión 18):** hay `.gitignore` —y protege bien: `.env` en
-la primera línea— **pero no hay repositorio Git.** Es un extintor sin edificio.
-Todo el curso existe hoy en **un solo disco duro**. Pendiente, aparte de este
-nivel.
+📌 **Estado del repo:** ~~(sesión 18) hay `.gitignore` pero no hay repositorio
+Git: un extintor sin edificio~~ → **resuelto en la sesión 19.** El curso vive en
+`https://github.com/jdrodriguez1000/Edu_Triple_S` (público, rama `main`), con un
+commit por sesión. `.env`, `memoria.json` y `.venv/` siguen fuera del historial.
 
 ### RAG — es casi la misma idea que la memoria
 
@@ -597,8 +597,19 @@ es el examen, no el examinado.** Quedó comentado dentro de `evals.py`.
 | 3 | `evals.py` — 49 casos, $0,00 | ✅ |
 | 4 | **Conectar al agente**: `recordar` + leer al arrancar | ✅ **sesión 19** |
 | 5 | Correrlo y **medir** | ✅ `volumen.py` — 3 defectos hallados, **los 3 arreglados y re-medidos: 4 de 9 → 9 de 9** |
-| **5c** | 🚨 **Las invenciones que no son números** | ⏳ **lo siguiente.** Se inventó una tendencia y una fecha |
-| 6 | Cerrar memoria → después, **Skills** | ⏳ |
+| 5b | El examen con rúbrica y juez | ✅ sesiones 20–21 — 9 criterios, C9 escrito y **nunca corrido** |
+| **6** | **Skills** | ✅ **sesión 22** — 4 skills, `skills.py`, `leer_skill`, línea base y medición |
+| 7 | Las lecciones de la MEMORIA en `LESSONS.md` | ⏳ **lo único que falta.** L6b.1–L6b.29, cuesta $0,00 |
+
+### Paso 6 — Skills, en cuatro líneas
+
+- **Qué son:** conocimiento en `.md`. La **ficha** viaja siempre; el **cuerpo**,
+  solo cuando el modelo lo pide con `leer_skill`.
+- **Qué costó:** +849 tokens por vuelta, **predichos gratis con `count_tokens` y
+  confirmados exactos**. Cargar 3 o más sale peor que no tener el mecanismo.
+- **Qué se ganó:** un defecto real del agente (una división hecha de cabeza, con
+  14 USD de error) se arregló **editando un `.md`, sin tocar Python**.
+- **Dónde está lo reutilizable:** `GUIDE.md` §12 y `LESSONS.md` L6b.30–L6b.46.
 
 ### ✅ Las dos cosas que estaban pendientes antes del paso 4, resueltas
 

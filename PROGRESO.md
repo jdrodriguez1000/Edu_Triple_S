@@ -3,22 +3,164 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-07-31 (sesión 21)
+**Última actualización:** 2026-07-31 (sesión 22)
 
 ---
 
-# 📍 NIVEL 6b — **C9 ESCRITO. EL EXAMEN QUEDA CERRADO Y EL PASO 6 (SKILLS) ARRANCA LA PRÓXIMA.**
+# 📍 NIVEL 6b — **PASO 6 (SKILLS) TERMINADO, MEDIDO Y VERIFICADO. EL NIVEL 6b QUEDA CERRADO SALVO UNA DEUDA.**
 
-Sesión corta y **de $0,00**: no se llamó a la API ni una vez.
+Sesión 22. Costo total: **$0,1796**.
 
-## 🚨 LO PRIMERO DE LA PRÓXIMA SESIÓN: **EL PASO 6 — SKILLS**
+## 🚨 LO PRIMERO DE LA PRÓXIMA SESIÓN: **LAS LECCIONES DE LA MEMORIA (L6b.1–L6b.29)**
 
-Cerrar memoria y pasar a Skills. Es lo último del nivel 6b, y con él va el
-bloque de `LESSONS.md` del nivel (van 27 candidatas + las de hoy).
+Es la única deuda que queda del nivel 6b, y está dicha en voz alta dentro de
+`LESSONS.md`: el bloque del nivel **está a medias**.
+
+- Las lecciones de **Skills** ya están escritas: **L6b.30 a L6b.46** (17).
+- Las de **memoria** (pasos 1 a 5, sesiones 16 a 21) **no**. Siguen sueltas
+  dentro de este archivo. Se numerarán **L6b.1 a L6b.29** — el hueco ya está
+  reservado a propósito, para no renumerar nada.
+
+Cuesta **$0,00**: es leer las sesiones 16–21 de aquí y destilarlas. Cuando eso
+esté, el nivel 6b se cierra y sigue el **nivel 7**.
 
 ---
 
-## Lo que se hizo: C9 — USÓ LO QUE RECORDABA
+## Lo que se hizo en la sesión 22: SKILLS, de cero a medido
+
+### Las 4 skills (`06b-memoria-skills/skills/`)
+
+| Skill | Qué contiene |
+|---|---|
+| `reporte-mensual.md` | 5 secciones en orden, redondeos, `cierre-AAAA-MM.md`, nota al pie textual |
+| `normas-cambiarias.md` | tramos de 5.000 y 20.000 USD, márgenes 0,4 % / 0,7 %, monedas permitidas |
+| `explicar-a-un-cliente.md` | palabras prohibidas y 3 respuestas modelo (la única sin cifras) |
+| `cierre-de-ano.md` | una sola tasa para todos los saldos, sección 6, archivo aparte |
+
+Todas rotuladas **⚠️ reglas de una empresa ficticia**. Ninguna se presenta como
+normativa colombiana. Y todas llenas de **datos arbitrarios a propósito**: si el
+modelo pudiera adivinarlos, no se podría medir nada.
+
+### El código
+
+| Archivo | Qué |
+|---|---|
+| `skills.py` | **nuevo.** Funciones puras: partir ficha/cuerpo, armar el menú, `leer_skill`. No conoce la API |
+| `linea_base.py` | **nuevo.** Las 5 preguntas, en dos modos (`--con` / sin) |
+| `agente.py` | menú al SYSTEM, `leer_skill` en TOOLS/FUNCIONES/PERMISOS, freno de doble carga, `menu_skills` como parámetro |
+| `skills/*.md` | las 4 |
+
+**228 evals (121 + 107) siguen en verde**, y `memoria.json` quedó byte por byte
+igual.
+
+### 🚨 LA LÍNEA BASE, que fue lo primero y hay que insistir en ella
+
+Antes de conectar nada se corrieron las 4 preguntas **sin** skills ($0,0405).
+Resultado: **el agente no inventó ni un umbral** — se declaró fuera de alcance
+(*"no soy de regulaciones bancarias, pregunte en su banco"*) o pidió más datos.
+
+Eso probó lo único que había que probar antes de gastar: **las skills tienen
+algo que aportar.** Es el error del *"¿qué es una variable?"* de la sesión 3,
+evitado esta vez **comprobando** en vez de suponiendo.
+
+### 💰 Los números, y uno de ellos es un estreno
+
+| | tokens por vuelta |
+|---|---|
+| Sin skills | 4.894 |
+| **Impuesto del menú + la herramienta** | **+849 (+17,3 %)** |
+| Los 4 cuerpos completos | 3.906 |
+
+⭐ **`count_tokens` predijo +849 GRATIS, y la corrida real dio +849 exacto.**
+Primera vez en el curso que un costo se predice en vez de descubrirse.
+
+**El punto de equilibrio:** cargando **una** skill sale ~6.700/vuelta; pegando
+todo el conocimiento siempre, 8.800; **cargando las cuatro, 9.649 — peor que no
+tener el mecanismo.** Skills gana solo si el modelo es selectivo, y eso lo
+deciden **las descripciones**, no el código.
+
+### Lo que hizo el agente con las skills puestas ($0,0777, 4 preguntas)
+
+| Pregunta | Cargó | |
+|---|---|---|
+| 200 dólares | **nada** | ✅ el control no se dejó tentar |
+| el cliente reclama | `explicar-a-un-cliente` | ✅ |
+| 50 millones | `normas-cambiarias` → `trm` → `convertir` | ✅ **la skill lo mandó a usar herramientas** |
+| reporte de diciembre | `cierre-de-ano` **+** `reporte-mensual` | ⭐ **las dos en la MISMA vuelta** |
+
+El par confundible se resolvió, y era lo más dudoso del diseño. Funcionaron las
+**notas de frontera en las dos direcciones**, copiadas de lo que se hizo con C9.
+Y el "goloso" no apareció: nunca cargó de más.
+
+### 🐛 Los cuatro defectos de la sesión, y de quién fue cada uno
+
+1. **Mío, de diseño del examen:** *"ármame el reporte de diciembre"* un 31 de
+   julio. El agente contestó **"esa fecha está en el futuro"** y tenía razón.
+   La pregunta era imposible. → Cambiada a diciembre de 2025.
+2. **Mío, de rótulo:** el script gritaba `🚨 SEÑALES ENCONTRADAS SIN SKILL` en la
+   corrida **con** skills. El detector no cambió; cambió **qué significa** lo
+   que detecta. Rotulé el éxito como alarma.
+3. **Mío, de orden:** `--con` se leía a mitad del archivo y `anotar("inicio")`
+   lo necesitaba 30 líneas antes → `NameError`.
+4. **Del agente, y el importante:** con la skill puesta hizo **una división de
+   cabeza** para aplicar el margen del 0,4 % y **falló por 14,15 USD (~44.000
+   pesos)**, teniendo `convertir` disponible.
+
+### ⭐ EL RESULTADO DE FONDO DEL PASO 6
+
+El defecto 4 se corrigió **editando `normas-cambiarias.md`**: se pasó de "margen
+sobre la tasa" (que obliga a dividir) a "**factor sobre el resultado**" (que
+`convertir` sí puede hacer, porque multiplica).
+
+**Cero líneas de Python.** En la corrida siguiente: **dos llamadas a
+`convertir`** y la cifra exacta, **15.898,25**.
+
+> Esa es la ganancia de verdad del paso, y no es el ahorro de tokens: **el
+> conocimiento salió del `.py` y lo puede editar quien sepa del negocio.**
+
+### La verificación honesta del arreglo
+
+La primera re-corrida **no sirvió**: la pregunta 3 mezcla dos cosas (¿autorizo?
+y ¿cotizo?), así que "no aplicó el margen" admitía dos explicaciones. Se agregó
+la **pregunta 5** (*"cotízame… con el margen aplicado"*), que solo tiene dos
+salidas posibles. Ahí sí se confirmó.
+
+⚠️ **Y con la letra pequeña:** es **una** corrida. El defecto salió 1 de 1 y el
+arreglo funcionó 1 de 1. Eso es *"no se reprodujo"*, no *"quedó arreglado"*.
+
+### Las cuentas
+
+| Corrida | |
+|---|---|
+| Línea base (4 preguntas) | $0,0344 |
+| Repetir la 4 arreglada | $0,0061 |
+| Con skills (4 preguntas) | $0,0777 |
+| La 3 después del arreglo | $0,0303 |
+| La 5 (cotización limpia) | $0,0311 |
+| **Total** | **$0,1796** |
+
+### Dónde quedó escrito lo reutilizable
+
+📌 **`GUIDE.md` §12 — "Skills: conocimiento que vive fuera del código".** Es la
+sección **más portable de la guía**: no depende de este curso ni del agente de
+divisas. Tiene el árbol de decisión de cuándo usar una skill, la plantilla del
+`.md`, las reglas de la descripción, las 4 decisiones del harness, el candado de
+seguridad, los modos de falla y el procedimiento en 6 pasos.
+
+**`LESSONS.md`: L6b.30 a L6b.46** (17 lecciones).
+
+### Deudas anotadas del paso 6
+
+- Agregar un `.md` a la carpeta **exige reiniciar**: el menú se arma al importar.
+- El tramo se decidió con el monto **bruto** (15.962,10), no con el neto. El
+  `.md` dice *"el equivalente en dólares"* y no aclara cuál. Es una ambigüedad
+  real, sin consecuencia en este caso.
+- Las skills nunca se han **saboteado** (como sí se hizo con `memoria.py`).
+  Nadie ha visto en rojo el mecanismo de carga.
+
+---
+
+## Lo que se hizo en la sesión 21: C9 — USÓ LO QUE RECORDABA
 
 El hueco que dejó la corrida de ayer (caso 12.2: la peor respuesta del examen no
 sacó un solo FALLA) ya tiene criterio.

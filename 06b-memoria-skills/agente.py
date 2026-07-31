@@ -51,6 +51,7 @@ from dotenv import load_dotenv
 
 import herramientas
 import memoria          # nivel 6b: la memoria persistente entre conversaciones
+import skills           # nivel 6b, paso 6: el conocimiento que vive en .md
 
 # La consola de Windows imprime en cp1252 y revienta con tildes. Sin esta
 # línea el agente CORRE BIEN y falla al final, al imprimir: no falló el
@@ -255,7 +256,20 @@ def _fecha_larga(d):
     return f"{DIAS[d.weekday()]} {d.day} de {MESES[d.month]} de {d.year} ({d.isoformat()})"
 
 
-def armar_sistema(texto_memoria="", hoy=None):
+# ⭐ EL MENÚ DE SKILLS SE ARMA UNA VEZ, AL IMPORTAR EL MÓDULO.
+#
+#    Ni por vuelta ni por conversación: las fichas no cambian mientras el
+#    programa corre. Es la misma razón por la que la memoria se lee una vez por
+#    conversación — lo que no cambia no se vuelve a leer.
+#
+# ⚠️ Y el precio de esa decisión, dicho en voz alta: si agregas un .md a la
+#    carpeta con el programa corriendo, el agente no se entera. Hay que
+#    reiniciar. Es una limitación real, no un descuido.
+FICHAS = skills.leer_fichas()
+MENU_SKILLS = skills.menu_como_texto(FICHAS)
+
+
+def armar_sistema(texto_memoria="", hoy=None, menu_skills=None):
     """Pega la memoria al final del system prompt. Devuelve el texto completo.
 
     ⭐ ES LA MITAD DE "LEER", Y ES LA ESCUELA A: decide el CÓDIGO, no el modelo.
@@ -323,10 +337,26 @@ def armar_sistema(texto_memoria="", hoy=None):
         "una que no está en esta lista, di la fecha sin el día de la semana."
     )
 
-    if not texto_memoria:
-        return encabezado
+    # 🚨 EL ORDEN DE LAS TRES PIEZAS NO ES CASUAL:
+    #      1. las reglas del oficio  -> mandan sobre todo lo demás
+    #      2. el menú de skills      -> qué puede ir a consultar
+    #      3. la memoria             -> quién es el usuario
+    #    Lo que sabemos del usuario nunca manda sobre "nunca inventes un dato",
+    #    y saber a quién le hablas no cambia qué documentos existen.
+    #
+    # ⚠️ `menu_skills=None` significa "usa el de verdad"; `""` significa "corre
+    #    SIN skills", que es una orden. Es el mismo par que texto_memoria, y
+    #    existe por lo mismo: sin él no habría forma de medir el antes.
+    if menu_skills is None:
+        menu_skills = MENU_SKILLS
 
-    return encabezado + "\n\n" + texto_memoria
+    partes = [encabezado]
+    if menu_skills:
+        partes.append(menu_skills)
+    if texto_memoria:
+        partes.append(texto_memoria)
+
+    return "\n\n".join(partes)
 
 # ---------------------------------------------------------------------------
 # 1) EL MENÚ: las 6 herramientas, descritas para el modelo
@@ -669,6 +699,47 @@ TOOLS = [
         },
     },
 
+    # ------------------------------------------------------------------
+    # 8) leer_skill — la única que no HACE nada. Solo trae texto.
+    # ------------------------------------------------------------------
+    # ⭐ Compárala con las otras siete y se ve por qué una skill no es una
+    #    herramienta, aunque llegue montada en una:
+    #      · no consulta el mundo -> no puede fallar por red, ni dar un 503
+    #      · no cambia nada       -> no necesita permiso (PERMISOS: "libre")
+    #      · devuelve lo mismo hoy que mañana -> es determinista
+    #    La herramienta es el camión. La skill es lo que va en el camión.
+    #
+    # ⚠️ La DESCRIPCIÓN aquí es corta a propósito: el "cuándo usar cada una" ya
+    #    está en el menú del system prompt, y repetirlo lo haría pagar dos veces.
+    #    Lo único que falta decir aquí es cómo se llama el argumento.
+    {
+        "name": "leer_skill",
+        "description": (
+            "Lee uno de los documentos de consulta listados en tu system prompt y "
+            "te devuelve su contenido completo. Llámala ANTES de contestar cuando "
+            "la pregunta caiga en el tema de una de las fichas. Puedes llamarla "
+            "dos veces en el mismo turno si hacen falta dos documentos. "
+            "No cambia nada y no cuesta permisos: ante la duda, léela."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "nombre": {
+                    "type": "string",
+                    # La lista sale de la carpeta, no de aquí escrita a mano. Si
+                    # se escribiera a mano, el día que agregues una skill habría
+                    # DOS sitios que actualizar y uno se quedaría viejo.
+                    "enum": [f["nombre"] for f in FICHAS],
+                    "description": (
+                        "El nombre exacto de la skill, tal como aparece en el menú "
+                        "del system prompt. Sin la extensión .md y sin rutas."
+                    ),
+                },
+            },
+            "required": ["nombre"],
+        },
+    },
+
 ]
 
 
@@ -691,6 +762,8 @@ FUNCIONES = {
     "historial":       herramientas.historial,
     "trm_en_fecha":    herramientas.trm_en_fecha,
     "guardar_reporte": herramientas.guardar_reporte,
+    # Tampoco sale de herramientas.py: el conocimiento es su propio módulo.
+    "leer_skill":      skills.leer_skill,
     # ⭐ La única que no sale de herramientas.py. El bucle no se entera ni le
     #    importa: para él una herramienta es un nombre y algo que se puede
     #    llamar. Por eso `recordar` puede vivir en memoria.py, con el resto de
@@ -727,6 +800,14 @@ PERMISOS = {
     "historial":       "red",
     "trm_en_fecha":    "red",
     "guardar_reporte": "disco",
+    # ⭐ leer_skill es "libre" SIN NINGUNA EXCEPCIÓN NI DEBATE, y es la única de
+    #    la tabla que lo es por su naturaleza y no por una decisión: lee un
+    #    archivo NUESTRO, que escribimos nosotros, y no cambia nada.
+    #    La pregunta del criterio de arriba —"si sale mal, ¿lo puedo deshacer?"—
+    #    ni siquiera aplica: no hay nada que deshacer.
+    #    ⚠️ Eso vale mientras el nombre no se convierta en una ruta. Ver el
+    #       candado dentro de skills.leer_skill().
+    "leer_skill":      "libre",
     # ⚠️ recordar TAMBIÉN ESCRIBE EN EL DISCO Y AUN ASÍ ES "libre". Es la única
     #    fila de esta tabla que contradice el criterio de arriba, y fue una
     #    decisión tomada a propósito en la sesión 18, con tres razones:
@@ -963,7 +1044,8 @@ def _guardar_texto(textos, nuevo):
 
 
 def ejecutar_agente(pregunta, max_vueltas=MAX_VUELTAS, autorizadas=AUTORIZADAS,
-                    preguntar=pedir_permiso, texto_memoria=None):
+                    preguntar=pedir_permiso, texto_memoria=None,
+                    menu_skills=None):
     """El bucle. Es el mismo del nivel 3, con seis herramientas en vez de una.
 
     Mandar mensaje -> mirar stop_reason -> si dice "tool_use", ejecutar la
@@ -1006,7 +1088,12 @@ def ejecutar_agente(pregunta, max_vueltas=MAX_VUELTAS, autorizadas=AUTORIZADAS,
         # queda: aquí se ve CUÁNTO pesó la memoria en la entrada de cada vuelta.
         anotar("memoria_leida", datos=len(datos), caracteres=len(texto_memoria))
 
-    sistema = armar_sistema(texto_memoria)
+    # ⚠️ `menu_skills` viaja hasta aquí por la misma razón que `texto_memoria`:
+    #    para poder correr el agente SIN skills a propósito y comparar. Sin este
+    #    parámetro, el día que se conectan las skills la corrida "antes" deja de
+    #    existir — y con ella, la única forma de saber qué cambió.
+    #    None = con las skills de verdad.  "" = corre sin ellas.
+    sistema = armar_sistema(texto_memoria, menu_skills=menu_skills)
 
     anotar("pregunta", texto=pregunta)
     historial = [{"role": "user", "content": pregunta}]
@@ -1032,6 +1119,20 @@ def ejecutar_agente(pregunta, max_vueltas=MAX_VUELTAS, autorizadas=AUTORIZADAS,
     #    de verdad, lo que el asistente escribe mientras trabaja SE VE. Tirarlo
     #    era una limitación de la plomería, no una decisión de nadie.
     textos = []
+
+    # 🚨 EL FRENO DE LA DOBLE CARGA. Vive AQUÍ, en la conversación, y no dentro
+    #    de skills.leer_skill(), y esa ubicación es la decisión:
+    #
+    #    "¿ya la cargué?" no es una propiedad de la skill — es una propiedad de
+    #    ESTA conversación. La misma skill, en la conversación siguiente, hay que
+    #    volverla a cargar. Si el freno viviera dentro de la función, la función
+    #    tendría memoria entre llamadas, y una función pura dejaría de serlo.
+    #
+    # ⚠️ Y sin este freno el mismo texto se paga dos veces. Recuerda lo del
+    #    nivel 3: el tool_result no se usa y se va, se REENVÍA en cada vuelta
+    #    siguiente. Cargar dos veces `normas-cambiarias` no son 2.667 caracteres
+    #    de más: son 2.667 multiplicados por las vueltas que falten.
+    skills_cargadas = set()
 
     for vuelta in range(1, max_vueltas + 1):
         # El presupuesto puede acabarse a mitad de una pregunta. Cuando eso
@@ -1139,6 +1240,30 @@ def ejecutar_agente(pregunta, max_vueltas=MAX_VUELTAS, autorizadas=AUTORIZADAS,
             anotar("permiso", herramienta=bloque.name, concedido=True,
                    motivo=motivo, entrada=bloque.input)
 
+            # --- 1-bis) ¿ESTA SKILL YA ESTÁ CARGADA?
+            #     Se responde ANTES de abrir el archivo, y la respuesta que se
+            #     le manda al modelo es corta a propósito: 20 caracteres en vez
+            #     de 2.667.
+            #
+            # ⚠️ Y le decimos POR QUÉ, no solo que no. Un "no" sin motivo lo
+            #    haría reintentar; con el motivo, sigue trabajando. Es la misma
+            #    lección del PERMISO DENEGADO del nivel 4.
+            pedida = (bloque.input or {}).get("nombre")
+            if bloque.name == "leer_skill" and pedida in skills_cargadas:
+                salida = {
+                    "aviso": f"Ya leíste '{pedida}' en esta conversación: su "
+                             f"contenido sigue arriba, en tus mensajes "
+                             f"anteriores. Búscalo ahí y contesta.",
+                }
+                print(f"     -> leer_skill({pedida}) ⏭️  ya cargada, no se reenvía")
+                anotar("skill_repetida", nombre=pedida, vuelta=vuelta)
+                resultados.append({
+                    "type": "tool_result",
+                    "tool_use_id": bloque.id,
+                    "content": json.dumps(salida, ensure_ascii=False),
+                })
+                continue
+
             # --- 2) ¿EXISTE LA HERRAMIENTA?
             #        Antes esto era FUNCIONES[bloque.name], y un nombre
             #        inventado reventaba con KeyError y tumbaba el bucle entero.
@@ -1209,6 +1334,29 @@ def ejecutar_agente(pregunta, max_vueltas=MAX_VUELTAS, autorizadas=AUTORIZADAS,
                     }
 
                 print(f"     -> {bloque.name}({json.dumps(bloque.input, ensure_ascii=False)})")
+
+                # ⚠️ Se apunta DESPUÉS de que salió bien, y solo si salió bien.
+                #    Si se apuntara antes, un nombre inventado quedaría marcado
+                #    como "ya cargada" y el modelo no podría volver a pedirla
+                #    con el nombre correcto: lo habríamos encerrado por su
+                #    propio error de dedo.
+                if bloque.name == "leer_skill" and "error" not in salida:
+                    skills_cargadas.add(salida["skill"])
+
+            # El cuerpo de una skill es largo y ya está en el .md: imprimirlo
+            # entero llenaría la pantalla y no enseñaría nada. Se dice el peso,
+            # que es el dato que importa.
+            if bloque.name == "leer_skill" and "contenido" in salida:
+                print(f"        devolvió: la skill '{salida['skill']}' "
+                      f"({len(salida['contenido'])} caracteres)")
+                anotar("skill_leida", nombre=salida["skill"],
+                       caracteres=len(salida["contenido"]), vuelta=vuelta)
+                resultados.append({
+                    "type": "tool_result",
+                    "tool_use_id": bloque.id,
+                    "content": json.dumps(salida, ensure_ascii=False),
+                })
+                continue
 
             print(f"        devolvió: {salida}")
             anotar("herramienta", nombre=bloque.name, entrada=bloque.input,
