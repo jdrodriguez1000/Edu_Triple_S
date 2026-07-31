@@ -112,6 +112,75 @@ Se paga 16 veces y se cobra 3.
 > de costo 5 y 6 del curso: *un número heredado arrastra los supuestos con los
 > que nació*.)
 
+---
+
+## 📌 TAREA APARTADA — `METODO.md`, **al terminar TODOS los niveles**
+
+**No es para la próxima sesión.** Va después del nivel 8, y por eso queda aquí
+escrita: para que no se pierda y para que no se adelante.
+
+**De dónde salió:** al cerrar la sesión 21 el estudiante preguntó si este repo
+sirve de base para construir apps —su próximo proyecto es una **app del clima**
+que compara ciudades y recomienda qué ponerse o si salir— y si podía decirle a
+un Claude Code de otra terminal que leyera `GUIDE.md`, `LESSONS.md`,
+`PROGRESO.md` y `README.md`.
+
+**Qué se respondió, y es lo que justifica la tarea:**
+
+1. **El código de este repo NO es una librería.** Está escrito para enseñar:
+   comentarios largos, el bucle a mano en vez del `tool_runner`, nombres en
+   español. **Lo reutilizable no son las piezas, es el criterio.**
+2. **Cargar los cuatro archivos en otro proyecto es mala idea**, y por la lección
+   del nivel 2. Pesan ~445 KB ≈ **110.000 tokens** *(estimado por caracteres, NO
+   medido — se puede medir gratis con el conteo de tokens de `GUIDE.md` §5.b)*,
+   y entrarían en **cada** sesión del otro proyecto.
+3. **Y `PROGRESO.md` es lo peor de los cuatro para exportar:** es el estado de
+   ESTE curso. Un agente trabajando en la app del clima leería *"lo siguiente es
+   Skills"* y *"C9 quedó sin correr"*. **Ruido con autoridad.**
+
+| archivo | ¿se exporta? |
+|---|---|
+| `GUIDE.md` | **sí** — el *cómo*. Sobre todo §11 (SDD/TDD), §4.b (plantilla del bucle), §4.c (los frenos) |
+| `LESSONS.md` | **sí, filtrado** — muchas lecciones son sobre el curso, no sobre construir |
+| `README.md` | no — es el mapa de un curso |
+| `PROGRESO.md` | **no, y con ganas** — es estado ajeno |
+
+**Qué es `METODO.md`:** un archivo **corto** con lo que sobrevive al cambio de
+proyecto, pensado para **copiarse al repo nuevo** (como su `CLAUDE.md` o al lado
+de él), donde Claude Code lo lee solo sin que haya que pedirlo.
+
+> ⭐ **Sería el primer artefacto del curso pensado para SALIR del curso.**
+
+**Por qué al final y no ya:** para destilar hay que tener qué destilar. Faltan
+Skills (6b), TypeScript (6), producción (7) y multi-agente (8) — y **el nivel 7
+es el que más método nuevo va a aportar** (observabilidad, costo por usuario,
+auth). Un `METODO.md` escrito hoy habría que reescribirlo cuatro veces.
+
+📌 **Y ojo con el otro mecanismo, que él ya usa:** `~/.claude/rules/` aplica a
+todos sus proyectos. Lo que sea **regla suya de siempre** va ahí; lo que sea
+**método de construir agentes** va en `METODO.md`. No es lo mismo.
+
+### 🌤️ Y de paso quedó dicho cómo encaja la app del clima (para cuando llegue)
+
+- **El nivel 3 ya trae el código contra Open-Meteo** (gratis, sin llave, por
+  `urllib`). No hay que buscar proveedor.
+- **Comparar ciudades ya está medido:** *"compara Bogotá y Cartagena"* produjo
+  **dos `tool_use` en la misma vuelta**.
+- ⭐ **Y tiene las DOS mitades del nivel 5, igual que el agente de divisas:**
+  *"¿qué temperatura hace?"* se prueba con un `if` (**eval determinista**);
+  *"¿me llevo chaqueta?"* no tiene respuesta correcta única (**rúbrica + juez**).
+- ⚠️ **El riesgo específico ya se sabe nombrar:** *"¿salgo o no?"* es una
+  recomendación que afecta a una persona, y **un modelo complaciente siempre dice
+  que sí.** Eso es **C5** (admitir que no hay pronóstico por hora) y **C4**
+  (levantar la frontera: *"llueve suave, pero depende de si vas en moto"*).
+- **La memoria del 6b entra sola:** *"soy friolento"*, *"voy en moto"* son fichas
+  de libro — y **C9 aplica directo**: ¿recomendó sabiendo que es friolento, o
+  contestó en genérico?
+- ⚠️ **Hueco honesto:** si la app va a ser **web**, faltan el nivel 6 (TypeScript)
+  y el 7 (API, frontend, auth, despliegue). Como agente de terminal está todo.
+
+---
+
 ### 🆕 Candidatas a lección del día (para el bloque del 6b)
 
 1. **Escribir un criterio y medirlo son dos gastos distintos.** Uno cuesta $0.

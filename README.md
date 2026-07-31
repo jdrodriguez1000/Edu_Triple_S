@@ -49,6 +49,18 @@ Cada nivel es una carpeta. Se hacen en orden.
 | 6 | `06-typescript/` | Portar **tu** agente a TypeScript | El mismo modelo mental en otro lenguaje |
 | 7 | `07-produccion/` | API web + frontend con el agente adentro | **Observabilidad**, auth, costos por usuario, despliegue |
 | 8 | `08-avanzado/` | Multi-agente: orquestador y workers | Orquestación, agentes programados, memoria y skills **compartidas** |
+| 📌 | `METODO.md` (raíz) | **Al terminar los 8:** el método destilado, para llevárselo a proyectos de verdad | — |
+
+📌 **`METODO.md` es la tarea final del recorrido**, apartada en la sesión 21. Un
+archivo **corto** con lo que sobrevive al cambio de proyecto, pensado para
+copiarse a un repo nuevo. Va al final por una razón: **para destilar hay que
+tener qué destilar**, y el nivel 7 es el que más método nuevo va a aportar.
+El detalle completo está en `PROGRESO.md`.
+
+> ⚠️ Y la advertencia que lo hace necesario: **este repo no se exporta tal cual.**
+> Sus cuatro archivos de memoria pesan ~445 KB y `PROGRESO.md` es el estado de
+> *este* curso. Meterlos en otro proyecto es pagar contexto por historia ajena.
+> **Lo reutilizable no son las piezas: es el criterio.**
 
 **Estado actual (2026-07-31):** niveles 0 a 5 cerrados, el 5b también, y el
 **6b en curso** (5 de 6 pasos).
