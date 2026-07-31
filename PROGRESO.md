@@ -64,6 +64,20 @@ proceso** (3 de 3). Y luego el paso 6: cerrar memoria y pasar a Skills.
 - **`rubrica.md`** — 8 criterios y una **Parte 8** nueva con la corrida auditada.
 - **`examen.py`** — un caso ya no es una pregunta, es una **lista de turnos**.
 - **`juez.py`** — la llave pasó de `caso` a `(caso, turno)`.
+- **`GUIDE.md` §11 — *Cómo encaja todo esto con SDD y TDD*.** Salió de una duda
+  suya al cierre: *"yo trabajo con SDD y TDD, ¿cómo coordino ese flujo con
+  agentes?"*. Es la sección más orientada a su SaaS de todo el curso:
+  - la **regla del `if`** para separar TDD de evals;
+  - la spec partida en **tres** (casos · rúbrica · system prompt), y por qué la
+    rúbrica **es** una especificación;
+  - las **dos preguntas previas** a escribir un criterio (¿qué evidencia
+    necesita? ¿se solapa con otro?);
+  - sus cuatro pasos de siempre anotados: **cambian dos de cuatro**;
+  - los **dos ciclos** —código y conducta— y por qué el de conducta gana un paso
+    que TDD no tiene: **auditar**.
+
+  ⭐ La frase que la resume: **cambiar el prompt sin evals es refactorizar sin
+  tests.** Es literalmente lo que le pasó en la sesión 19.
 
 ### Las tres lecciones de método del día
 

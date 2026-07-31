@@ -1375,6 +1375,168 @@ Un modelo **no tiene reloj**. Prohibirle inventar la fecha solo lo obliga a deci
 > **Si el dato siempre se necesita y no cambia dentro de la conversación, va en
 > el prompt.** (La fecha y la memoria son el mismo caso.)
 
+---
+
+## 11. Cómo encaja todo esto con SDD y TDD
+
+**Para cuando construyas software de verdad, no ejercicios.** Escrita en la
+sesión 20, a partir de una duda concreta: *"yo trabajo con SDD y TDD, ¿cómo
+coordino ese flujo con agentes de IA?"*
+
+### 11.a La regla que parte el mundo en dos
+
+TDD y evals **no son lo mismo**, y confundirlos es el error clásico al pasar de
+aplicaciones a IA. No es una diferencia de estilo: es de naturaleza.
+
+| | TDD | Evals |
+|---|---|---|
+| misma entrada | **misma salida** | salida distinta cada vez |
+| resultado | rojo o verde | **un porcentaje** |
+| costo | $0,00 | dinero real |
+| velocidad | segundos | minutos |
+| lo decide | un `if` | una opinión medida |
+
+> 🚨 **LA ÚNICA REGLA QUE NECESITAS PARA SABER DÓNDE VA ALGO:**
+> **si la respuesta correcta se puede escribir en un `if`, es TDD.
+> Si necesita criterio, es un eval.**
+
+**Cómo se ve en este repo:**
+
+| Archivo | Capa |
+|---|---|
+| `evals_agente.py`, `evals_memoria.py` | **TDD.** Determinista, sin red, $0,00 |
+| `rubrica.md` + `examen.py` + `juez.py` | **Evals.** Por eso imprime `C8: 33%` y no "verde" |
+
+⭐ Y lo más importante de TDD ya lo haces: **los sabotajes.** Ver un test en rojo
+antes de creerle el verde (§8). Sin eso, un eval que no prueba nada se ve igual
+que uno que sí.
+
+### 11.b La especificación se parte en TRES
+
+En una aplicación normal la spec es una sola cosa. En un agente vive en tres
+sitios distintos:
+
+```
+1. La spec determinista   →  casos de prueba      (evals_*.py)
+2. La spec de conducta    →  LA RÚBRICA           (rubrica.md)
+3. La spec ejecutable     →  EL SYSTEM PROMPT     (agente.py)
+```
+
+La **2** es SDD literal: `rubrica.md` **es una especificación**, no
+documentación, y se escribe **antes** de correr un solo caso.
+> *Una rúbrica escrita después de ver las respuestas es la que el agente ya
+> aprueba.* Eso es una ceremonia, no una medición.
+
+La **3** no tiene equivalente en una app normal: **el system prompt es prosa que
+se ejecuta.** Es spec y es código al mismo tiempo. Por eso existe la §10.
+
+### 11.c ⚠️ La pregunta que va ANTES de escribir un criterio
+
+> **¿Qué evidencia necesita el juez para poder calificar esto?**
+
+En TDD esa pregunta no existe: un `if` ve todo lo que hay en memoria. **El juez
+solo ve lo que le pasas.**
+
+🚨 En la sesión 20 se falló esto **tres veces en una sola sesión**:
+
+| Criterio | Evidencia que faltaba | Cuándo se notó |
+|---|---|---|
+| C8 (¿guardó bien?) | qué había en la memoria **antes** | antes de correr ✅ |
+| C7 (¿afirmó sin fuente?) | **las fechas que el system le dio** | corriendo, y dio un **62% falso** |
+| C9 (¿usó lo que guardó?) | — | el criterio ni existía |
+
+> **Escribir un criterio sin su evidencia no lo deja sin medir: lo deja midiendo
+> mal**, con números que se ven igual de buenos que los verdaderos.
+
+### 11.d Y la otra pregunta previa: ¿se solapa con algo?
+
+Dos criterios que castigan lo mismo **no miden el doble: hacen que el juez se
+contradiga.** Pasó con C6 en la primera corrida —casi la misma frase, veredictos
+opuestos— y volvió a asomar con C7 y C8, que se solapaban con **tres** criterios
+viejos.
+
+> **Cada cosa se castiga en UN solo lugar.** Cuando un juez se contradiga,
+> sospecha primero de la rúbrica, no del modelo.
+
+### 11.e Los cuatro pasos de siempre, anotados
+
+**El ciclo de trabajo no se tira a la basura. Cambian dos pasos de cuatro.**
+
+| Paso | Qué cambia |
+|---|---|
+| **1. Definir la feature** | 🆕 pregunta nueva: **¿es de código o de conducta?** |
+| **2. Especificar** | se parte en dos (§11.a) y gana las preguntas de §11.c y §11.d |
+| **3. Evolucionar arquitectura** | igual, + tres decisiones propias de agentes (abajo) |
+| **4. El ciclo** | se parte en **dos ciclos** a velocidades distintas |
+
+**Features de conducta** son cosas como *"que cite la fuente"*, *"un hecho por
+ficha"*, *"que no narre el proceso"*. ⚠️ **Esa familia no existe en una app
+normal — y de los tres defectos hallados en la sesión 20, los tres eran de ese
+tipo.** Ninguno se arreglaba tocando código.
+
+**Las tres decisiones de arquitectura que solo existen aquí:**
+
+| Decisión | Regla |
+|---|---|
+| ¿herramienta o harness? | si siempre se necesita y no cambia en la conversación, **va puesto** (§10) |
+| ¿libre o con permiso? | **denegar por defecto** (§4.c) |
+| ¿qué queda en el registro? | ⬇ |
+
+> ⭐ **DISEÑA QUÉ VAS A PODER OBSERVAR, NO SOLO QUÉ VA A HACER.**
+> El `registro.jsonl` se escribió como bitácora en la sesión 15. Cuando llegó el
+> examen, **resultó ser la evidencia** y no hubo que construir nada. Eso no fue
+> suerte: fue haber decidido a tiempo qué se anota.
+
+### 11.f Los dos ciclos
+
+**Ciclo A — el código. Idéntico al de siempre.**
+
+```
+ROJO → CONSTRUIR → VERDE → REFACTOR
+```
+Gratis, en segundos, **en cada commit**.
+
+**Ciclo B — la conducta. Parecido, con tres diferencias.**
+
+```
+MEDIR → CAMBIAR EL PROMPT → VOLVER A MEDIR → AUDITAR → ajustar la prosa
+```
+
+**1. No hay verde: hay una línea base.** La pregunta deja de ser *"¿pasa?"* y
+pasa a ser **"¿mejoró o empeoró respecto a la última medición?"**. Guarda cada
+línea base **con fecha, con quién juzgó y con cuántas repeticiones**.
+
+**2. 🚨 Hay un paso que TDD no tiene: AUDITAR.** Porque el instrumento puede
+mentir. En la sesión 20, C7 dijo **62%** y las cinco fallas eran del juez.
+**Un `if` no tiene opiniones; un juez sí.** Ese paso no se salta nunca.
+
+**3. ⚠️ UNA SOLA COSA POR VUELTA.** En el ciclo A puedes tocar tres cosas y los
+tests te dicen cuál rompió. **Aquí no: un porcentaje que se movió no dice por
+qué.** Ya pasó dos veces en el curso (cambiar prompt y código a la vez deja un
+resultado que no se puede atribuir).
+
+### 11.g Cuándo corre cada uno
+
+| | cuándo |
+|---|---|
+| **Ciclo A (TDD)** | en **cada commit**. Es gratis y es rápido. |
+| **Ciclo B (evals)** | cuando **cambias el prompt**, o antes de soltar una versión. |
+
+⚠️ **No metas los evals en CI en cada commit.** Cuestan dinero y son ruidosos.
+
+⚠️ **Y TDD te da un trinquete; los evals no.** Un test que pasó a verde se queda
+verde. **Un 81% puede dar 75% mañana sin que nadie haya tocado nada.** Por eso
+existe `REPETICIONES` en `examen.py`, y por eso una línea base de **una sola
+muestra** hay que citarla diciendo que es de una sola muestra.
+
+### 11.h ⭐ El resumen en una frase
+
+> **Cambiar el prompt sin evals es refactorizar sin tests.**
+
+Es exactamente lo que pasó en la sesión 19: tres rondas de prompt, tres arreglos,
+**y cada uno destapó un defecto nuevo**, porque cada ronda se juzgó con una sola
+muestra.
+
 ### Nunca le pidas que cuente: dáselo contado
 
 La primera versión decía *"cualquier otra fecha, **cuéntala** desde esta"*. Y
