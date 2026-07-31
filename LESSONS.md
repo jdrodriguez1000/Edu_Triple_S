@@ -1899,12 +1899,414 @@ el disco; el gasto ya estaba hecho.
 
 ## Nivel 6b — Memoria persistente y Skills
 
-> ⚠️ **Este bloque está a medias, y se dice para que no se olvide.**
-> Las lecciones de la **memoria** (pasos 1 a 5, sesiones 16 a 21) siguen
-> pendientes de escribir: están sueltas dentro de `PROGRESO.md`. Se numerarán
-> **L6b.1 a L6b.29**.
-> Las de **Skills** (paso 6, sesión 22) empiezan en **L6b.30**, para no tener
-> que renumerar nada después.
+> **L6b.1 a L6b.29** son las de la **memoria persistente** (pasos 1 a 5,
+> sesiones 18 a 21). **L6b.30 en adelante**, las de **Skills** (paso 6,
+> sesión 22).
+>
+> Las candidatas apuntadas en `PROGRESO.md` eran más de 29: las que decían la
+> misma idea con otra ropa quedaron **fundidas en una sola lección**, para que
+> la numeración de Skills no se moviera.
+
+### L6b.1 — La API no tiene memoria. Nunca. Ni siquiera dentro de una conversación
+
+El `historial` del nivel 2 no le daba memoria al modelo: era **tu código
+repitiéndole todo** en cada llamada. Cada petición llega igual de ciega que la
+primera.
+
+> **La memoria nunca estuvo en el modelo: siempre estuvo en tu código.**
+
+### L6b.2 — Toda memoria vive en el harness, y por eso pagar más no la arregla
+
+Ni el modelo ni la API guardan nada. **Opus olvida exactamente igual que haiku.**
+La amnesia no es una limitación del modelo que se compre: es el sitio donde no
+pusiste un archivo.
+
+### L6b.3 — Memoria no es historial: es lo que quedó DESPUÉS de olvidar casi todo
+
+Guardar la conversación entera falla por tres lados: por costo (se reenvía en
+cada vuelta), por techo (la ventana se acaba) y —sobre todo— **por falta de
+criterio**. Un sistema que guarda todo no decidió nada.
+
+> Y el curso mismo es la prueba: `PROGRESO.md` se actualiza, `LESSONS.md` solo
+> crece, `GUIDE.md` se corrige. **Tres archivos porque son tres memorias con
+> tres políticas.**
+
+### L6b.4 — Un sistema de memoria sin política de olvido no está terminado
+
+El tope de 8 datos parecía un detalle de implementación. Cuando por fin se vio
+actuar, **botó `es contador`** —el hecho más definitorio del usuario— para que
+entrara *"estudia economía"*, y dejó vivo *"viaja seguido a Panamá"*.
+
+> **Botar el más viejo trata la antigüedad como si fuera irrelevancia, y no lo
+> es.** Eso no es una obviedad: es una decisión de diseño, y tiene víctima.
+
+### L6b.5 — El formato del archivo sale de la política, no del gusto
+
+| qué guarda | política | formato |
+|---|---|---|
+| `registro.jsonl` | **eventos**: pasaron y no cambian | solo crece → se **añade** |
+| `memoria.json` | **estado**: es verdad hoy | se **reescribe** entero |
+
+> Antes de elegir entre `.json` y `.jsonl`, pregunta si lo que guardas **ocurrió**
+> o **es cierto ahora**. El resto se deduce solo.
+
+### L6b.6 — Permiso = ANTES, para lo irreversible. Revisión = DESPUÉS, para lo reversible
+
+`recordar` quedó como `"libre"`, con huella en el registro y un comando para ver
+y borrar. Tres razones, y la segunda es la que decidió:
+
+1. La primera vez interrumpe, y cae a mitad de una respuesta que nadie pidió.
+2. ⭐ **El permiso no tiene memoria:** `AUTORIZADAS` vive en RAM y muere al
+   cerrar. **Un permiso volátil sobre una herramienta persistente es un desajuste
+   de diseño** — habría que autorizar lo mismo todos los días, para siempre.
+3. El permiso pregunta lo que no importa: el peligro de la memoria no es la
+   **acción** (escribir 4 líneas, reversible) sino el **contenido** — un dato
+   falso envenena todas las conversaciones futuras. Y un *"¿autorizas escribir?"*
+   no muestra **qué** se va a escribir.
+
+### L6b.7 — Escalar por usuarios y escalar por conocimiento son dos ejes independientes
+
+No es una escalera `archivo → base de datos → RAG`.
+
+| eje | lo mueve | exige |
+|---|---|---|
+| ↔ | cuántos **usuarios** escriben | archivo → SQLite → PostgreSQL |
+| ↕ | cuánto **conocimiento** hay que consultar | leerlo entero → Skills → RAG |
+
+Un investigador solo con 20.000 papers: **RAG sí, base de datos no.** 50.000
+empleados sin documentos: **base de datos sí, RAG no.**
+
+> **RAG no es el hermano de la memoria: es la memoria persistente cuando ya no
+> cabe.** Y con miles de usuarios el archivo plano no es "menos elegante": **se
+> rompe** — dos escrituras al tiempo lo corrompen sin error y sin aviso.
+
+### L6b.8 — Un log no es una memoria
+
+*"Deja registro de lo realizado"* suena a memoria y no lo es. El agente escribía
+`registro.jsonl` desde la sesión 15 y **jamás lo volvió a abrir**.
+
+> **El log es la materia prima; la memoria es la conclusión.** A ese agente no le
+> faltaba escribir: le faltaba **leer**.
+
+### L6b.9 — Un eval en verde dice una de dos cosas, y no sabes cuál
+
+O el código está bien, **o la prueba no está mirando**. Lo único que las separa
+es romper el código a propósito y ver el rojo. En los cinco sabotajes del nivel,
+tres casos pasaron en verde defectos reales.
+
+⚠️ **Y el caso extremo:** con el desvío del disco quitado, **48 casos salieron en
+verde mientras el eval borraba el `memoria.json` de verdad.** No lo dañó: lo
+desapareció. El único que se enteró fue la trampa que comparaba el archivo real
+byte por byte.
+
+> **Un eval con un efecto secundario destructivo no se ve rojo: se ve verde.**
+> El desvío es la promesa; la trampa es el hecho comprobado. Hacen falta las dos.
+
+### L6b.10 — Lo que informa éxito no siempre lo hizo, y pasa en las dos capas
+
+| capa | qué se vio |
+|---|---|
+| **el código** | el tope botaba el dato equivocado y el motivo decía `desplazo` — la respuesta correcta para la acción equivocada |
+| **el modelo** | *"**Anotado**: te daré las cifras en tablas"* · `🧠 no guardó nada`. Nunca llamó a `recordar` |
+
+> **El motivo dice qué CREYÓ que hizo, no qué hizo.** Contar y leer el motivo no
+> basta: hay que preguntar **quién** quedó.
+
+🚨 **Y arriba está el peligro de fondo de la escuela B** (que el modelo decida
+cuándo escribir): *"decir que lo hizo"* y *"hacerlo"* son dos cosas separadas, y
+**nada las obliga a coincidir**. Contradice L4.9 de frente: allá algo le dijo que
+no y no mintió; aquí nadie le dijo nada y narró como si hubiera llamado.
+El arreglo no fue código, fue una regla en el system: *"nunca digas que guardaste
+algo si no llamaste a `recordar` en este mismo turno"*.
+
+### L6b.11 — Una conversación tiene que ver una memoria QUIETA
+
+Tres sitios posibles para leer la memoria, y los tres "funcionan":
+
+| dónde | cada cuánto | qué pasa |
+|---|---|---|
+| en `llamar_modelo` | cada vuelta | ⚠️ el system prompt cambia a mitad de conversación |
+| al importar el módulo | por proceso | ⚠️ lo aprendido en la pregunta 1 no llega a la 2 |
+| al empezar `ejecutar_agente` | **por conversación** | ✅ |
+
+> Si el modelo guarda un dato en la vuelta 3, en la vuelta 4 **su propio pasado
+> sería otro**. Lo que se aprende hoy se usa en la conversación **siguiente**, no
+> en la vuelta siguiente.
+
+Y la distinción que lo hace probable: `None` es *"léelo tú del disco"*; `""` es
+*"corre SIN memoria"*. **Una orden y una ausencia no son lo mismo.**
+
+### L6b.12 — Una herramienta no tiene que vivir en `herramientas.py`: tiene que estar en `FUNCIONES`
+
+`recordar` se quedó en `memoria.py`. `herramientas.py` es *el mundo exterior*
+(divisas, red, reportes); la memoria es *del harness*. Meterla ahí habría
+obligado a que un módulo importara al otro sin necesidad.
+
+> **Lo único que mira el bucle es `FUNCIONES`.** La carpeta donde vive una
+> función es organización tuya; el menú es el contrato.
+
+Y el envoltorio no sobra: `guardar_dato` devuelve una tupla, y el `tool_result`
+necesita texto.
+> ⭐ **Una tupla le dice al HARNESS qué pasó; no le dice al MODELO qué hacer.**
+> `muy_largo` es un diagnóstico. *"Resúmelo en menos de 200 caracteres y vuelve a
+> intentarlo"* es una instrucción.
+
+### L6b.13 — Lo que cuesta la memoria no son los datos
+
+Dos mediciones, las dos gratis con `count_tokens`:
+
+| | tokens por vuelta |
+|---|---|
+| el primer dato | **+72** (48 son el encabezado, tenga uno u ocho) |
+| cada dato siguiente | ~25 |
+| la memoria **llena**, 8 datos | **247** |
+| **enseñarle a usarla** (system + descripción) | **+443** |
+
+> ⭐ **Enseñarle al agente a usar la memoria cuesta más que darle la memoria.**
+> Las instrucciones pesan casi el doble que los datos que gobiernan.
+
+Y el peaje fijo es **la tercera aparición del costo del menú** (sesión 16): hay
+un precio por **abrir la puerta**, y después el pasajero es barato.
+→ Consecuencia que no es obvia: **una memoria con un solo dato es el peor negocio
+de todos.** Se paga el peaje completo por un pasajero.
+
+📏 **Y se puede presupuestar sin gastar:** `count_tokens` predijo +72 y la corrida
+pagada dio +74; predijo +143 y dio +142.
+
+### L6b.14 — Una muestra no es una medida
+
+El **mismo** acto 2, dos veces, con la misma pregunta, la misma memoria y el
+mismo modelo: una corrida **afirmó** y la otra **preguntó**. Nadie cambió una
+línea.
+
+Y peor: la misma conversación falló **al revés** en dos corridas — en una guardó
+bien y entregó una respuesta en blanco; en la otra respondió perfecto y mintió
+diciendo *"Anotado"*.
+
+> 📌 **Una diferencia entre dos configuraciones solo cuenta si es más grande que
+> la diferencia entre dos corridas de la misma configuración.**
+
+Consecuencia retroactiva: los criterios del 5b medidos con 3 muestras eran más
+frágiles de lo que parecían.
+
+### L6b.15 — La memoria no da razón, da foco
+
+La misma pregunta, con y sin memoria. Las tres respuestas fueron buenas y
+**ninguna inventó una cifra**. Lo que cambió fue el tamaño del abanico:
+
+| | caminos que ofreció |
+|---|---|
+| sin memoria | **4** (pago oficial, remesa, compra internacional, otro) |
+| con memoria | **2**, y apuntados: *"como contador que factura a EE.UU…"* |
+
+> **La memoria no hizo al agente más correcto: lo hizo más específico.** Si al
+> otro lado hay una persona, **ahorrarle dos preguntas ES el producto.**
+
+✅ Y lo mejor es lo que no pasó: **sin memoria no se inventó un perfil.** Dijo
+*"no puedo decirte cuál te conviene sin saber qué es lo tuyo"*.
+
+### L6b.16 — Lo que no puedes provocar a voluntad, no lo pruebes pagando: simúlalo
+
+El defecto de las respuestas vacías se vio tres veces solo. Al querer
+reproducirlo a propósito, **el modelo no cooperó**: dos corridas pagadas y
+ninguna sirvió.
+
+Se fabricó un **cliente falso** con un guion de respuestas y se le metió al bucle.
+Cuesta $0,00, corre en milisegundos, **y va a seguir probándolo dentro de seis
+meses**. Es la misma sustitución que ya se le hacía al archivo, pero al cliente.
+
+⚠️ Y trajo su propia trampa: el bucle llama a `anotar()`, que escribe en el
+registro **de verdad**. Sin desviarlo, el eval habría metido líneas falsas en la
+evidencia de las corridas pagadas.
+
+### L6b.17 — Una respuesta incompleta es peor que una vacía
+
+**3 de cada 10 respuestas llegaban en blanco:** el modelo escribía el texto junto
+al bloque `tool_use` y el bucle solo miraba la última vuelta. Al sabotear el
+arreglo apareció el caso peor: con texto en dos vueltas llega **algo** — una
+respuesta que **parece completa y no lo es**.
+
+> **La vacía se ve. La incompleta no.** Y: cortar por un límite tuyo
+> (presupuesto, tope de vueltas) no es razón para botar lo que ya se pagó.
+
+### L6b.18 — Una herramienta nueva no crea defectos: los DESTAPA
+
+`recordar` es la primera herramienta que el modelo llama **mientras ya está
+contestando**; las seis de divisas se piden primero y se contesta después. Por
+eso destapó un defecto del bucle que llevaba **tres niveles** ahí y estaba
+anotado como *"solo se nota cuando una herramienta se niega a mitad"*.
+
+> Resultó ser el **30%** de las respuestas.
+
+### L6b.19 — Cuando una buena respuesta reprueba, el sospechoso es el examen
+
+La vara falló **tres veces en un día**: contó como *empaquetado* lo que eran
+omisiones, y reprobó dos veces al agente por **no guardar un dato que ya estaba
+en memoria** — donde guardar cero era lo correcto.
+
+> ⭐ **Una vara escrita para un contexto no vale en otro.** `esperadas=1` suponía
+> memoria vacía, y nadie volvió a mirar ese supuesto.
+
+Y las tres se atraparon **mirando fila por fila**, no razonando. Como el número
+único que mezclaba dos fenómenos: *empaquetar* es "guardó mal", *omitir* es "no
+guardó", y se arreglan distinto.
+
+### L6b.20 — Dónde va la regla importa más que cómo está escrita
+
+El agente guardaba **4 de 9** hechos. Se arregló a **9 de 9** sin cambiar el
+código, y el arreglo fue de ubicación y de proporción:
+
+**Ubicación.** ⭐ **Una descripción de herramienta solo pesa cuando el modelo YA
+está considerando usarla.** Si decide no llamarla, no lo frena nada — y
+*"Anotado"* fue justo lo que dijo cuando **no** la llamó. → Lo que debe frenarlo
+*antes* de decidir, o gobernar lo que puede **afirmar**, va en el **system
+prompt**.
+
+**Proporción.** La descripción vieja tenía **cuatro prohibiciones y una sola
+instrucción positiva**. Con esa proporción, ante la duda el modelo se **abstiene**.
+⚠️ Y no era que no supiera qué guardar: *"su ciudad"* ya estaba en la lista y
+omitió *"vivo en Medellín"*. **Le faltaba el disparador, no el criterio.**
+
+> Y el empaquetado no lo arregló la regla abstracta (*"un hecho por llamada"*, que
+> ya estaba): lo movió **el ejemplo textual del error concreto.**
+
+### L6b.21 — Una regla más estrecha que el problema no protege
+
+El system decía *"nunca inventes un **número**"*. Se le escaparon: una tendencia
+(*"el euro ha estado fuerte esta semana"*, sin un solo dato del euro), una fecha
+(*"sábado 2 de agosto"* siendo 31 de julio) y un día de la semana.
+
+> 🚨 **Una tendencia es un dato igual que un precio.** La regla se reescribió
+> nombrando las cuatro cosas, y la invención paró.
+
+### L6b.22 — Lo que el modelo no puede saber no se arregla prohibiendo: se pone, y se pone contado
+
+Un modelo **no tiene reloj**. Prohibirle inventar la fecha sin darle la fecha solo
+lo obliga a decir *"no sé"*.
+
+Y no fue una herramienta `hoy()`, que era lo obvio:
+
+| | costo |
+|---|---|
+| herramienta | ~200 tokens de menú en **cada** vuelta **+ una vuelta entera** |
+| una línea en el system | **~40 tokens, cero vueltas** |
+
+> **Si el dato siempre se necesita y no cambia dentro de la conversación, no
+> merece una herramienta: merece estar puesto.**
+
+⚠️ Y la primera versión decía *"cualquier otra fecha, cuéntala desde esta"* — y
+contó mal. **Contar días de calendario es aritmética**, justo lo que este modelo
+hace de cabeza y falla. La solución nunca fue *"que calcule mejor"*: fue
+**dárselo hecho** (ayer, mañana, el próximo lunes) y prohibirle fabricar el resto.
+**Tercera aparición del puente** (`cop_por_1_usd`, `usd_por_1_cop`, las fechas), y
+tercera vez que sale casi gratis: 101 tokens, $0,0001 por vuelta.
+
+> **Darle el dato hecho sale siempre más barato que el error.**
+
+### L6b.23 — Un dato nuevo en el prompt puede cambiar comportamientos que no tienen nada que ver con él
+
+Con el calendario puesto, el agente **dejó de llamar a `trm()`** y aun así afirmó
+cuál TRM estaba vigente… equivocándose de día. Y al final preguntó *"¿necesitas
+saber la TRM de hoy?"*: **sabía que no la tenía, y ya lo había afirmado.**
+
+> ⚠️ **Le diste fechas y dejó de pedir tasas.** Con material para deducir, dedujo
+> en vez de consultar. Un cambio en el prompt no se verifica solo en lo que venía
+> a arreglar.
+
+### L6b.24 — Pulir un prompt contra una sola muestra es perseguir la cola
+
+Tres rondas de prompt en un día. Cada una **arregló lo que buscaba y destapó algo
+nuevo**, porque cada una se juzgó con **una** muestra.
+
+> 🚨 **Cuando cada parche destapa otro, lo que falta no es un parche mejor: es el
+> instrumento de medida.** Reconocer que un método se agotó vale más que una ronda
+> más.
+
+📌 Corolario del cierre: **cambiar el prompt sin evals es refactorizar sin tests.**
+
+### L6b.25 — La memoria que recibe el agente son HECHOS, no el hilo
+
+El examen lo destapó: con la ficha *"prefiere los valores en pesos"* delante, ante
+*"¿Y 450 dólares cuánto serían?"* el agente contestó **"¿a qué moneda quieres
+convertir?"**.
+
+> **La memoria NO es el historial de la conversación.** Para el usuario la
+> relación es continua —por eso escribe una pregunta de seguimiento— pero el turno
+> 2 arranca en blanco: **sabe quién eres y no sabe de qué estaban hablando.**
+
+No es un bug: es el límite de esta escuela de memoria. Y **no se ve hasta que
+alguien encadena dos preguntas.**
+
+### L6b.26 — El peor choque entre dos criterios no es que midan lo mismo: es que premien lo contrario
+
+Al escribir C9 (*¿usó lo que recordaba?*) aparecieron tres solapamientos, y los
+dos peores daban veredictos **opuestos a la misma frase**:
+
+| | la misma respuesta era… | dónde quedó la línea |
+|---|---|---|
+| C4 | levantar la frontera (`PASA`) **e** ignorar la ficha (`FALLA`) | si la memoria ya resuelve la ambigüedad, **no hay frontera** |
+| C5 | admitir el límite (`PASA`) **y** desconocer lo que tenía (`FALLA`) | la línea es *"¿podía saberlo?"* |
+| C7 | ¿afirmar desde una ficha es *afirmar sin fuente*? | **no: una ficha ES fuente**, llega en el system prompt |
+
+> ⭐ **Cada cosa se castiga en UN solo lugar.** Si no, una misma falla resta tres
+> veces y el juez tiene que elegir — que es literalmente lo que rompió C6.
+
+### L6b.27 — Un criterio nuevo no crea evidencia: solo mira la que ya hay
+
+Dos caras del mismo hecho, y las dos costaron:
+
+1. **Un criterio sin su evidencia no queda sin medir: queda midiendo MAL.** C7
+   pidió algo que el juez no veía y sacó un **62% que era falso** — las cinco
+   fallas eran del juez, no del agente. Y un número mal medido **se ve igual de
+   bueno que uno verdadero**. → Por eso C9 se diseñó reutilizando la evidencia que
+   ya existía para C8: **más barato y más seguro que inventarla.**
+2. **C8 tiene 16 casillas; C9 tiene 3.** Es la misma memoria vista por sus dos
+   lados: **guardar se puede vigilar en todas partes; USAR solo se ve en la
+   conversación siguiente.**
+
+> ⭐ **La memoria no se mide mejor agregando criterios, sino agregando PARES de
+> conversaciones.** El techo es la forma del examen, no la rúbrica.
+
+### L6b.28 — Escribir el instrumento es gratis; usarlo es lo que cuesta
+
+Son dos gastos distintos y venían pegados en una sola recomendación:
+
+| | |
+|---|---|
+| escribir C9 | **$0** |
+| saber qué DA C9 | ~$0,25 y una auditoría entera |
+
+Lo mismo por el otro lado: con el defecto de C7 ya diagnosticado, recalificar
+habría costado $0,25 **y no habría agregado conocimiento** — el número ya se
+sabía. Se arregló el código para que el defecto no vuelva, y no se recalificó.
+
+> **Cuando encuentres un defecto en tu instrumento, pregúntate si necesitas volver
+> a medir o si ya sabes qué habría dado.**
+
+💰 Y los dos errores de costo del examen, que son la misma advertencia:
+
+- El presupuesto se estimó heredando *"10 preguntas **en sonnet**"* cuando el
+  examinado era **haiku**: $0,72 estimado contra $0,17 real. → **Un número
+  heredado arrastra los supuestos con los que nació.**
+- Al juez se le contó la respuesta visible y **no los tokens de pensamiento**:
+  $0,34 estimado contra **$0,666** real, a dos casos de cortar la evaluación por
+  la mitad. → **Lo que el modelo piensa y tú nunca ves se paga completo.**
+
+### L6b.29 — Una rúbrica puede mezclar lo medido y lo supuesto, siempre que se distinga a simple vista
+
+C9 se escribió y **nunca se corrió**. Quedó marcado así en **tres sitios**: el
+encabezado del `.md`, el criterio mismo y la tabla de pendientes. C1–C8 tienen una
+corrida detrás; C9 no tiene ninguna.
+
+Y lo mismo con el 100% de C7 después de la auditoría: **es derivado, no medido** —
+sale de leer las cinco justificaciones, no de volver a correr.
+
+> Un instrumento a medias sirve. Un instrumento a medias **que no dice cuál mitad
+> es cuál** produce números con la misma cara que los verdaderos.
+
+⭐ Y un detalle que confirmó una decisión vieja: **`cargar_rubrica()` no se tocó al
+agregar C7, C8 ni C9.** El instrumento vive en el `.md`; el código solo lo
+transporta.
 
 ### L6b.30 — Una herramienta extiende lo que el agente HACE; una skill, lo que SABE
 

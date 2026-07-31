@@ -3,26 +3,65 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-07-31 (sesión 22)
+**Última actualización:** 2026-07-31 (sesión 23)
 
 ---
 
-# 📍 NIVEL 6b — **PASO 6 (SKILLS) TERMINADO, MEDIDO Y VERIFICADO. EL NIVEL 6b QUEDA CERRADO SALVO UNA DEUDA.**
+# 🎓 NIVEL 6b — **CERRADO.** Memoria persistente y Skills, terminados y medidos.
 
-Sesión 22. Costo total: **$0,1796**.
+Sesión 22 (Skills, $0,1796) + sesión 23 (las lecciones, **$0,00**).
 
-## 🚨 LO PRIMERO DE LA PRÓXIMA SESIÓN: **LAS LECCIONES DE LA MEMORIA (L6b.1–L6b.29)**
+## Lo que se hizo en la sesión 23: se saldó la única deuda del nivel
 
-Es la única deuda que queda del nivel 6b, y está dicha en voz alta dentro de
-`LESSONS.md`: el bloque del nivel **está a medias**.
+`LESSONS.md` tenía el bloque del 6b **a medias**: las 17 de Skills escritas
+(L6b.30–L6b.46) y las de memoria pendientes. Ya no.
 
-- Las lecciones de **Skills** ya están escritas: **L6b.30 a L6b.46** (17).
-- Las de **memoria** (pasos 1 a 5, sesiones 16 a 21) **no**. Siguen sueltas
-  dentro de este archivo. Se numerarán **L6b.1 a L6b.29** — el hueco ya está
-  reservado a propósito, para no renumerar nada.
+**Escritas L6b.1 a L6b.29**, destiladas de las sesiones 18 a 21 de este archivo.
+Cero llamadas a la API. **El bloque del nivel 6b tiene ahora 46 lecciones
+seguidas, sin huecos.**
 
-Cuesta **$0,00**: es leer las sesiones 16–21 de aquí y destilarlas. Cuando eso
-esté, el nivel 6b se cierra y sigue el **nivel 7**.
+### La decisión de encaje, que vale anotarla
+
+Las candidatas apuntadas sumaban **más de 29** (8 de la sesión 18, 21 de la 19,
+y las de la 20 y la 21, que ninguna sesión había numerado). Y el hueco reservado
+era exactamente 29, porque **Skills ya estaba escrito desde L6b.30 y renumerarlo
+habría roto las referencias**.
+
+→ Se **fundieron las que eran la misma idea con otra ropa**, en vez de dejar
+fuera las de las sesiones 20 y 21. Las fusiones:
+
+| quedó | venía de |
+|---|---|
+| **L6b.4** | política de olvido **+** el tope botando `es contador` |
+| **L6b.9** | un eval verde es ambiguo **+** el eval destructivo se ve verde |
+| **L6b.10** | el `motivo` que miente **+** *"Anotado"* sin anotar (las dos capas del mismo engaño) |
+| **L6b.13** | el peaje fijo del encabezado **+** enseñar cuesta más que dar **+** la predicción gratis |
+| **L6b.20** | dónde va la regla **+** prohibir mucho y ordenar poco |
+| **L6b.22** | lo que no puede saber se pone **+** el puente de fechas |
+| **L6b.27** | un criterio sin evidencia mide mal **+** un criterio nuevo no crea evidencia |
+| **L6b.28** | escribir ≠ medir **+** los dos errores de costo del examen |
+
+> **Una lección que se dice dos veces con otras palabras no son dos lecciones.**
+> Fundirlas fue más barato que renumerar 17 lecciones ya escritas.
+
+## 🚨 SIGUIENTE PASO: **EL NIVEL 7**
+
+El 6b está cerrado. El orden acordado en la sesión 18 era **6b → 6 → 7**, así que
+antes del 7 va el **nivel 6 (TypeScript)**: no trae conceptos nuevos de agentes,
+traduce lo que ya funciona, y el navegador del nivel 7 solo habla JavaScript.
+
+📌 Y sigue apartada, para **después del nivel 8**, la tarea de `METODO.md`
+(abajo, en su sección).
+
+### Deudas que el nivel 6b deja abiertas (ninguna bloquea)
+
+- Los **dos defectos del prompt** confirmados por el examen: dos hechos en una
+  ficha, y narrar el proceso. Se arreglan **el día que se vuelva a correr el
+  examen**, no antes (sesión 21).
+- **C9 está escrito y nunca corrido.**
+- Las **skills nunca se han saboteado**.
+- Escritura no atómica en `_escribir()`; el tope bota el más viejo; hay dos
+  `agente.py` en el curso.
 
 ---
 

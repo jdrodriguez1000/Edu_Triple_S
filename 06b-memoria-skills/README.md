@@ -599,7 +599,10 @@ es el examen, no el examinado.** Quedó comentado dentro de `evals.py`.
 | 5 | Correrlo y **medir** | ✅ `volumen.py` — 3 defectos hallados, **los 3 arreglados y re-medidos: 4 de 9 → 9 de 9** |
 | 5b | El examen con rúbrica y juez | ✅ sesiones 20–21 — 9 criterios, C9 escrito y **nunca corrido** |
 | **6** | **Skills** | ✅ **sesión 22** — 4 skills, `skills.py`, `leer_skill`, línea base y medición |
-| 7 | Las lecciones de la MEMORIA en `LESSONS.md` | ⏳ **lo único que falta.** L6b.1–L6b.29, cuesta $0,00 |
+| 7 | Las lecciones de la MEMORIA en `LESSONS.md` | ✅ **sesión 23** — L6b.1–L6b.29, $0,00. Con Skills (L6b.30–L6b.46), **46 seguidas** |
+
+🎓 **Con el paso 7 el nivel 6b queda CERRADO.** Lo siguiente es el **nivel 6
+(TypeScript)**.
 
 ### Paso 6 — Skills, en cuatro líneas
 

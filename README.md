@@ -63,7 +63,7 @@ El detalle completo está en `PROGRESO.md`.
 > **Lo reutilizable no son las piezas: es el criterio.**
 
 **Estado actual (2026-07-31):** niveles 0 a 5 cerrados, el 5b también, y el
-**6b en curso** (5 de 6 pasos).
+**6b CERRADO** (sus 6 pasos, con sus 46 lecciones escritas).
 
 El proyecto integrador está terminado: 6 herramientas, **121 evals que corren en
 $0,00**, un harness con 10 frenos, tres modelos comparados con datos, y una
@@ -81,9 +81,14 @@ verdad encontró cinco defectos que 228 evals no podían ver** — respuestas qu
 llegaban vacías, un agente que decía *"Anotado"* sin anotar, y datos inventados
 que no eran números (una tendencia, una fecha). Los cinco están corregidos.
 
-**Lo siguiente es cerrar el 6b:** traer el examen del 5b y medir el agente
-entero con rúbrica, en vez de parchear conversación por conversación. Después
-las Skills, y luego el nivel 6 (TypeScript).
+**Y el 6b se cerró con dos cosas más.** El **examen con rúbrica y juez**, que
+midió el agente entero en vez de parchearlo conversación por conversación (y
+encontró el hueco de *"¿usa lo que recordó?"*, hoy el criterio C9). Y las
+**Skills**: el conocimiento de negocio salió del `.py` a cuatro archivos `.md`
+que carga a demanda. La prueba de que eso valía la pena: un error de $14 USD del
+agente se arregló **editando un `.md`, sin tocar una línea de Python**.
+
+**Lo siguiente es el nivel 6 (TypeScript)**, y después el 7.
 
 Vamos avanzando de a uno: cuando termines uno, me dices y construimos el
 siguiente.
