@@ -3,9 +3,114 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-07-31 (sesión 19)
+**Última actualización:** 2026-07-31 (sesión 20)
 
-# 📍 NIVEL 6b — **EN CURSO. El paso 4 está hecho: la memoria ya vive en el agente.**
+---
+
+# 📍 NIVEL 6b — **EL EXAMEN DEL AGENTE CON MEMORIA ESTÁ CORRIDO Y AUDITADO.**
+
+**Lo que se hizo hoy:** se trajo el examen del 5b, se le agregaron **dos
+criterios** y **tres pares de conversaciones**, se corrió entero y **se
+auditaron las 16 justificaciones a mano.** Costó **$0,84**.
+
+🚨 **EL EXAMEN PAGÓ SOLO: encontró en el caso 11 el defecto que la demostración
+de ayer nos hizo dar por bueno.**
+
+```
+sesión 19:  recordar("es contador y factura a clientes en Estados Unidos")
+            → funcionó: el agente lo recuperó en la conversación siguiente.
+            → conclusión de ayer: "la memoria funciona". ✅
+
+sesión 20:  esa MISMA ficha tiene DOS hechos pegados.
+            El defecto estaba ahí desde el primer día y no se veía,
+            porque mirando UNA sola conversación no se nota.
+```
+
+## El marcador, con los dos números: el que salió y el auditado
+
+| | juez | auditado | |
+|---|:-:|:-:|---|
+| C1 · C2 · C3 | 100% | **100%** | |
+| C4 · C5 | 100% | **100%** | 3 muestras: frágil |
+| C6 | 81% | **81%** | ✅ real: **narra el proceso** |
+| C7 | **62%** | **100%** | 🚨 **las 5 fallas eran del JUEZ** |
+| C8 | 33% | **33%** | ✅ real, y **en los dos pares** |
+
+⚠️ **El 100% de C7 es DERIVADO, no medido.** Sale de leer las 5 justificaciones,
+no de una corrida. Va marcado así a propósito.
+
+## 🚨 LO PRIMERO DE LA PRÓXIMA SESIÓN: **ESCRIBIR C9**
+
+El examen tiene un hueco **confirmado**, y salió justo donde se predijo:
+
+```
+caso 12.2   memoria: "prefiere los valores en pesos, nunca en dólares"
+            P: "¿Y 450 dólares cuánto serían?"
+            R: "¿A qué moneda quieres convertir?"   ← con el dato delante
+            veredicto: C6:PASA y TODO LO DEMÁS "NO APLICA"
+```
+
+**La peor respuesta del examen no sacó un solo FALLA.** C8 mide si el agente
+**guarda** bien; **ningún criterio mide si USA lo que guardó.**
+
+**Después de C9, los dos defectos confirmados** (los dos son del **prompt**, no
+del código): los **dos hechos en una ficha** (2 de 2) y la **narración del
+proceso** (3 de 3). Y luego el paso 6: cerrar memoria y pasar a Skills.
+
+---
+
+## Lo que quedó escrito hoy (nivel 6b)
+
+- **`rubrica.md`** — 8 criterios y una **Parte 8** nueva con la corrida auditada.
+- **`examen.py`** — un caso ya no es una pregunta, es una **lista de turnos**.
+- **`juez.py`** — la llave pasó de `caso` a `(caso, turno)`.
+
+### Las tres lecciones de método del día
+
+**1. ⭐ "El juez no puede calificar lo que no ve" — TRES veces en una sesión.**
+La memoria (antes de correr), la fecha (después, a golpes), y la evidencia que
+todavía falta para C9. **Cada criterio nuevo obliga a preguntarse qué evidencia
+necesita.** Escribir un criterio sin su evidencia no lo deja sin medir: **lo deja
+midiendo mal**, con números que se ven igual de buenos que los verdaderos.
+
+**2. ⭐ Cada cosa se castiga en UN solo lugar.** Los dos criterios nuevos, tal
+como se les ocurrieron, se solapaban con **tres** de los viejos. Una misma
+invención habría restado tres veces y el juez habría tenido que elegir — que es
+literalmente lo que rompió C6 en la primera corrida. Por eso C1 soltó `recordar`,
+C2 se quedó solo con las cifras y C5 solo con los permisos.
+
+**3. ⭐ Arreglar el CÓDIGO es gratis; volver a CORRER es lo que cuesta.**
+(Decisión del estudiante, y era la correcta.) Con el defecto de C7 ya
+diagnosticado, recalificar habría costado $0,25 **y no habría agregado
+conocimiento** — el número ya se sabía. Se arregló el código el mismo día, para
+que el defecto no vuelva gratis, y no se recalificó.
+> **Cuando encuentres un defecto en tu instrumento, pregúntate si necesitas
+> volver a medir o si ya sabes qué habría dado.**
+
+### ⭐ Y el hallazgo conceptual, que es más grande que el criterio que falta
+
+> **La memoria NO es el historial de la conversación.**
+> El agente recibe **hechos**, no **el hilo**. Para el usuario la relación es
+> continua —por eso escribe *"¿Y 450 dólares…?"*, una pregunta de seguimiento—
+> pero el turno 2 arranca en blanco: **sabe quién eres y no sabe de qué estaban
+> hablando.** No es un bug: es el límite de esta escuela de memoria, y no se ve
+> hasta que alguien encadena dos preguntas.
+
+### 💰 Los dos errores de costo del día (los dos míos, y van 5 y 6 en el curso)
+
+| | estimado | real | causa |
+|---|---|---|---|
+| examen | $0,72 | **$0,17** | heredé *"10 preguntas **en sonnet**"* y el examinado es **haiku** |
+| juez | $0,34 | **$0,666** | conté la respuesta visible y **no los tokens de pensamiento** |
+
+⚠️ **Al juez le faltaron dos casos para cortar la evaluación por la mitad**
+($0,666 de $0,70). El presupuesto quedó subido a $1,50.
+> **Un número heredado arrastra los supuestos con los que nació.** Y: **lo que el
+> modelo piensa y tú nunca ves se paga completo.**
+
+---
+
+# 📍 SESIÓN 19 — el paso 4: la memoria ya vive en el agente
 
 **El agente recuerda entre conversaciones, probado con el programa cerrado en
 medio.** Se saldaron las dos deudas que bloqueaban el paso, se copió el proyecto

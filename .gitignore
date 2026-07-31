@@ -1,6 +1,15 @@
 .env
 memoria.json
 memoria_de_prueba.json
+
+# La memoria que el EXAMEN escribe y borra en cada caso (sesión 20).
+# No sube, y no es por privacidad: es que NO ES EVIDENCIA DE NADA.
+# El examen la borra antes de cada caso, así que lo que queda al final es solo
+# la sobra del último. La evidencia de verdad —qué tenía guardado el agente en
+# CADA turno— vive en respuestas_*.jsonl, en el campo `memoria_antes`.
+#   ⚠️ Subir este archivo sería peor que no subirlo: parecería el estado de la
+#      corrida y sería el de un caso suelto.
+memoria_examen_*.json
 .venv/
 venv/
 __pycache__/
