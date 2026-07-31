@@ -824,8 +824,14 @@ cerrar. Las 8 de la sesión 18 siguen vivas. Las nuevas:
 **Vivas del 6b (sesión 18):**
 5. **Escritura no atómica en `_escribir()`.** Temporal + renombrar.
 6. **El tope bota el más viejo, y eso es una DECISIÓN**, no una obviedad.
-7. **No hay repositorio Git**, y `.gitignore` lleva meses esperando. Todo el
-   curso en un solo disco.
+7. ✅ ~~**No hay repositorio Git**~~ — **RESUELTA al cierre de la sesión 19.**
+   `https://github.com/jdrodriguez1000/Edu_Triple_S` (público, rama `main`).
+   Era la deuda más vieja y la de más riesgo: seis semanas en un solo disco.
+   → **Y resuelve el problema de copiar carpetas:** el 5b se congeló hoy
+   duplicando 94 KB; de aquí en adelante eso lo hace un commit.
+   → `CLAUDE.md` ahora exige **commit al cerrar** y `git log -5` al arrancar.
+   📌 **Pendiente higiénico:** rotar la API key — quedó impresa completa en la
+   consola durante la revisión de secretos previa al primer commit.
 
 **Vivas del 5b (siguen todas):**
 8. La corrida buena del examen (3 repeticiones, C6 nuevo, opus de juez, ~$1,50).
@@ -855,8 +861,70 @@ cerrar. Las 8 de la sesión 18 siguen vivas. Las nuevas:
 | `GUIDE.md` | §2 mapa de archivos · §8 **qué sabotear y en qué orden** · §9 los comandos del 6b |
 | `PROGRESO.md` | esto |
 
+| `CLAUDE.md` | **el commit pasa a ser paso obligatorio de cierre** · `git log -5` al arrancar · qué no puede subir nunca |
+
 ⚠️ **`LESSONS.md` NO se tocó, y es correcto:** un bloque por nivel, al cerrar el
 nivel. El 6b tiene el paso 6 pendiente. Van **29 candidatas** apuntadas arriba.
+
+---
+
+## 🎉 Y AL FINAL DE LA SESIÓN 19: EL REPOSITORIO
+
+`https://github.com/jdrodriguez1000/Edu_Triple_S` — **público, rama `main`.**
+
+**71 archivos, 1,5 MB, los 9 niveles.** La deuda más vieja del curso, cerrada.
+
+⚠️ **La revisión ANTES del primer commit fue el trabajo de verdad**, no el
+`git init`: se buscaron secretos en todo el árbol, se confirmó que `.env`,
+`memoria.json` y `.venv/` no entraban, y se decidió que **los `.jsonl` SÍ suben**
+porque son la evidencia que este archivo cita por nombre.
+> **Git no olvida: lo que nunca debe subir se decide ANTES del primer commit.**
+
+⭐ **Y responde la pregunta que él hizo al cerrar:** en un proyecto real **no se
+copian carpetas por etapa** —lo de hoy con el 5b fue pedagógico—, eso lo hace un
+commit. Con Git hay **un solo `agente.py`**, con historia, y no el problema de
+"dos archivos que tienen que estar de acuerdo y nada los obliga".
+
+### La conversación de cierre: las dos memorias y los dos system prompts
+
+Preguntó cómo se trabaja en un proyecto real. **Acertó dos de cuatro puntos**, y
+las correcciones valen:
+
+⚠️ **1. "Memoria" son DOS cosas sin relación:**
+
+| | del **desarrollo** | de la **aplicación** |
+|---|---|---|
+| de quién | del equipo que construye | de **cada usuario** |
+| dónde | `CLAUDE.md`, `PROGRESO.md` | una base de datos |
+| ¿la programas? | **no**, es convención de escritura | **sí, es producto** |
+| ¿a Git? | sí | ❌ **nunca** |
+
+⚠️ **2. No se separan "carpetas de construcción" y "carpetas de la app":** todo
+vive en el mismo repo. Lo que se separa es **código ≠ datos de usuarios ≠
+secretos**.
+
+⭐ **3. Y el descubrimiento del día: `CLAUDE.md` ES UN SYSTEM PROMPT.**
+
+| | Claude Code | su agente |
+|---|---|---|
+| harness | Claude Code | `agente.py` |
+| **system prompt** | **`CLAUDE.md`** | **`SISTEMA`** |
+| memoria | `PROGRESO.md` | `memoria.json` |
+| herramientas | Read, Edit, Bash | `trm`, `tasa`, `convertir` |
+| permisos | el que pregunta antes de correr | `pedir_permiso` |
+| registro | el transcript | `registro.jsonl` |
+
+> **Lleva seis semanas construyendo una versión pequeña de la herramienta con la
+> que la está construyendo.**
+
+Y por eso son **dos** system prompts y no se mezclan: público distinto, y sobre
+todo **costo distinto** — `CLAUDE.md` lo paga él mientras construye; el de la app
+lo paga **cada usuario en cada vuelta, para siempre**.
+
+📌 **Candidato para más adelante:** sacar `SISTEMA` a un `prompts/agente.md`, por
+la misma razón por la que la rúbrica se lee de `rubrica.md`. Hoy se editó **tres
+veces y se midió su costo**: eso ya no es una constante, es un documento que se
+versiona. **No se hizo: se decide cuando el examen esté corriendo.**
 
 ---
 
