@@ -26,14 +26,35 @@ curso en carpetas.
 ## PRIMER PASO DE CADA SESIÓN — obligatorio
 
 1. Lee **`PROGRESO.md`**. Ahí está en qué nivel va, qué terminó y qué quedó pendiente.
-2. Salúdalo diciéndole **dónde quedó** y **cuál es el siguiente paso concreto**.
+2. Corre **`git log --oneline -5`**: dice qué se hizo de verdad la última vez.
+3. Salúdalo diciéndole **dónde quedó** y **cuál es el siguiente paso concreto**.
    No preguntes "¿en qué íbamos?" — averígualo tú en `PROGRESO.md`.
 
-## ÚLTIMO PASO DE CADA SESIÓN — obligatorio
+## ÚLTIMO PASO DE CADA SESIÓN — obligatorio, y son DOS cosas
 
-Actualiza `PROGRESO.md` antes de terminar: marca lo completado, anota dudas abiertas,
+**1. Actualiza `PROGRESO.md`**: marca lo completado, anota dudas abiertas,
 errores que encontró, y cuál es el siguiente paso. Hazlo también cuando termine un
 nivel a mitad de sesión, no solo al final.
+
+**2. Haz el commit de la sesión.** El repositorio existe desde la sesión 19:
+`https://github.com/jdrodriguez1000/Edu_Triple_S` (público, rama `main`).
+
+```powershell
+git add -A
+git commit -m "Sesión NN: qué avanzó"
+git push
+```
+
+- **Un commit por sesión**, al final, después de actualizar `PROGRESO.md`.
+- El mensaje dice **qué avanzó y por qué**, no qué archivos cambiaron: eso ya lo
+  sabe Git. Primera línea corta, y debajo lo que valga la pena.
+- Termina el mensaje con `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
+- **Antes de commitear, mira qué entra** (`git status`). ⚠️ **Git no olvida**: si
+  una llave o un dato de una persona entra al historial, borrar el archivo
+  después NO lo borra. Nunca deben subir: `.env`, `memoria.json`, `.venv/`.
+
+📌 **Y al ARRANCAR la sesión, `git log --oneline -5` dice qué pasó la última vez.**
+Es el complemento de `PROGRESO.md`: uno cuenta el porqué, el otro el qué exacto.
 
 ## Los 4 archivos de memoria de la raíz
 
