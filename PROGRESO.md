@@ -3,11 +3,135 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-07-31 (sesión 20)
+**Última actualización:** 2026-07-31 (sesión 21)
 
 ---
 
-# 📍 NIVEL 6b — **EL EXAMEN DEL AGENTE CON MEMORIA ESTÁ CORRIDO Y AUDITADO.**
+# 📍 NIVEL 6b — **C9 ESCRITO. EL EXAMEN QUEDA CERRADO Y EL PASO 6 (SKILLS) ARRANCA LA PRÓXIMA.**
+
+Sesión corta y **de $0,00**: no se llamó a la API ni una vez.
+
+## 🚨 LO PRIMERO DE LA PRÓXIMA SESIÓN: **EL PASO 6 — SKILLS**
+
+Cerrar memoria y pasar a Skills. Es lo último del nivel 6b, y con él va el
+bloque de `LESSONS.md` del nivel (van 27 candidatas + las de hoy).
+
+---
+
+## Lo que se hizo: C9 — USÓ LO QUE RECORDABA
+
+El hueco que dejó la corrida de ayer (caso 12.2: la peor respuesta del examen no
+sacó un solo FALLA) ya tiene criterio.
+
+⚠️ **Y va marcado en TRES sitios como "escrito y NUNCA corrido":** encabezado de
+`rubrica.md`, el criterio mismo, y la tabla de pendientes de la Parte 8. C1–C8
+tienen una corrida detrás; C9 no tiene ninguna.
+
+> **Una rúbrica puede contener a la vez cosas medidas y cosas supuestas, siempre
+> que se distingan a simple vista.**
+
+### La decisión de entrada, que fue del estudiante y hay que dejarla escrita
+
+Yo abrí la sesión diciendo *"lo siguiente es C9"*, como si fuera obligatorio. Él
+preguntó **por qué no pasar ya a Skills**, y la pregunta estaba bien hecha.
+
+Lo que la resolvió no fue quién tenía razón, sino un dato: **escribir C9 cuesta
+$0; saber qué DA C9 cuesta ~$0,25 y una auditoría entera.** Son dos cosas
+distintas y estaban pegadas en una sola recomendación. Se hizo la barata.
+
+> Es la misma distinción de ayer (arreglar el código vs. volver a correr),
+> aplicada esta vez **antes** de gastar en vez de después.
+
+### Las dos preguntas previas de `GUIDE.md` §11, respondidas
+
+**1. ¿Qué evidencia necesita? ⭐ NINGUNA NUEVA — y es el mejor hallazgo del día.**
+C7 y C8 llegaron pidiendo cosas que el juez no veía, y a C7 le costó un **62%
+falso**. C9 se califica con la pieza 2 que ya se construyó para C8.
+> **C8 y C9 miran el mismo dato desde los dos lados: qué se escribió y qué se
+> leyó.** Un criterio que reutiliza evidencia es más barato y más seguro que uno
+> que la inventa.
+
+**2. ¿Con qué se solapa? Con tres — y los dos peores no eran solapamiento, sino
+PREMIOS OPUESTOS.** Que es el defecto que rompió C6, con otra cara:
+
+| | el choque | dónde quedó la línea |
+|---|---|---|
+| **C4** | *"¿a qué moneda?"* = levantó la frontera (`PASA`) **y** ignoró la ficha (`FALLA`) | si la memoria ya resuelve la ambigüedad, **no hay frontera**: es C9 |
+| **C5** | *"no lo sé"* = admitió el límite (`PASA`) **y** desconoció lo que tenía (`FALLA`) | la línea es *"¿podía saberlo?"*. Si estaba en su memoria, **podía**: es C9 |
+| **C7** | ¿una afirmación que sale de una ficha es *afirmar sin fuente*? | **no.** La memoria llega en el system prompt → **una ficha ES fuente**. Distorsionarla es C9 |
+
+Y una que parecía choque y no lo era: **mencionar un dato del usuario no es
+relleno** (la lista de C6 es cerrada). Lo que sí lo sigue siendo es **narrar que
+lo fue a buscar**. → *Usar el dato, sí; contar el mecanismo, no.*
+
+### ⚠️ El número incómodo, dicho ANTES de correr: C9 nace con 3 casillas
+
+Solo se puede calificar en 11.2, 12.2 y 13.2. En las diez sueltas y en los tres
+turnos 1 **la memoria arranca vacía**: no hay nada que ignorar.
+
+**Es el criterio peor medido del examen**, por debajo de C4 y C5 (4 cada uno).
+Un solo fallo lo tumba al 67%.
+
+> ⭐ **Pero ese 3 es el dato útil, porque dice qué hacer: la memoria no se mide
+> mejor agregando CRITERIOS, sino agregando PARES.** Un criterio nuevo no crea
+> evidencia — solo mira la que ya hay. Las 3 casillas son las 3 únicas
+> conversaciones segundas que existen: **el techo es la forma del examen, no la
+> rúbrica.**
+
+Y la comparación que lo resume: **C8 tiene 16 casillas y C9 tiene 3.** Es la
+misma memoria. **Guardar se puede vigilar en todas partes; usar solo se ve en la
+conversación siguiente.**
+
+📌 **Lo que subiría C9 de verdad:** un par nuevo donde la ficha **cambie la
+respuesta sin ser la única forma de contestar**. El 11 y el 13 taparon el hueco
+por suerte de diseño (ahí usar la memoria era el único camino); el 12 fue el
+único con otra salida, y es justo el que se escapó.
+
+### Lo que se tocó
+
+| Archivo | Qué |
+|---|---|
+| `06b-memoria-skills/rubrica.md` | **C9 completo**; notas de frontera en C4, C5 y C6; columna C9 en las dos matrices; conteo de casillas; Parte 0 (no pidió evidencia nueva); Parte 8; encabezado |
+| `06b-memoria-skills/juez.py` | C9 cableado en `APLICA` (11.2, 12.2, 13.2) y en `CRITERIOS`; nota de presupuesto |
+
+**Verificado sin gastar:** la Parte 1 sigue recortándose bien (18.205 caracteres,
+los 9 criterios dentro), `juez.py` compila, y `APLICA` da **16 turnos con 3
+casillas de C9**, exactamente donde dice la matriz del `.md`.
+
+⭐ **Y un detalle que salió solo: `cargar_rubrica()` no se tocó al agregar C7, C8
+ni C9.** Es justo lo que buscaba esa decisión — **el instrumento vive en el
+`.md`, el código solo lo transporta.** Tres criterios después, sigue aguantando.
+
+### 💰 El efecto de segundo orden, anotado en el código
+
+C9 **se califica en 3 turnos, pero su texto viaja en la entrada de los 16**.
+Se paga 16 veces y se cobra 3.
+
+> No es razón para no escribirlo. Es razón para **no estimar la próxima corrida
+> copiando el $0,6658 de ayer**: ese número nació con ocho criterios. (Errores
+> de costo 5 y 6 del curso: *un número heredado arrastra los supuestos con los
+> que nació*.)
+
+### 🆕 Candidatas a lección del día (para el bloque del 6b)
+
+1. **Escribir un criterio y medirlo son dos gastos distintos.** Uno cuesta $0.
+   Preguntarse cuál de los dos necesitas es lo que evita pagar de más.
+2. **El peor choque entre criterios no es que midan lo mismo: es que premien lo
+   contrario.** C4/C9 y C5/C9 daban veredictos opuestos a la MISMA frase.
+3. **Un criterio que reutiliza la evidencia de otro es más seguro que uno que la
+   inventa.** C7 pidió evidencia nueva y se midió mal; C9 no pidió nada.
+4. **Un criterio nuevo no crea evidencia.** Para medir mejor hay que cambiar la
+   forma del examen, no la rúbrica.
+5. **Un encabezado desactualizado sobrevive porque no rompe nada.** El título
+   decía *"los seis criterios"* con ocho escritos debajo.
+
+---
+
+# 📍 Histórico: sesión 20 — el examen corrido y auditado
+
+✅ **Lo de "ESCRIBIR C9" que pedía este bloque se hizo en la sesión 21** (arriba).
+
+**EL EXAMEN DEL AGENTE CON MEMORIA ESTÁ CORRIDO Y AUDITADO.**
 
 **Lo que se hizo hoy:** se trajo el examen del 5b, se le agregaron **dos
 criterios** y **tres pares de conversaciones**, se corrió entero y **se
@@ -39,9 +163,9 @@ sesión 20:  esa MISMA ficha tiene DOS hechos pegados.
 ⚠️ **El 100% de C7 es DERIVADO, no medido.** Sale de leer las 5 justificaciones,
 no de una corrida. Va marcado así a propósito.
 
-## 🚨 LO PRIMERO DE LA PRÓXIMA SESIÓN: **ESCRIBIR C9**
+## ✅ **ESCRIBIR C9** — hecho en la sesión 21. Se deja el diagnóstico original:
 
-El examen tiene un hueco **confirmado**, y salió justo donde se predijo:
+El examen tenía un hueco **confirmado**, y salió justo donde se predijo:
 
 ```
 caso 12.2   memoria: "prefiere los valores en pesos, nunca en dólares"
@@ -56,6 +180,12 @@ caso 12.2   memoria: "prefiere los valores en pesos, nunca en dólares"
 **Después de C9, los dos defectos confirmados** (los dos son del **prompt**, no
 del código): los **dos hechos en una ficha** (2 de 2) y la **narración del
 proceso** (3 de 3). Y luego el paso 6: cerrar memoria y pasar a Skills.
+
+> ⚠️ **Actualización de la sesión 21:** los dos defectos del prompt **siguen
+> abiertos y se dejan así a propósito.** Arreglarlos es barato; saber si el
+> arreglo sirvió cuesta una corrida — y parchear un prompt contra una muestra es
+> exactamente lo que hizo falta corregir en la sesión 19. Se arreglan **el día
+> que se vuelva a correr el examen**, no antes.
 
 ---
 

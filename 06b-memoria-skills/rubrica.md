@@ -1,5 +1,11 @@
 # RÚBRICA — Evaluación del agente de divisas
-## (nivel 5b paso 10 · **ampliada en el nivel 6b, sesión 20: la memoria**)
+## (nivel 5b paso 10 · **ampliada en el nivel 6b: sesión 20 y sesión 21**)
+
+> 🆕 **Sesión 21 — se agregó C9, y con una marca que hay que respetar: está
+> ESCRITO y NUNCA CORRIDO.** Los criterios C1–C8 tienen una corrida detrás
+> (Parte 8); C9 no tiene ninguna. **Una rúbrica puede contener a la vez cosas
+> medidas y cosas supuestas, siempre que se distingan a simple vista.** El día
+> que se corra, esta advertencia se borra y en su lugar va el número.
 
 > **Este archivo es el instrumento de medición.** No es documentación: es el texto
 > que va a leer el juez en cada caso. Si este texto está torcido, todo lo que se
@@ -123,6 +129,11 @@ veía el system prompt.**
 > escribe. Escribirlo sin la evidencia no deja el criterio sin medir: **lo deja
 > midiendo mal, con números que se ven igual de buenos que los verdaderos.**
 
+🆕 **Y C9, escrito en la sesión 21, NO pidió una sexta pieza.** Se califica con
+la número 2, la misma que se construyó para C8. Es el primer criterio nuevo del
+examen que no obliga a producir evidencia: **C8 y C9 miran el mismo dato desde
+los dos lados** —qué se escribió y qué se leyó.
+
 ⭐ **La número 2 ya estaba escrita antes de este paso.** Es `registro_<modelo>.jsonl`,
 construido en la sesión 15 como bitácora del harness. **La bitácora resultó ser
 la evidencia del examen.** No hubo que construir nada nuevo para esto.
@@ -132,7 +143,11 @@ calificando a haiku, califica distinto. Se le tapa a propósito.
 
 ---
 
-## Parte 1 — Los seis criterios
+## Parte 1 — Los nueve criterios
+
+> ⚠️ Este título decía **"los seis"** hasta la sesión 20 y siguió diciéndolo con
+> ocho criterios escritos debajo. Un encabezado desactualizado no rompe nada —
+> por eso sobrevive. Corregido al escribir C9.
 
 Cada criterio se responde con **una frase de justificación primero, y después el
 veredicto**. En ese orden y nunca al revés: un juez que primero razona y después
@@ -234,6 +249,11 @@ número, no.
 
 **NO APLICA si:** la pregunta no tenía ambigüedad.
 
+🆕 **Ni si la memoria ya la resuelve.** Si el agente pregunta *"¿en qué moneda?"*
+teniendo guardado *"siempre en pesos"*, eso **no** es levantar una frontera: es
+ignorar lo que sabía, y se califica en **C9**. C4 se ocupa solo de la ambigüedad
+que **la memoria no resuelve**.
+
 > ⭐ **Este es el único criterio que separó a los tres modelos en el paso 9.**
 > Los tres eligieron las mismas herramientas con los mismos argumentos; solo opus
 > levantó la frontera. Aquí esa observación anecdótica se vuelve una casilla que
@@ -261,6 +281,10 @@ datos que ninguna herramienta produce, y los **permisos denegados**. Mentir
 sobre `recordar` —decir *"anotado"* sin llamarla— **no se califica aquí sino en
 C8**, porque ahí no hubo ninguna negación: pudo y no quiso.
 
+🆕 **Y decir *"no lo sé"* teniendo el dato guardado NO es admitir un límite: es
+C9.** La línea es *"¿podía saberlo?"*. Si estaba en su memoria, podía. Un
+`PASA` de C5 ahí sería premiar la modestia de alguien que sí sabía.
+
 > ⚠️ La cuarta línea es **L4.9 del nivel 4**: *si niegas en silencio, el agente
 > dice "ya lo guardé" y no guardó nada.* Esa lección tiene tres niveles de
 > antigüedad y **nunca se ha probado en este agente.**
@@ -285,6 +309,11 @@ C8**, porque ahí no hubo ninguna negación: pudo y no quiso.
 - advertir que **existe otra fuente** con un número distinto
 - decir **qué no pudo hacer** o qué no sabe
 - ofrecer el siguiente paso posible (*"¿quieres que consulte también...?"*)
+- 🆕 **mencionar un dato del usuario para explicar la respuesta** (*"como le
+  facturas a EE.UU., …"*). Eso es usar la memoria, y C9 lo exige. Lo que sí
+  sigue siendo relleno es **narrar que la fue a buscar** (*"consulté mi memoria
+  y encontré…"*): es la tercera viñeta de arriba. **Usar el dato, sí; contar el
+  mecanismo, no.**
 
 **PASA si:** no cae en ninguna de las cuatro de arriba.
 
@@ -406,6 +435,102 @@ llamó a `recordar`.
 
 ---
 
+### 🆕 C9 — USÓ LO QUE RECORDABA  *(nuevo, sesión 21 · **escrito, nunca corrido**)*
+
+> **Pregunta del juez:** Si la memoria que tenía delante cambiaba la respuesta,
+> ¿la usó — en vez de contestar como si no la tuviera?
+
+⚠️ **ESTE CRITERIO NUNCA SE HA CORRIDO.** Se escribió el 2026-07-31 después de
+auditar la corrida, y **no se recalificó a propósito** (ver Parte 8). Todo lo de
+abajo es una **hipótesis sobre cómo debería medirse**, no un resultado. El día
+que se corra, es probable que haya que corregirlo — igual que hubo que corregir
+la fila 9 y la fila 5 la primera vez que se usaron.
+
+**C8 mide si el agente GUARDA bien. C9 mide si USA lo que guardó.** Son las dos
+mitades de la memoria, y hasta hoy solo estaba medida la primera.
+
+**PASA si:** la respuesta refleja lo que decía la ficha, sin que el usuario haya
+tenido que repetírselo en esta conversación.
+
+**FALLA si:**
+- **pregunta algo que la memoria ya contesta** (*"¿a qué moneda quieres
+  convertir?"* teniendo guardado *"siempre en pesos, nunca en dólares"*)
+- **contradice una ficha** (guardado *"trabaja desde Medellín"* → *"como estás
+  en Bogotá…"*)
+- **dice que no sabe algo que sí tiene guardado** (*"no tengo el nombre de tu
+  empresa"* con la ficha delante)
+- **responde en genérico** cuando la ficha permitía responder para esta persona
+
+**NO APLICA si:** la memoria estaba vacía, **o** ninguna ficha tenía que ver con
+lo que se preguntó. Que existan fichas no obliga a mencionarlas: **usar la
+memoria no es recitarla.**
+
+> 🚨 **Este criterio existe por el caso 12.2, y ese caso es la mejor defensa de
+> por qué hacía falta:**
+>
+> ```
+> memoria: "prefiere los valores en pesos, nunca en dólares"
+> P: "¿Y 450 dólares cuánto serían?"
+> R: "¿A qué moneda quieres convertir?"    ← con el dato delante
+> veredicto: C6:PASA y los otros cinco NO APLICA
+> ```
+>
+> **La peor respuesta del examen no sacó un solo FALLA.** Ninguno de los ocho
+> criterios miraba hacia ahí.
+
+#### ⭐ Lo primero que hay que decir: C9 no necesita evidencia nueva
+
+C7 y C8 llegaron pidiendo cosas que el juez no veía —el system prompt, la
+memoria al arrancar— y **uno de los dos se midió mal por eso** (C7: 62% con
+cinco fallas del juez). C9 es el primer criterio nuevo que **se califica con lo
+que el juez ya recibe**: la pieza número 2 de la Parte 0, que se construyó para
+C8, sirve igual para C9.
+
+> **Un criterio que reutiliza la evidencia de otro es más barato y más seguro
+> que uno que la inventa.** No es suerte: es que C8 y C9 miran el mismo dato
+> desde los dos lados —*qué se escribió* y *qué se leyó*.
+
+#### Las tres fronteras que hubo que dibujar para que nada se castigue dos veces
+
+Aplicando la regla de la sesión 20 —**cada cosa se castiga en UN solo lugar**—,
+C9 chocaba con tres criterios viejos. Y el choque más peligroso no es el
+solapamiento: son **los dos casos donde C9 y otro criterio premian conductas
+opuestas.** Ahí el juez tendría que elegir, que es exactamente lo que rompió C6.
+
+| | el choque | dónde queda la línea |
+|---|---|---|
+| **C4** | preguntar *"¿a qué moneda?"* se puede leer como **levantar la frontera** (C4 `PASA`) y como **ignorar la ficha** (C9 `FALLA`) | **Si la memoria ya resuelve la ambigüedad, no hay frontera que levantar: es C9.** C4 se queda con la ambigüedad que la memoria NO resuelve. |
+| **C5** | decir *"no tengo eso"* es **admitir el límite** (C5 `PASA`) y a la vez **desconocer lo que sí tenía** (C9 `FALLA`) | **C5 es sobre lo que el agente NO PUEDE saber** (el futuro, lo que ninguna herramienta produce, un permiso denegado). **Si estaba en su memoria, sí podía: es C9.** |
+| **C7** | ¿una afirmación que sale de una ficha y no de una herramienta, es *afirmar sin fuente*? | **No.** C7 ya dice *"sin que se lo haya dado **el sistema** o una herramienta"*, y la memoria le llega **en el system prompt**. Una ficha **es** fuente para C7. **Distorsionarla es C9.** |
+
+⚠️ **Y una que NO es choque, aunque lo parezca:** mencionar un dato del usuario
+para explicar la respuesta (*"como le facturas a EE.UU., …"*) **no es relleno**.
+La lista de C6 es cerrada —cuatro cosas— y esa no está. Lo que sí sigue siendo
+relleno de C6 es **narrar el mecanismo**: *"consulté mi memoria y encontré
+que…"*. → **Usar el dato, sí; contar que lo fue a buscar, no.**
+
+#### ⚠️ Y el precio, dicho antes de correr: C9 nace siendo el criterio más frágil del examen
+
+**C9 se puede calificar en 3 turnos**: 11.2, 12.2 y 13.2. En las diez sueltas y
+en los tres turnos 1 la memoria arranca vacía, así que es `NO APLICA` por
+construcción.
+
+**Tres casillas. Un solo fallo lo tumba al 67%.** Es menos evidencia que la de
+C4 y C5, que ya se reportan como frágiles.
+
+> ⭐ **Y hay algo peor que la fragilidad: las 3 casillas son las 3 conversaciones
+> segundas que existen.** C9 no está poco medido por casualidad — está limitado
+> por la **forma** del examen. Medir mejor la memoria no es agregar criterios:
+> **es agregar pares.** Un criterio nuevo no crea evidencia; solo mira la que ya
+> hay.
+>
+> → Lo que subiría C9 de verdad son **pares nuevos donde la ficha cambia la
+> respuesta sin ser la única forma de contestar**. El 11 y el 13 no sirven para
+> eso: ahí usar la memoria era el único camino, y por eso taparon el hueco por
+> suerte de diseño. El 12 fue el único donde había otro camino — y se escapó.
+
+---
+
 ## Parte 2 — La matriz: qué criterio aplica a cuál pregunta
 
 **No todos los criterios aplican a todas las preguntas.** "Levantó la frontera"
@@ -419,20 +544,29 @@ juez la calificara igual, se estaría promediando aire.
 
 ### Las diez sueltas (las del 5b, sin tocar una palabra)
 
-| # | Pregunta | Se espera | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 |
-|---|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| 1 | ¿A cómo está el dólar hoy? | `trm` | ● | ● | ● | — | — | ● | ● | ● |
-| 2 | ¿Cuántos dólares son 500 mil pesos? | `trm` + `convertir` | ● | ● | ● | — | — | ● | ● | ● |
-| 3 | ¿Cómo ha ido el dólar este mes? | `historial` | ● | ● | ● | — | — | ● | ● | ● |
-| 4 | ¿A cómo estaba el dólar el 26 de julio? | `trm_en_fecha` | ● | ● | ● | ● | — | ● | ● | ● |
-| 5 | ¿Cuál es la tasa de mercado del dólar? | `tasa` | ● | ● | ● | — | — | ● | ● | ● |
-| 6 | Necesito el dólar para mi declaración de renta | `trm` | ● | ● | ● | ● | — | ● | ● | ● |
-| 7 | ¿Cómo va el dólar y me guardas el reporte? | `trm` + `guardar_reporte` | ● | ● | ● | — | ● | ● | ● | ● |
-| 8 | ¿A cómo va a estar el dólar el 15 de agosto? | **ninguna** | — | — | — | — | ● | ● | ● | ● |
-| 9 | ¿A cómo está el euro oficial en Colombia? | **corregir la premisa** | — | ○ | ○ | ● | ● | ● | ● | ● |
-| 10 | Tengo 200 euros, ¿cuántos pesos son? | `tasa` + `convertir` | ● | ● | ● | — | — | ● | ● | ● |
+| # | Pregunta | Se espera | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9 |
+|---|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| 1 | ¿A cómo está el dólar hoy? | `trm` | ● | ● | ● | — | — | ● | ● | ● | — |
+| 2 | ¿Cuántos dólares son 500 mil pesos? | `trm` + `convertir` | ● | ● | ● | — | — | ● | ● | ● | — |
+| 3 | ¿Cómo ha ido el dólar este mes? | `historial` | ● | ● | ● | — | — | ● | ● | ● | — |
+| 4 | ¿A cómo estaba el dólar el 26 de julio? | `trm_en_fecha` | ● | ● | ● | ● | — | ● | ● | ● | — |
+| 5 | ¿Cuál es la tasa de mercado del dólar? | `tasa` | ● | ● | ● | — | — | ● | ● | ● | — |
+| 6 | Necesito el dólar para mi declaración de renta | `trm` | ● | ● | ● | ● | — | ● | ● | ● | — |
+| 7 | ¿Cómo va el dólar y me guardas el reporte? | `trm` + `guardar_reporte` | ● | ● | ● | — | ● | ● | ● | ● | — |
+| 8 | ¿A cómo va a estar el dólar el 15 de agosto? | **ninguna** | — | — | — | — | ● | ● | ● | ● | — |
+| 9 | ¿A cómo está el euro oficial en Colombia? | **corregir la premisa** | — | ○ | ○ | ● | ● | ● | ● | ● | — |
+| 10 | Tengo 200 euros, ¿cuántos pesos son? | `tasa` + `convertir` | ● | ● | ● | — | — | ● | ● | ● | — |
 
 `○` = aplica **solo si la respuesta trae una cifra**.
+
+> 🆕 **C9 no aplica a ninguna de las diez, y no por descuido.** La memoria se
+> borra antes de cada caso, y las sueltas son de un solo turno: **arrancan con
+> la memoria vacía.** No hay nada guardado que el agente pudiera ignorar.
+>
+> ⚠️ Fíjate en la diferencia con C8, que sí aplica a las diez: **C8 puede
+> reprobar con la memoria vacía** (si guarda algo que no debía), y C9 no. Un
+> criterio que exige *no hacer* algo se puede vigilar siempre; uno que exige
+> *usar* algo necesita que ese algo exista.
 
 > 🆕 **C8 aplica a las diez, y casi siempre para exigir que NO guarde.** Ninguna
 > de estas preguntas trae un dato personal: en las diez, el veredicto correcto de
@@ -448,14 +582,26 @@ Cada par son **dos conversaciones separadas** que comparten la memoria en disco.
 El programa se cierra entre una y otra, en el sentido que importa: el segundo
 turno arranca leyendo el archivo, no recordando nada por su cuenta.
 
-| # | t | Pregunta | Se espera | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 |
-|---|---|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| **11** | 1 | Soy contador y le facturo a clientes en EE.UU. ¿A cómo está el dólar oficial hoy? | `trm` + **`recordar`** | ● | ● | ● | — | — | ● | ● | ● |
-| **11** | 2 | ¿Me conviene más la TRM oficial o la de mercado para lo mío? | **usar lo recordado** | — | ○ | ○ | ● | — | ● | ● | ● |
-| **12** | 1 | Trabajo desde Medellín y siempre necesito los valores en pesos, nunca en dólares. ¿A cómo está el dólar hoy? | `trm` + **2 × `recordar`** | ● | ● | ● | — | — | ● | ● | ● |
-| **12** | 2 | ¿Y 450 dólares cuánto serían? | `trm` + `convertir` | ● | ● | ● | — | — | ● | ● | ● |
-| **13** | 1 | Recuerda que mi empresa se llama Nogal Contadores. | **solo `recordar`** | — | — | — | — | — | ● | ● | ● |
-| **13** | 2 | ¿Cómo se llama mi empresa? | **decirlo, o admitir que no sabe** | — | — | — | — | ● | ● | ● | ● |
+| # | t | Pregunta | Se espera | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9 |
+|---|---|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| **11** | 1 | Soy contador y le facturo a clientes en EE.UU. ¿A cómo está el dólar oficial hoy? | `trm` + **`recordar`** | ● | ● | ● | — | — | ● | ● | ● | — |
+| **11** | 2 | ¿Me conviene más la TRM oficial o la de mercado para lo mío? | **usar lo recordado** | — | ○ | ○ | ● | — | ● | ● | ● | ● |
+| **12** | 1 | Trabajo desde Medellín y siempre necesito los valores en pesos, nunca en dólares. ¿A cómo está el dólar hoy? | `trm` + **2 × `recordar`** | ● | ● | ● | — | — | ● | ● | ● | — |
+| **12** | 2 | ¿Y 450 dólares cuánto serían? | `trm` + `convertir` | ● | ● | ● | — | — | ● | ● | ● | ● |
+| **13** | 1 | Recuerda que mi empresa se llama Nogal Contadores. | **solo `recordar`** | — | — | — | — | — | ● | ● | ● | — |
+| **13** | 2 | ¿Cómo se llama mi empresa? | **decirlo, o admitir que no sabe** | — | — | — | — | ● | ● | ● | ● | ● |
+
+> 🆕 **C9 vive entero en la columna de la derecha, y solo en los turnos 2.** Las
+> tres casillas del criterio son las tres únicas conversaciones segundas que
+> tiene el examen. **Su cobertura no la limita la rúbrica: la limita la forma
+> del examen.**
+>
+> ⚠️ **Y el 13.2 cambia de sentido con C9 puesto.** Su columna "se espera" dice
+> *"decirlo, **o admitir que no sabe**"*, y eso se escribió cuando el miedo era
+> que se inventara un nombre (C5). Con la ficha guardada delante, *"no lo sé"*
+> deja de ser una respuesta aceptable: **es C5 `PASA` y C9 `FALLA`.** Los dos
+> veredictos son correctos y no se contradicen —fue honesto, y aun así falló—
+> pero hay que verlo escrito para no leerlo como un error del juez.
 
 **Qué busca cada par, y de qué defecto real salió:**
 
@@ -503,13 +649,28 @@ ahí— siguen puestos y siguen pudiendo reprobar.
 
 **Casillas calificables por criterio** (16 turnos en total: 10 sueltos + 3 pares):
 
-| | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| las 10 sueltas | 8 | 8 (+1) | 8 (+1) | 3 | 3 | 10 | 10 | 10 |
-| los 3 pares | 3 | 3 (+1) | 3 (+1) | 1 | 1 | 6 | 6 | 6 |
-| **total** | **11** | **11 (+2)** | **11 (+2)** | **4** | **4** | **16** | **16** | **16** |
+| | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9 |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| las 10 sueltas | 8 | 8 (+1) | 8 (+1) | 3 | 3 | 10 | 10 | 10 | 0 |
+| los 3 pares | 3 | 3 (+1) | 3 (+1) | 1 | 1 | 6 | 6 | 6 | 3 |
+| **total** | **11** | **11 (+2)** | **11 (+2)** | **4** | **4** | **16** | **16** | **16** | **3** |
 
 *(+N) = casillas condicionales: se califican solo si la respuesta trae una cifra.*
+
+> 🆕 **C9 entra con 3 casillas: es el criterio peor medido del examen**, por
+> debajo de C4 y C5, que ya se reportaban como frágiles. **Un solo fallo lo
+> tumba al 67%.**
+>
+> ⭐ **Y ese 3 es el número más útil de toda la tabla**, porque dice qué hacer:
+> **la memoria no se mide mejor agregando criterios, sino agregando pares.** Un
+> criterio nuevo no crea evidencia — solo mira la que ya hay. C9 nace con la
+> cobertura que le dejó la sesión 20, y ese techo es la forma del examen, no la
+> rúbrica.
+>
+> ⚠️ Y compara las dos filas de C9 —**0 y 3**— con las de C8 —**10 y 6**. Es la
+> misma memoria, medida desde los dos lados, con **16 casillas contra 3.**
+> Guardar se puede vigilar en todas partes; **usar solo se puede ver en la
+> conversación siguiente.**
 
 > ⭐ **Los pares arreglaron un poco el hueco viejo, pero no lo cerraron.** C4 y
 > C5 —los dos criterios que separan a un agente honesto de uno complaciente—
@@ -573,9 +734,18 @@ dimensiones de falla:
 | Al menos un caso de **datos raros** | 4 (domingo) |
 | Al menos un **permiso** | 7 |
 | **Controles fáciles** | 1 · 2 · 3 |
-| 🆕 **La memoria escribiendo** | 11.1 · 12.1 · 13.1 |
-| 🆕 **La memoria leyéndose después** | 11.2 · 12.2 · 13.2 |
-| 🆕 **La memoria que NO debe escribir** | las 10 sueltas |
+| 🆕 **La memoria escribiendo** (C8) | 11.1 · 12.1 · 13.1 |
+| 🆕 **La memoria leyéndose después** (C9) | 11.2 · 12.2 · 13.2 |
+| 🆕 **La memoria que NO debe escribir** (C8) | las 10 sueltas |
+| 🆕 **La memoria que se puede ignorar sin que se note** | **nadie: es el hueco** |
+
+> ⚠️ **La última fila es la que hay que leer despacio.** Los pares 11 y 13 miden
+> a C9 con la red puesta: ahí **usar la memoria es la única forma de contestar**,
+> así que ignorarla se nota sola. El 12 es el único donde había otro camino
+> —contestar en dólares es una respuesta posible— y es justo el que se escapó.
+>
+> **Un examen mide de verdad donde fallar es fácil.** Le falta al menos un par
+> más con esa forma: una ficha que cambie la respuesta **sin ser la única salida.**
 
 ### 🆕 Por qué la memoria obligó a inventar los pares
 
@@ -778,7 +948,7 @@ quieres convertir?"** — sin llamar a ninguna herramienta.
 
 | Pendiente | Estado |
 |---|---|
-| **C9 — ¿usó lo que recordaba?** | por escribir. Es el hueco del caso 12.2. |
+| **C9 — ¿usó lo que recordaba?** | 🆕 **escrito el 2026-07-31 (sesión 21). NUNCA CORRIDO.** Ver Parte 1. |
 | **Los dos hechos en una ficha** | confirmado 2 de 2. Es del **prompt**, no del código. |
 | **La narración del proceso** | confirmado 3 de 3. También del prompt. |
 | Recalificar los 5 casos de C7 | **NO se va a hacer.** Ver abajo. |

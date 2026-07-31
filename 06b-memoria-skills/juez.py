@@ -77,6 +77,14 @@ PRECIO_SALIDA = agente.CATALOGO[MODELO_JUEZ]["salida"]
 #    presupuesto era muy bajo y por poco se queda mudo el examen entero.
 #    → LO QUE EL MODELO PIENSA Y TÚ NUNCA VES SE PAGA COMPLETO. Al presupuestar
 #      un modelo que razona, la respuesta visible es la parte pequeña.
+#
+# 🆕 SESIÓN 21 — C9 entra a la rúbrica, y el efecto de segundo orden de arriba
+#    se aplica sin piedad: C9 se CALIFICA en 3 turnos, pero su texto viaja en
+#    la entrada de los 16. Se paga 16 veces y se cobra 3.
+#    → No es razón para no escribirlo. Es razón para NO estimar el próximo
+#      costo copiando el $0,6658 de la sesión 20: ese número nació con ocho
+#      criterios. (Un número heredado arrastra los supuestos con los que nació
+#      — errores de costo 5 y 6 del curso.)
 PRESUPUESTO_JUEZ = 1.50
 gastado_usd = 0.0
 
@@ -118,7 +126,7 @@ MAX_TOKENS_JUEZ = 4000
 # ---------------------------------------------------------------------------
 # ⭐ ESTA ES LA DECISIÓN IMPORTANTE DE TODO EL ARCHIVO.
 #
-#    Lo fácil era pegar los seis criterios aquí como un texto largo. Y el día
+#    Lo fácil era pegar los criterios aquí como un texto largo. Y el día
 #    que corrigieras rubrica.md —como se corrigió la fila 9 el mismo día que se
 #    escribió— habría DOS rúbricas: la que TÚ lees y la que de verdad califica.
 #    Nada te avisaría. Los veredictos seguirían saliendo, con buena cara.
@@ -127,7 +135,10 @@ MAX_TOKENS_JUEZ = 4000
 #    cosas que TIENEN que estar de acuerdo y nada las obliga.
 #    → El instrumento vive en UN solo sitio, y es el que puedes leer con los ojos.
 def cargar_rubrica():
-    """Saca de rubrica.md la Parte 1: los seis criterios, y nada más.
+    """Saca de rubrica.md la Parte 1: los criterios, y nada más.
+
+    ⭐ Nadie tocó esta función al agregar C7, C8 ni C9. Es justamente lo que se
+       buscaba: el instrumento vive en el .md, y el código solo lo transporta.
 
     No se manda el archivo entero a propósito. Las partes 3 a 7 son el porqué
     del examen —para ti—, no instrucciones para el juez, y se pagarían en cada
@@ -196,11 +207,11 @@ APLICA = {
     # o razonando sobre lo que ya sabe. C4 SÍ aplica, y es el punto del turno:
     # sabiendo que factura a EE.UU., elegir en silencio entre las dos fuentes
     # es peor que nombrar la frontera.
-    (11, 2): ["C2", "C3", "C4", "C6", "C7", "C8"],
+    (11, 2): ["C2", "C3", "C4", "C6", "C7", "C8", "C9"],
 
     # 12 — los dos hechos en una sola ficha (defecto ABIERTO).
     (12, 1): ["C1", "C2", "C3", "C6", "C7", "C8"],
-    (12, 2): ["C1", "C2", "C3", "C6", "C7", "C8"],
+    (12, 2): ["C1", "C2", "C3", "C6", "C7", "C8", "C9"],
 
     # 13 — el "anotado" sin anotar.
     # Sin C1/C2/C3: no hay divisas, no hay cifras y no hay fuente que citar.
@@ -209,10 +220,21 @@ APLICA = {
     (13, 1): ["C6", "C7", "C8"],
     # C5 aparece porque la falla complaciente está a la vista: inventarse un
     # nombre de empresa antes que decir "no lo tengo guardado".
-    (13, 2): ["C5", "C6", "C7", "C8"],
+    # 🆕 Y con C9 puesto, este turno puede sacar C5:PASA y C9:FALLA a la vez:
+    #    "no tengo el nombre" es honesto (C5) y aun así ignora la ficha (C9).
+    #    No es una contradicción del juez. Está escrito en la matriz del .md.
+    (13, 2): ["C5", "C6", "C7", "C8", "C9"],
 }
 
-CRITERIOS = ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"]
+# 🆕 C9 (sesión 21): ESCRITO Y NUNCA CORRIDO.
+#    Solo aparece en los tres turnos 2, y no por decisión: en los diez sueltos y
+#    en los turnos 1 la memoria arranca VACÍA, así que no hay nada que ignorar.
+#    ⚠️ Son 3 casillas — la peor cobertura del examen, por debajo de C4 y C5.
+#       Un solo fallo lo tumba al 67%.
+#    ⭐ Y eso dice qué hacer: la memoria no se mide mejor agregando criterios,
+#       sino agregando PARES. Un criterio nuevo no crea evidencia; solo mira la
+#       que ya hay.
+CRITERIOS = ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9"]
 
 
 # ---------------------------------------------------------------------------
