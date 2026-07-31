@@ -3,13 +3,14 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-07-31 (sesión 24)
+**Última actualización:** 2026-07-31 (sesión 25)
 
 ---
 
-# 📍 NIVEL 6c — TYPESCRIPT. Pasos 0 a 3 corridos. Costo del nivel: **$0,0061**.
+# 📍 NIVEL 6c — TYPESCRIPT. Pasos 0 a 3b corridos. Costo del nivel: **$0,0061**.
 
-Sesión 24. Carpeta: `06c-typescript/`.
+Sesiones 24 y 25. Carpeta: `06c-typescript/`.
+La sesión 25 no gastó nada: `count_tokens` es gratis.
 
 ## Por qué se llama 6c y no 6
 
@@ -101,7 +102,9 @@ puede adivinar cuál querías. Ningún error de la API da eso.
 
 ## Paso 2 — `02_async.ts`: donde Python y TS de verdad se separan
 
-✅ Compila y corre limpio. **Pendiente de correr por el estudiante.**
+✅ **Corrido por el estudiante** (confirmado en la sesión 25). Sus tiempos:
+3033 ms en serie / 1006 ms en paralelo → los mismos **3,0x**. Las 6 líneas
+idénticas a las esperadas, incluida la del `catch` que sí atrapa.
 ⏱️ Tarda ~7 s a propósito: está midiendo. **No llama a la API** — el clima es
 simulado, es la regla del 6b (*lo que puedas simular, no lo pagues*).
 
@@ -195,28 +198,92 @@ bloque `text`, y la pantalla salió vacía sin ningún error (L1.1, L1.2).
 
 El ejercicio 2 del paso lo revive a propósito (bajar `max_tokens` a 30).
 
-## ⚠️ SOSPECHA ABIERTA, SIN MEDIR: los 235 tokens de salida
+## Paso 3b — ✅ **SOSPECHA CERRADA Y MEDIDA:** los 235 tokens de salida
 
-Dos frases costaron **235 tokens de salida**. Parece mucho.
+Sesión 25. Script: `03b_thinking.ts`. **Costo de la medición: $0,00.**
 
-**Hipótesis:** Opus 5 **piensa por defecto**, y los tokens de `thinking` se
-facturan dentro de `output_tokens` aunque no se vean. Si es así, se pagaron
-~100 tokens de razonamiento invisible.
+La sesión 24 dejó abierta una sospecha: que Opus 5 pensara por defecto y que
+ese pensamiento se cobrara dentro de `output_tokens`. Se cerró en dos pasos —
+primero la referencia oficial del SDK, después la medición.
 
-🔴 **Es una sospecha, no una medición.** Queda escrita como tal justamente
-porque este curso ya mordió cuatro veces por escribir números salidos de la
-cabeza (el *"Haiku cuesta 5x menos"* del nivel 1, la fila inventada del nivel 2,
-el `~$0.02` del streaming del nivel 4, el costo del examen del 6b).
+### El mecanismo — confirmado en la documentación
 
-**Cómo comprobarlo, y cuesta $0,00:** `count_tokens` sobre el texto que sí llegó.
-Si da ~135 y la API cobró 235, la diferencia queda con nombre y apellido. Es la
-misma jugada que ganó en el 6b, cuando `count_tokens` predijo los +849 tokens
-del menú de skills **antes** de gastar.
+- **Opus 5 piensa por defecto.** Omitir el parámetro `thinking` **no lo apaga**:
+  equivale a `thinking: {type: "adaptive"}`. Es un **cambio respecto a Opus 4.8
+  y 4.7**, donde omitirlo sí significaba no pensar.
+- Existe un campo `display`, que por defecto vale **`"omitted"`**: el bloque
+  `thinking` llega igual, pero **con el texto vacío**. Por eso el `for` del
+  paso 3 no vio nada — el bloque estaba ahí, callado y cobrado.
+- 🚨 **`max_tokens` es el techo de PENSAMIENTO + RESPUESTA juntos.** Si se ajusta
+  al tamaño de la respuesta esperada, el texto se corta a mitad de frase.
+  **Es el bug del nivel 1 (`max_tokens=30`, L1.1/L1.2) con otra cara** — y ahora
+  se sabe *por qué* pasó.
+
+### El número — medido con `count_tokens`, $0,00
+
+| | tokens |
+|---|---|
+| texto que se vio | ~176 |
+| cobrado por la API | **235** |
+| **pensamiento invisible** | **~59 (25% de la factura)** |
+
+Costo de lo invisible: **$0,001475** de los $0,006140 del paso 3.
+
+⚠️ **Advertencia del instrumento, pegada al dato:** `count_tokens` pide un
+mensaje completo, no un texto suelto, así que esos 176 incluyen unos pocos
+tokens de envoltorio. Es una **cota alta**: el texto pesa eso o un poco menos,
+y el thinking es de 59 **o un poco más**.
+
+### ⭐ LA LECCIÓN DE MÉTODO: la hipótesis acertó, MI NÚMERO NO
+
+Escribí *"se pagaron ~100 tokens"*. Fueron **59** — casi el doble de lo real.
+
+Es la **quinta vez** que un número salido de mi cabeza se cae al medirlo:
+el *"Haiku cuesta 5x menos"* (nivel 1), la fila inventada (nivel 2), el `~$0.02`
+del streaming (nivel 4), el costo del examen (6b), y este.
+
+🔑 **Y por eso funcionó el formato.** Estaba escrito como **sospecha**, no como
+dato, así que nadie construyó nada encima. La regla se confirma: *un número
+escrito en el material tiene que venir de una corrida, o venir marcado como
+estimación.* Marcarlo salva; afirmarlo cuesta.
+
+📌 Corolario nuevo: **la documentación da el mecanismo, no la magnitud.** La
+referencia del SDK dijo correctamente *qué* pasaba; el *cuánto* solo salió al
+medir. Consultar docs no reemplaza correr el experimento.
 
 ## 🚨 SIGUIENTE PASO: **paso 4 — el bucle agéntico**
 
-Arranca midiendo el thinking invisible por $0,00 (arriba), y después el bucle
-con la herramienta del clima.
+El bucle con la herramienta del clima, en TypeScript. La deuda del thinking ya
+está saldada, así que el paso 4 arranca limpio. **No hay nada pendiente de
+correr ni de verificar.**
+
+### ⚠️ DECISIÓN SUYA, PLANTEADA Y SIN RESPONDER (retomarla al abrir)
+
+Se le presentaron dos caminos para el bucle y la sesión se cerró antes de que
+eligiera. **Preguntárselo de entrada, no volver a explicar los dos caminos
+desde cero:**
+
+- **(A) Escribir el bucle a mano**, igual que `03-primer-agente/02_bucle.py`:
+  mirar `stop_reason === "tool_use"`, sacar el bloque, ejecutar, devolver el
+  `tool_result` con su `tool_use_id`, repetir. Aquí TypeScript **obliga a
+  estrechar** los bloques `tool_use` igual que obligó con `text` en el paso 3.
+- **(B) Usar el `toolRunner` del SDK**, que trae el bucle ya escrito: se definen
+  las funciones y él llama, ejecuta y repite. Es lo de producción. ⚠️ Está en
+  **beta** en el SDK de TS.
+
+**Mi recomendación, dada:** A primero y B después como comparación, por la misma
+razón por la que aquí se escriben los evals a mano antes de usar una librería —
+sin haber escrito el bucle no hay con qué diagnosticar el día que `toolRunner`
+se porte raro. Y tiene el bucle de Python al lado para comparar línea por línea.
+
+### Lo que ya está listo para el paso 4
+
+- `@anthropic-ai/sdk` 0.115.0 instalado, `tsconfig.json` con `strict: true` y
+  `"types": ["node"]`, `dist/` en `.gitignore`.
+- La ruta al `.env` es `path.resolve(__dirname, "..", "..", ".env")` — **tres**
+  niveles, porque corre desde `dist/`.
+- El patrón de estrechar bloques ya está escrito y probado en
+  `03_primera_llamada.ts`; el bucle usa el mismo con `type === "tool_use"`.
 
 El mapa del nivel está en `06c-typescript/README.md`.
 

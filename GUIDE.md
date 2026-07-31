@@ -528,6 +528,22 @@ n = cliente.messages.count_tokens(
 ).input_tokens
 ```
 
+**En TypeScript es lo mismo, con el nombre en camelCase** (nivel 6c, paso 3b):
+
+```typescript
+const cuenta = await client.messages.countTokens({
+  model: "claude-opus-5",
+  messages: [{ role: "user", content: texto }],
+});
+cuenta.input_tokens;   // ⚠️ la RESPUESTA sí es snake_case
+```
+
+📌 Regla del SDK de TS: **lo que tú escribes va en camelCase** (`countTokens`,
+`maxTokens` no — ese es `max_tokens`… ver abajo), **lo que la API devuelve viene
+en snake_case** (`input_tokens`, `stop_reason`, `output_tokens`). Los campos del
+cuerpo de la petición (`max_tokens`, `input_schema`) **conservan snake_case**
+porque van tal cual por el cable; solo los **métodos** son camelCase.
+
 Úsalo para:
 
 - saber cuánto vas a pagar **antes** de pagarlo
@@ -659,6 +675,41 @@ Repetible y gratis a la vez.
 
 Pasarse **no degrada la respuesta: falla la llamada.** Por eso un agente largo
 necesita una política de recorte (ver `02-conversacion/README.md`).
+
+---
+
+## 5.d 🚨 El thinking invisible de Opus 5 (medido el 2026-07-31)
+
+**Opus 5 piensa por defecto.** No escribir el parámetro `thinking` **no lo
+apaga**: equivale a `thinking: {type: "adaptive"}`. Es un cambio respecto a
+Opus 4.8 y 4.7, donde omitirlo sí significaba no pensar.
+
+Y hay un campo `display` que por defecto vale **`"omitted"`**: el bloque
+`thinking` llega igual, **con el texto vacío**. Se ve una respuesta normal;
+se paga una respuesta con razonamiento.
+
+Medido en el nivel 6c, paso 3b, sobre una respuesta de dos frases:
+
+| | tokens |
+|---|---|
+| texto visible | ~176 |
+| cobrado (`output_tokens`) | **235** |
+| **pensamiento invisible** | **~59 → 25% de la factura** |
+
+**Las tres consecuencias prácticas:**
+
+1. **`output_tokens` incluye el pensamiento.** Un costo calculado desde `usage`
+   ya lo cubre; uno estimado "por el largo del texto" se queda corto ~25%.
+2. 🚨 **`max_tokens` es el techo de PENSAMIENTO + RESPUESTA juntos.** Ajustarlo
+   al tamaño de la respuesta esperada **corta el texto a mitad de frase.**
+   Es exactamente el bug del nivel 1 (`max_tokens=30`, L1.1) explicado.
+3. **Para verlo:** `thinking: {type: "adaptive", display: "summarized"}` y una
+   rama `if (bloque.type === "thinking")` al recorrer `content`.
+
+📌 Y el orden que funcionó para cerrarlo: **primero la documentación oficial
+(da el mecanismo), después `count_tokens` (da la magnitud).** Consultar docs
+no reemplaza medir: la referencia acertó en el *qué*, y la estimación de cabeza
+del *cuánto* (~100) se cayó contra los 59 reales.
 
 ---
 

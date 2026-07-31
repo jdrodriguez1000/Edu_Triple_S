@@ -25,6 +25,7 @@ siguen en Python. TypeScript entra solo en la capa que el navegador exige.
 | **1** | Los tipos, con Python al lado | ✅ **$0,00** |
 | **2** | `async`/`await` y las promesas | ✅ **$0,00** |
 | **3** | El SDK de Anthropic en TS: primera llamada | 💰 centavos |
+| **3b** | ¿A dónde se fue la factura? El thinking invisible | ✅ **$0,00** |
 | 4 | La herramienta del clima y el bucle agéntico | centavos |
 | 5 | Los frenos, y medir | centavos |
 | 6 | Las lecciones a `LESSONS.md` | $0,00 |
@@ -743,3 +744,104 @@ caracteres), la respuesta del modelo, y después `stop_reason`, tokens y costo.
 - **Esa unión es la del paso 1, escrita por el SDK** — y atrapa exactamente el
   bug de pantalla vacía que te costó una sesión en el nivel 1.
 - El costo se calcula desde `usage`. Nunca se escribe fijo.
+
+---
+
+# Paso 3b — ¿A dónde se fue la factura? ✅ $0,00
+
+Archivo: `03b_thinking.ts`
+
+El paso 3 dejó una pregunta incómoda: **dos frases costaron 235 tokens de
+salida.** Parecía mucho. Este paso la responde **sin gastar un centavo**.
+
+## La herramienta: `count_tokens`
+
+Es un endpoint de la API que **cuenta tokens y no cobra**. No llama al modelo:
+solo pasa el texto por el mismo tokenizador que usaría la llamada real.
+
+```typescript
+const cuenta = await client.messages.countTokens({
+  model: "claude-opus-5",
+  messages: [{ role: "user", content: RESPUESTA_QUE_LLEGO }],
+});
+console.log(cuenta.input_tokens);
+```
+
+Es la misma jugada que ganó en el nivel 6b, cuando `count_tokens` predijo los
++849 tokens del menú de skills **antes** de gastarlos.
+
+## El resultado, medido
+
+| | tokens |
+|---|---|
+| texto que se vio | ~176 |
+| cobrado por la API | **235** |
+| **pensamiento invisible** | **~59 (25% de la factura)** |
+
+## 🚨 Lo que explica ese 25%
+
+**Opus 5 piensa por defecto.** No escribir el parámetro `thinking` **no lo
+apaga**: lo deja en automático (`adaptive`). Esto es un cambio: en Opus 4.8 y
+4.7, omitirlo sí significaba no pensar.
+
+Y hay un campo `display` que por defecto vale `"omitted"`: el bloque `thinking`
+**llega igual, pero con el texto vacío**. Por eso tu `for` del paso 3 no vio
+nada — el bloque estaba ahí, callado. Y cobrado.
+
+Para verlo, se pide explícitamente:
+
+```typescript
+thinking: { type: "adaptive", display: "summarized" }
+```
+
+- 🔑 **Lo que no se ve también se paga.** El pensamiento se factura dentro de
+  `output_tokens`.
+- 🚨 **Y muerde donde ya te dolió:** `max_tokens` es el techo de
+  **pensamiento + respuesta juntos**. Si lo ajustas al tamaño de la respuesta
+  que esperas, el texto se corta a mitad de frase. **Es el bug del nivel 1
+  (`max_tokens=30`) con otra cara** — y ahora sabes *por qué* pasó.
+
+## ⚠️ La advertencia del instrumento, pegada al dato
+
+`countTokens` pide un **mensaje completo**, no un texto suelto. Por eso el texto
+va envuelto como un turno de usuario — y ese envoltorio mete unos pocos tokens
+que no son del texto.
+
+Así que 176 es una **cota alta**: el texto pesa eso o un poco menos, y el
+pensamiento invisible es de 59 **o un poco más**.
+
+📌 Un instrumento sin su margen escrito al lado es un número que engaña.
+
+## Cómo correr esto
+
+```powershell
+npx tsc
+node dist/03b_thinking.js
+```
+
+✅ **No gasta nada.** `count_tokens` no cobra.
+
+## Ejercicios del paso 3b
+
+1. **Hazlo visible.** Agrega `thinking: { type: "adaptive", display: "summarized" }`
+   a `03_primera_llamada.ts` y añade una rama `if (bloque.type === "thinking")`
+   al `for`. Corre. ¿Ahora sí ves el razonamiento? ¿Cambió `output_tokens`?
+   *(Cuesta unos centavos.)*
+2. **Mide el envoltorio.** Corre `countTokens` con `content: ""` (texto vacío).
+   Lo que salga son los tokens de envoltorio. Réstalos de 176: ese es el texto
+   de verdad. Gratis.
+3. **Predice antes de pagar.** Escribe un prompt nuevo, cuenta sus tokens de
+   entrada con `countTokens`, y **anota tu predicción**. Después córrelo de
+   verdad y compara con `usage.input_tokens`. ¿Acertaste?
+
+---
+
+## Lo que ya sabes del paso 3b
+
+- **`count_tokens` cuenta gratis.** Es la forma de medir *antes* de pagar.
+- **Opus 5 piensa por defecto**, y `display: "omitted"` hace que ese
+  pensamiento llegue invisible — pero cobrado dentro de `output_tokens`.
+- **`max_tokens` cubre pensamiento + respuesta.** Ajustarlo a la respuesta
+  esperada corta el texto.
+- **La documentación da el mecanismo; solo medir da la magnitud.** La referencia
+  del SDK acertó en *qué* pasaba. El *cuánto* (59, no ~100) solo salió al medir.
