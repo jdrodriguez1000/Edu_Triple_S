@@ -1,0 +1,36 @@
+{"hora": "2026-07-29T11:03:04+00:00", "evento": "inicio", "modelo": "claude-opus-5", "presupuesto_usd": 0.1, "max_vueltas": 6, "timeout": 30.0}
+{"hora": "2026-07-29T11:03:04+00:00", "evento": "pregunta", "texto": "Que archivos tengo guardados?"}
+{"hora": "2026-07-29T11:03:08+00:00", "evento": "llamada_api", "intento": 1, "segundos": 3.81, "entrada": 724, "salida": 38, "costo_usd": 0.00457, "acumulado_usd": 0.00457, "stop_reason": "tool_use"}
+{"hora": "2026-07-29T11:03:08+00:00", "evento": "herramienta", "nombre": "listar_archivos", "entrada": {}, "permiso": "permitida por politica", "resultado": "En la caja hay: borrador.txt, notas.txt."}
+{"hora": "2026-07-29T11:03:10+00:00", "evento": "llamada_api", "intento": 1, "segundos": 2.06, "entrada": 787, "salida": 54, "costo_usd": 0.005285, "acumulado_usd": 0.009855, "stop_reason": "end_turn"}
+{"hora": "2026-07-29T11:03:10+00:00", "evento": "respuesta_final", "vueltas": 2, "texto": "Tienes dos archivos guardados: **borrador.txt** y **notas.txt**. ¿Necesitas hacer algo con alguno de ellos?"}
+{"hora": "2026-07-29T11:03:10+00:00", "evento": "pregunta", "texto": "Borra el archivo borrador.txt, ya no lo necesito."}
+{"hora": "2026-07-29T11:03:14+00:00", "evento": "llamada_api", "intento": 1, "segundos": 3.98, "entrada": 735, "salida": 69, "costo_usd": 0.0054, "acumulado_usd": 0.015255, "stop_reason": "tool_use"}
+{"hora": "2026-07-29T11:04:01+00:00", "evento": "herramienta", "nombre": "borrar_archivo", "entrada": {"nombre": "borrador.txt"}, "permiso": "autorizada por el usuario", "resultado": "Borrado 'borrador.txt'."}
+{"hora": "2026-07-29T11:04:07+00:00", "evento": "llamada_api", "intento": 1, "segundos": 6.39, "entrada": 823, "salida": 35, "costo_usd": 0.00499, "acumulado_usd": 0.020245, "stop_reason": "end_turn"}
+{"hora": "2026-07-29T11:04:07+00:00", "evento": "respuesta_final", "vueltas": 2, "texto": "Listo, ya borré borrador.txt. Recordá que esta acción no se puede deshacer."}
+{"hora": "2026-07-29T11:04:07+00:00", "evento": "pregunta", "texto": "Que clima hace en Bucaramanga y que hora es en UTC?"}
+{"hora": "2026-07-29T11:04:11+00:00", "evento": "llamada_api", "intento": 1, "segundos": 4.45, "entrada": 736, "salida": 93, "costo_usd": 0.006005, "acumulado_usd": 0.02625, "stop_reason": "tool_use"}
+{"hora": "2026-07-29T11:04:13+00:00", "evento": "herramienta", "nombre": "obtener_clima", "entrada": {"ciudad": "Bucaramanga"}, "permiso": "permitida por politica", "resultado": "Bucaramanga: 20.4 C, parcialmente nublado."}
+{"hora": "2026-07-29T11:04:13+00:00", "evento": "herramienta", "nombre": "hora_utc", "entrada": {}, "permiso": "permitida por politica", "resultado": "Son las 11:04 UTC del 29/07/2026."}
+{"hora": "2026-07-29T11:04:16+00:00", "evento": "llamada_api", "intento": 1, "segundos": 2.75, "entrada": 934, "salida": 55, "costo_usd": 0.006045, "acumulado_usd": 0.032295, "stop_reason": "end_turn"}
+{"hora": "2026-07-29T11:04:16+00:00", "evento": "respuesta_final", "vueltas": 2, "texto": "En Bucaramanga hay 20.4 °C y está parcialmente nublado. Y en UTC son las 11:04 del 29 de julio de 2026."}
+{"hora": "2026-07-29T11:04:16+00:00", "evento": "fin", "gastado_usd": 0.032295}
+{"hora": "2026-07-29T11:08:45+00:00", "evento": "inicio", "modelo": "claude-opus-5", "presupuesto_usd": 0.1, "max_vueltas": 6, "timeout": 30.0}
+{"hora": "2026-07-29T11:08:45+00:00", "evento": "pregunta", "texto": "Que archivos tengo guardados?"}
+{"hora": "2026-07-29T11:08:49+00:00", "evento": "llamada_api", "intento": 1, "segundos": 3.7, "entrada": 724, "salida": 39, "costo_usd": 0.004595, "acumulado_usd": 0.004595, "stop_reason": "tool_use"}
+{"hora": "2026-07-29T11:08:49+00:00", "evento": "herramienta", "nombre": "listar_archivos", "entrada": {}, "permiso": "permitida por politica", "resultado": "En la caja hay: borrador.txt, notas.txt."}
+{"hora": "2026-07-29T11:08:51+00:00", "evento": "llamada_api", "intento": 1, "segundos": 2.62, "entrada": 788, "salida": 52, "costo_usd": 0.00524, "acumulado_usd": 0.009835, "stop_reason": "end_turn"}
+{"hora": "2026-07-29T11:08:51+00:00", "evento": "respuesta_final", "vueltas": 2, "texto": "Tienes dos archivos guardados: **borrador.txt** y **notas.txt**. ¿Querés que haga algo con alguno de ellos?"}
+{"hora": "2026-07-29T11:08:51+00:00", "evento": "pregunta", "texto": "Borra el archivo borrador.txt, ya no lo necesito."}
+{"hora": "2026-07-29T11:08:55+00:00", "evento": "llamada_api", "intento": 1, "segundos": 3.98, "entrada": 735, "salida": 69, "costo_usd": 0.0054, "acumulado_usd": 0.015235, "stop_reason": "tool_use"}
+{"hora": "2026-07-29T11:09:18+00:00", "evento": "herramienta", "nombre": "borrar_archivo", "entrada": {"nombre": "borrador.txt"}, "permiso": "rechazada por el usuario", "resultado": "PERMISO DENEGADO: el usuario no autorizo borrar_archivo."}
+{"hora": "2026-07-29T11:09:21+00:00", "evento": "llamada_api", "intento": 1, "segundos": 3.39, "entrada": 838, "salida": 54, "costo_usd": 0.00554, "acumulado_usd": 0.020775, "stop_reason": "end_turn"}
+{"hora": "2026-07-29T11:09:21+00:00", "evento": "respuesta_final", "vueltas": 2, "texto": "No pude borrarlo: el sistema me negó el permiso para usar la función de borrado. Si autorizas ese permiso, lo intento de nuevo."}
+{"hora": "2026-07-29T11:09:21+00:00", "evento": "pregunta", "texto": "Que clima hace en Bucaramanga y que hora es en UTC?"}
+{"hora": "2026-07-29T11:09:24+00:00", "evento": "llamada_api", "intento": 1, "segundos": 3.02, "entrada": 736, "salida": 94, "costo_usd": 0.00603, "acumulado_usd": 0.026805, "stop_reason": "tool_use"}
+{"hora": "2026-07-29T11:09:26+00:00", "evento": "herramienta", "nombre": "obtener_clima", "entrada": {"ciudad": "Bucaramanga"}, "permiso": "permitida por politica", "resultado": "Bucaramanga: 20.4 C, parcialmente nublado."}
+{"hora": "2026-07-29T11:09:26+00:00", "evento": "herramienta", "nombre": "hora_utc", "entrada": {}, "permiso": "permitida por politica", "resultado": "Son las 11:09 UTC del 29/07/2026."}
+{"hora": "2026-07-29T11:09:29+00:00", "evento": "llamada_api", "intento": 1, "segundos": 2.7, "entrada": 935, "salida": 54, "costo_usd": 0.006025, "acumulado_usd": 0.03283, "stop_reason": "end_turn"}
+{"hora": "2026-07-29T11:09:29+00:00", "evento": "respuesta_final", "vueltas": 2, "texto": "En Bucaramanga hay 20.4 °C y está parcialmente nublado. La hora UTC es 11:09 del 29 de julio de 2026."}
+{"hora": "2026-07-29T11:09:29+00:00", "evento": "fin", "gastado_usd": 0.03283}

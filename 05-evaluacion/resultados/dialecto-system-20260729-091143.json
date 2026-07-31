@@ -1,0 +1,158 @@
+{
+  "experimento": "dialecto anclado en el SYSTEM",
+  "modelo": "claude-opus-5",
+  "system": "Eres un asistente breve. Responde en espanol de Colombia, en dos frases como maximo. Si una herramienta te dice que no pudo hacer algo, dilo con claridad en vez de inventar.",
+  "pregunta": "Que ropa me pongo hoy en Bogota si esta lloviendo?",
+  "n": 10,
+  "sucias": 0,
+  "costo": 0.0459,
+  "corridas": [
+    {
+      "n": 1,
+      "texto": "Ponte pantalón largo, una chaqueta impermeable o rompevientos con capucha y zapatos cerrados que no se te empapen, más un buso o suéter debajo porque con lluvia bajan los 14-15 grados. Lleva paraguas por si acaso, que en Bogotá el chubasco no avisa.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "marcas_col": [
+        "chaqueta"
+      ],
+      "entrada": 102,
+      "salida": 160,
+      "stop_reason": "end_turn",
+      "segundos": 10.25,
+      "hora": "2026-07-29T09:10:51"
+    },
+    {
+      "n": 2,
+      "texto": "Ponte algo de manga larga con una chaqueta impermeable o cortavientos, pantalón largo y zapatos cerrados que no se mojen fácil. Lleva sombrilla y, por si escampa, algo que puedas quitarte, que en Bogotá el clima cambia en un rato.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "marcas_col": [
+        "sombrilla",
+        "chaqueta"
+      ],
+      "entrada": 102,
+      "salida": 128,
+      "stop_reason": "end_turn",
+      "segundos": 4.9,
+      "hora": "2026-07-29T09:10:56"
+    },
+    {
+      "n": 3,
+      "texto": "No puedo consultar el clima ahora mismo, así que no sé si de verdad está lloviendo. Si lo está, le recomiendo chaqueta impermeable con capucha, zapatos cerrados que no resbalen y una prenda de manga larga, porque en Bogotá la lluvia suele venir con frío.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "marcas_col": [
+        "chaqueta"
+      ],
+      "entrada": 102,
+      "salida": 147,
+      "stop_reason": "end_turn",
+      "segundos": 4.49,
+      "hora": "2026-07-29T09:11:00"
+    },
+    {
+      "n": 4,
+      "texto": "Lleve chaqueta impermeable o rompevientos, zapatos cerrados que no se mojen y un buso o saco debajo, porque con lluvia la temperatura baja fácil a 10-12 grados. Ojo con el paraguas: si hay viento, mejor la capucha.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "marcas_col": [
+        "saco",
+        "chaqueta"
+      ],
+      "entrada": 102,
+      "salida": 153,
+      "stop_reason": "end_turn",
+      "segundos": 5.01,
+      "hora": "2026-07-29T09:11:05"
+    },
+    {
+      "n": 5,
+      "texto": "Póngase algo de manga larga con una chaqueta impermeable o rompevientos, jean o pantalón que no se pegue, y zapatos cerrados que no se le mojen fácil. Lleve paraguas y, si puede, una capita extra o buzo, que en Bogotá el frío pega más cuando uno se moja.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "marcas_col": [
+        "chaqueta"
+      ],
+      "entrada": 102,
+      "salida": 166,
+      "stop_reason": "end_turn",
+      "segundos": 5.25,
+      "hora": "2026-07-29T09:11:11"
+    },
+    {
+      "n": 6,
+      "texto": "No puedo verificar el clima ahora mismo, así que le hablo en general: si está lloviendo en Bogotá, lo mejor es chaqueta impermeable con capucha, un buen buzo o saco debajo y zapatos cerrados que no se empapen. Lleve paraguas y evite el jean muy grueso, que se moja y no seca en todo el día.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "marcas_col": [
+        "saco",
+        "chaqueta"
+      ],
+      "entrada": 102,
+      "salida": 204,
+      "stop_reason": "end_turn",
+      "segundos": 5.91,
+      "hora": "2026-07-29T09:11:16"
+    },
+    {
+      "n": 7,
+      "texto": "No puedo consultar el clima de hoy, así que te hablo en general: con lluvia en Bogotá va bien una chaqueta impermeable con capucha, buso o saco encima de la camiseta, jean y zapatos cerrados que no se empapen. Si sales temprano o de noche, suma bufanda porque refresca duro.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "marcas_col": [
+        "saco",
+        "chaqueta"
+      ],
+      "entrada": 102,
+      "salida": 159,
+      "stop_reason": "end_turn",
+      "segundos": 5.43,
+      "hora": "2026-07-29T09:11:22"
+    },
+    {
+      "n": 8,
+      "texto": "No tengo acceso al clima en tiempo real, así que no puedo confirmar si está lloviendo ahora mismo en Bogotá. Si llueve, lo mejor es chaqueta impermeable con capucha, un buso o saco debajo por el frío, pantalón largo y zapatos cerrados que no se mojen fácil.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "marcas_col": [
+        "saco",
+        "chaqueta"
+      ],
+      "entrada": 102,
+      "salida": 173,
+      "stop_reason": "end_turn",
+      "segundos": 9.82,
+      "hora": "2026-07-29T09:11:32"
+    },
+    {
+      "n": 9,
+      "texto": "No tengo acceso al clima en este momento, así que no le puedo confirmar si está lloviendo. Si sí llueve, le sirve una chaqueta impermeable con capucha, camiseta y buso o saco delgado debajo, jean y zapatos cerrados que no se mojen fácil.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "marcas_col": [
+        "saco",
+        "chaqueta"
+      ],
+      "entrada": 102,
+      "salida": 154,
+      "stop_reason": "end_turn",
+      "segundos": 5.42,
+      "hora": "2026-07-29T09:11:37"
+    },
+    {
+      "n": 10,
+      "texto": "No tengo forma de confirmar el clima ahorita, pero si está lloviendo en Bogotá lo mejor es chaqueta impermeable o rompevientos, zapatos cerrados que no se mojen y una buena sombrilla. Lleve algo de abrigo por debajo, que la lluvia baja la temperatura y en la tarde eso pega duro.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "marcas_col": [
+        "sombrilla",
+        "chaqueta"
+      ],
+      "entrada": 102,
+      "salida": 188,
+      "stop_reason": "end_turn",
+      "segundos": 5.86,
+      "hora": "2026-07-29T09:11:43"
+    }
+  ]
+}

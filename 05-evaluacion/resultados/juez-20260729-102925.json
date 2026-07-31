@@ -1,0 +1,194 @@
+{
+  "juez": "claude-haiku-4-5",
+  "rubrica": "Eres un evaluador de variedades del espanol. Tu unico trabajo es\ndecir a que variedad suena un texto. No evalues si el consejo es bueno, ni si\nesta bien escrito, ni si es util. SOLO la variedad del espanol.\n\nEscala:\n\n0 = RIOPLATENSE. Usa voseo o lexico del Rio de la Plata.\n    Senales: ponete, llevá, querés, tenés, podés, sos, vos, campera,\n    remera, pileta, colectivo, birome.\n\n    CUIDADO, ESTOS PARES SE DIFERENCIAN EN UNA LETRA O UNA TILDE.\n    La columna izquierda es rioplatense (nota 0).\n    La columna derecha es COLOMBIANO CORRECTO y NO baja la nota:\n\n        ponete   -> rioplatense  |  ponte    -> colombiano, correcto\n        llevá    -> rioplatense  |  lleva    -> colombiano, correcto\n        querés   -> rioplatense  |  quieres  -> colombiano, correcto\n        tenés    -> rioplatense  |  tienes   -> colombiano, correcto\n        abrigate -> rioplatense  |  abrigate con tilde en la i: correcto\n        vos      -> rioplatense  |  usted / tu -> colombiano, correcto\n\n    No marques nota 0 por ver \"ponte\" o \"lleva\". Esas son las formas\n    colombianas. Solo cuenta la forma de la izquierda, exacta.\n\n1 = NEUTRO. Espanol correcto pero sin marcas regionales claras.\n    Ni rioplatense ni con lexico colombiano distintivo.\n\n2 = COLOMBIANO. Suena natural para alguien de Colombia.\n    Senales: sombrilla (no paraguas), saco/buso, chaqueta, tinto, chevere,\n    parcero, vaina, harto, el uso natural de usted o del tuteo colombiano.\n\nREGLA DE DESEMPATE (leela dos veces, es la mas importante):\nUn texto puede tener senales de varios niveles a la vez. En ese caso NO\ndecidas por mayoria. Manda siempre la senal mas baja:\n\n  Si aparece UNA SOLA marca rioplatense, la nota es 0.\n  Da igual que el resto del texto sea colombianisimo.\n\nEjemplo que hay que clasificar como 0, no como 2:\n  \"Ponete una chaqueta encima de un buso; si vas a caminar harto,\n   no sobra la sombrilla.\"\n  Tiene tres marcas colombianas (buso, harto, sombrilla) y una\n  rioplatense (ponete). Es 0. Un solo \"ponete\" delata el texto entero.\n\nResponde SOLO con un objeto JSON, sin nada mas antes ni despues:\n{\"nota\": 0, \"razon\": \"maximo 12 palabras\", \"palabras\": [\"las\", \"que\", \"lo\", \"delatan\"]}",
+  "juzgadas": 12,
+  "acuerdo_con_detector_pct": 41.7,
+  "matriz": {
+    "ambos_rio": 0,
+    "ambos_limpio": 5,
+    "solo_juez": 7,
+    "solo_detector": 0
+  },
+  "estabilidad": "11/12",
+  "sin_formato": 0,
+  "costo": 0.0264,
+  "items": [
+    {
+      "origen": "dialecto-system-20260729-091143.json",
+      "version": "-",
+      "n": 1,
+      "texto": "Ponte pantalón largo, una chaqueta impermeable o rompevientos con capucha y zapatos cerrados que no se te empapen, más un buso o suéter debajo porque con lluvia bajan los 14-15 grados. Lleva paraguas por si acaso, que en Bogotá el chubasco no avisa.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 1,
+      "razon": "Mezcla de léxico colombiano sin marcas rioplatenses claras",
+      "palabras_juez": [
+        "ponte",
+        "chaqueta",
+        "buso",
+        "chubasco",
+        "paraguas"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 1,
+      "texto": "Ponte una chaqueta impermeable o rompevientos encima de un buseta o suéter delgado, con pantalón largo y zapatos cerrados que no se te empapen. No sobra llevar paraguas, porque en Bogotá el aguacero le cae a uno de sorpresa.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 2,
+      "razon": "Léxico colombiano distintivo sin marcas rioplatenses",
+      "palabras_juez": [
+        "buseta",
+        "rompevientos",
+        "aguacero",
+        "paraguas",
+        "le cae a uno"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 11,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, y zapatos cerrados que no se mojen. Lleva paraguas por si acaso, que en Bogotá el aguacero no avisa.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 0,
+      "razon": "Marca rioplatense clara",
+      "palabras_juez": [
+        "ponte",
+        "Lleva"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 21,
+      "texto": "Con lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se te empapen. Si vas a caminar harto, lleva sombrilla y una bufanda liviana por si baja más la temperatura.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 0,
+      "razon": "Marca rioplatense clara: ponte (imperativo voseo)",
+      "palabras_juez": [
+        "ponte"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 1,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buserito o suéter delgado, con jean o pantalón largo y zapatos cerrados que no se te empapen. Lleva sombrilla por si arrecia, que en Bogotá el aguacero no avisa.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 0,
+      "razon": "marca rioplatense inequívoca",
+      "palabras_juez": [
+        "Lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 4,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buso o saco debajo, más zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia llega sin avisar.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 1,
+      "razon": "Léxico neutro sin marcas regionales distintivas claras",
+      "palabras_juez": [
+        "ponte",
+        "chaqueta",
+        "rompevientos",
+        "buso",
+        "saco",
+        "paraguas"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 7,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos sobre un buso, pantalón largo y zapatos cerrados que no se empapen. No olvides el paraguas, que en Bogotá el aguacero arranca cuando menos uno espera.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 0,
+      "razon": "Marca rioplatense clara en imperativo 'ponte'",
+      "palabras_juez": [
+        "ponte"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 11,
+      "texto": "Póngase una chaqueta impermeable o rompevientos sobre una camiseta manga larga o un buzo, con jeans y zapatos cerrados que no se le mojen. No sobra llevar paraguas, que en Bogotá el aguacero no avisa.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 1,
+      "razon": "Sin marcas regionales claras. Léxico y conjugaciones neutros",
+      "palabras_juez": [
+        "póngase",
+        "chaqueta",
+        "buzo",
+        "paraguas",
+        "jeans"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 14,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buseta o suéter, con pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que a 14 grados y con lluvia el frío se siente más fuerte.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 1,
+      "razon": "Español neutro sin marcas regionales claras",
+      "palabras_juez": [
+        "ponte",
+        "paraguas",
+        "chaqueta",
+        "pantalón"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 17,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se le mojen fácil. No olvide el paraguas, que en Bogotá el aguacero coge a uno de sorpresa.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 0,
+      "razon": "marca rioplatense 'ponte' detectada",
+      "palabras_juez": [
+        "ponte"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 21,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un suéter o buzo, con pantalón largo y zapatos cerrados que no se te empapen. Y no salgas sin sombrilla, que en Bogotá el aguacero no avisa.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 0,
+      "razon": "Marca rioplatense explícita que prevalece",
+      "palabras_juez": [
+        "ponte"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 24,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buzo, pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia va y vuelve en cualquier momento.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 0,
+      "razon": "Marca rioplatense inequívoca",
+      "palabras_juez": [
+        "ponte"
+      ]
+    }
+  ]
+}

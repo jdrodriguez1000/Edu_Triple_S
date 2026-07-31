@@ -1,0 +1,118 @@
+{
+  "juez": "claude-haiku-4-5",
+  "rubrica": "Eres un evaluador de variedades del espanol. Tu unico trabajo es\ndecir a que variedad suena un texto. No evalues si el consejo es bueno, ni si\nesta bien escrito, ni si es util. SOLO la variedad del espanol.\n\nEscala:\n\n0 = RIOPLATENSE. Usa voseo o lexico del Rio de la Plata.\n    Senales: ponete, lleva con tilde final (lleva'), queres, tenes, podes,\n    sos, vos, campera, remera, pileta, colectivo, birome.\n\n1 = NEUTRO. Espanol correcto pero sin marcas regionales claras.\n    Ni rioplatense ni con lexico colombiano distintivo.\n\n2 = COLOMBIANO. Suena natural para alguien de Colombia.\n    Senales: sombrilla (no paraguas), saco/buso, chaqueta, tinto, chevere,\n    parcero, vaina, el uso natural de usted o del tuteo colombiano.\n\nResponde SOLO con un objeto JSON, sin nada mas antes ni despues:\n{\"nota\": 0, \"razon\": \"maximo 12 palabras\", \"palabras\": [\"las\", \"que\", \"lo\", \"delatan\"]}",
+  "juzgadas": 6,
+  "acuerdo_con_detector_pct": 83.3,
+  "matriz": {
+    "ambos_rio": 0,
+    "ambos_limpio": 5,
+    "solo_juez": 0,
+    "solo_detector": 1
+  },
+  "estabilidad": "6/6",
+  "sin_formato": 0,
+  "costo": 0.009,
+  "items": [
+    {
+      "origen": "dialecto-system-20260729-091143.json",
+      "version": "-",
+      "n": 1,
+      "texto": "Ponte pantalón largo, una chaqueta impermeable o rompevientos con capucha y zapatos cerrados que no se te empapen, más un buso o suéter debajo porque con lluvia bajan los 14-15 grados. Lleva paraguas por si acaso, que en Bogotá el chubasco no avisa.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 2,
+      "razon": "Uso de 'ponte', 'buso', 'chaqueta', 'rompevientos' y context",
+      "palabras_juez": [
+        "ponte",
+        "buso",
+        "chaqueta",
+        "rompevientos",
+        "Bogotá"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 12,
+      "texto": "Con esa lluvia y 14 grados, ponete una chaqueta impermeable o rompevientos encima de un buso o suéter, jean o pantalón largo y zapatos cerrados que no se te empapen. Si vas a caminar harto, no sobra la sombrilla y una bufanda liviana para el frío de la tarde.",
+      "detector_rio": true,
+      "marcas": [
+        "ponete"
+      ],
+      "nota": 2,
+      "razon": "Colombiano. Usa 'ponete', 'buso', 'sombrilla', 'harto'",
+      "palabras_juez": [
+        "ponete",
+        "buso",
+        "sombrilla",
+        "harto"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 1,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o saco, jean y zapatos cerrados que no se le mojen los pies. No olvide el paraguas, que en Bogotá el chubasco arranca sin avisar.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 2,
+      "razon": "Léxico colombiano: buso, saco, chubasco, Bogotá, uso de uste",
+      "palabras_juez": [
+        "buso",
+        "saco",
+        "chubasco",
+        "paraguas",
+        "usted"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 8,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se calen. No olvides el paraguas, que en Bogotá el clima cambia cada rato.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 2,
+      "razon": "Uso de 'ponte', 'buso', 'chaqueta' y contexto bogotano.",
+      "palabras_juez": [
+        "ponte",
+        "buso",
+        "chaqueta",
+        "Bogotá"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 15,
+      "texto": "Con 14 grados y lloviendo, ponte una chaqueta impermeable o rompevientos encima de un buso, y zapatos cerrados que no se te mojen. No olvides el paraguas, que en Bogotá la lluvia va y vuelve.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 2,
+      "razon": "Buso, chaqueta, paraguas, referencias Bogotá, contexto colom",
+      "palabras_juez": [
+        "ponte",
+        "buso",
+        "chaqueta",
+        "paraguas",
+        "Bogotá"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 22,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se le mojen los pies.\n\nY no salga sin paragua o capota, que en Bogotá el aguacero no avisa.",
+      "detector_rio": false,
+      "marcas": [],
+      "nota": 2,
+      "razon": "Combinación de colombianismo 'buso' con contexto Bogotá y 'p",
+      "palabras_juez": [
+        "buso",
+        "Bogotá",
+        "paragua",
+        "aguacero"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+.env
+memoria.json
+memoria_de_prueba.json
+.venv/
+venv/
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
+
+# Salida que GENERA el agente al correr (guardar_reporte). Se puede volver a
+# producir corriendo el programa, así que no es fuente: es resultado.
+# ⚠️ Los .jsonl SÍ suben, y es a propósito: son la EVIDENCIA que PROGRESO.md
+#    cita por nombre. Un registro que se pueda perder no sirve como prueba.
+caja/
+
+# Editores
+.vscode/
+.idea/

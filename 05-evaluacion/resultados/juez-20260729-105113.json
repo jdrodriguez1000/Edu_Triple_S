@@ -1,0 +1,2104 @@
+{
+  "juez": "claude-haiku-4-5",
+  "rubrica": "Eres un evaluador de coherencia en el trato. Tu unico trabajo es\ndecir si el texto trata al lector de forma CONSISTENTE de principio a fin.\nNo evalues si el consejo es bueno, ni la ortografia, ni si es util.\nSOLO la coherencia del trato.\n\nEn espanol hay dos formas de dirigirse a alguien, y mezclarlas en un mismo\nmensaje suena mal y descuidado:\n\n  TUTEO  : ponte, lleva, tienes, puedes, te conviene, tu chaqueta, contigo\n  USTEDEO: pongase, lleve, tiene, puede, le conviene, su chaqueta, con usted\n\nEscala:\n\n0 = MEZCLA LOS DOS. Empieza tuteando y termina ustedeando, o al contrario.\n    Ejemplo real que es 0:\n      \"Ponte una chaqueta... que no se te empapen. Lleve paraguas.\"\n      (\"ponte\" y \"te\" son tuteo; \"lleve\" es ustedeo -> mezcla)\n\n1 = USTEDEO consistente de principio a fin.\n\n2 = TUTEO consistente de principio a fin.\n\nCOMO DESEMPATAR CUANDO UNA PALABRA ES AMBIGUA:\n\"le\", \"se\" y \"su\" sirven para usted Y para tercera persona. Decide por el\ncontexto a quien se refieren:\n  \"su chaqueta\" hablandole al lector      -> ustedeo\n  \"el aguacero coge a cualquiera, su ...\" -> tercera persona, NO cuenta\nSi una palabra ambigua no se refiere al lector, ignorala.\n\nLas notas 1 y 2 son las dos BUENAS: no hay una mejor que la otra.\nLa unica mala es la 0.\n\nResponde SOLO con un objeto JSON, sin nada mas antes ni despues:\n{\"nota\": 0, \"razon\": \"maximo 12 palabras\", \"palabras\": [\"las\", \"que\", \"lo\", \"delatan\"]}",
+  "juzgadas": 120,
+  "acuerdo_con_detector_pct": 66.4,
+  "matriz": {
+    "ambos_rio": 3,
+    "ambos_limpio": 76,
+    "solo_juez": 40,
+    "solo_detector": 0
+  },
+  "estabilidad": "18/20",
+  "sin_formato": 1,
+  "costo": 0.1268,
+  "items": [
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 1,
+      "texto": "Ponte una chaqueta impermeable o rompevientos encima de un buseta o suéter delgado, con pantalón largo y zapatos cerrados que no se te empapen. No sobra llevar paraguas, porque en Bogotá el aguacero le cae a uno de sorpresa.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "llevar",
+        "le"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 2,
+      "texto": "Ponete una chaqueta impermeable o rompevientos con una camiseta y un buserito debajo, más pantalón largo y zapatos cerrados que no se te empapen. No olvidés el paraguas, que a esa hora el aguacero en Bogotá no perdona.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponete, te empapen, olvidés, te",
+      "palabras_juez": [
+        "ponete",
+        "te",
+        "olvidés",
+        "paraguas"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 3,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, jeans y zapatos cerrados que no se te empapen. Lleva paraguas por si el aguacero arrecia, que en Bogotá eso cambia rapidito.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo al inicio con ustedeo al final",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva",
+        "lleve"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 4,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un suéter o buzo, con pantalón largo y zapatos cerrados que no se calen. No sobra llevar paraguas, que en Bogotá el aguacero cae sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Comienza con tuteo ('ponte', 'se te ",
+      "palabras_juez": [
+        "ponte",
+        "no se te calen",
+        "llevar"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 5,
+      "texto": "Con 14 grados y lluvia, ponete una chaqueta impermeable o rompevientos encima de un buso, jean y zapatos cerrados que no se te empapen. No sobra la sombrilla, que en Bogotá el aguacero llega sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponete, te empapen, se te empapen, te con",
+      "palabras_juez": [
+        "ponete",
+        "te",
+        "empapen",
+        "buso"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 6,
+      "texto": "Ponete una chaqueta impermeable o rompevientos sobre un buso, jean o pantalón largo y zapatos cerrados que no se te empapen. Si vas a caminar harto, llevá sombrilla y evitá la ropa de algodón grueso, que con la lluvia se demora un mundo en secar.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponete, te empapen, vas, llevá, evitá, se",
+      "palabras_juez": [
+        "ponete",
+        "te",
+        "vas",
+        "llevá",
+        "evitá"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 7,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos sobre un buso, jean y zapatos cerrados que no se te empapen. No sobra la sombrilla y, si vas a caminar harto, unas medias extra por si acaso.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "vas",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "vas",
+        "tu"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 8,
+      "texto": "Ponete una chaqueta impermeable o rompevientos sobre un buseto o suéter delgado, con pantalón largo y zapatos cerrados que no se te calen. Si vas a andar a pie un buen rato, llevá paraguas porque en Bogotá el aguacero va y viene.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponete, te calen, vas, llevá, te",
+      "palabras_juez": [
+        "ponete",
+        "te",
+        "vas",
+        "llevá"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 9,
+      "texto": "Con lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se te empapen.\n\nSi vas a caminar harto, lleva sombrilla y evita las telas de algodón grueso que se demoran un mundo en secar.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "vas",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, vas, lleva, evita",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "empapen",
+        "vas",
+        "lleva",
+        "evita"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 10,
+      "texto": "Póngase una chaqueta impermeable o rompevientos sobre un buso, pantalón largo y zapatos cerrados que no se mojen fácil. Lleve paraguas, que a 14 grados y con lluvia el frío se siente más si se moja.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [
+        "póngase",
+        "lleve"
+      ],
+      "nota": 1,
+      "razon": "Ustedeo consistente: póngase, lleve, se moja (impersonal)",
+      "palabras_juez": [
+        "pongase",
+        "lleve",
+        "paraguas"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 11,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, y zapatos cerrados que no se mojen. Lleva paraguas por si acaso, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Empieza tuteando (ponte, te mojen) y",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "mojen",
+        "Lleva"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 12,
+      "texto": "Con esa lluvia y 14 grados, ponete una chaqueta impermeable o rompevientos encima de un buso o suéter, jean o pantalón largo y zapatos cerrados que no se te empapen. Si vas a caminar harto, no sobra la sombrilla y una bufanda liviana para el frío de la tarde.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponete",
+        "te",
+        "vas",
+        "te empapen"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 13,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buzo o suéter delgado, con pantalón largo y zapatos cerrados que no se calen.\n\nNo sobra llevar paraguas, que en Bogotá el aguacero arrecia sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. 'Ponte' es tuteo, pero 'llevar' sin ",
+      "palabras_juez": [
+        "ponte",
+        "llevar"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 14,
+      "texto": "Con 14 grados y lluvia, ponete una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te empapen.\n\nSi vas a caminar harto, no sobra el paraguas, porque en Bogotá el aguacero arrecia sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Empieza con tuteo (ponete, te empape",
+      "palabras_juez": [
+        "ponete",
+        "te",
+        "vas"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 15,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso, con jean o pantalón largo y zapatos cerrados que no se te empapen. Lleve paraguas o gorro, que en Bogotá el aguacero coge desprevenido a cualquiera.",
+      "detector_trato": "mixto",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [
+        "lleve"
+      ],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final",
+      "palabras_juez": [
+        "Ponte",
+        "te",
+        "Lleve"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 16,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buseta o suéter delgado, y zapatos cerrados que no se te mojen. Lleva sombrilla por si arrecia, que a esa temperatura con lluvia sí cala el frío.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Inicia con tuteo (ponte, te mojen) y",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 17,
+      "texto": "Con lluvia y 14 grados te va bien una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se mojen fácil. Lleve paraguas por si acaso, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "mixto",
+      "marcas_tu": [
+        "te"
+      ],
+      "marcas_ud": [
+        "lleve"
+      ],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final",
+      "palabras_juez": [
+        "te",
+        "va",
+        "bien",
+        "Lleve"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 18,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buchecito o suéter debajo, pantalón largo y zapatos cerrados que no se te empapen. Y no salgas sin sombrilla, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "salgas",
+        "te",
+        "empapen"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 19,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se te calen.\n\nNo sobra llevar sombrilla, que en Bogotá el aguacero arrecia sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te calen, llevar (imperativo tú im",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "calen",
+        "llevar"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 20,
+      "texto": "Con lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te empapen.\n\nSi te toca caminar harto, lleva sombrilla y evita las prendas de algodón grueso, que se demoran un mundo en secar.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, se te empapen, te toca, lleva, evi",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva",
+        "evita"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 21,
+      "texto": "Con lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se te empapen. Si vas a caminar harto, lleva sombrilla y una bufanda liviana por si baja más la temperatura.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "vas",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Empieza con tuteo (ponte, te) y term",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 22,
+      "texto": "Póngase una chaqueta impermeable o rompevientos sobre un buso o suéter, con pantalón largo y zapatos cerrados que no se le mojen. No olvide el paraguas, que en Bogotá el aguacero cambia de opinión cada rato.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [
+        "póngase"
+      ],
+      "nota": 1,
+      "razon": "Ustedeo consistente: póngase, se le mojen, olvide, le convie",
+      "palabras_juez": [
+        "póngase",
+        "se",
+        "olvide",
+        "le"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 23,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos sobre un buseta o suéter, pantalón largo y zapatos cerrados que no se te empapen. Lleva sombrilla y, si vas a caminar harto, una bufanda liviana porque en Bogotá al caer la tarde refresca más.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "vas",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final. 'Ponte' y 'te' son t",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "empapen",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 24,
+      "texto": "Ponete una chaqueta impermeable o rompevientos sobre un buzo o suéter, con pantalón largo y zapatos cerrados que no se te empapen. Si vas a caminar harto, llevá paraguas y no te confiés, que en Bogotá el clima cambia en un ratico.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponete, te empapen, vas, llevá, te confié",
+      "palabras_juez": [
+        "ponete",
+        "te",
+        "llevá",
+        "te confiés"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 25,
+      "texto": "Ponete una chaqueta impermeable o rompevientos con una camiseta y un buso liviano debajo, más pantalón largo y zapatos cerrados que no se te empapen. No olvidés la sombrilla, que a esa hora el aguacero bogotano no perdona.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponete, te empapen, olvidés, te conviene ",
+      "palabras_juez": [
+        "ponete",
+        "te",
+        "olvidés"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 26,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buseto o suéter, pantalón largo y zapatos cerrados que no se te empapen.\n\nLleva paraguas o capota, que en Bogotá el aguacero rara vez avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Usa 'ponte' y 'te' (tuteo), luego 'l",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 27,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buso o suéter debajo, jeans y zapatos cerrados que no se te empapen. No olvides la sombrilla, que en Bogotá la lluvia no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "empapen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 28,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, jean o pantalón largo y zapatos cerrados que no se te mojen. Un paraguas nunca sobra, que en Bogotá el aguacero llega sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo. Comienza tuteando (ponte, ",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "mojen",
+        "Un paraguas nunca sobra"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 29,
+      "texto": "Con esa lluvia y 14 grados, ponete una chaqueta impermeable o un buen paraguas, camiseta con un buzo encima y zapatos cerrados que no se te mojen. Si vas a estar mucho por fuera, una bufanda liviana no sobra porque en Bogotá el frío se siente más cuando cae el agua.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponete, se te mojen, vas, sobra",
+      "palabras_juez": [
+        "ponete",
+        "te",
+        "vas",
+        "sobra"
+      ]
+    },
+    {
+      "origen": "v2-clima-dado-20260729-092850.json",
+      "version": "-",
+      "n": 30,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buzo o suéter, jeans y zapatos cerrados que no se calen.\n\nNo olvides la sombrilla, que en Bogotá el aguacero arrecia de un momento a otro.",
+      "detector_trato": "tu",
+      "marcas_tu": [
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te (implícito), olvides, se calen",
+      "palabras_juez": [
+        "ponte",
+        "olvides",
+        "se calen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 1,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buserito o suéter delgado, con jean o pantalón largo y zapatos cerrados que no se te empapen. Lleva sombrilla por si arrecia, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo con ustedeo. Empieza tuteando y termina ustedea",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva",
+        "lleve"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 1,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buseta manga larga, con pantalón largo y zapatos cerrados que no se te mojen.\n\nNo olvides el paraguas, que en Bogotá la lluvia va y vuelve en cualquier momento.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te mojen, olvides, te conviene. To",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "mojen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 1,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o saco, jean y zapatos cerrados que no se le mojen los pies. No olvide el paraguas, que en Bogotá el chubasco arranca sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Empieza tuteando ('ponte', 'se le') ",
+      "palabras_juez": [
+        "ponte",
+        "se le mojen",
+        "olvide"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 2,
+      "texto": "Póngase una chaqueta impermeable o rompevientos encima de un buso o saco, con pantalón largo y zapatos cerrados que no se le mojen. No sobra llevar paraguas, que en Bogotá el aguacero coge a cualquiera.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla ustedeo inicial con tuteo final",
+      "palabras_juez": [
+        "Póngase",
+        "se",
+        "le",
+        "llevar",
+        "que no se le mojen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 2,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con capucha, un buso o suéter debajo y zapatos cerrados que no se te mojen. Lleva paraguas por si acaso, que a esa temperatura la lluvia se siente más fría de lo que dice el número.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 2,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá el clima cambia cada rato.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, olvides",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 3,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buseto o suéter delgado, pantalón largo y zapatos cerrados que no se te empapen. Y no salgas sin paraguas, que en Bogotá el aguacero coge fuerza rapidito.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo en 'salgas'",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "empapen",
+        "salgas"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 3,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buso, pantalón largo y zapatos cerrados que no se empapen. No olvides el paraguas, que en Bogotá la lluvia va y viene.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, chaqueta, se empapen, olvides",
+      "palabras_juez": [
+        "ponte",
+        "chaqueta",
+        "se",
+        "empapen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 3,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se mojen fácil. Y no salgas sin paraguas o capota, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te, salgas, tu implícito",
+      "palabras_juez": [
+        "ponte",
+        "se mojen",
+        "salgas",
+        "sin"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 4,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, con pantalón largo y zapatos cerrados que no se te empapen. Lleva paraguas por si acaso, que en Bogotá la lluvia va y viene.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo con ustedeo",
+      "palabras_juez": [
+        "Ponte",
+        "te",
+        "Lleva",
+        "Lleve"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 4,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buso o saco debajo, más zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia llega sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, olvides",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 4,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buseta o saco de manga larga, con pantalón largo y zapatos cerrados que no se te calen.\n\nNo olvides el paraguas, que en Bogotá el aguacero cambia de opinión cada rato.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente. 'Ponte', 'te' y 'olvides' son todas forma",
+      "palabras_juez": [
+        "Ponte",
+        "te",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 5,
+      "texto": "Ponete una chaqueta impermeable o rompevientos sobre un buen suéter, pantalón largo y zapatos cerrados que no se te mojen. Si vas a caminar harto, llevá paraguas y no está de más una bufanda para el fresquito.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponete",
+        "te",
+        "vas",
+        "llevá",
+        "está"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 5,
+      "texto": "Ponte un buso o saco abrigado con una chaqueta impermeable y zapatos cerrados que no se mojen. Lleva paraguas, que en Bogotá la lluvia no avisa cuándo arrecia.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Empieza con tuteo (ponte, te) y term",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 5,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, con pantalón largo y zapatos cerrados que no se te mojen. No olvides el paraguas, que en Bogotá el aguacero coge a uno por sorpresa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "mojen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 6,
+      "texto": "Con lluvia y 14 grados le sirve una chaqueta impermeable o rompevientos encima de un buso, jean y zapatos cerrados que no se le empapen. No olvide el paraguas, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "indeterminado",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla ustedeo y tuteo inconsistentemente",
+      "palabras_juez": [
+        "le",
+        "se",
+        "olvide",
+        "se",
+        "le"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 6,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buen suéter debajo, pantalón largo y zapatos cerrados que no se calen.\n\nNo olvides el paraguas, que en Bogotá esa lluvia de 14 grados se siente más fría de lo que suena.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, olvides, se siente, suena",
+      "palabras_juez": [
+        "ponte",
+        "olvides",
+        "te",
+        "se"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 6,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, con pantalón largo y zapatos cerrados que no se te calen. No olvides el paraguas, que en Bogotá el aguacero llega sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te cales, olvides, te refieren al ",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "cales",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 7,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buso o suéter debajo, jean o pantalón largo y zapatos cerrados que no se empapen. No sobra llevar paraguas, que en Bogotá el aguacero arrecia sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, llevar (infinitivo), se empapen, n",
+      "palabras_juez": [
+        "ponte",
+        "llevar",
+        "empapen",
+        "sobra"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 7,
+      "texto": "Ponte una chaqueta impermeable o un buen paraguas, con un suéter o buzo debajo y zapatos cerrados que no se te empapen. Si vas a caminar harto, unos pantalones largos y medias gruesas te salvan del frío de la tarde.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, vas, te salvan",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "vas",
+        "te"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 7,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos sobre un buso, pantalón largo y zapatos cerrados que no se empapen. No olvides el paraguas, que en Bogotá el aguacero arranca cuando menos uno espera.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, olvides, se empapen, espera",
+      "palabras_juez": [
+        "ponte",
+        "olvides",
+        "se",
+        "empapen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 8,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, con jean o pantalón largo y zapatos cerrados que no se mojen. Si vas a caminar harto, lleva sombrilla y evita las prendas de algodón grueso, que se demoran un mundo en secar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, vas, lleva, evita, se mojan",
+      "palabras_juez": [
+        "ponte",
+        "vas",
+        "lleva",
+        "evita"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 8,
+      "texto": "Ponte una chaqueta impermeable o cortavientos sobre un buso, pantalón largo y zapatos cerrados que no se calen. No olvides el paraguas, que en Bogotá la lluvia llega sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "se",
+        "te",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 8,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se calen. No olvides el paraguas, que en Bogotá el clima cambia cada rato.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "se te calen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 9,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, con pantalón largo y zapatos cerrados que no se te empapen. Y no salgas sin paraguas, que en Bogotá el aguacero llega sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "empapen",
+        "salgas",
+        "tu"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 9,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos sobre un buzo, pantalón largo y zapatos cerrados que no se empapen. Y lleva paraguas, que en Bogotá la lluvia va y vuelve.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo: 'ponte' y 'se empapen' son tuteo, 'l",
+      "palabras_juez": [
+        "ponte",
+        "se empapen",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 9,
+      "texto": "Con esa lluviecita y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, jean y zapatos cerrados que no se calen.\n\nNo sobra llevar paraguas, que en Bogotá el clima cambia de un momento a otro.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, se calen, lleva (implícito en sobr",
+      "palabras_juez": [
+        "ponte",
+        "se",
+        "calen",
+        "llevar"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 10,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buso, y zapatos cerrados que no se te empapen. Lleva sombrilla por si se pone brava la lluvia más tarde.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo con ustedeo",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "Lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 10,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buzo, con pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que a esa temperatura y con lluvia el frío se siente más fuerte.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente. Usa 'ponte', 'te', 'olvides', 'se te empa",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides",
+        "se te empapen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 10,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te mojen. No olvides el paraguas, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te mojen, olvides",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 11,
+      "texto": "Póngase una chaqueta impermeable o rompevientos sobre una camiseta manga larga o un buzo, con jeans y zapatos cerrados que no se le mojen. No sobra llevar paraguas, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 1,
+      "razon": "Ustedeo consistente: póngase, se le mojen, llevar",
+      "palabras_juez": [
+        "póngase",
+        "se",
+        "le",
+        "mojen",
+        "llevar"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 11,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buseta o suéter, y usa zapatos cerrados que no se calen. No olvides el paraguas, que con 14 grados y lluvia el frío se siente más fuerte.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "Ponte",
+        "usa",
+        "olvides",
+        "se",
+        "te"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 11,
+      "texto": "Con 14 grados y lloviendo, póngase una chaqueta impermeable o un buen paraguas, un saco encima de la camiseta y zapatos cerrados que no se le empapen. Nada de sandalias ni chanclas, que las calles quedan con charcos.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 1,
+      "razon": "Ustedeo consistente: póngase, se le empapen, no se le empape",
+      "palabras_juez": [
+        "póngase",
+        "se",
+        "le",
+        "empapen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 12,
+      "texto": "Póngase una chaqueta impermeable o rompevientos sobre un buseto o suéter, pantalón largo y zapatos cerrados que no se le empapen. Y no salga sin sombrilla, que en Bogotá eso cambia cada media hora.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 1,
+      "razon": "Ustedeo consistente: póngase, se le empapen, salga, no se le",
+      "palabras_juez": [
+        "póngase",
+        "le",
+        "salga"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 12,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buzo, pantalón largo y zapatos cerrados que no se empapen. No olvides el paraguas, porque en Bogotá la lluvia va y viene sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, se empapen, olvides",
+      "palabras_juez": [
+        "ponte",
+        "se",
+        "empapen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 12,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te mojen. No olvides el paraguas, que en Bogotá la lluvia no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "mojen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 13,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso, jean o pantalón largo y zapatos cerrados que no se calen. Y no salgas sin paraguas, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, salgas, se calen",
+      "palabras_juez": [
+        "ponte",
+        "salgas",
+        "se",
+        "calen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 13,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con capucha, un buso o suéter debajo y zapatos cerrados que no se mojen. Lleva paraguas por si arrecia, que a esa temperatura la humedad se siente más fría de lo que marca el termómetro.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva",
+        "arrecia"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 13,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente en todo el texto",
+      "palabras_juez": [
+        "ponte",
+        "se",
+        "te",
+        "empapen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 14,
+      "texto": "Ponte una chaqueta impermeable o rompevientos encima de un buzo o suéter, con pantalón largo y zapatos cerrados que no se te empapen. Lleva paraguas y, si te da friíto, una bufanda liviana no sobra.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Comienza tuteando (ponte, te empapen",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 14,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buseta o suéter, con pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que a 14 grados y con lluvia el frío se siente más fuerte.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, te, olvides",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "empapen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 14,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se mojen fácil. No olvides el paraguas, que en Bogotá la lluvia llega sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, chaqueta, buso, olvides. Todo diri",
+      "palabras_juez": [
+        "ponte",
+        "no",
+        "olvides",
+        "se",
+        "mojen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 15,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se te empapen. Lleva paraguas o capucha, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Empieza tuteando ('ponte', 'te') y t",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 15,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buso encima de una camiseta, y prefiere pantalón largo con zapatos cerrados que no se empapen. Lleva paraguas, que a 14 grados y con lluvia el frío se siente más fuerte.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Comienza con 'ponte' y 'se empapen' ",
+      "palabras_juez": [
+        "ponte",
+        "se empapen",
+        "prefiere",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 15,
+      "texto": "Con 14 grados y lloviendo, ponte una chaqueta impermeable o rompevientos encima de un buso, y zapatos cerrados que no se te mojen. No olvides el paraguas, que en Bogotá la lluvia va y vuelve.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te mojen, olvides son todas formas",
+      "palabras_juez": [
+        "ponte",
+        "se",
+        "te",
+        "mojen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 16,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buseto o suéter, y zapatos cerrados que no se te empapen.\n\nSi vas a caminar harto, lleva paraguas y evita el jean, que se moja y no seca ni de fundas.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Comienza tuteando (ponte, se te empa",
+      "palabras_juez": [
+        "ponte",
+        "se te",
+        "lleva",
+        "evita"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 16,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos sobre un buzo, jeans y zapatos cerrados que no se calen. No olvides el paraguas, que en Bogotá el sol de las tres no se le cree a nadie.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final. Comienza tuteando (p",
+      "palabras_juez": [
+        "ponte",
+        "se",
+        "calen",
+        "le",
+        "cree"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 16,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se calen. No olvides el paraguas, que en Bogotá el aguacero coge a cualquiera desprevenido.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, rompevientos, no olvides, se calen",
+      "palabras_juez": [
+        "ponte",
+        "no olvides",
+        "se calen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 17,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se mojen fácil. Si vas a caminar harto, lleva paraguas y unas medias de repuesto por si acaso.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, vas, lleva, se mojen, acaso",
+      "palabras_juez": [
+        "ponte",
+        "vas",
+        "lleva",
+        "se",
+        "mojen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 17,
+      "texto": "Ponte una chaqueta impermeable o un buen paraguas, con un saco o suéter debajo y zapatos cerrados que no se te empapen. Con 14 grados y lluvia, unos pantalones largos y medias abrigadas te caen muy bien.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, se te empapen, te caen",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "caen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 17,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se le mojen fácil. No olvide el paraguas, que en Bogotá el aguacero coge a uno de sorpresa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Comienza tuteando (ponte, se le) y t",
+      "palabras_juez": [
+        "ponte",
+        "se le",
+        "no olvide"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 18,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, pantalón largo y zapatos cerrados que no se te empapen. Lleva paraguas y, si vas a estar afuera un rato, una bufanda liviana no sobra.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo con ustedeo. Empieza tuteando (ponte, te) y ter",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 18,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un saco liviano debajo, más pantalón largo y zapatos cerrados que no se empapen. Lleva paraguas por si el aguacero arrecia.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Inicia con 'ponte' (tuteo) y 'se te ",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 18,
+      "texto": "Con esa lluviecita y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, jean y zapatos cerrados que no se le mojen los pies. No olvide el paraguas, que en Bogotá la lluvia no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final",
+      "palabras_juez": [
+        "ponte",
+        "se le mojen",
+        "No olvide"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 19,
+      "texto": "Con 14 grados y lluvia, póngase una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se le mojen. No sobra llevar paraguas o capota, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 1,
+      "razon": "Ustedeo consistente: póngase, se le mojen, llevar. Sin mezcl",
+      "palabras_juez": [
+        "póngase",
+        "se",
+        "le",
+        "mojen",
+        "llevar"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 19,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, con pantalón largo y zapatos cerrados que no se empapen. Lleva paraguas por si acaso, que en Bogotá el clima cambia de un momento a otro.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo: 'ponte' y 'te' son tuteo; 'lleva' es",
+      "palabras_juez": [
+        "ponte",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 19,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia va y vuelve.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, olvides",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 20,
+      "texto": "Con 14 grados y lluvia, póngase una chaqueta impermeable o rompevientos sobre un buso o suéter, y zapatos cerrados que no se le mojen. Lleve paraguas o capota, que en Bogotá el aguacero arrecia sin avisar.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 1,
+      "razon": "Ustedeo consistente: póngase, su chaqueta, le mojen, lleve",
+      "palabras_juez": [
+        "póngase",
+        "le",
+        "lleve"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 20,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buso encima de una camiseta, pantalón largo y zapatos cerrados que no se empapen. Lleva paraguas o capota, que en Bogotá la lluvia arranca sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo (ponte, se empapen) con ustedeo (lleva)",
+      "palabras_juez": [
+        "ponte",
+        "se",
+        "empapen",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 21,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un suéter o buzo, con pantalón largo y zapatos cerrados que no se te empapen. Y no salgas sin sombrilla, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente en todo el texto",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "salgas",
+        "te"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 21,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buso o saco debajo, y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia va y viene.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "se te empapen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 21,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia va y viene.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "se te empapen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 22,
+      "texto": "Con 14 grados y lluvia, ponete una chaqueta impermeable o rompevientos encima de un buzo, jeans y zapatos cerrados que no se te empapen. Y no salgás sin paraguas, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo inconsistentemente",
+      "palabras_juez": [
+        "ponete",
+        "se",
+        "te",
+        "empapen",
+        "salgás",
+        "paraguas"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 22,
+      "texto": "Ponte una chaqueta impermeable o cortavientos sobre un buso, con pantalón largo y zapatos cerrados que no se empapen. No olvides el paraguas, que en Bogotá la lluvia arranca sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "un",
+        "buso",
+        "pantalón",
+        "no",
+        "olvides",
+        "te"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 22,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se le mojen los pies.\n\nY no salga sin paragua o capota, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "mixto",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final",
+      "palabras_juez": [
+        "ponte",
+        "se le mojen",
+        "salga"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 23,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, jean o pantalón largo y zapatos cerrados que no se te empapen.\n\nSi vas a caminar harto, lleva paraguas y evita las telas de algodón grueso, que se demoran mucho en secar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Comienza con tuteo (ponte, te) y lue",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 23,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con capucha, un buso o suéter debajo, pantalón largo y zapatos cerrados que no se calen. Lleva paraguas por si el aguacero arrecia.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final",
+      "palabras_juez": [
+        "Ponte",
+        "te",
+        "Lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 23,
+      "texto": "Con esa lluviecita y 14 grados, póngase una chaqueta impermeable o rompevientos encima de un buzo, jeans y zapatos cerrados que no se le mojen.\n\nNo olvide el paraguas, que en Bogotá la lluvia va y vuelve cuando menos se piensa.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 1,
+      "razon": "Ustedeo consistente: póngase, se le mojen, olvide",
+      "palabras_juez": [
+        "póngase",
+        "le",
+        "olvide"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 24,
+      "texto": "Póngase una chaqueta impermeable o rompevientos sobre un buso o suéter, pantalón largo y zapatos cerrados que no se le mojen. Si le toca caminar harto, lleve paraguas y evite el algodón grueso, que se demora un mundo en secar.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 1,
+      "razon": "Ustedeo consistente: póngase, le toca, le mojen, lleve",
+      "palabras_juez": [
+        "póngase",
+        "le",
+        "lleve"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 24,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buzo, pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia va y vuelve en cualquier momento.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, olvides, se te",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "empapen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 24,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso o saco, con pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, olvides, se te",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 25,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, pantalón largo y zapatos cerrados que no se te empapen. No sobra llevar sombrilla, que en Bogotá el aguacero arrecia sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, llevar, se te empapen",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "llevar",
+        "te"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 25,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buzo, pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia va y vuelve en cualquier momento.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, te (implícito en no ol",
+      "palabras_juez": [
+        "ponte",
+        "se",
+        "te",
+        "empapen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 25,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia coge a uno por sorpresa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, olvides",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 26,
+      "texto": "Ponete una chaqueta impermeable o rompevientos encima de un buso o suéter, con jeans y zapatos cerrados que no se mojen fácil. Lleva paraguas o capota, que a esa hora el aguacero en Bogotá no perdona.",
+      "detector_trato": "indeterminado",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo (ponete, te, que) con ustedeo (lleva). Inconsis",
+      "palabras_juez": [
+        "ponete",
+        "lleva",
+        "te"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 26,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buzo, pantalón largo y zapatos cerrados que no se empapen. No olvides el paraguas, que en Bogotá la lluvia no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, se empapen, olvides",
+      "palabras_juez": [
+        "ponte",
+        "se",
+        "empapen",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 26,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buso, pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia arranca sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, olvides, se te",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides",
+        "se te"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 27,
+      "texto": "Con 14 grados y lluvia, le recomiendo una chaqueta impermeable o rompevientos encima de un buzo, pantalón largo y zapatos cerrados que no se le calen.\n\nY no olvide el paraguas o la capota, que en Bogotá el aguacero coge a cualquiera desprevenido.",
+      "detector_trato": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 1,
+      "razon": "Ustedeo consistente: le recomiendo, se le calen, no olvide",
+      "palabras_juez": [
+        "le",
+        "se",
+        "olvide"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 27,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buso encima de una camiseta, pantalón largo y zapatos cerrados que no se te calen. Lleva paraguas o capota, que en Bogotá el chubasco vuelve sin avisar.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo",
+      "palabras_juez": [
+        "Ponte",
+        "te",
+        "Lleva",
+        "capota"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 27,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso o saco, y pantalón largo con zapatos cerrados que no se empapen. Si vas a caminar harto, no te olvides del paraguas o una capota, que en Bogotá el agua llega de lado.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, lluvia, te olvides, vas, te empape",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides",
+        "vas"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 28,
+      "texto": "Con lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se te empapen.\n\nSi te toca caminar harto, lleva paraguas y de una vez una bufanda liviana, que en la tarde eso baja más.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente del principio al fin",
+      "palabras_juez": [
+        "ponte",
+        "se",
+        "te",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 28,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o un rompevientos sobre un buso, además de pantalón largo y zapatos cerrados que no se te empapen.\n\nLleva paraguas por si acaso, porque en Bogotá la lluvia va y vuelve en cuestión de minutos.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo y ustedeo. Empieza con tuteo (ponte, te) y lueg",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 28,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, jean y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá el clima cambia en cualquier momento.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, olvides",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 29,
+      "texto": "Con lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te mojen.\n\nY no salgas sin sombrilla, que en Bogotá el aguacero no avisa.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "se te mojen",
+        "salgas"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 29,
+      "texto": "Ponte un buso o saco abrigado con una chaqueta impermeable, y zapatos cerrados que no se mojen fácil. No olvides el paraguas, que con 14 grados y lluvia el frío se siente más.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente en todo el texto",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides",
+        "se",
+        "mojen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 29,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá la lluvia va y vuelve.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente de principio a fin",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "olvides"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "A",
+      "n": 30,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buserdo o suéter, con pantalón largo y zapatos cerrados que no se mojen. No olvides la sombrilla, que a esa hora la lluvia en Bogotá no perdona.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, olvides, se mojen, que se refiere ",
+      "palabras_juez": [
+        "ponte",
+        "olvides",
+        "se",
+        "mojen"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "B",
+      "n": 30,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buso encima de una camiseta, pantalón largo y zapatos cerrados que no se empapen. Lleva paraguas por si el aguacero se pone bravo.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 0,
+      "razon": "Mezcla tuteo inicial con ustedeo final",
+      "palabras_juez": [
+        "ponte",
+        "se te empapen",
+        "lleva"
+      ]
+    },
+    {
+      "origen": "v3-tres-versiones-20260729-094729.json",
+      "version": "C",
+      "n": 30,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, más pantalón largo y zapatos cerrados que no se te empapen. No olvides el paraguas, que en Bogotá el aguacero aparece cuando menos lo espera uno.",
+      "detector_trato": "tu",
+      "marcas_tu": [],
+      "marcas_ud": [],
+      "nota": 2,
+      "razon": "Tuteo consistente: ponte, te empapen, olvides, espera uno",
+      "palabras_juez": [
+        "ponte",
+        "te",
+        "empapen",
+        "olvides"
+      ]
+    }
+  ]
+}

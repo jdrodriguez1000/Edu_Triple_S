@@ -1,0 +1,546 @@
+{
+  "experimento": "v2 - clima dado, dialecto + tratamiento",
+  "modelo": "claude-opus-5",
+  "system": "Eres un asistente breve. Responde en espanol de Colombia, en dos frases como maximo. Si una herramienta te dice que no pudo hacer algo, dilo con claridad en vez de inventar.",
+  "pregunta": "Esta lloviendo en Bogota y hace 14 grados. Que ropa me pongo?",
+  "n": 30,
+  "rioplatense": 9,
+  "tratamiento": {
+    "tu": 26,
+    "usted": 2,
+    "mixto": 2
+  },
+  "costo": 0.1273,
+  "corridas": [
+    {
+      "n": 1,
+      "texto": "Ponte una chaqueta impermeable o rompevientos encima de un buseta o suéter delgado, con pantalón largo y zapatos cerrados que no se te empapen. No sobra llevar paraguas, porque en Bogotá el aguacero le cae a uno de sorpresa.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 135,
+      "stop_reason": "end_turn",
+      "segundos": 7.9,
+      "hora": "2026-07-29T09:26:40"
+    },
+    {
+      "n": 2,
+      "texto": "Ponete una chaqueta impermeable o rompevientos con una camiseta y un buserito debajo, más pantalón largo y zapatos cerrados que no se te empapen. No olvidés el paraguas, que a esa hora el aguacero en Bogotá no perdona.",
+      "rioplatense": true,
+      "marcas_rio": [
+        "ponete"
+      ],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 146,
+      "stop_reason": "end_turn",
+      "segundos": 3.97,
+      "hora": "2026-07-29T09:26:44"
+    },
+    {
+      "n": 3,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, jeans y zapatos cerrados que no se te empapen. Lleva paraguas por si el aguacero arrecia, que en Bogotá eso cambia rapidito.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 145,
+      "stop_reason": "end_turn",
+      "segundos": 5.21,
+      "hora": "2026-07-29T09:26:49"
+    },
+    {
+      "n": 4,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un suéter o buzo, con pantalón largo y zapatos cerrados que no se calen. No sobra llevar paraguas, que en Bogotá el aguacero cae sin avisar.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 145,
+      "stop_reason": "end_turn",
+      "segundos": 3.78,
+      "hora": "2026-07-29T09:26:53"
+    },
+    {
+      "n": 5,
+      "texto": "Con 14 grados y lluvia, ponete una chaqueta impermeable o rompevientos encima de un buso, jean y zapatos cerrados que no se te empapen. No sobra la sombrilla, que en Bogotá el aguacero llega sin avisar.",
+      "rioplatense": true,
+      "marcas_rio": [
+        "ponete"
+      ],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 122,
+      "stop_reason": "end_turn",
+      "segundos": 3.65,
+      "hora": "2026-07-29T09:26:57"
+    },
+    {
+      "n": 6,
+      "texto": "Ponete una chaqueta impermeable o rompevientos sobre un buso, jean o pantalón largo y zapatos cerrados que no se te empapen. Si vas a caminar harto, llevá sombrilla y evitá la ropa de algodón grueso, que con la lluvia se demora un mundo en secar.",
+      "rioplatense": true,
+      "marcas_rio": [
+        "llevá",
+        "ponete"
+      ],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 158,
+      "stop_reason": "end_turn",
+      "segundos": 4.2,
+      "hora": "2026-07-29T09:27:01"
+    },
+    {
+      "n": 7,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos sobre un buso, jean y zapatos cerrados que no se te empapen. No sobra la sombrilla y, si vas a caminar harto, unas medias extra por si acaso.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "vas",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 133,
+      "stop_reason": "end_turn",
+      "segundos": 4.34,
+      "hora": "2026-07-29T09:27:05"
+    },
+    {
+      "n": 8,
+      "texto": "Ponete una chaqueta impermeable o rompevientos sobre un buseto o suéter delgado, con pantalón largo y zapatos cerrados que no se te calen. Si vas a andar a pie un buen rato, llevá paraguas porque en Bogotá el aguacero va y viene.",
+      "rioplatense": true,
+      "marcas_rio": [
+        "llevá",
+        "ponete"
+      ],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 165,
+      "stop_reason": "end_turn",
+      "segundos": 4.71,
+      "hora": "2026-07-29T09:27:10"
+    },
+    {
+      "n": 9,
+      "texto": "Con lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se te empapen.\n\nSi vas a caminar harto, lleva sombrilla y evita las telas de algodón grueso que se demoran un mundo en secar.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "vas",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 152,
+      "stop_reason": "end_turn",
+      "segundos": 4.03,
+      "hora": "2026-07-29T09:27:14"
+    },
+    {
+      "n": 10,
+      "texto": "Póngase una chaqueta impermeable o rompevientos sobre un buso, pantalón largo y zapatos cerrados que no se mojen fácil. Lleve paraguas, que a 14 grados y con lluvia el frío se siente más si se moja.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [
+        "póngase",
+        "lleve"
+      ],
+      "entrada": 108,
+      "salida": 138,
+      "stop_reason": "end_turn",
+      "segundos": 3.75,
+      "hora": "2026-07-29T09:27:18"
+    },
+    {
+      "n": 11,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, y zapatos cerrados que no se mojen. Lleva paraguas por si acaso, que en Bogotá el aguacero no avisa.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 149,
+      "stop_reason": "end_turn",
+      "segundos": 3.89,
+      "hora": "2026-07-29T09:27:21"
+    },
+    {
+      "n": 12,
+      "texto": "Con esa lluvia y 14 grados, ponete una chaqueta impermeable o rompevientos encima de un buso o suéter, jean o pantalón largo y zapatos cerrados que no se te empapen. Si vas a caminar harto, no sobra la sombrilla y una bufanda liviana para el frío de la tarde.",
+      "rioplatense": true,
+      "marcas_rio": [
+        "ponete"
+      ],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 184,
+      "stop_reason": "end_turn",
+      "segundos": 6.25,
+      "hora": "2026-07-29T09:27:28"
+    },
+    {
+      "n": 13,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buzo o suéter delgado, con pantalón largo y zapatos cerrados que no se calen.\n\nNo sobra llevar paraguas, que en Bogotá el aguacero arrecia sin avisar.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 143,
+      "stop_reason": "end_turn",
+      "segundos": 3.48,
+      "hora": "2026-07-29T09:27:31"
+    },
+    {
+      "n": 14,
+      "texto": "Con 14 grados y lluvia, ponete una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te empapen.\n\nSi vas a caminar harto, no sobra el paraguas, porque en Bogotá el aguacero arrecia sin avisar.",
+      "rioplatense": true,
+      "marcas_rio": [
+        "ponete"
+      ],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 165,
+      "stop_reason": "end_turn",
+      "segundos": 4.71,
+      "hora": "2026-07-29T09:27:36"
+    },
+    {
+      "n": 15,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso, con jean o pantalón largo y zapatos cerrados que no se te empapen. Lleve paraguas o gorro, que en Bogotá el aguacero coge desprevenido a cualquiera.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "mixto",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [
+        "lleve"
+      ],
+      "entrada": 108,
+      "salida": 153,
+      "stop_reason": "end_turn",
+      "segundos": 3.66,
+      "hora": "2026-07-29T09:27:40"
+    },
+    {
+      "n": 16,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buseta o suéter delgado, y zapatos cerrados que no se te mojen. Lleva sombrilla por si arrecia, que a esa temperatura con lluvia sí cala el frío.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 140,
+      "stop_reason": "end_turn",
+      "segundos": 3.49,
+      "hora": "2026-07-29T09:27:43"
+    },
+    {
+      "n": 17,
+      "texto": "Con lluvia y 14 grados te va bien una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se mojen fácil. Lleve paraguas por si acaso, que en Bogotá el aguacero no avisa.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "mixto",
+      "marcas_tu": [
+        "te"
+      ],
+      "marcas_ud": [
+        "lleve"
+      ],
+      "entrada": 108,
+      "salida": 128,
+      "stop_reason": "end_turn",
+      "segundos": 4.33,
+      "hora": "2026-07-29T09:27:47"
+    },
+    {
+      "n": 18,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buchecito o suéter debajo, pantalón largo y zapatos cerrados que no se te empapen. Y no salgas sin sombrilla, que en Bogotá el aguacero no avisa.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 133,
+      "stop_reason": "end_turn",
+      "segundos": 5.51,
+      "hora": "2026-07-29T09:27:53"
+    },
+    {
+      "n": 19,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se te calen.\n\nNo sobra llevar sombrilla, que en Bogotá el aguacero arrecia sin avisar.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 134,
+      "stop_reason": "end_turn",
+      "segundos": 5.36,
+      "hora": "2026-07-29T09:27:58"
+    },
+    {
+      "n": 20,
+      "texto": "Con lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso, pantalón largo y zapatos cerrados que no se te empapen.\n\nSi te toca caminar harto, lleva sombrilla y evita las prendas de algodón grueso, que se demoran un mundo en secar.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 142,
+      "stop_reason": "end_turn",
+      "segundos": 3.65,
+      "hora": "2026-07-29T09:28:02"
+    },
+    {
+      "n": 21,
+      "texto": "Con lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos encima de un buso o suéter, pantalón largo y zapatos cerrados que no se te empapen. Si vas a caminar harto, lleva sombrilla y una bufanda liviana por si baja más la temperatura.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "vas",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 149,
+      "stop_reason": "end_turn",
+      "segundos": 5.53,
+      "hora": "2026-07-29T09:28:07"
+    },
+    {
+      "n": 22,
+      "texto": "Póngase una chaqueta impermeable o rompevientos sobre un buso o suéter, con pantalón largo y zapatos cerrados que no se le mojen. No olvide el paraguas, que en Bogotá el aguacero cambia de opinión cada rato.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "usted",
+      "marcas_tu": [],
+      "marcas_ud": [
+        "póngase"
+      ],
+      "entrada": 108,
+      "salida": 133,
+      "stop_reason": "end_turn",
+      "segundos": 3.79,
+      "hora": "2026-07-29T09:28:11"
+    },
+    {
+      "n": 23,
+      "texto": "Con esa lluvia y 14 grados, ponte una chaqueta impermeable o rompevientos sobre un buseta o suéter, pantalón largo y zapatos cerrados que no se te empapen. Lleva sombrilla y, si vas a caminar harto, una bufanda liviana porque en Bogotá al caer la tarde refresca más.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "vas",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 178,
+      "stop_reason": "end_turn",
+      "segundos": 4.19,
+      "hora": "2026-07-29T09:28:15"
+    },
+    {
+      "n": 24,
+      "texto": "Ponete una chaqueta impermeable o rompevientos sobre un buzo o suéter, con pantalón largo y zapatos cerrados que no se te empapen. Si vas a caminar harto, llevá paraguas y no te confiés, que en Bogotá el clima cambia en un ratico.",
+      "rioplatense": true,
+      "marcas_rio": [
+        "llevá",
+        "ponete"
+      ],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 170,
+      "stop_reason": "end_turn",
+      "segundos": 4.19,
+      "hora": "2026-07-29T09:28:20"
+    },
+    {
+      "n": 25,
+      "texto": "Ponete una chaqueta impermeable o rompevientos con una camiseta y un buso liviano debajo, más pantalón largo y zapatos cerrados que no se te empapen. No olvidés la sombrilla, que a esa hora el aguacero bogotano no perdona.",
+      "rioplatense": true,
+      "marcas_rio": [
+        "ponete"
+      ],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 149,
+      "stop_reason": "end_turn",
+      "segundos": 4.31,
+      "hora": "2026-07-29T09:28:24"
+    },
+    {
+      "n": 26,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos sobre un buseto o suéter, pantalón largo y zapatos cerrados que no se te empapen.\n\nLleva paraguas o capota, que en Bogotá el aguacero rara vez avisa.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 148,
+      "stop_reason": "end_turn",
+      "segundos": 5.53,
+      "hora": "2026-07-29T09:28:29"
+    },
+    {
+      "n": 27,
+      "texto": "Ponte una chaqueta impermeable o rompevientos con un buso o suéter debajo, jeans y zapatos cerrados que no se te empapen. No olvides la sombrilla, que en Bogotá la lluvia no avisa.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 147,
+      "stop_reason": "end_turn",
+      "segundos": 3.96,
+      "hora": "2026-07-29T09:28:33"
+    },
+    {
+      "n": 28,
+      "texto": "Ponte una chaqueta impermeable o rompevientos sobre un buso o suéter, jean o pantalón largo y zapatos cerrados que no se te mojen. Un paraguas nunca sobra, que en Bogotá el aguacero llega sin avisar.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 139,
+      "stop_reason": "end_turn",
+      "segundos": 8.12,
+      "hora": "2026-07-29T09:28:42"
+    },
+    {
+      "n": 29,
+      "texto": "Con esa lluvia y 14 grados, ponete una chaqueta impermeable o un buen paraguas, camiseta con un buzo encima y zapatos cerrados que no se te mojen. Si vas a estar mucho por fuera, una bufanda liviana no sobra porque en Bogotá el frío se siente más cuando cae el agua.",
+      "rioplatense": true,
+      "marcas_rio": [
+        "ponete"
+      ],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "te",
+        "vas"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 174,
+      "stop_reason": "end_turn",
+      "segundos": 4.19,
+      "hora": "2026-07-29T09:28:46"
+    },
+    {
+      "n": 30,
+      "texto": "Con 14 grados y lluvia, ponte una chaqueta impermeable o rompevientos encima de un buzo o suéter, jeans y zapatos cerrados que no se calen.\n\nNo olvides la sombrilla, que en Bogotá el aguacero arrecia de un momento a otro.",
+      "rioplatense": false,
+      "marcas_rio": [],
+      "tratamiento": "tu",
+      "marcas_tu": [
+        "ponte"
+      ],
+      "marcas_ud": [],
+      "entrada": 108,
+      "salida": 147,
+      "stop_reason": "end_turn",
+      "segundos": 4.71,
+      "hora": "2026-07-29T09:28:50"
+    }
+  ]
+}
