@@ -1,0 +1,39 @@
+{
+  // ─────────────────────────────────────────────────────────────
+  //  tsconfig.json — las reglas del traductor (el compilador)
+  //  Este archivo NO es del programa: es del compilador.
+  //  Le dice cómo traducir tu .ts a JavaScript y qué tan estricto ser.
+  // ─────────────────────────────────────────────────────────────
+  "compilerOptions": {
+    // A qué versión de JavaScript traducir. ES2022 = moderna, la entiende Node.
+    "target": "ES2022",
+    "module": "commonjs",
+
+    // 🔴 LA OPCIÓN QUE IMPORTA. Sin esto, TypeScript deja pasar casi todo
+    //    y no sirve para nada. Con esto, avisa antes de correr.
+    "strict": true,
+
+    // Dónde deja el JavaScript traducido. Nunca se edita a mano.
+    "outDir": "dist",
+    "rootDir": ".",
+
+    // TypeScript no sabe NADA de Node por su cuenta: el idioma nació en
+    // el navegador. Sin esta línea, `process` y `setTimeout` no existen
+    // para él (error TS2591, lo vimos en el paso 2).
+    // Las descripciones vienen del paquete @types/node.
+    "types": ["node"],
+
+    // Que el .js traducido apunte de vuelta al .ts al reportar un error.
+    "sourceMap": true
+
+    // 🔴 EJERCICIO 2 — descomenta la línea de abajo (y la coma de arriba).
+    //    Por defecto, tsc AVISA del error pero IGUAL escribe el .js, y Node
+    //    lo corre tan tranquilo. Esta opción hace que un error impida la
+    //    traducción: sin .js, no hay nada que correr.
+    // ,"noEmitOnError": true
+  },
+
+  // Qué traducir y qué ignorar.
+  "include": ["*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

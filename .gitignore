@@ -17,6 +17,11 @@ __pycache__/
 node_modules/
 .DS_Store
 
+# El JavaScript que `tsc` traduce desde los .ts (nivel 6c). No sube por la
+# misma razón que __pycache__: NO ES FUENTE, es resultado. Se regenera entero
+# con `npx tsc`, y subirlo permitiría que el .js y el .ts se contradigan.
+dist/
+
 # Salida que GENERA el agente al correr (guardar_reporte). Se puede volver a
 # producir corriendo el programa, así que no es fuente: es resultado.
 # ⚠️ Los .jsonl SÍ suben, y es a propósito: son la EVIDENCIA que PROGRESO.md

@@ -62,8 +62,9 @@ El detalle completo está en `PROGRESO.md`.
 > *este* curso. Meterlos en otro proyecto es pagar contexto por historia ajena.
 > **Lo reutilizable no son las piezas: es el criterio.**
 
-**Estado actual (2026-07-31):** niveles 0 a 5 cerrados, el 5b también, y el
-**6b CERRADO** (sus 6 pasos, con sus 46 lecciones escritas).
+**Estado actual (2026-07-31):** niveles 0 a 5 cerrados, el 5b también, el
+**6b CERRADO** (sus 6 pasos, con sus 46 lecciones escritas), y el **6c
+(TypeScript) en curso** — 4 de 7 pasos, en `06c-typescript/`.
 
 El proyecto integrador está terminado: 6 herramientas, **121 evals que corren en
 $0,00**, un harness con 10 frenos, tres modelos comparados con datos, y una

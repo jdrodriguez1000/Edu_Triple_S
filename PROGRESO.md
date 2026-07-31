@@ -3,7 +3,230 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-07-31 (sesión 23)
+**Última actualización:** 2026-07-31 (sesión 24)
+
+---
+
+# 📍 NIVEL 6c — TYPESCRIPT. Pasos 0 a 3 corridos. Costo del nivel: **$0,0061**.
+
+Sesión 24. Carpeta: `06c-typescript/`.
+
+## Por qué se llama 6c y no 6
+
+El plan decía `06-typescript/`. Se cambió a **`06c`** a petición del estudiante:
+después de `05b` y `06b`, una carpeta `06` a secas se lee como si fuera
+*anterior*, y el orden de las carpetas debe contar el orden real en que se hizo.
+
+## Antes de tocar código: las 4 capas de la web, explicadas
+
+La sesión empezó con dos dudas conceptuales, y valen la pena anotadas porque la
+segunda es **la confusión más común al llegar a la web**:
+
+1. **¿Backend en Python con FastAPI?** Sí. Y no es opcional: la API key **jamás**
+   puede estar en el frontend, porque todo lo que llega al navegador el usuario
+   lo puede leer. El agente vive en el servidor. FastAPI solo le pone una puerta
+   de entrada por internet a funciones de Python que ya existen.
+
+2. **TypeScript / React / Next.js / Tailwind.** No son cuatro opciones de una
+   lista: son **cuatro capas** que se usan a la vez.
+   - **TypeScript** = el idioma (el único de los cuatro que lo es).
+   - **React** = armar la pantalla por piezas reutilizables.
+   - **Next.js** = React **más** todo lo que le falta (rutas, servidor, build).
+     No es "React o Next": si usas Next, estás usando React.
+   - **Tailwind** = solo aspecto. Es la más opcional de las cuatro.
+
+   Y la duda que se resolvió de una vez: **Next.js sí puede hacer backend**,
+   pero para él la respuesta es quedarse con FastAPI, porque su agente está en
+   Python con 228 evals y un harness de 10 frenos. **Traducir código que ya
+   funciona y ya está medido es la peor apuesta que hay.**
+
+## Paso 0 — `00_hola.ts`: TypeScript no corre, se compila
+
+✅ **Corrido por el estudiante**, salida idéntica a la esperada
+(`Hola, Juan` + la línea del harness).
+
+### 🚨 El hallazgo del paso 0, que no estaba previsto
+
+Probando el ejercicio 1 —pasarle un número a una función que pide texto— salió
+el aviso esperado (`TS2345`). **Pero el programa corrió igual y imprimió
+`Hola, 42`.**
+
+`tsc` protestó **y aun así escribió el `.js`**. Node lo corrió sin chistar.
+
+La causa está a la vista en `dist/00_hola.js`: los tipos **no están**.
+`const nombre: string = "Juan"` quedó como `const nombre = "Juan"`. El traductor
+los leyó, avisó con ellos, y los borró.
+
+- 🔑 **Los tipos son para ti, no para la máquina.** Viven *antes* de correr.
+- 🔑 Y la lección que ya se repitió con los evals en verde y con el *"Anotado"*
+  sin anotar: **un aviso que no detiene nada es un aviso que se puede ignorar.**
+
+→ Arreglo medido: `noEmitOnError` en `tsconfig.json` deja el proyecto **sin
+`dist/`** cuando hay error. Quedó **comentada, como ejercicio 2**, para que él
+vea primero el problema.
+
+## Paso 1 — `01_tipos.ts`: los tipos, sobre las formas del agente
+
+✅ **Corrido por el estudiante**, salida idéntica a la esperada (6 líneas).
+
+Se enseñan sobre las formas que él ya escribía en Python como diccionarios
+sueltos (`Mensaje`, `Uso`), no con ejemplos de juguete.
+
+### El punto que carga el paso: la unión `"user" | "assistant"`
+
+No dice *"role es un texto"*: dice **qué valores son legales**, y no hay tercero.
+En Python `"assistnat"` era un string válido y el error llegaba como **400 de la
+API, después de pagar**. Aquí sale del traductor, gratis, y **medido** trae un
+regalo:
+
+```
+error TS2820: Type '"assistnat"' is not assignable to type '"assistant" | "user"'.
+              Did you mean '"assistant"'?
+```
+
+**El compilador corrige el typo.** Sabe cuáles son los valores posibles, así que
+puede adivinar cuál querías. Ningún error de la API da eso.
+
+- 🔑 **Un tipo no dice "de qué clase es el dato": dice qué valores son legales.**
+  Cuanto más estrecho, más errores atrapa gratis.
+
+### Los 3 errores verificados a mano antes de escribirlos en el README
+
+| Ejercicio | Error medido |
+|---|---|
+| 1 — typo en la unión | `TS2820` + *"Did you mean 'assistant'?"* |
+| 2 — `vueltas = "tres"` sin tipo escrito | `TS2322` (la deducción **sí** revisa) |
+| 4 — `Mensaje` sin `content` | `TS2741: Property 'content' is missing` |
+| 5 — lo mismo pero con `any` | **ningún error.** El typo pasa en silencio |
+
+## Paso 2 — `02_async.ts`: donde Python y TS de verdad se separan
+
+✅ Compila y corre limpio. **Pendiente de correr por el estudiante.**
+⏱️ Tarda ~7 s a propósito: está midiendo. **No llama a la API** — el clima es
+simulado, es la regla del 6b (*lo que puedas simular, no lo pagues*).
+
+**La idea:** en Python `client.messages.create(...)` **detiene** el programa. En
+JavaScript **nada bloquea nunca**: una función lenta devuelve un **recibo**
+(una promesa) en el acto. Es así porque JS nació en el navegador, donde
+congelarse habría congelado la página de verdad.
+
+### Los 3 hallazgos medidos
+
+**1. Olvidar `await` no da error.** Da esto, en silencio:
+
+```
+1. Sin await  →  [object Promise]
+```
+
+En un agente se ve como *"la respuesta llegó vacía"* o como `[object Promise]`
+metido en un prompt que sí se paga. Nadie avisa.
+
+**2. `Promise.all` — lo molesto se vuelve la ventaja.** Las mismas 3 llamadas:
+
+| | tiempo |
+|---|---|
+| En serie (lo que hace Python) | 3.024 ms |
+| En paralelo | 1.007 ms |
+| | **3,0x** |
+
+**3. 🚨 Un `try/catch` sin `await` adentro no protege nada** — y es peor que no
+atrapar: **mata el proceso entero**. El `try` cierra antes de que el error
+ocurra. Es la versión JavaScript del *"Anotado"* sin anotar: un freno que se ve
+puesto y no frena.
+
+### El error de montaje, que vale como lección
+
+El primer intento no compiló: `error TS2591: Cannot find name 'process'`.
+**TypeScript no sabe nada de Node por su cuenta** (el idioma nació en el
+navegador). Se agregó `"types": ["node"]` al `tsconfig.json`.
+📌 `@types/node` no es código: son **solo las descripciones de tipos** de cosas
+que ya existen.
+
+## Paso 3 — `03_primera_llamada.ts`: el primero que cuesta 💰
+
+✅ **Corrido por el estudiante.** Escrito y verificado **sin** llamar a la API;
+la única llamada del nivel fue la suya.
+
+| | |
+|---|---|
+| `stop_reason` | `end_turn` |
+| tokens | 53 entrada / **235 salida** |
+| costo | **$0,006140 USD** |
+
+El `for` con el estrechamiento funcionó a la primera: imprimió el texto limpio.
+
+Instalado: `@anthropic-ai/sdk` **0.115.0** y `dotenv`. Modelo `claude-opus-5`,
+`max_tokens: 2000`. Se consultó la referencia del SDK antes de escribir una
+línea, en vez de tirar de memoria.
+
+### La trampa de la ruta, que Python no tenía
+
+En Python el `.env` está **dos** niveles arriba (`parent.parent`). Aquí son
+**tres**, y la razón es la del paso 0: **este archivo no es el que corre.**
+
+```
+.ts  →  06c-typescript/03_primera_llamada.ts        ← lo que se escribe
+.js  →  06c-typescript/dist/03_primera_llamada.js   ← lo que CORRE
+```
+
+- 🔑 **En TypeScript la ruta se calcula desde donde corre el `.js`, no desde
+  donde vive el `.ts`.** Primera consecuencia práctica de que el idioma se
+  compile.
+
+### 🚨 El punto del paso: `content[0].text` NO COMPILA
+
+En Python se leía directo. Aquí, **medido**:
+
+```
+error TS2339: Property 'text' does not exist on type 'ContentBlock'.
+```
+
+Porque `content` **no es una lista de textos**: es una lista de **bloques**, y
+el SDK los declara como una unión —`TextBlock | ThinkingBlock | ToolUseBlock`—
+**la misma unión del paso 1, escrita por el SDK en vez de por él**. Hay que
+**estrechar** con `if (bloque.type === "text")`.
+
+Y TypeScript tiene razón, porque **ese bug le pasó de verdad**: nivel 1, sesión
+1, `max_tokens=30` con Opus, los 30 tokens se fueron en `thinking`, no hubo
+bloque `text`, y la pantalla salió vacía sin ningún error (L1.1, L1.2).
+
+- 🔑 **El aviso no es una molestia: es el bug del nivel 1, atrapado antes de
+  correr y antes de pagar.**
+
+El ejercicio 2 del paso lo revive a propósito (bajar `max_tokens` a 30).
+
+## ⚠️ SOSPECHA ABIERTA, SIN MEDIR: los 235 tokens de salida
+
+Dos frases costaron **235 tokens de salida**. Parece mucho.
+
+**Hipótesis:** Opus 5 **piensa por defecto**, y los tokens de `thinking` se
+facturan dentro de `output_tokens` aunque no se vean. Si es así, se pagaron
+~100 tokens de razonamiento invisible.
+
+🔴 **Es una sospecha, no una medición.** Queda escrita como tal justamente
+porque este curso ya mordió cuatro veces por escribir números salidos de la
+cabeza (el *"Haiku cuesta 5x menos"* del nivel 1, la fila inventada del nivel 2,
+el `~$0.02` del streaming del nivel 4, el costo del examen del 6b).
+
+**Cómo comprobarlo, y cuesta $0,00:** `count_tokens` sobre el texto que sí llegó.
+Si da ~135 y la API cobró 235, la diferencia queda con nombre y apellido. Es la
+misma jugada que ganó en el 6b, cuando `count_tokens` predijo los +849 tokens
+del menú de skills **antes** de gastar.
+
+## 🚨 SIGUIENTE PASO: **paso 4 — el bucle agéntico**
+
+Arranca midiendo el thinking invisible por $0,00 (arriba), y después el bucle
+con la herramienta del clima.
+
+El mapa del nivel está en `06c-typescript/README.md`.
+
+### Decisiones técnicas del nivel
+
+- `node_modules/` es el `.venv` de JavaScript, y aquí **sí es por proyecto**, no
+  compartido como el de Python. Es regla de `node`, no decisión nuestra.
+- `dist/` se agregó al `.gitignore`: **es resultado, no fuente.** Subirlo
+  permitiría que el `.js` y el `.ts` se contradigan.
+- Node v25.8.1, npm 11.11.0, TypeScript 7.0.2, `strict: true`.
 
 ---
 
