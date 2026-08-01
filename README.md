@@ -46,7 +46,7 @@ Cada nivel es una carpeta. Se hacen en orden.
 | 5 | `05-evaluacion/` | Medir si tu agente funciona | Evals deterministas, **rúbricas y LLM-as-judge**, defectos intermitentes, regresiones |
 | 5b | `05b-proyecto/` | **Proyecto integrador: agente de divisas y TRM**, desde un archivo vacío | Construir sin plantilla: harness + 5 herramientas + evals |
 | 6b | `06b-memoria-skills/` | Que tu agente **recuerde** y **sepa cosas** | Memoria persistente, **Skills** (habilidades cargadas a demanda) |
-| 6 | `06-typescript/` | Portar **tu** agente a TypeScript | El mismo modelo mental en otro lenguaje |
+| 6c | `06c-typescript/` | Portar **tu** agente a TypeScript | El mismo modelo mental en otro lenguaje |
 | 7 | `07-produccion/` | API web + frontend con el agente adentro | **Observabilidad**, auth, costos por usuario, despliegue |
 | 8 | `08-avanzado/` | Multi-agente: orquestador y workers | Orquestación, agentes programados, memoria y skills **compartidas** |
 | 📌 | `METODO.md` (raíz) | **Al terminar los 8:** el método destilado, para llevárselo a proyectos de verdad | — |
@@ -62,9 +62,11 @@ El detalle completo está en `PROGRESO.md`.
 > *este* curso. Meterlos en otro proyecto es pagar contexto por historia ajena.
 > **Lo reutilizable no son las piezas: es el criterio.**
 
-**Estado actual (2026-07-31):** niveles 0 a 5 cerrados, el 5b también, el
-**6b CERRADO** (sus 6 pasos, con sus 46 lecciones escritas), y el **6c
-(TypeScript) en curso** — 4 de 7 pasos, en `06c-typescript/`.
+**Estado actual (2026-08-01):** niveles 0 a 5 cerrados, el 5b también, el
+**6b CERRADO** (sus 6 pasos, con sus 46 lecciones escritas) y el **6c
+(TypeScript) CERRADO** — sus 7 pasos corridos y medidos, con las lecciones
+`L6c.1–L6c.29` escritas y `GUIDE.md` §13. Costó **$0,1084**.
+**Lo siguiente es el nivel 7.**
 
 El proyecto integrador está terminado: 6 herramientas, **121 evals que corren en
 $0,00**, un harness con 10 frenos, tres modelos comparados con datos, y una
@@ -89,7 +91,8 @@ encontró el hueco de *"¿usa lo que recordó?"*, hoy el criterio C9). Y las
 que carga a demanda. La prueba de que eso valía la pena: un error de $14 USD del
 agente se arregló **editando un `.md`, sin tocar una línea de Python**.
 
-**Lo siguiente es el nivel 6 (TypeScript)**, y después el 7.
+**Lo siguiente es el nivel 7** (producción: API web + frontend). El 6c
+(TypeScript) quedó cerrado en la sesión 28.
 
 Vamos avanzando de a uno: cuando termines uno, me dices y construimos el
 siguiente.

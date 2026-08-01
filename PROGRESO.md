@@ -3,15 +3,48 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-01 (sesión 27)
+**Última actualización:** 2026-08-01 (sesión 28)
 
 ---
 
-# 📍 NIVEL 6c — TYPESCRIPT. Pasos 0 a 5 corridos. Falta SOLO el paso 6 (lecciones).
+# 🚨 SIGUIENTE PASO: **EL NIVEL 7 — producción (API web + frontend)**
+
+El 6c quedó **CERRADO** en la sesión 28. No hay nada pendiente que bloquee. El
+nivel 7 es el que junta las cuatro capas de la web que se explicaron al abrir el
+6c: FastAPI en el servidor (la API key **jamás** llega al navegador) y
+TypeScript/React del lado de la pantalla.
+
+📌 Y sigue apartada, para **después del nivel 8**, la tarea de `METODO.md`.
+
+---
+
+# 🎓 NIVEL 6c — TYPESCRIPT. **CERRADO.** Los 7 pasos corridos y medidos.
 # Costo del nivel: **$0,1084**.
 
-Sesiones 24, 25, 26 y 27. Carpeta: `06c-typescript/`.
-La 25 no gastó nada; la 26 gastó **$0,0284**; la 27 gastó **$0,0739**.
+Sesiones 24, 25, 26, 27 y 28. Carpeta: `06c-typescript/`.
+La 25 no gastó nada; la 26 gastó **$0,0284**; la 27 gastó **$0,0739**;
+la **28 gastó $0,00** (el paso 6 es solo escritura).
+
+## Lo que se hizo en la sesión 28 — el paso 6, y con él el cierre
+
+- **`LESSONS.md`: bloque `L6c.1` a `L6c.29`**, destilado de los pasos 0 a 5 de
+  esta cabecera. Sin huecos, con el *porqué* y sin comandos.
+- **`GUIDE.md`: sección nueva §13 — TypeScript.** No tenía **nada** del idioma,
+  como se sospechaba. Ahora trae los comandos (`npm install` + `npx tsc` +
+  `node dist/...`), la tabla comparada con Python, el `tsconfig.json` real, la
+  ruta de **tres** niveles al `.env`, una **tabla propia de errores `TS####`**
+  (§13.e), el patrón de estrechar bloques, `leerCiudad` con la unión
+  discriminada, `as`, y los tres errores de `async`.
+  - Y se le puso el aviso a la tabla de errores del §3: **esa es de Python**;
+    los `TS####` están en §13.e.
+  - §1 (arrancar sesión) ahora dice que en el 6c **no se activa el `.venv`**.
+- ⚠️ **Se verificó el código antes de escribir la guía, no de memoria.** Dos
+  cosas no cuadraban con el borrador: `leerCiudad` **no usa** `as Record<...>`
+  (el `in` ya basta) y `noEmitOnError` está **comentado a propósito** en el
+  `tsconfig.json`, como ejercicio 2. Las dos se corrigieron antes de publicar.
+  Es L6c.29 aplicada al material mismo.
+- `README.md` de la raíz y del nivel actualizados: el 6c aparece **cerrado**, y
+  la fila del mapa decía `06-typescript/` cuando la carpeta es `06c-`.
 
 ## Por qué se llama 6c y no 6
 
@@ -456,12 +489,10 @@ la documentación oficial antes de corregir, no de memoria otra vez.
   nivel 2, el `~$0.02` del streaming, el docstring de `04_streaming.py`).
   **Tener mediciones viejas escritas es lo que hace que las mentiras nuevas se noten.**
 
-## 🚨 SIGUIENTE PASO: **paso 6 — las lecciones del 6c a `LESSONS.md`, y cerrar el nivel**
+## Paso 6 — ✅ **HECHO en la sesión 28.** El detalle está arriba, en la cabecera.
 
-Es el último paso del nivel y cuesta **$0,00**. Todo el material está arriba, en
-esta cabecera: los pasos 0–5 con sus hallazgos. Hay que convertirlo en bloque
-numerado `L6c.x` con el *porqué*, no con comandos, y revisar si `GUIDE.md` quedó
-desactualizado (probablemente sí: no tiene nada de `npx tsc` ni de `unknown`).
+`L6c.1`–`L6c.29` en `LESSONS.md` y la sección **§13 (TypeScript)** nueva en
+`GUIDE.md`. Costó **$0,00**.
 
 ### Deudas voluntarias que quedan (ninguna bloquea el cierre)
 

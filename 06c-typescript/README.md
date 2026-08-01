@@ -30,7 +30,9 @@ siguen en Python. TypeScript entra solo en la capa que el navegador exige.
 | **4b** | ¿De dónde salen los +5 tokens? Las tildes, medidas | ✅ **$0,00** |
 | **4c** | `as`: la puerta de atrás del idioma (ejercicio 3 del paso 4) | ✅ **$0,00** |
 | **5** | Los frenos, y medir: la unión discriminada + el sabotaje | ✅ **$0,0739** |
-| 6 | Las lecciones a `LESSONS.md` | $0,00 |
+| **6** | Las lecciones a `LESSONS.md` (**L6c.1–L6c.29**) y `GUIDE.md` §13 | ✅ **$0,00** |
+
+🎓 **NIVEL CERRADO** (sesión 28). Costo del nivel entero: **$0,1084**.
 
 Los tres primeros pasos **no gastan un centavo**: no hay API, solo idioma.
 

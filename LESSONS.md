@@ -2501,3 +2501,350 @@ entregó tramo, margen y cifra final.
 > ANTES de medir, o mañana leerás "subió el costo" y sacarás la conclusión
 > contraria.
 
+
+---
+
+## Nivel 6c — TypeScript
+
+> Sesiones 24 a 27. Carpeta `06c-typescript/`. Costo del nivel entero:
+> **$0,1084**.
+>
+> Este nivel **no trae conceptos nuevos de agentes**: traduce a otro idioma el
+> agente del nivel 3, que ya funcionaba. Por eso casi todas las lecciones son
+> comparaciones — *lo mismo, pero aquí pasa así* — y por eso muchas rescatan
+> bugs viejos de Python que el compilador atrapa **antes de correr y antes de
+> pagar**.
+
+### L6c.1 — TypeScript no corre: se compila. Hay dos archivos, no uno
+
+El `.ts` es lo que escribes. El `.js` de `dist/` es **lo que corre**. Node no
+entiende TypeScript; entiende lo que `tsc` escribió a partir de él.
+
+Todo lo raro de este nivel sale de ahí: la ruta al `.env`, los tipos que
+desaparecen, los avisos que no detienen nada.
+
+> **En Python el archivo que abres es el que corre. Aquí no.**
+
+### L6c.2 — Los tipos son para ti, no para la máquina
+
+`const nombre: string = "Juan"` quedó en el `.js` como `const nombre = "Juan"`.
+Los tipos **no están** en lo que corre. El traductor los leyó, avisó con ellos,
+y los borró.
+
+Los comentarios sí sobreviven a la traducción. Los tipos no.
+
+> Un tipo vive **antes** de correr. Después no existe nadie que lo haga cumplir.
+
+### L6c.3 — Un aviso que no detiene nada es un aviso que se puede ignorar
+
+Pasarle un número a una función que pedía texto dio `TS2345`... **y el programa
+imprimió `Hola, 42` igual.** `tsc` protestó y aun así escribió el `.js`.
+
+El arreglo es `noEmitOnError` en `tsconfig.json`: con un error, no hay `dist/`.
+
+> Es el eval en verde del 6b y el *"Anotado"* sin anotar, otra vez. **Un freno
+> que solo habla no es un freno.**
+
+### L6c.4 — Un tipo no dice de qué CLASE es el dato: dice qué VALORES son legales
+
+`role: "user" | "assistant"` no dice *"role es un texto"*. Dice que hay dos
+valores y no hay tercero. Y por saberlo, el compilador puede hacer algo que
+ningún error de la API hace:
+
+```
+error TS2820: Type '"assistnat"' is not assignable to type '"assistant" | "user"'.
+              Did you mean '"assistant"'?
+```
+
+**Corrige el typo.** En Python ese mismo typo era un string válido y el error
+llegaba como un 400, después de pagar.
+
+> Cuanto más **estrecho** el tipo, más errores atrapa gratis.
+
+### L6c.5 — `any` no es "no sé qué tipo es": es "no revises nada"
+
+Al mismo objeto al que le faltaba una llave obligatoria: con el tipo escrito,
+`TS2741: Property 'content' is missing`. Con `any`, **ningún error**. El typo
+pasa en silencio hasta la API.
+
+> `any` no ahorra trabajo: lo aplaza y lo encarece.
+
+### L6c.6 — En JavaScript nada bloquea nunca. Una función lenta devuelve un recibo
+
+En Python `client.messages.create(...)` **detiene** el programa hasta que llega
+la respuesta. En JavaScript devuelve en el acto una **promesa**: un recibo que
+dice *"esto llegará"*.
+
+No es un capricho del idioma. JS nació dentro del navegador, donde detener el
+programa habría congelado la página delante del usuario.
+
+> `await` es *"aquí sí espérame"*. Es la excepción, no la regla.
+
+### L6c.7 — Olvidar un `await` no da error: da `[object Promise]`
+
+```
+1. Sin await  →  [object Promise]
+```
+
+Nadie avisa. En un agente se ve como *"la respuesta llegó vacía"*, o peor: como
+`[object Promise]` metido dentro de un prompt que **sí se paga**.
+
+> El fallo más caro no es el que revienta: es el que sigue corriendo con basura
+> adentro.
+
+### L6c.8 — Lo molesto se convierte en la ventaja: `Promise.all`
+
+Las mismas 3 llamadas lentas:
+
+| | tiempo |
+|---|---|
+| en serie (lo que hace Python) | 3.024 ms |
+| en paralelo (`Promise.all`) | 1.007 ms |
+| | **3,0x** |
+
+Tener que pensar en promesas es el precio; poder lanzar tres cosas a la vez sin
+esfuerzo es lo que compras con él.
+
+> Un agente que consulta tres herramientas independientes no tiene por qué
+> consultarlas de a una.
+
+### L6c.9 — Un `try/catch` sin `await` adentro no protege nada — y además mata el proceso
+
+El `try` termina **antes** de que el error ocurra, porque lo que hay dentro solo
+dejó un recibo. Cuando el error llega, ya no hay nadie atrapándolo, y no es que
+se escape: **tumba el proceso entero**.
+
+> Otra vez el freno que se ve puesto y no frena. **Un `catch` alrededor de una
+> promesa sin `await` es decoración.**
+
+### L6c.10 — TypeScript no sabe nada de Node por su cuenta
+
+`error TS2591: Cannot find name 'process'`. El idioma nació en el navegador: ahí
+no existen `process`, ni archivos, ni carpetas. Hay que decirle que va a correr
+en Node (`"types": ["node"]`).
+
+📌 `@types/node` **no es código**: son solo las descripciones de tipos de cosas
+que ya existen.
+
+> Los tipos y el código son dos paquetes distintos, y a veces se instalan aparte.
+
+### L6c.11 — La ruta se calcula desde donde corre el `.js`, no desde donde vive el `.ts`
+
+En Python el `.env` estaba **dos** niveles arriba. Aquí son **tres**, porque el
+archivo que corre está dentro de `dist/`.
+
+> Primera consecuencia práctica de L6c.1, y la primera que hace perder media
+> hora. Si una ruta relativa falla, pregunta **quién** la está resolviendo.
+
+### L6c.12 — `content` no es una lista de textos: es una lista de bloques, y por eso `content[0].text` no compila
+
+```
+error TS2339: Property 'text' does not exist on type 'ContentBlock'.
+```
+
+El SDK declara `TextBlock | ThinkingBlock | ToolUseBlock` — la misma unión de
+L6c.4, escrita por la librería. Hay que **estrechar** con
+`if (bloque.type === "text")`.
+
+Y el compilador tiene razón, porque **ese bug ya pasó**: nivel 1, `max_tokens=30`
+con Opus, los 30 tokens se fueron en el bloque `thinking`, no hubo bloque `text`,
+y la pantalla salió vacía sin ningún error (L1.1, L1.2).
+
+> El aviso no es una molestia: es el bug del nivel 1 atrapado **antes de correr
+> y antes de pagar**.
+
+### L6c.13 — Opus 5 piensa por defecto, y ese pensamiento invisible se cobra
+
+Omitir el parámetro `thinking` **no lo apaga** (equivale a `adaptive`) — es un
+cambio respecto a Opus 4.8/4.7. Y `display` vale `"omitted"` por defecto: el
+bloque llega, pero vacío. Está ahí, callado y cobrado.
+
+Medido con `count_tokens`, gratis:
+
+| | tokens |
+|---|---|
+| texto que se vio | ~176 |
+| cobrado | **235** |
+| **pensamiento invisible** | **~59 (25% de la factura)** |
+
+🚨 Y la consecuencia práctica: **`max_tokens` es el techo de pensamiento +
+respuesta juntos.** Ajustarlo al tamaño de la respuesta esperada corta el texto
+a mitad de frase.
+
+> Es L1.1 con otra cara — y ahora se sabe *por qué* pasó.
+
+### L6c.14 — La documentación da el mecanismo; la magnitud solo sale al medir
+
+La referencia del SDK explicó correctamente **qué** pasaba con el thinking. El
+**cuánto** no estaba ahí, y el número que puse de mi cabeza (~100) resultó ser
+casi el doble del real (59).
+
+> Consultar la documentación no reemplaza correr el experimento. Responden a
+> preguntas distintas.
+
+### L6c.15 — Marcar algo como sospecha es lo que evita que alguien construya encima
+
+La hipótesis del thinking acertó; mi número falló. **No hizo daño**, y la razón
+es que estaba escrito como *sospecha*, no como dato.
+
+> **Un número escrito en el material tiene que venir de una corrida, o venir
+> marcado como estimación.** Marcarlo salva; afirmarlo cuesta.
+
+### L6c.16 — `unknown` no es `any`
+
+El SDK declara `input: unknown` en el bloque `tool_use`, y leerlo directo no
+compila: `TS18046: 'bloque.input' is of type 'unknown'`.
+
+- `any` dice *"no revises nada"* → deja pasar en silencio.
+- `unknown` dice *"hay algo y no sé qué es"* → **frena hasta que compruebes**.
+
+Comparado con `TS2339` del paso 3, es otro grado de ignorancia: allá el
+compilador sabía qué había y sabía que `.text` faltaba; aquí no sabe ni qué hay.
+
+> El tipo correcto para lo que viene de afuera es el que **obliga** a mirar.
+
+### L6c.17 — Los tipos protegen lo que TÚ escribes. Donde entra algo de afuera, se acaban
+
+El modelo, un archivo, internet: ahí los tipos no alcanzan y empieza la
+comprobación **en tiempo de ejecución**. Que es exactamente lo que hacen los 10
+frenos de `herramientas.py` del 5b.
+
+> La novedad no es la idea: es que **el compilador no te deja olvidarla**.
+
+### L6c.18 — `as` no comprueba, no convierte, no existe
+
+`(input as { ciudad: string }).ciudad` quedó en el `.js` compilado como
+`return input.ciudad;`. El `as` **no está**. Lo único que hace es callar al
+compilador. (Detalle bonito: la única vez que aparece `ciudad: string` en el
+`.js` es dentro de un comentario.)
+
+Contra los 4 `input` que el modelo puede mandar: la función que comprueba acertó
+**4 de 4**; el `as`, **1 de 4** — y ninguna de las dos dio un aviso al compilar.
+
+- 🔑 **El daño de `as` no es que falle: es DÓNDE falla.** Miente en un sitio y
+  revienta en otro, lejos, con un error que no menciona la causa.
+- 🔑 **Cuándo sí:** cuando el dato es tuyo y sabes algo que el compilador no
+  puede saber. **Nunca** sobre lo que escribió el modelo, un archivo o internet.
+
+### L6c.19 — Un `null` aplasta tres motivos distintos en uno. La unión discriminada los guarda
+
+```ts
+type Lectura =
+  | { ok: true;  ciudad: string }
+  | { ok: false; error: string };
+```
+
+La función *sabía* cuál de los tres `if` había fallado, y con `string | null`
+tiraba ese dato a la basura — dejando al bucle inventarse un mensaje genérico.
+
+> Si tu función descubre algo y devuelve menos de lo que descubrió, ese trabajo
+> lo va a repetir alguien más arriba. O nadie.
+
+### L6c.20 — Un buen mensaje de error nombra el error Y nombra el arreglo
+
+*"le diría que la llave se llama `ciudad`, no `ciuadd`"*. **Son dos datos, no
+uno**, y el segundo no cabía en la función vieja: había que leer
+`Object.keys(input)`, que estaba ahí gratis y nadie miraba.
+
+Cada vuelta que el modelo gasta adivinando la paga el dueño del agente.
+
+> **Un mensaje de error solo puede ser tan bueno como lo que tu código se
+> molestó en mirar.**
+
+### L6c.21 — No se puede olvidar el caso malo: el freno lo pone el idioma, no la disciplina
+
+`leerCiudad(x).ciudad` directo **no compila**. Con la unión discriminada, TS
+obliga a preguntar `if (lectura.ok)` antes de leer nada.
+
+> En Python olvidarse del caso malo es un descuido. Aquí es imposible. **Esa es
+> la diferencia que se compra con los tipos.**
+
+### L6c.22 — El mensaje de error es código también, y puede tener el mismo bug del que protege
+
+`null` producía *"esperaba un objeto y llegó un object"*, porque
+**`typeof null === "object"`**. El comentario del freno anunciaba la trampa y el
+mensaje la olvidaba.
+
+Salió de **probar** los frenos con 7 casos sin API, no de leerlos.
+
+> Nadie prueba los mensajes de error. Por eso mienten.
+
+### L6c.23 — Un candado solo se sabe que sirve rompiéndolo a propósito
+
+En dos días de corridas normales el freno **nunca disparó**: el modelo mandó la
+llave correcta las 3 veces. Con `SABOTEAR = true` renombrando la llave a
+`ciuadd`, el patrón fue el mismo en las tres preguntas: `tool_use` → **error** →
+`tool_use` correcto → `end_turn`. Nunca se cayó, nunca inventó un dato.
+
+> Un freno que nunca disparó no está demostrado: está **sin probar**. Sabotéalo
+> tú, que es barato, antes de que lo sabotee la producción.
+
+### L6c.24 — 🚨 Un error no se paga una vez: se paga en CADA vuelta posterior
+
+| | limpio | saboteado | dif |
+|---|---|---|---|
+| vueltas | 6 | **9** | +3 |
+| entrada | 3.030 | **5.165** | +70% |
+| costo | $0,027825 | **$0,046050** | **+65%** |
+
+La vuelta 3 de Medellín pagó más tokens de entrada que **cualquier** vuelta de
+la corrida limpia, porque el historial **todavía lleva adentro el intento
+fallido**: el `ciuadd`, el mensaje de error, la disculpa. Todo eso vuelve a
+entrar y se vuelve a pagar.
+
+> En un agente, un error no es un evento: es **peso permanente en el historial**.
+> Por eso el mensaje bueno de L6c.20 se paga solo.
+
+### L6c.25 — El texto del menú de herramientas se paga en cada vuelta
+
+Las tildes del menú costaron +2 tokens, y cada pregunta +3. Total **+5 sobre 457:
+un 1,1%**, $0,00008 en la corrida entera. El hallazgo no es ese.
+
+El hallazgo es que **la descripción de las herramientas entra completa en cada
+vuelta**. Con 3 ciudades da igual; con 20 herramientas de tres párrafos en un
+agente de 8 vueltas, es una **factura recurrente**. *Eso* es decisión de
+ingeniería. Las tildes no.
+
+Y de paso: **una tilde no cuesta un token**. Tres sitios cambiados dieron +2, dos
+sitios dieron +3. Depende de cómo el tokenizador parta la palabra.
+
+> El conteo se mide, no se deduce.
+
+### L6c.26 — Un hallazgo del 1% se cierra, no se actúa
+
+Saber de dónde salen los +5 vale mucho. Cambiar el código por $0,00008 no vale
+nada — y el nivel 5 ya midió que escribir mal el prompt **empeora la respuesta**
+(rioplatense, tú/usted mezclado). Ahorrar el 1% pagándolo en calidad es mal
+negocio.
+
+> Entender por qué pasa algo y decidir hacer algo al respecto son dos decisiones
+> separadas. La segunda casi siempre es "no".
+
+### L6c.27 — El idioma no cambia la factura
+
+Mismo agente, mismas 3 preguntas, Python contra TypeScript: 3.062 vs 3.050
+tokens de entrada, ~$0,030 vs $0,028.
+
+> **Los tokens los cuenta la API, no `tsc` ni Python.** Cambiar de lenguaje no
+> es una optimización de costo.
+
+### L6c.28 — Contar es determinista; generar no
+
+Las vueltas 1 dieron **exactamente** los mismos tokens de entrada en las dos
+corridas (457 / 463 / 457), porque la entrada era idéntica. Las vueltas 2
+cambiaron, porque ahí entra lo que el modelo dijo antes.
+
+> En un agente, la parte reproducible se acaba en la primera vuelta. Eso decide
+> qué se puede comparar directamente y qué hay que correr N veces.
+
+### L6c.29 — Precios escritos de memoria: quinta vez, y así se cazó
+
+`05_frenos.ts` salió con `$15/$75` por millón; Opus 5 cuesta **$5/$25**. La
+primera corrida imprimió $0,083475 cuando el costo real era $0,027825.
+
+**Se cazó porque no cuadraba con un número que SÍ estaba medido:** el paso 4 dio
+$0,028375 con 3.050/525, y esa cuenta solo cierra con 5 y 25. Se verificó contra
+la documentación oficial antes de corregir — no de memoria otra vez.
+
+> **Tener mediciones viejas escritas es lo que hace que las mentiras nuevas se
+> noten.** La bitácora no es archivo muerto: es el detector.

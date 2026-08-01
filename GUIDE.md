@@ -30,6 +30,9 @@ cd 01-primera-llamada
 python 01_hola_claude.py
 ```
 
+📌 **En el nivel 6c (TypeScript) no se activa el `.venv`**: eso es de Python.
+Ahí son otros dos comandos, y son dos siempre. Ver **§13.b**.
+
 ---
 
 ## 2. Mapa de archivos de la raíz
@@ -57,6 +60,9 @@ llaves, datos de usuarios y cualquier memoria persistente.
 ---
 
 ## 3. Errores comunes y cómo salir de ellos
+
+> Esta tabla es de **Python**. Los errores de TypeScript (los que empiezan por
+> `TS####`) tienen su propia tabla en **§13.e**.
 
 | Lo que ves | Qué pasó | Solución |
 |---|---|---|
@@ -1850,3 +1856,214 @@ otra cosa, y su rótulo llegó a llamar "🚨 inventó algo" a un acierto.
 
 > **Una medición no vale sola: vale contra la configuración con la que se tomó.**
 
+
+---
+
+## 13. TypeScript (nivel 6c)
+
+> El agente en TypeScript **no es otro agente**: es el del nivel 3 traducido.
+> Lo que cambia es el idioma y el montaje, no las ideas. El *por qué* de todo
+> esto está en `LESSONS.md`, bloque `L6c.x`.
+
+### 13.a Lo primero que hay que tener en la cabeza
+
+**TypeScript no corre: se compila.** Hay dos archivos y solo uno de ellos se
+ejecuta:
+
+```
+06c-typescript/04_bucle.ts        ← lo que escribes
+06c-typescript/dist/04_bucle.js   ← lo que CORRE (lo escribe tsc)
+```
+
+De ahí salen las tres sorpresas del nivel: la ruta al `.env`, los tipos que
+desaparecen del `.js`, y los avisos que no detienen nada.
+
+### 13.b Comandos
+
+Desde `06c-typescript/`. **No hace falta activar el `.venv`**: eso es de Python.
+
+```powershell
+cd C:\Users\USUARIO\Documents\Company_TripleS\Edu_TripleS\06c-typescript
+
+npm install                    # una sola vez: crea node_modules/
+npx tsc                        # traduce TODOS los .ts a dist/*.js
+node dist/04_bucle.js          # corre
+```
+
+Dos pasos siempre, en ese orden. **Si corres sin compilar, corres el `.js`
+viejo** — y no hay ningún aviso de que lo estás haciendo.
+
+| | Python | TypeScript |
+|---|---|---|
+| librerías | `.venv/`, **compartido en la raíz** | `node_modules/`, **por proyecto** |
+| instalar | `pip install -r requirements.txt` | `npm install` |
+| lista | `requirements.txt` | `package.json` |
+| correr | `python 01_x.py` | `npx tsc` **y** `node dist/01_x.js` |
+
+`node_modules/` es por proyecto porque lo manda `node`, no porque lo
+decidiéramos nosotros. `dist/` está en `.gitignore`: **es resultado, no fuente**.
+
+### 13.c `tsconfig.json` — las cuatro líneas que importan
+
+```jsonc
+{
+  "compilerOptions": {
+    "target": "ES2022",      // a qué JavaScript traducir
+    "module": "commonjs",    // por eso funciona __dirname (§13.d)
+    "strict": true,          // sin esto, TypeScript casi no revisa nada
+    "types": ["node"],       // sin esto: "Cannot find name 'process'"
+    "outDir": "dist",        // dónde deja el .js. Nunca se edita a mano
+    "sourceMap": true
+    // ,"noEmitOnError": true
+  },
+  "include": ["*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+⚠️ **`noEmitOnError` viene apagado por defecto**, y sin él `tsc` protesta y
+escribe el `.js` igual: el programa corre roto con un aviso que nadie leyó.
+📌 En este repo está **comentado a propósito**, como ejercicio 2 del paso 0 —
+para ver primero el problema. En un proyecto de verdad, se enciende.
+
+📌 `@types/node` no es código: son **solo las descripciones de tipos** de cosas
+que ya existen. TypeScript nació en el navegador y no sabe nada de Node por su
+cuenta.
+
+### 13.d La ruta al `.env`: **tres** niveles, no dos
+
+```ts
+import path from "path";
+import { config } from "dotenv";
+
+// TRES niveles: este archivo corre desde dist/, no desde donde vive el .ts.
+config({ path: path.resolve(__dirname, "..", "..", ".env") });
+```
+
+En Python son dos (`parent.parent`). Aquí son tres por 13.a.
+
+### 13.e Errores del compilador y qué significan
+
+| Lo que ves | Qué pasó | Solución |
+|---|---|---|
+| `TS2591: Cannot find name 'process'` | TS no sabe que corres en Node | `"types": ["node"]` en `tsconfig.json` |
+| `TS2820: ... Did you mean 'assistant'?` | Typo en un valor de una unión. **Y te dice cuál era** | Cópiale la sugerencia |
+| `TS2322: Type 'string' is not assignable to 'number'` | La deducción también revisa, aunque no escribas el tipo | Corrige el valor |
+| `TS2741: Property 'content' is missing` | Falta una llave obligatoria del tipo | Agrégala |
+| `TS2345: Argument of type 'number' ... 'string'` | Le pasaste el tipo equivocado a una función | Corrige la llamada |
+| `TS2339: Property 'text' does not exist on type 'ContentBlock'` | `content` es una lista de **bloques**, no de textos | Estrecha con `if (bloque.type === "text")` (§13.f) |
+| `TS18046: 'bloque.input' is of type 'unknown'` | Lo que mandó el modelo no tiene tipo conocido | Comprueba en tiempo de ejecución (§13.g) |
+| **Compila, corre, e imprime basura** | Falta un `await`, o `noEmitOnError` está apagado | §13.h |
+
+### 13.f Leer la respuesta: `content[0].text` NO COMPILA
+
+`content` es una unión: `TextBlock | ThinkingBlock | ToolUseBlock`. Hay que
+**estrechar** — preguntar de qué tipo es cada bloque antes de leerlo:
+
+```ts
+for (const bloque of respuesta.content) {
+  if (bloque.type === "text") {
+    console.log(bloque.text);          // aquí TS ya sabe que hay .text
+  } else if (bloque.type === "tool_use") {
+    // bloque.name, bloque.id, bloque.input
+  }
+}
+```
+
+Es la misma regla del §4 de Python (*filtra por tipo, nunca asumas `[0]`*), con
+la diferencia de que aquí **el compilador no te deja saltártela**.
+
+### 13.g Lo que manda el modelo llega como `unknown`. Compruébalo
+
+`input: unknown` no se puede leer directo. Y el patrón bueno **no devuelve
+`null`**: devuelve una unión discriminada, para no tirar a la basura el motivo
+del fallo.
+
+```ts
+type Lectura =
+  | { ok: true;  ciudad: string }
+  | { ok: false; error: string };
+
+function leerCiudad(input: unknown): Lectura {
+  // 1) ¿es un objeto? ⚠️ typeof null === "object": el null NO sobra
+  if (typeof input !== "object" || input === null) {
+    return { ok: false, error: `esperaba un objeto y llegó ${describir(input)}` };
+  }
+  // 2) ¿tiene la llave? Y si no, DI CUÁLES llegaron: el dato está gratis
+  if (!("ciudad" in input)) {
+    const llaves = Object.keys(input);
+    if (llaves.length === 0) {
+      return { ok: false, error: `falta la llave "ciudad". Llegó un objeto vacío.` };
+    }
+    return { ok: false, error: `falta la llave "ciudad". Llegó: ${llaves.join(", ")}` };
+  }
+  // 3) ¿el valor es texto?  Fíjate: NO hay `as`. El `in` de arriba ya le
+  //    enseñó a TS que la llave existe, y su valor vale `unknown`.
+  const valor: unknown = input.ciudad;
+  if (typeof valor !== "string") {
+    return { ok: false, error: `"ciudad" debe ser texto, llegó ${describir(valor)}` };
+  }
+  return { ok: true, ciudad: valor };
+}
+```
+
+Y en el bucle, **no se puede olvidar el caso malo**: `leerCiudad(x).ciudad`
+directo no compila.
+
+```ts
+const lectura = leerCiudad(bloque.input);
+const resultado = lectura.ok ? obtenerClima(lectura.ciudad) : lectura.error;
+```
+
+⚠️ **El mensaje de error es código también**: pruébalo. Los 7 casos del paso 5
+se corrieron **sin API, $0,00**, y ahí salió que `null` decía *"llegó un
+object"*.
+
+### 13.h `as` — la puerta trasera. Qué hace de verdad: **nada**
+
+```ts
+(input as { ciudad: string }).ciudad   // ← en el .js queda: input.ciudad
+```
+
+No comprueba, no convierte, **no existe** después de compilar. Lo único que
+hace es callar al compilador. Medido con los 4 `input` posibles: comprobando,
+4 de 4; con `as`, 1 de 4.
+
+> **Nunca uses `as` sobre lo que escribió el modelo, un archivo o internet.**
+> Solo cuando el dato es tuyo y sabes algo que el compilador no puede saber.
+
+### 13.i `async` / `await` — los tres errores que no avisan
+
+En JavaScript **nada bloquea**: una función lenta devuelve una promesa (un
+recibo) en el acto.
+
+**1. Sin `await`, no hay error. Hay basura:**
+
+```ts
+const r = pedirClima("Bogotá");      // → [object Promise]
+const r = await pedirClima("Bogotá"); // → el dato
+```
+
+Si esa basura entra en un prompt, **se paga**.
+
+**2. Un `try/catch` sin `await` adentro no protege nada** — y encima tumba el
+proceso, porque el `try` ya cerró cuando el error llega:
+
+```ts
+try { await puedeFallar(); } catch (e) { /* ahora sí atrapa */ }
+```
+
+**3. Tres llamadas independientes no se piden de a una:**
+
+```ts
+const [a, b, c] = await Promise.all([f("A"), f("B"), f("C")]);  // 3,0x medido
+```
+
+### 13.j Precios: los mismos, y se copian de la documentación
+
+**El idioma no cambia la factura.** Mismo agente, Python vs TypeScript: 3.062 vs
+3.050 tokens de entrada. Los tokens los cuenta la API.
+
+⚠️ Opus 5: **$5 / $25** por millón (entrada / salida). Ver §5. Escribirlos de
+memoria ya salió mal cinco veces en el curso — **cópialos de la documentación
+oficial o de una corrida vieja, nunca de la cabeza.**
