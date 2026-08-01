@@ -26,7 +26,8 @@ siguen en Python. TypeScript entra solo en la capa que el navegador exige.
 | **2** | `async`/`await` y las promesas | ✅ **$0,00** |
 | **3** | El SDK de Anthropic en TS: primera llamada | 💰 centavos |
 | **3b** | ¿A dónde se fue la factura? El thinking invisible | ✅ **$0,00** |
-| 4 | La herramienta del clima y el bucle agéntico | centavos |
+| **4** | La herramienta del clima y el bucle agéntico | ✅ **$0,0284** |
+| **4b** | ¿De dónde salen los +5 tokens? Las tildes, medidas | ✅ **$0,00** |
 | 5 | Los frenos, y medir | centavos |
 | 6 | Las lecciones a `LESSONS.md` | $0,00 |
 
@@ -845,3 +846,282 @@ node dist/03b_thinking.js
   esperada corta el texto.
 - **La documentación da el mecanismo; solo medir da la magnitud.** La referencia
   del SDK acertó en *qué* pasaba. El *cuánto* (59, no ~100) solo salió al medir.
+
+---
+
+# Paso 4 — El bucle agéntico 💰
+
+Archivo: `04_bucle.ts`
+
+Es tu `03-primer-agente/02_bucle.py` del nivel 3, dicho en TypeScript. **Misma
+herramienta, mismas 3 preguntas, misma lógica.** Ponlos lado a lado: son el
+mismo programa.
+
+> ⚠️ **Se escribió a mano a propósito.** El SDK trae un `toolRunner` que hace el
+> bucle solo — pero está en beta, y sobre todo: si nunca escribiste el bucle, no
+> tienes con qué diagnosticar el día que se porte raro. Es la misma razón por la
+> que aquí escribiste los evals a mano antes de tocar una librería.
+
+## El bucle, en 3 movimientos (idénticos a los de Python)
+
+```
+vuelta 1 → stop_reason = "tool_use"    el modelo PIDE
+           ...corre TU código...
+vuelta 2 → stop_reason = "end_turn"    el modelo RESPONDE con el dato
+```
+
+Y las tres reglas del nivel 3 siguen intactas:
+
+1. **Guarda `respuesta.content` ENTERO** en el historial. Si le quitas los
+   bloques `tool_use`, la API rechaza el mensaje siguiente. Y desde el paso 3b
+   sabes que ahí viaja también un bloque `thinking` invisible — que también hay
+   que devolver.
+2. **Cada resultado lleva su `tool_use_id`.** Es el ticket.
+3. **Todos los resultados van en UN solo mensaje**, con `role: "user"` — aunque
+   no los escribiste tú. Para la API, todo lo que *entra* al modelo es `user`.
+
+## 🚨 Lo nuevo: `input` es de tipo `unknown`
+
+En Python leías el parámetro directo:
+
+```python
+funcion(**bloque.input)      # bloque.input era un diccionario, y ya
+```
+
+En TypeScript, el SDK declara el bloque así:
+
+```typescript
+interface ToolUseBlock {
+  id: string;
+  name: string;
+  input: unknown;      // 🚨 aquí
+  type: "tool_use";
+}
+```
+
+Y esa línea **no compila**. Medido:
+
+```
+error TS18046: 'bloque.input' is of type 'unknown'.
+```
+
+### `unknown` no es `any`
+
+Ya conociste `any` en el paso 1: decía *"no revises nada aquí"*. Apagaba el
+idioma. `unknown` dice algo distinto y más honesto:
+
+> **"aquí hay un dato y NO SÉ QUÉ ES."**
+
+Y no te deja tocarlo hasta que compruebes qué es. `any` te deja pasar en
+silencio; `unknown` te frena.
+
+Compara los dos errores que llevas medidos:
+
+| Paso | Error | Lo que sabía el compilador |
+|---|---|---|
+| 3 | `TS2339: Property 'text' does not exist` | Sabía qué había, y que `.text` no estaba |
+| 4 | `TS18046: is of type 'unknown'` | **No sabe ni qué hay** |
+
+### ¿Por qué tiene razón?
+
+Porque `input` **lo escribió el modelo, no tú**. Tu `input_schema` es una
+*petición*, no una garantía. Puede llegar `{}`. Puede llegar `{"ciudad": 42}`.
+Puede llegar `{"ciuadd": "Bogotá"}` con el typo del modelo.
+
+> ### 🔑 Los tipos protegen lo que TÚ escribes.
+> Donde entra algo del mundo —el modelo, un archivo, internet— los tipos se
+> acaban, y empieza la comprobación **en tiempo de ejecución**.
+
+Y eso ya lo sabías hacer: son tus **10 frenos** de `herramientas.py` en el nivel
+5b. La novedad no es la idea. Es que aquí **el compilador no te deja olvidarla**.
+
+### Comprobar de verdad: 3 preguntas
+
+```typescript
+function leerCiudad(input: unknown): string | null {
+  if (typeof input !== "object" || input === null) return null;  // 1. ¿objeto?
+  if (!("ciudad" in input)) return null;                          // 2. ¿la llave?
+  const valor = (input as Record<string, unknown>).ciudad;
+  if (typeof valor !== "string") return null;                     // 3. ¿texto?
+  return valor;
+}
+```
+
+⚠️ El `input === null` no sobra: en JavaScript `typeof null` es `"object"`.
+Es un defecto famoso del idioma, de 1995, que nadie se atrevió a arreglar.
+
+Y si devuelve `null`, el agente **no se cae**: le manda al modelo un mensaje de
+error que puede leer. Es la lección del nivel 5b otra vez — *el mensaje de error
+es la instrucción de reintento que le das al agente*.
+
+## Cómo correr esto
+
+```powershell
+npx tsc
+node dist/04_bucle.js
+```
+
+💰 **Este gasta**: 3 preguntas × 2 llamadas, con Opus 5. Unos centavos.
+
+Debes ver, por cada pregunta, dos líneas `[vuelta N]` y en medio el `→ ejecuté`.
+La tercera pregunta (Tokio) no está en el diccionario: mira **qué hace el agente
+con el error** en vez de morirse.
+
+## Ejercicios del paso 4
+
+1. **Rompe el `unknown`.** Descomenta la línea del punto 3 y compila. Lee el
+   `TS18046`. Compáralo con el `TS2339` del paso 3: ¿qué sabe el compilador en
+   cada caso, y qué no?
+2. **Fuerza la basura.** Cambia `leerCiudad` para que devuelva siempre `null`.
+   Corre. ¿Se cae el agente? ¿Qué hace el modelo cuando lee ese error? ¿Vuelve a
+   intentar, se rinde, o inventa? *(Cuesta unos centavos y enseña mucho.)*
+3. **Quita el freno.** Cambia `leerCiudad(bloque.input)` por
+   `(bloque.input as { ciudad: string }).ciudad`. **Compila** — el `as` es la
+   otra puerta de atrás del idioma. Pregúntate: ¿qué pasa el día que el modelo
+   mande `{}`? *(Este es el ejercicio importante del paso.)*
+4. **Cuenta las llamadas.** Suma los tokens de las 6 vueltas y compáralo con lo
+   que te costó el paso 3 (una sola llamada, 53 in / 235 out). ¿Cuántas veces
+   más caro es un agente que un chat?
+5. **Añade una ciudad** al diccionario y pregunta por ella. Fíjate en que **no
+   tocaste el bucle**: el bucle no cambia, cambian las herramientas.
+6. **Baja `maxVueltas` a 1** y corre. ¿Qué devuelve? ¿Por qué ese límite no es
+   un adorno?
+
+---
+
+## Lo que ya sabes del paso 4
+
+- **El bucle agéntico es el mismo en los dos idiomas**: pedir → ejecutar →
+  devolver con `tool_use_id` → repetir, guardando `content` entero.
+- **`input` llega como `unknown`**, porque lo escribe el modelo, no tú.
+- **`unknown` ≠ `any`.** `any` apaga el idioma en silencio; `unknown` te obliga
+  a comprobar antes de tocar.
+- **Los tipos se acaban en las fronteras.** Lo que entra de afuera se valida en
+  tiempo de ejecución — que es justo lo que hacen tus frenos del 5b.
+- **Un error de herramienta se devuelve como texto, no como excepción.** Un
+  agente que lanza excepciones se muere; uno que devuelve texto se recupera.
+
+---
+
+# Paso 4b — ¿De dónde salen los +5 tokens? ✅ $0,00
+
+Archivo: `04b_tildes.ts`
+
+## La corrida real del paso 4
+
+| | |
+|---|---|
+| entrada | **3.050** tokens |
+| salida | **525** tokens |
+| **costo** | **$0,028375 USD** |
+
+Las tres preguntas hicieron `tool_use` → `end_turn`, sin excepción. Y **Tokio se
+recuperó**: la función devolvió texto en vez de reventar, el modelo lo leyó, y
+contestó ofreciendo las tres ciudades disponibles. Fue la respuesta **más larga
+de las seis** (149 tokens de salida) — el error lo hizo hablar *más*, no menos.
+
+## Lo primero: el idioma no cambia la factura
+
+El mismo agente, las mismas 3 preguntas, en `03-primer-agente/02_bucle.py`:
+
+| | Python | TypeScript |
+|---|---|---|
+| entrada | 3.062 | 3.050 |
+| salida | 590 | 525 |
+| costo | ~$0,030 | $0,028 |
+
+> 🔑 **Los tokens los cuenta la API, no `tsc` ni Python.** Es el mismo agente
+> hablando con el mismo modelo, y el recibo lo demuestra.
+
+## 🚨 Pero apareció un +5 que no cuadraba
+
+Comparando las vueltas 1, una a una:
+
+| pregunta | Python | TypeScript | dif |
+|---|---|---|---|
+| Medellín | 452 | 457 | **+5** |
+| Bogotá | 458 | 463 | **+5** |
+| Tokio | 452 | 457 | **+5** |
+
+**Exactamente +5 en las tres.** La sospecha: las **tildes**. El archivo de Python
+está escrito sin ellas (`Usala`, `algun`, `Bogota`); el de TypeScript sí las
+tiene. Pero eso no explicaba por qué el número era *idéntico* en las tres, si las
+preguntas cambiaron cada una de forma distinta.
+
+Se midió con `count_tokens`, **gratis**, separando los dos sospechosos:
+
+```
+SOSPECHOSO 1 — el menú de herramientas
+  menú sin tildes (Python)     : 441
+  menú con tildes (TypeScript) : 443
+  → diferencia                 : +2
+
+SOSPECHOSO 2 — las preguntas
+  Medellín   py=18  ts=21  → +3
+  Bogotá     py=24  ts=27  → +3
+  Tokio      py=18  ts=21  → +3
+```
+
+**Cuadra exacto:** `+2 (menú) + 3 (pregunta) = +5`. El menú aporta un peaje fijo
+en las tres, y cada pregunta resultó costar +3 por su cuenta. Sospecha cerrada.
+
+## 🔑 Una tilde no cuesta un token
+
+Y aquí está lo que no se esperaba:
+
+| texto | sitios cambiados | tokens de más |
+|---|---|---|
+| el menú (`Úsala`, `algún`, `Bogotá`) | **3** | **+2** |
+| `¿Me llevo... a Bogotá?` (`¿`, `á`) | **2** | **+3** |
+
+No hay regla de *"una tilde = un token"*. Depende de cómo el tokenizador parta
+esa palabra concreta. Es la lección del nivel 1 con otra ropa: **el conteo se
+mide, no se deduce.**
+
+## ⚠️ Lo que NO hay que concluir
+
+La tentación es *"escribo sin tildes y ahorro"*. **No.**
+
+Son **+5 sobre 457: un 1,1%.** En la corrida entera, las tildes costaron unos
+**$0,00008**. Y el nivel 5 midió lo contrario en la dirección que sí importa: el
+prompt en mal español producía **respuestas peores** (el rioplatense, el tú/usted
+mezclado). Escribir mal para ahorrar el 1% y pagarlo en calidad es mal negocio.
+
+> ### 🔑 El costo del acento es real, medible y despreciable.
+> Lo que vale del hallazgo no es el número: es que ahora sabes que **el texto de
+> tu menú de herramientas se paga en CADA vuelta.** Con 3 ciudades da igual. Con
+> 20 herramientas descritas en tres párrafos, en un agente de 8 vueltas, la
+> descripción es una factura recurrente. *Eso* sí es una decisión de ingeniería.
+
+## Cómo correr esto
+
+```powershell
+npx tsc
+node dist/04b_tildes.js
+```
+
+✅ **No gasta nada.** `count_tokens` no cobra.
+
+## Ejercicios del paso 4b
+
+1. **Mide el envoltorio.** Cuenta un mensaje con `content: "x"` y sin `tools`.
+   Ese es el piso. Réstaselo a los 441/443 y tienes el peso real del menú.
+2. **Engorda la descripción.** Duplica el texto de `description` en el menú y
+   vuelve a contar. Multiplica la diferencia por 6 (las vueltas de la corrida):
+   eso es lo que te habría costado ese párrafo de más.
+3. **Predice antes de medir.** Escribe una cuarta pregunta con muchas tildes,
+   **anota tu predicción** de cuántos tokens pesa, y después cuéntala. *(Es el
+   ejercicio del 3b: predecir antes de pagar — aquí ni siquiera se paga.)*
+4. **¿Y el nombre de la herramienta?** Cambia `obtener_clima` por un nombre
+   larguísimo y cuenta. ¿Pesa el nombre igual que la descripción?
+
+---
+
+## Lo que ya sabes del paso 4b
+
+- **El idioma no cambia la factura**: 3.050 vs 3.062 tokens para el mismo agente.
+- **El menú de herramientas se reenvía en cada vuelta.** Su texto es un peaje
+  recurrente, no un costo único.
+- **Una tilde no cuesta exactamente un token.** No hay regla; hay medición.
+- **Un hallazgo del 1% se cierra, no se actúa.** Saber de dónde salen los +5 vale
+  mucho; cambiar el código por $0,00008 no vale nada.

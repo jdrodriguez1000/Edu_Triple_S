@@ -3,14 +3,14 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-07-31 (sesión 25)
+**Última actualización:** 2026-08-01 (sesión 26)
 
 ---
 
-# 📍 NIVEL 6c — TYPESCRIPT. Pasos 0 a 3b corridos. Costo del nivel: **$0,0061**.
+# 📍 NIVEL 6c — TYPESCRIPT. Pasos 0 a 4b corridos. Costo del nivel: **$0,0345**.
 
-Sesiones 24 y 25. Carpeta: `06c-typescript/`.
-La sesión 25 no gastó nada: `count_tokens` es gratis.
+Sesiones 24, 25 y 26. Carpeta: `06c-typescript/`.
+La sesión 25 no gastó nada; la 26 gastó **$0,0284** (el bucle) **+ $0,00** (4b).
 
 ## Por qué se llama 6c y no 6
 
@@ -251,32 +251,122 @@ estimación.* Marcarlo salva; afirmarlo cuesta.
 referencia del SDK dijo correctamente *qué* pasaba; el *cuánto* solo salió al
 medir. Consultar docs no reemplaza correr el experimento.
 
-## 🚨 SIGUIENTE PASO: **paso 4 — el bucle agéntico**
+## Paso 4 — `04_bucle.ts`: el bucle agéntico 💰 **$0,028375**
 
-El bucle con la herramienta del clima, en TypeScript. La deuda del thinking ya
-está saldada, así que el paso 4 arranca limpio. **No hay nada pendiente de
-correr ni de verificar.**
+✅ **Corrido por el estudiante.** **Eligió el camino (A): escribirlo a mano**,
+como se le recomendó. El `toolRunner` del SDK queda pendiente como comparación
+(⚠️ está en beta) — es una deuda voluntaria, no bloquea nada.
 
-### ⚠️ DECISIÓN SUYA, PLANTEADA Y SIN RESPONDER (retomarla al abrir)
+Las 3 preguntas del nivel 3, traducidas. Patrón confirmado en las tres:
+`tool_use` → `end_turn`, **6 vueltas en total**. 3.050 entrada / 525 salida.
 
-Se le presentaron dos caminos para el bucle y la sesión se cerró antes de que
-eligiera. **Preguntárselo de entrada, no volver a explicar los dos caminos
-desde cero:**
+### 🚨 El punto del paso: `input` es de tipo `unknown`
 
-- **(A) Escribir el bucle a mano**, igual que `03-primer-agente/02_bucle.py`:
-  mirar `stop_reason === "tool_use"`, sacar el bloque, ejecutar, devolver el
-  `tool_result` con su `tool_use_id`, repetir. Aquí TypeScript **obliga a
-  estrechar** los bloques `tool_use` igual que obligó con `text` en el paso 3.
-- **(B) Usar el `toolRunner` del SDK**, que trae el bucle ya escrito: se definen
-  las funciones y él llama, ejecuta y repite. Es lo de producción. ⚠️ Está en
-  **beta** en el SDK de TS.
+En Python `funcion(**bloque.input)` funcionaba porque `input` era un diccionario.
+El SDK de TS lo declara `input: unknown`, y leerlo directo **no compila**:
 
-**Mi recomendación, dada:** A primero y B después como comparación, por la misma
-razón por la que aquí se escriben los evals a mano antes de usar una librería —
-sin haber escrito el bucle no hay con qué diagnosticar el día que `toolRunner`
-se porte raro. Y tiene el bucle de Python al lado para comparar línea por línea.
+```
+error TS18046: 'bloque.input' is of type 'unknown'.
+```
 
-### Lo que ya está listo para el paso 4
+Comparado con el error del paso 3 (`TS2339: Property 'text' does not exist`), la
+diferencia es de grado de ignorancia: allá el compilador **sabía qué había** y
+sabía que `.text` faltaba; aquí **no sabe ni qué hay**.
+
+- 🔑 **`unknown` no es `any`.** `any` decía *"no revises nada"* y dejaba pasar en
+  silencio; `unknown` dice *"hay algo y no sé qué es"* y **frena**.
+- 🔑 **Los tipos protegen lo que TÚ escribes. Donde entra algo de afuera —el
+  modelo, un archivo, internet— los tipos se acaban y empieza la comprobación en
+  tiempo de ejecución.** Que es exactamente lo que hacen sus 10 frenos de
+  `herramientas.py` (5b) — la novedad no es la idea, es que **el compilador no le
+  deja olvidarla**.
+
+Se escribió `leerCiudad(input: unknown)` con 3 comprobaciones (¿objeto y no
+`null`? ¿tiene la llave? ¿el valor es string?). ⚠️ El `input === null` no sobra:
+en JavaScript `typeof null === "object"`.
+
+### Lo que confirmó la corrida
+
+- **Tokio se recuperó.** La función devolvió **texto**, no una excepción; el
+  modelo lo leyó y ofreció las tres ciudades disponibles. Y fue la respuesta
+  **más larga de las seis (149 tok de salida)** — *el error lo hizo hablar más,
+  no menos.* Regla del nivel 3, revalidada.
+- ⚠️ **El freno nunca disparó.** El modelo mandó `{"ciudad": "..."}` correcto las
+  3 veces. Es **el freno 3 del 5b otra vez**: un candado que hoy no atrapó a
+  nadie y que sigue estando para el día que sí.
+
+## Paso 4b — `04b_tildes.ts`: ✅ **SOSPECHA CERRADA**, y costó $0,00
+
+### El idioma no cambia la factura
+
+Mismo agente, mismas 3 preguntas, contra `03-primer-agente/02_bucle.py`:
+
+| | Python | TypeScript |
+|---|---|---|
+| entrada | 3.062 | 3.050 |
+| salida | 590 | 525 |
+| costo | ~$0,030 | **$0,028** |
+
+🔑 **Los tokens los cuenta la API, no `tsc` ni Python.**
+
+### El +5 que no cuadraba
+
+Las vueltas 1 dieron **+5 exacto en las tres** (452→457, 458→463, 452→457).
+Sospecha: las **tildes** (el archivo de Python está escrito sin ellas). Pero eso
+no explicaba que el número fuera *idéntico* en las tres, si cada pregunta cambió
+de forma distinta. Se midió con `count_tokens`, separando los dos sospechosos:
+
+```
+menú sin tildes (Python) : 441      Medellín  py=18 ts=21 → +3
+menú con tildes (TS)     : 443      Bogotá    py=24 ts=27 → +3
+→ diferencia             : +2       Tokio     py=18 ts=21 → +3
+```
+
+**Cuadra exacto: +2 (menú) + 3 (pregunta) = +5.** El menú aporta un peaje fijo
+en las tres; cada pregunta resultó costar +3 por su cuenta.
+
+### 🔑 El hallazgo que no se esperaba: una tilde NO cuesta un token
+
+| texto | sitios cambiados | tokens de más |
+|---|---|---|
+| el menú (`Úsala`, `algún`, `Bogotá`) | **3** | **+2** |
+| `¿Me llevo... a Bogotá?` (`¿`, `á`) | **2** | **+3** |
+
+No hay regla de *"una tilde = un token"*: depende de cómo el tokenizador parta
+esa palabra. **El conteo se mide, no se deduce** (L1 con otra ropa).
+
+### ⚠️ Y lo que NO hay que concluir — anotado a propósito
+
+Son **+5 sobre 457: un 1,1%**; en la corrida entera, **$0,00008**. Y el nivel 5
+midió lo contrario en la dirección que importa: el prompt en mal español daba
+**respuestas peores** (rioplatense, tú/usted mezclado). Escribir mal para ahorrar
+el 1% y pagarlo en calidad es mal negocio.
+
+> 🔑 Lo que vale del hallazgo no es el número: es que **el texto del menú de
+> herramientas se paga en CADA vuelta**. Con 3 ciudades da igual; con 20
+> herramientas de tres párrafos en un agente de 8 vueltas, la descripción es una
+> factura recurrente. *Eso* sí es decisión de ingeniería. Las tildes no.
+
+📌 **Un hallazgo del 1% se cierra, no se actúa.** Saber de dónde salen los +5
+vale mucho; cambiar el código por $0,00008 no vale nada.
+
+## 🚨 SIGUIENTE PASO: **paso 5 — los frenos, y medir**
+
+Antes, si quiere, queda **el ejercicio 3 del paso 4**, que es el importante y no
+se hizo: cambiar `leerCiudad(bloque.input)` por
+`(bloque.input as { ciudad: string }).ciudad`. **Compila sin una queja** y no
+protege nada — es `any` con otra ropa. Es la puerta de atrás del idioma y
+conviene que la vea antes del paso 5, que va justamente de frenos.
+
+### Deudas voluntarias que deja la sesión 26 (ninguna bloquea)
+
+- **El `toolRunner` del SDK nunca se probó** (camino B). Comparar el bucle a mano
+  con el de la librería sigue siendo el mejor ejercicio de cierre del nivel.
+- **El freno `leerCiudad` no se ha visto disparar.** El ejercicio 2 del paso 4
+  (forzar que devuelva `null`) enseñaría qué hace el modelo al leer ese error:
+  ¿reintenta, se rinde, o inventa? Cuesta centavos.
+
+### Lo que ya estaba listo desde el paso 3
 
 - `@anthropic-ai/sdk` 0.115.0 instalado, `tsconfig.json` con `strict: true` y
   `"types": ["node"]`, `dist/` en `.gitignore`.
@@ -4536,11 +4626,15 @@ curso. Mantener ese ritmo: explicar → correr → comparar → escribir.
 | 3 | Primer agente (clima) | ✅ | ✅ |
 | 4 | Harness real | ✅ | ✅ |
 | 5 | Evaluación (evals + rúbricas) | ✅ | ✅ |
-| **5b** | **Proyecto integrador (divisas/TRM)** ← **EN CURSO** | 🔄 README ✅ | 🔄 paso 6/10 |
-| 6 | TypeScript | ⬜ | ⬜ |
-| 6b | Memoria persistente y Skills | ⬜ | ⬜ |
+| 5b | Proyecto integrador (divisas/TRM) | 🔄 README ✅ | 🔄 paso 6/10 |
+| 6b | Memoria persistente y Skills | ✅ | ✅ |
+| **6c** | **TypeScript** ← **EN CURSO** | 🔄 pasos 0–4b ✅ | 🔄 paso 4b/6 |
 | 7 | Producción (incl. observabilidad) | ⬜ | ⬜ |
 | 8 | Multi-agente (orquestador + workers) | ⬜ | ⬜ |
+
+> ⚠️ **El orden real en que se hicieron es 5b (a medias) → 6b → 6c.** El 5b quedó
+> parado en el paso 6/10 y **nadie ha decidido si se retoma o se da por cerrado**:
+> es la única fila de esta tabla con una pregunta abierta.
 
 > ⚠️ **Los niveles 5 y 6 se intercambiaron en la sesión 6.** Antes: 5 = TypeScript,
 > 6 = Evaluación. Ahora: **5 = Evaluación, 6 = TypeScript**. Las entradas de la
