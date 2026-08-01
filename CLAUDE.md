@@ -93,6 +93,14 @@ NN-nombre-del-nivel/
 
 Cada `README.md` de nivel termina con: **Ejercicios** y **Lo que ya sabes**.
 
+⚠️ **El nivel 7 rompe esta forma a propósito, y no es un descuido.** Su código
+vive en **otro repositorio**, fuera de este. `07-produccion/README.md` es un
+**puente**: guarda el análisis, las decisiones y la ruta al proyecto. **No le
+falta un script — no lo lleva.** No crear uno.
+
+📌 Regla del reparto entre los dos repos: **aquí va el porqué y lo aprendido;
+allá va lo que el programa hace.** El detalle está en el puente.
+
 ## Convenciones técnicas del repo
 
 - `.venv` y `.env` son **compartidos**, viven en la raíz. No crear uno por nivel.

@@ -47,7 +47,7 @@ Cada nivel es una carpeta. Se hacen en orden.
 | 5b | `05b-proyecto/` | **Proyecto integrador: agente de divisas y TRM**, desde un archivo vacío | Construir sin plantilla: harness + 5 herramientas + evals |
 | 6b | `06b-memoria-skills/` | Que tu agente **recuerde** y **sepa cosas** | Memoria persistente, **Skills** (habilidades cargadas a demanda) |
 | 6c | `06c-typescript/` | Portar **tu** agente a TypeScript | El mismo modelo mental en otro lenguaje |
-| 7 | `07-produccion/` | API web + frontend con el agente adentro | **Observabilidad**, auth, costos por usuario, despliegue |
+| 7 | `07-produccion/` 🌉 | API web + frontend con el agente adentro — **el código vive en otro repo**; aquí está el puente | **Observabilidad**, auth, costos por usuario, despliegue en **AWS** |
 | 8 | `08-avanzado/` | Multi-agente: orquestador y workers | Orquestación, agentes programados, memoria y skills **compartidas** |
 | 📌 | `METODO.md` (raíz) | **Al terminar los 8:** el método destilado, para llevárselo a proyectos de verdad | — |
 
@@ -66,7 +66,10 @@ El detalle completo está en `PROGRESO.md`.
 **6b CERRADO** (sus 6 pasos, con sus 46 lecciones escritas) y el **6c
 (TypeScript) CERRADO** — sus 7 pasos corridos y medidos, con las lecciones
 `L6c.1–L6c.29` escritas y `GUIDE.md` §13. Costó **$0,1084**.
-**Lo siguiente es el nivel 7.**
+
+**El nivel 7 arrancó** con su análisis: 5 de 7 piezas, sin escribir código y sin
+gastar un centavo. Todo está en **`07-produccion/README.md`** — el proyecto se
+construirá en **otro repositorio**, y esa carpeta es el puente.
 
 El proyecto integrador está terminado: 6 herramientas, **121 evals que corren en
 $0,00**, un harness con 10 frenos, tres modelos comparados con datos, y una

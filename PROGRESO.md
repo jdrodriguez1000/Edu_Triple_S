@@ -7,14 +7,71 @@
 
 ---
 
-# 🚨 SIGUIENTE PASO: **EL NIVEL 7 — producción (API web + frontend)**
+# 📍 NIVEL 7 — PRODUCCIÓN. Análisis en curso: **5 de 7 piezas hechas.**
+# Sin código, sin API. La sesión 28 costó **$0,00**.
 
-El 6c quedó **CERRADO** en la sesión 28. No hay nada pendiente que bloquee. El
-nivel 7 es el que junta las cuatro capas de la web que se explicaron al abrir el
-6c: FastAPI en el servidor (la API key **jamás** llega al navegador) y
-TypeScript/React del lado de la pantalla.
+## 🚨 SIGUIENTE PASO (tres cosas, en este orden)
 
-📌 Y sigue apartada, para **después del nivel 8**, la tarea de `METODO.md`.
+1. **Decidir ruta y nombre del repo nuevo** y escribirlo en
+   `07-produccion/README.md`. Es la línea que no puede quedar desactualizada.
+2. **Pieza 6 — AWS.** La más pesada. Qué da la capa gratis y por cuánto tiempo,
+   **con documentación oficial y fecha**, no de memoria. La **alarma de
+   facturación va antes que encender nada**.
+3. **Pieza 7 — el orden de los pasos** del proyecto. Ahí termina el análisis y
+   empieza a construirse.
+
+## ⭐ TODO EL ANÁLISIS ESTÁ EN `07-produccion/README.md`
+
+**No se repite aquí.** Ese archivo es el **puente** al repositorio del proyecto y
+guarda las 5 piezas, las 7 decisiones, las 4 suposiciones que producción rompe,
+las restricciones, el reparto de archivos entre los dos repos y los dos agentes
+de sesión. Léelo al abrir la próxima sesión.
+
+Lo mínimo para orientarse sin abrirlo:
+
+- **El proyecto va en OTRO repositorio**, privado, fuera de este. Aquí queda el
+  puente. Razón dura: al desplegar en AWS **se sube lo que hay en el repo**, y a
+  ese servidor no tienen por qué viajar 321 KB de bitácora ni las skills de su
+  empresa.
+- **El proyecto es un agente para practicar inglés escrito** (A1, 3 temas, sin
+  voz, 3 herramientas). Salió de una idea propia suya. Se descartó la de
+  extractos bancarios: **la primera vez que despliegas, el dato de adentro debe
+  ser el más aburrido que tengas.**
+- **Arquitectura B decidida** (estaba aplazada desde la sesión 18): FastAPI en el
+  servidor, TypeScript en la pantalla.
+- **Se adopta su convención `_persistence/`** (6 archivos + protocolos de inicio
+  y cierre en el `CLAUDE.md` del proyecto). Es mejor que lo que yo propuse: es el
+  mismo principio de los 4 archivos de esta raíz, con más grano fino.
+
+## La firma del nivel, que se repitió cuatro veces
+
+> 🚨 **Producción no rompe el agente. Rompe las suposiciones que el agente tenía
+> derecho a hacer.**
+
+Un solo usuario · el historial en una variable · alguien tecleando (`input()`) ·
+que existe "la corrida" con su presupuesto. **Las cuatro salieron de leer el
+código del 6b, no de teoría.** Por eso `assumptions.md` va a ser el archivo que
+más valga en este proyecto.
+
+## Hallazgo suelto de la sesión 28, que vale para siempre
+
+**Claude Code ya escribía tu `registro.jsonl`.** Está en
+`~/.claude/projects/<ruta-del-proyecto>/*.jsonl`: un `usage` por cada respuesta,
+con el modelo al lado. Llevaba 28 sesiones escribiéndose solo.
+
+Y trajo un dato nuevo, medido en una respuesta real de esta sesión:
+`input_tokens: 2` contra `cache_read_input_tokens: 336.229`. **Casi todo es
+caché** — por eso una sesión larga no cuesta lo que costaría multiplicar 336 mil
+por el precio de entrada. ⏳ El factor exacto de ahorro del *prompt caching*
+queda **sin verificar**.
+
+📌 Con suscripción los tokens **sí se cuentan** (`/usage`, el transcript, o
+telemetría con `CLAUDE_CODE_ENABLE_TELEMETRY=1`). Lo que cambia es el dólar: ahí
+es una **estimación** de lo que habría costado por API, no una factura.
+
+📌 Y sigue apartada, para **después del nivel 8**, la tarea de `METODO.md` — que
+esta sesión perfiló: será la unión de **su protocolo `_persistence`** con **el
+criterio del curso**.
 
 ---
 
