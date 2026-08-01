@@ -28,7 +28,8 @@ siguen en Python. TypeScript entra solo en la capa que el navegador exige.
 | **3b** | ¿A dónde se fue la factura? El thinking invisible | ✅ **$0,00** |
 | **4** | La herramienta del clima y el bucle agéntico | ✅ **$0,0284** |
 | **4b** | ¿De dónde salen los +5 tokens? Las tildes, medidas | ✅ **$0,00** |
-| 5 | Los frenos, y medir | centavos |
+| **4c** | `as`: la puerta de atrás del idioma (ejercicio 3 del paso 4) | ✅ **$0,00** |
+| **5** | Los frenos, y medir: la unión discriminada + el sabotaje | ✅ **$0,0739** |
 | 6 | Las lecciones a `LESSONS.md` | $0,00 |
 
 Los tres primeros pasos **no gastan un centavo**: no hay API, solo idioma.

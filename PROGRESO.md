@@ -3,14 +3,15 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-01 (sesión 26)
+**Última actualización:** 2026-08-01 (sesión 27)
 
 ---
 
-# 📍 NIVEL 6c — TYPESCRIPT. Pasos 0 a 4b corridos. Costo del nivel: **$0,0345**.
+# 📍 NIVEL 6c — TYPESCRIPT. Pasos 0 a 5 corridos. Falta SOLO el paso 6 (lecciones).
+# Costo del nivel: **$0,1084**.
 
-Sesiones 24, 25 y 26. Carpeta: `06c-typescript/`.
-La sesión 25 no gastó nada; la 26 gastó **$0,0284** (el bucle) **+ $0,00** (4b).
+Sesiones 24, 25, 26 y 27. Carpeta: `06c-typescript/`.
+La 25 no gastó nada; la 26 gastó **$0,0284**; la 27 gastó **$0,0739**.
 
 ## Por qué se llama 6c y no 6
 
@@ -350,21 +351,128 @@ el 1% y pagarlo en calidad es mal negocio.
 📌 **Un hallazgo del 1% se cierra, no se actúa.** Saber de dónde salen los +5
 vale mucho; cambiar el código por $0,00008 no vale nada.
 
-## 🚨 SIGUIENTE PASO: **paso 5 — los frenos, y medir**
+## Paso 4c — `04c_puerta_trasera.ts`: ✅ el ejercicio 3, hecho. **$0,00**
 
-Antes, si quiere, queda **el ejercicio 3 del paso 4**, que es el importante y no
-se hizo: cambiar `leerCiudad(bloque.input)` por
-`(bloque.input as { ciudad: string }).ciudad`. **Compila sin una queja** y no
-protege nada — es `any` con otra ropa. Es la puerta de atrás del idioma y
-conviene que la vea antes del paso 5, que va justamente de frenos.
+Era la deuda que dejó la sesión 26: ver qué hace `as` de verdad. Se escribió un
+banco de pruebas **sin API** con los 4 `input` que el modelo puede mandar, y las
+dos lecturas lado a lado: `leerCiudad()` (comprueba) contra
+`(input as { ciudad: string }).ciudad` (jura y no mira).
 
-### Deudas voluntarias que deja la sesión 26 (ninguna bloquea)
+**Resultado: 4 de 4 contra 1 de 4.** Ninguna de las dos dio un aviso al compilar.
 
-- **El `toolRunner` del SDK nunca se probó** (camino B). Comparar el bucle a mano
-  con el de la librería sigue siendo el mejor ejercicio de cierre del nivel.
-- **El freno `leerCiudad` no se ha visto disparar.** El ejercicio 2 del paso 4
-  (forzar que devuelva `null`) enseñaría qué hace el modelo al leer ese error:
-  ¿reintenta, se rinde, o inventa? Cuesta centavos.
+Y los tres fallos **no fallan igual** — eso es lo que enseñó el ejercicio:
+
+```
+{}                    → typeof undefined → revienta LEJOS, en obtenerClima()
+{"ciudad": 42}        → typeof number    → la firma prometía string. Mintió.
+{"ciuadd": "Bogotá"}  → typeof undefined → el más traicionero: el modelo casi acierta
+```
+
+- 🔑 **`as` no comprueba, no convierte, no existe.** Se verificó en el `.js`
+  compilado: `leerCiudadConAs` quedó en `return input.ciudad;` — las tres
+  comprobaciones y el `as` **no están**. Lo único que hace es callar al compilador.
+  Detalle bonito: la única vez que aparece `ciudad: string` en el `.js` es dentro
+  de un **comentario**. Los comentarios sobreviven a la traducción; los tipos no.
+- 🔑 **El daño de `as` no es que falle: es DÓNDE falla.** Miente en un sitio y
+  revienta en otro. Es el paso 0 (`Hola, 42`) pero caro.
+- 🔑 **Cuándo sí:** cuando el dato es TUYO y sabes algo que el compilador no puede
+  saber. Nunca sobre lo que escribió el modelo, un archivo, o internet.
+
+## Paso 5 — `05_frenos.ts`: ✅ **CERRADO Y MEDIDO.** 💰 $0,0739 (dos corridas)
+
+### El cambio de fondo: `string | null` → una unión discriminada
+
+```ts
+type Lectura =
+  | { ok: true;  ciudad: string }
+  | { ok: false; error: string };
+```
+
+El paso 4 aplastaba **tres motivos distintos** en un `null`, y el bucle tenía que
+inventarse un mensaje genérico. La función *sabía* cuál `if` falló y tiraba ese
+dato a la basura.
+
+- 🔑 **Un buen mensaje de error nombra el error Y nombra el arreglo.** La frase
+  la produjo él sin que se le pidiera: *"le diría que la llave se llama ciudad,
+  no ciuadd"*. Son dos datos, no uno. Cada vuelta que el modelo gasta adivinando
+  la paga el dueño del agente.
+- 🔑 **No se puede olvidar el caso malo.** `leerCiudad(x).ciudad` directo **no
+  compila**. El freno lo pone el idioma, no la disciplina.
+- 🔑 **Un mensaje de error solo puede ser tan bueno como lo que tu código se
+  molestó en mirar.** Su mejor respuesta (nombrar el typo) no cabía en la función
+  vieja: había que leer `Object.keys(input)`, que estaba ahí gratis y nadie miraba.
+- ⚠️ **El `if` 1 se quedó sin mensaje en su primera respuesta.** Es el caso raro
+  —que no llegue ni un objeto— y es justo el que menos se mira. *Denegar por
+  defecto* del 5b: el caso que crees que nunca pasa también necesita su mensaje.
+- **Se quitó el `as Record<string, unknown>` del paso 4:** el `in` del freno 2 ya
+  le enseña a TS que la llave existe. Sobraba, y se supo por el 4c.
+
+### 🐛 El defecto que salió de PROBAR los frenos, no de leerlos
+
+Con los 7 casos corridos sin API, dos mensajes salieron mintiendo: `null` producía
+*"esperaba un objeto y llegó un object"*, porque **`typeof null === "object"`**.
+El comentario del freno anunciaba la trampa y el mensaje la olvidaba. Se arregló
+con un ayudante `describir()`.
+
+- 🔑 **El mensaje de error es código también, y puede tener el mismo bug del que
+  protege.**
+
+### 🚨 EL SABOTAJE: el freno disparó, y el modelo se recuperó 3 de 3
+
+`const SABOTEAR = true` le renombra la llave a `ciuadd` en la vuelta 1. Patrón en
+las tres preguntas: `tool_use` → **error** → `tool_use` correcto → `end_turn`.
+Nunca se cayó, nunca inventó un dato, nunca se rindió.
+
+| | limpio | saboteado | dif |
+|---|---|---|---|
+| vueltas | 6 | **9** | +3 |
+| entrada | 3.030 | **5.165** | +70% |
+| salida | 507 | **809** | +60% |
+| costo | $0,027825 | **$0,046050** | **+65%** |
+
+- 🔑 **UN ERROR NO SE PAGA UNA VEZ: SE PAGA EN CADA VUELTA POSTERIOR.** La vuelta 3
+  de Medellín pagó **689 tokens de entrada** — más que cualquier vuelta de la
+  corrida limpia — porque el historial **todavía lleva adentro el intento fallido**
+  (el `ciuadd`, el mensaje de error, la disculpa). Todo eso vuelve a entrar y se
+  vuelve a pagar. Es el peso del menú del 5b visto desde otro lado.
+- 🔑 **Un candado solo se sabe que sirve rompiéndolo a propósito.** En dos días de
+  corridas normales el freno nunca disparó.
+- **El caso Tokio encadenó DOS errores distintos** (el del freno + "no tengo datos")
+  y el agente manejó los dos. La regla del nivel 3 aguantando bajo presión.
+- **Contar es determinista, generar no.** Las vueltas 1 dieron **exactamente** los
+  mismos tokens de entrada que el paso 4 (457 / 463 / 457) porque la entrada es
+  idéntica; las vueltas 2 cambiaron, porque ahí entra lo que el modelo dijo antes.
+
+### 🐛 DEFECTO MÍO, el 5º de este tipo: precios escritos de memoria
+
+`05_frenos.ts` salió con `$15/$75` por millón. Opus 5 cuesta **$5 / $25**. La
+primera corrida imprimió **$0,083475** cuando el costo real era **$0,027825**.
+
+**Se cazó porque no cuadraba con un número que SÍ estaba medido:** el paso 4 dio
+$0,028375 con 3.050/525, y esa cuenta solo cierra con 5 y 25. Se verificó contra
+la documentación oficial antes de corregir, no de memoria otra vez.
+
+- 🔑 Quinta vez del mismo patrón (*"Haiku cuesta 5x menos"*, la fila inventada del
+  nivel 2, el `~$0.02` del streaming, el docstring de `04_streaming.py`).
+  **Tener mediciones viejas escritas es lo que hace que las mentiras nuevas se noten.**
+
+## 🚨 SIGUIENTE PASO: **paso 6 — las lecciones del 6c a `LESSONS.md`, y cerrar el nivel**
+
+Es el último paso del nivel y cuesta **$0,00**. Todo el material está arriba, en
+esta cabecera: los pasos 0–5 con sus hallazgos. Hay que convertirlo en bloque
+numerado `L6c.x` con el *porqué*, no con comandos, y revisar si `GUIDE.md` quedó
+desactualizado (probablemente sí: no tiene nada de `npx tsc` ni de `unknown`).
+
+### Deudas voluntarias que quedan (ninguna bloquea el cierre)
+
+- **El `toolRunner` del SDK nunca se probó** (camino B del paso 4, ⚠️ está en beta).
+  Comparar el bucle a mano con el de la librería sigue siendo el mejor ejercicio
+  de cierre.
+- **El mensaje bueno nunca se comparó contra el genérico.** Se midió que el mensaje
+  bueno recupera 3 de 3 en 1 vuelta — **pero no se midió si el genérico del paso 4
+  ("falta el parámetro o no es un texto") habría costado más vueltas.** Es el
+  experimento que falta para *demostrar* que el mensaje bueno se paga solo; hoy
+  solo está razonado. Cuesta una corrida (~$0,046).
 
 ### Lo que ya estaba listo desde el paso 3
 
