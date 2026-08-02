@@ -3,12 +3,12 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-02 (sesión 30)
+**Última actualización:** 2026-08-02 (sesión 31)
 
 ---
 
-# 📍 NIVEL 7 — PRODUCCIÓN. **TEAPP existe y corre.**
-# Pasos **0 y 1 cerrados** en la sesión 30. Costo del día: **$0,00**.
+# 📍 NIVEL 7 — PRODUCCIÓN. **TEAPP contesta por la red.**
+# Paso **2 cerrado** en la sesión 31. Costo del día: **$0,00**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -16,13 +16,185 @@ Ruta:   C:\Users\USUARIO\Documents\Company_TripleS\Test_Edu_TripleS\TEAPP
 Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
 ```
 
-## 🚨 SIGUIENTE PASO: **el paso 2 — FastAPI**
+## 🚨 LO PRIMERO DE LA PRÓXIMA SESIÓN: **el cierre de TEAPP no se guardó**
 
-Una ruta, en local, que devuelva lo mismo que devuelve hoy la terminal.
-Ahí **muere `input()`**. Sigue costando **$0,00**.
+⚠️ **Todo el paso 2 está SIN COMMITEAR.** Comprobado al final de la sesión 31:
+
+```
+HEAD de TEAPP  : c160a83  ← el commit del paso 1
+progress.md    : sin tocar. Sigue diciendo "paso 1 de 9"
+sin commitear  : app/api.py, tests/test_api.py, y 11 archivos modificados
+```
+
+El `session-closer` **se lanzó** (18:38:09, está en el transcript) y **no dejó
+nada**. Ver el hallazgo abajo. El trabajo no se perdió —está entero en el disco—
+pero **no está en Git**, y Git es lo único que sobrevive a un accidente.
+
+👉 **Antes de tocar el paso 3: cerrar TEAPP a mano.** Mirar `git status`,
+escribir `progress.md`, commitear y empujar.
+
+## SIGUIENTE PASO DEL CURSO: **el paso 3 — la pantalla**
+
+`index.html` + `app.ts` contra la ruta `/practice` local. Es el nivel 6c
+aplicado, y lo primero que va a fallar es **CORS** (ya anotado allá como
+`T-029`). Sigue costando **$0,00**.
 
 ⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7. Los pasos 0 a 6 se
 hacen enteros en su máquina.
+
+---
+
+# 🧪 LA SESIÓN 31: el paso 2, y la revisión cruzada funcionando
+
+**El método de las dos terminales dio su mejor resultado hasta ahora.** Él
+construyó en TEAPP; esta terminal solo leyó, midió y devolvió listas. Salieron
+**dos defectos graves que 45 tests en verde no veían**, y los dos se arreglaron
+y se volvieron a medir el mismo día.
+
+## Lo que se construyó (el paso 2)
+
+- **`app/api.py`** — FastAPI con una sola ruta, `POST /practice`. Ahí murió
+  `input()`: existe únicamente en `main.py`, que ya no es la única puerta.
+- **`D-008`: `respond` devuelve tres piezas sueltas** (`TutorReply`) en vez de un
+  texto ya armado. 🔑 *El agente manda los ingredientes, no el plato servido.*
+  Decisión suya, tomada **antes** de escribir la pantalla — hacerlo en el paso 3
+  habría costado el doble.
+- **Pydantic como filtro:** un número, un `null` o una lista se paran con 422
+  antes de que el agente vea nada. Es *denegar por defecto* aplicado a los datos.
+- **De 30 tests a 53**, 0,96 s, sin red, **$0,00**.
+
+## 🚨 EL HALLAZGO: los 45 tests en verde no vieron que 7 de cada 10 peticiones caían
+
+Esta terminal levantó el servidor de verdad y le mandó **50 peticiones a la vez**.
+Tres corridas, antes del arreglo:
+
+| | corrida 1 | corrida 2 | corrida 3 |
+|---|---|---|---|
+| respuestas 200 | 11 | 14 | 19 |
+| **fallos 500** | **39** | **36** | **31** |
+| marcador (esperado 50) | **8** | **10** | **12** |
+| mismo número a 2+ personas | 3 | 4 | 7 |
+
+**Y eran DOS defectos distintos con el mismo síntoma**, que es lo que hace la
+lección:
+
+1. **Se peleaban por el archivo temporal.** Todas escribían el mismo
+   `score.json.tmp`; Windows cortaba con `PermissionError`. → temporal con
+   nombre propio por escritura (`tempfile.mkstemp`).
+2. **El hueco entre leer y escribir.** `add_point` lee el total y luego lo
+   escribe; entre esas dos líneas otra petición ya leyó el mismo número. → un
+   candado que abarca **la lectura y la escritura juntas**.
+
+> 🔑 **La escritura atómica y el candado resuelven cosas distintas.** La atómica
+> protege de UNA escritura cortada por la mitad (un corte de luz). El candado
+> protege de DOS escrituras pisándose. Tener la primera no te da la segunda —
+> y él tenía la primera desde el mismo día, escrita y con test.
+
+**Después del arreglo, 300 peticiones simultáneas, tres corridas:**
+`300/300 OK · 0 fallos · marcador exacto · la secuencia 1…300 completa, sin un
+hueco ni un repetido · 0 basura .tmp`.
+
+> 🔑 **Un test en verde no dice "el código está bien". Dice "el código está bien
+> para lo que este test hace".** `TestClient` manda las peticiones **de una en
+> una**: ni un solo test, ni una sola prueba a mano, creó nunca el estado que
+> rompía. Con un escritor el código era correcto.
+
+**Y la firma del nivel, quinta vez:** producción no rompió el código. Rompió la
+suposición de **"un solo usuario"** — que el roadmap tenía apuntada para el paso
+4. Apareció en el paso 2.
+
+## 🚨 EL SEGUNDO DEFECTO: el 500 regalaba la ruta del servidor
+
+Estaba **anotado desde la sesión 30** como el único pendiente explícito del paso
+2, y se hizo el paso 2 sin hacerlo. Comprobado con el servidor encendido:
+
+```json
+{ "detail": "El marcador C:\\Users\\USUARIO\\...\\TEAPP\\data\\score.json no es un JSON valido (...)" }
+```
+
+Y tenía los **dos extremos mal a la vez**: ese 500 contaba de más, y el 500 de la
+concurrencia era **mudo** — sin mensaje y sin quedar apuntado en ninguna parte.
+
+**`D-010`, una sola regla para los dos:**
+
+> 🔑 **El detalle completo va al log. Al navegador, un mensaje corto y sin rutas.**
+
+Comprobado después: `{"detail":"El marcador del servidor no se pudo leer..."}`,
+sin ruta, sin `score.json`, con el archivo roto intacto — y el mensaje completo
+sí en el log del servidor.
+
+## ⭐ LA MEJOR LECCIÓN DEL DÍA ES SUYA, Y NO LA PIDIÓ NADIE: `L-004`
+
+Montó la prueba de carga para validar su propio arreglo. Dio **50 de 50:
+perfecto**. Y en vez de darse por satisfecho descubrió que **contestaba el
+servidor viejo**, por el puerto ocupado — y que el viejo **también** daba 50 de
+50, porque las peticiones de PowerShell no salían lo bastante juntas para
+pisarse.
+
+> 🔑 **Antes de fiarte de una prueba, comprueba que falla con el código roto.**
+> Una prueba que pasa en los dos casos no está midiendo el arreglo: está dando
+> una confianza que no existe.
+
+Es la **tercera vez** en TEAPP que aparece el mismo animal —algo que mide otra
+cosa y suena convincente— y la primera que lo caza él solo:
+
+| | qué medía de más | quién lo cazó |
+|---|---|---|
+| paso 0 | el `session-starter` inventó las 3 herramientas | esta terminal, leyendo el transcript |
+| paso 2 | 45 tests que nunca mandaban 2 peticiones juntas | esta terminal, con carga real |
+| paso 2 | una prueba de carga que medía el servidor equivocado | **él** |
+
+## 🚨 Y EL TERCER FALLO DEL HARNESS: el `session-closer` no cerró nada
+
+Dijo "cerremos la sesión" a las 18:38:00. El `session-closer` **se lanzó** a las
+18:38:09 —está en el transcript `.jsonl`— y el resultado **nunca volvió**: el
+archivo termina ahí. No hubo commit, y `progress.md` sigue en "paso 1 de 9".
+
+**Es el segundo defecto del proyecto que sale del harness y no del código**, y
+los dos se encontraron igual: leyendo desde aquí el registro de la otra terminal.
+
+> 🔑 **Un protocolo que se lanza no es un protocolo que se cumple.** El
+> `starter` inventó porque nadie comprobó lo que leyó; el `closer` no guardó
+> porque nadie comprobó lo que escribió. **Lanzar no es terminar** — es la misma
+> `PI-4` de su `CLAUDE.md` (*terminado = visto funcionando*) aplicada al harness
+> en vez de al código.
+
+⏳ **Sin resolver:** si el `closer` falló, se quedó a medias o lo interrumpió el
+cambio de terminal. **El trabajo interno del subagente no queda en el
+transcript** — es el mismo hueco anotado en la sesión 30, y ya ha estorbado dos
+veces. Vale la pena que el protocolo de cierre **termine imprimiendo el hash del
+commit**: si no hay hash, no hubo cierre.
+
+## `assumptions.md` pasó de 0 a 3 — el hábito cuajó
+
+Era *"el archivo que más va a valer"* y cerró vacío los pasos 0 y 1. Hoy tiene
+las tres, y las tres son de verdad:
+
+| | qué se da por cierto | cuándo muerde |
+|---|---|---|
+| `A-001` | el marcador cuenta frases **practicadas**, no correctas | paso 8 |
+| `A-002` | el marcador lo escribe **un solo proceso a la vez** | paso 7 |
+| `A-003` | lo que se manda al **log** se ve y se puede reconstruir | paso 7 |
+
+📌 **`A-002` hubo que corregirla el mismo día, y ese es el detalle que enseña.**
+Nació diciendo *"sin `--workers`"* — cierto, pero es la forma que **se ve venir**.
+La que va a pasar de verdad es tener `main.py` abierto en una terminal **y el
+servidor en otra**: dos procesos, dos candados. Medido: de 400 puntos llegaron
+**169**, con 169 llamadas fallidas.
+
+> 🔑 **Registrar algo no sirve si señala al sitio equivocado.** Es lo mismo que
+> el puntero del paso 0, en otra forma: allí el archivo no se abría, aquí el
+> aviso apuntaba al peligro improbable. Y el propio `README.md` invitaba a
+> romperla, presentando las dos puertas una debajo de otra sin decir que no se
+> usan a la vez.
+
+## Lo que quedó anotado y NO se hizo, a propósito
+
+- **`T-033`, el log (paso 7).** Hoy la línea se ve por el *handler de último
+  recurso* de Python: sin hora, sin nivel, y solo WARNING o peor. Funciona por
+  defecto, **no porque nadie lo haya decidido**. Hoy no aporta arreglarlo; en la
+  nube, un log sin hora no sirve para lo que se escribió.
+- **`T-029`, CORS (paso 3).** Es lo primero que va a fallar con la pantalla.
 
 ---
 
@@ -62,7 +234,7 @@ referencia al curso, ni vocabulario de niveles. Se le quitó a propósito.
 - **30 tests, 0,07 s, sin red.** El marcador sobrevivió a cerrar la app.
 - Convención adoptada: **nombres en inglés, contenido en español**.
 
-## 🚨 EL HALLAZGO DE LA SESIÓN: el primer defecto salió del harness, no del código
+## 🚨 EL HALLAZGO DE LA SESIÓN 30: el primer defecto salió del harness, no del código
 
 `session-starter` corrió en frío (`/clear`) y reportó que las tres herramientas
 eran *"abrir un archivo, listar archivos y sacar una captura del navegador"*.
@@ -122,7 +294,7 @@ habría visto quien lo escribió.
 descartarlo, un `{"score": true}` habría pasado por un `1` válido. Es la misma
 trampa del nivel 5b, reencontrada por su cuenta.
 
-## ⏳ Para el paso 2 — anotado, no arreglado
+## ~~⏳ Para el paso 2 — anotado, no arreglado~~ → **RESUELTO en la sesión 31**
 
 🚨 **El mensaje de error trae la ruta absoluta del servidor.** En la terminal es
 ayuda: te dice qué archivo abrir. **En el navegador es información regalada**
@@ -131,7 +303,12 @@ sobre cómo está organizado el servidor por dentro.
 > **El mismo mensaje sirve para dentro y estorba para fuera.** En el paso 2:
 > el detalle al log, una versión corta y sin rutas al navegador.
 
-## ⚠️ El hábito que no cuajó: `assumptions.md` sigue en cero
+📌 **Cómo terminó:** se hizo el paso 2 **sin hacerlo** —quedó igual— y lo
+encontró la revisión de la sesión 31 comprobándolo contra el servidor. Se cerró
+con `D-010`. ⚠️ **Anotarlo no bastó**: la nota existía desde la sesión 30 y aun
+así se pasó por alto. Lo que lo cazó fue **volver a medirlo**, no releer la nota.
+
+## ~~⚠️ El hábito que no cuajó: `assumptions.md` sigue en cero~~ → **CUAJÓ en la 31** (0 → 3)
 
 ```
 decisions.md    6 entradas
@@ -251,6 +428,10 @@ Un solo usuario · el historial en una variable · alguien tecleando (`input()`)
 que existe "la corrida" con su presupuesto. **Las cuatro salieron de leer el
 código del 6b, no de teoría.** Por eso `assumptions.md` va a ser el archivo que
 más valga en este proyecto.
+
+📌 **Quinta vez, en la sesión 31** (ver arriba): la suposición de *"un solo
+usuario"* estaba apuntada para el paso 4 y reventó en el **paso 2**, en cuanto
+hubo servidor. **Las suposiciones no esperan al paso donde las anotaste.**
 
 ## Hallazgo suelto de la sesión 28, que vale para siempre
 

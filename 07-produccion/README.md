@@ -7,11 +7,15 @@
 >
 > Si abres esta carpeta buscando un `07_script.py`, no falta nada: es a propósito.
 
-**Estado:** 🔨 **TEAPP existe y corre.** Pasos **0 y 1 cerrados** (sesión 30).
-El análisis de las 7 piezas quedó completo en las sesiones 28 y 29.
-**$0,00 en las tres sesiones.** Última: 2026-08-02.
+**Estado:** 🔨 **TEAPP contesta por la red.** Pasos **0, 1 y 2 cerrados**
+(sesión 31). El análisis de las 7 piezas quedó completo en las sesiones 28 y 29.
+**$0,00 en las cuatro sesiones.** Última: 2026-08-02.
 
-**Siguiente:** el paso 2 — FastAPI en local. Ahí muere `input()`.
+**Siguiente:** el paso 3 — la pantalla (`index.html` + `app.ts`) contra
+`/practice` local. Lo primero que va a fallar es **CORS**.
+
+⚠️ **Pero antes: el paso 2 quedó SIN COMMITEAR en TEAPP.** El `session-closer`
+se lanzó y no dejó nada. Ver §7.9.
 
 > 📌 Y eso es deliberado, no lentitud: **en producción lo caro no es teclear. Es
 > equivocarse de estructura y darse cuenta con el servidor encendido.**
@@ -436,8 +440,78 @@ construyes lo demás te quita la variable ruidosa — **es el control del nivel 
 
 ## ⏭️ Siguiente paso
 
-**Pasos 0 y 1 cerrados** (sesión 30). Sigue el **paso 2: FastAPI en local**, una
-ruta que devuelva lo mismo que devuelve hoy la terminal. Ahí muere `input()`.
+**Pasos 0, 1 y 2 cerrados** (sesión 31). Sigue el **paso 3: la pantalla**,
+`index.html` + `app.ts` contra la ruta `/practice` local. Es el 6c aplicado.
+
+---
+
+## §7.9 — Lo que dejó la sesión 31: el paso 2, y la revisión cruzada trabajando
+
+**El paso 2 quedó así:** `app/api.py` con una sola ruta `POST /practice`,
+`respond` devolviendo tres piezas sueltas en vez de un texto armado (`D-008`),
+Pydantic parando lo que no encaja con un 422, y **53 tests** (eran 30).
+`input()` sigue existiendo, pero ya no es la única puerta.
+
+### 🚨 La revisión desde esta terminal encontró dos defectos que 45 tests no veían
+
+**Uno: el servidor se caía con varias personas a la vez.** 50 peticiones
+simultáneas → entre **31 y 39 fallos 500**, y de 50 puntos el marcador guardaba
+**8**. Eran **dos** defectos con el mismo síntoma: todas las peticiones escribían
+el mismo archivo temporal, y además `add_point` leía y escribía con un hueco en
+medio.
+
+> 🔑 **La escritura atómica y el candado resuelven cosas distintas.** La atómica
+> protege de UNA escritura cortada por la mitad. El candado protege de DOS
+> escrituras pisándose. Tener la primera no da la segunda.
+
+Después: **300 peticiones simultáneas, 0 fallos, la secuencia 1…300 completa.**
+
+> 🔑 **Un test en verde no dice "el código está bien". Dice "el código está bien
+> para lo que este test hace".** `TestClient` manda las peticiones de una en una:
+> ningún test creó nunca el estado que rompía.
+
+**Dos: el 500 regalaba la ruta absoluta del servidor** — el pendiente que la
+sesión 30 dejó escrito para el paso 2, y que se pasó por alto. Cerrado con
+`D-010`: *el detalle al log, al navegador un mensaje corto y sin rutas*.
+
+⚠️ **La nota existía y no bastó.** Lo que lo cazó fue **volver a medirlo**.
+
+### ⭐ `L-004` es suya, y es la lección más transferible del proyecto
+
+Montó la prueba de carga, dio 50 de 50 — y descubrió que **contestaba el servidor
+viejo** por el puerto ocupado, y que el viejo *también* daba 50 de 50.
+
+> 🔑 **Antes de fiarte de una prueba, comprueba que falla con el código roto.**
+
+### 🚨 Tercer fallo del harness: el `session-closer` no cerró nada
+
+Se lanzó (18:38:09, consta en el transcript) y **no dejó commit ni tocó
+`progress.md`**. El paso 2 entero sigue sin commitear en TEAPP.
+
+> 🔑 **Un protocolo que se lanza no es un protocolo que se cumple.** El `starter`
+> inventó porque nadie comprobó lo que leyó; el `closer` no guardó porque nadie
+> comprobó lo que escribió. Es `PI-4` —*terminado = visto funcionando*— aplicada
+> al harness en vez de al código.
+
+⏳ **Propuesta anotada:** que el protocolo de cierre **termine imprimiendo el
+hash del commit**. Si no hay hash, no hubo cierre.
+
+📌 Y los dos fallos del harness se encontraron igual: **leyendo desde aquí el
+transcript `.jsonl` de la otra terminal.** Sigue el hueco de la sesión 30 — el
+trabajo interno del subagente no queda ahí.
+
+### `assumptions.md` pasó de 0 a 3
+
+`A-001` (practicadas vs. correctas, paso 8) · `A-002` (un solo proceso escribe el
+marcador, paso 7) · `A-003` (el log se ve, paso 7).
+
+**`A-002` hubo que corregirla el mismo día**: nació diciendo "sin `--workers`",
+que es el peligro que *se ve venir*, cuando el probable es tener `main.py` y el
+servidor encendidos a la vez. Medido: de 400 puntos llegaron **169**.
+
+> 🔑 **Registrar algo no sirve si señala al sitio equivocado.**
+
+---
 
 ### Lo que dejó la sesión 30, y no se repite en `PROGRESO.md`
 
@@ -459,9 +533,9 @@ Haiku o la sesión principal al reescribir.
 algo *más*. Los dos hacen que **falle mejor** — que es casi todo lo que separa un
 script de un producto, y lo que los pasos 6 y 7 van a repetir.
 
-⏳ **Para el paso 2, anotado y sin arreglar:** el mensaje de error trae la ruta
-absoluta del servidor. En la terminal es ayuda; **en el navegador es información
-regalada**. El detalle va al log, y al navegador una versión corta y sin rutas.
+~~⏳ **Para el paso 2, anotado y sin arreglar:** el mensaje de error trae la ruta
+absoluta del servidor.~~ → **cerrado en la sesión 31 con `D-010`** (ver §7.9).
+⚠️ Pero no lo cerró la nota: lo cerró volver a medirlo.
 
 ## Lo que ya sabes (antes de escribir una línea)
 
