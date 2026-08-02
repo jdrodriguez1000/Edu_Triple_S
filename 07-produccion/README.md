@@ -7,8 +7,11 @@
 >
 > Si abres esta carpeta buscando un `07_script.py`, no falta nada: es a propósito.
 
-**Estado:** ✅ **análisis COMPLETO — las 7 piezas.** Cero código, cero llamadas a
-la API, **$0,00** en dos sesiones enteras (28 y 29). Última: 2026-08-02.
+**Estado:** 🔨 **TEAPP existe y corre.** Pasos **0 y 1 cerrados** (sesión 30).
+El análisis de las 7 piezas quedó completo en las sesiones 28 y 29.
+**$0,00 en las tres sesiones.** Última: 2026-08-02.
+
+**Siguiente:** el paso 2 — FastAPI en local. Ahí muere `input()`.
 
 > 📌 Y eso es deliberado, no lentitud: **en producción lo caro no es teclear. Es
 > equivocarse de estructura y darse cuenta con el servidor encendido.**
@@ -20,15 +23,34 @@ la API, **$0,00** en dos sesiones enteras (28 y 29). Última: 2026-08-02.
 ```
 Nombre:   TEAPP  (Teaching English Application)
 Ruta:     C:\Users\USUARIO\Documents\Company_TripleS\Test_Edu_TripleS\TEAPP
-Repo:     privado (guarda progreso personal y, después, configuración de AWS)
-Decidido: sesión 29 — 2026-08-02
+Repo:     https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
+Creado:   sesión 30 — 2026-08-02
 ```
 
 ⚠️ **Está FUERA de `Edu_TripleS`**, y eso es el punto: si viviera dentro, el Git
 de este repo se lo tragaría y se perdería la separación entera.
 
-📌 Cuando se decida, **esta línea se llena y se mantiene al día**. Es lo único de
-este archivo que no puede quedar desactualizado: es la dirección del proyecto.
+📌 **Esta línea se mantiene al día.** Es lo único de este archivo que no puede
+quedar desactualizado: es la dirección del proyecto.
+
+## 🔑 Cómo se trabaja: dos terminales
+
+Decisión del estudiante, sesión 30. Cambia el método de aquí en adelante:
+
+| terminal | papel |
+|---|---|
+| **Edu_TripleS** | **orienta.** Decide, explica, revisa y guarda el porqué |
+| **TEAPP** | **construye.** Ahí vive el código y se hacen sus commits |
+
+*"Me dices qué hacer y yo te digo cómo va todo."*
+
+Esta terminal **no construye** en TEAPP — pero **sí lo lee para revisar**, y ahí
+está su valor: los tres defectos del paso 1 los encontró la revisión desde aquí,
+no quien escribió el código.
+
+📌 Consecuencia: **TEAPP se explica solo.** No lleva ni una referencia al curso
+ni vocabulario de niveles. Se le quitó a propósito, para que el proyecto no
+dependa de una carpeta que el servidor nunca va a ver.
 
 ---
 
@@ -414,9 +436,32 @@ construyes lo demás te quita la variable ruidosa — **es el control del nivel 
 
 ## ⏭️ Siguiente paso
 
-**El análisis se acabó. Empieza el paso 0:** crear `TEAPP` en su ruta, `git init`,
-el `CLAUDE.md` del producto y `_persistence/` con sus 6 archivos.
-Primera sesión con las manos en el teclado desde la 27.
+**Pasos 0 y 1 cerrados** (sesión 30). Sigue el **paso 2: FastAPI en local**, una
+ruta que devuelva lo mismo que devuelve hoy la terminal. Ahí muere `input()`.
+
+### Lo que dejó la sesión 30, y no se repite en `PROGRESO.md`
+
+**El primer defecto de TEAPP no apareció en el código: apareció en el harness.**
+`session-starter` corrió en frío y **se inventó las tres herramientas**, porque
+`protocol-start` nunca le mandó abrir `_context/scope.md`.
+
+> 🔑 **Un puntero que nadie sigue es peor que no tener puntero.** Si el agente no
+> abre el archivo, no se queda sin la información: **se la inventa**, y suena
+> convincente. Es el precio del `CLAUDE.md` agnóstico, y se paga con lecturas
+> obligatorias.
+
+Se encontró **leyendo el transcript `.jsonl` de la otra terminal** — el hallazgo
+de la sesión 28 puesto a trabajar. Con un hueco anotado: el trabajo interno del
+subagente **no queda ahí**, así que no se pudo saber si inventó el subagente en
+Haiku o la sesión principal al reescribir.
+
+**Y el patrón de los arreglos del paso 1:** ninguno hace que el programa haga
+algo *más*. Los dos hacen que **falle mejor** — que es casi todo lo que separa un
+script de un producto, y lo que los pasos 6 y 7 van a repetir.
+
+⏳ **Para el paso 2, anotado y sin arreglar:** el mensaje de error trae la ruta
+absoluta del servidor. En la terminal es ayuda; **en el navegador es información
+regalada**. El detalle va al log, y al navegador una versión corta y sin rutas.
 
 ## Lo que ya sabes (antes de escribir una línea)
 

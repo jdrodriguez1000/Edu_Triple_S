@@ -3,26 +3,164 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-02 (sesión 29)
+**Última actualización:** 2026-08-02 (sesión 30)
 
 ---
 
-# 📍 NIVEL 7 — PRODUCCIÓN. ✅ **ANÁLISIS COMPLETO: las 7 piezas.**
-# Sin código, sin API. Las sesiones 28 y 29 costaron **$0,00** cada una.
-
-## 🚨 SIGUIENTE PASO: **el paso 0 — crear TEAPP**
-
-Crear el proyecto en su ruta, `git init`, el `CLAUDE.md` **del producto** y
-`_persistence/` con sus 6 archivos. **Primera sesión con código desde la 27.**
+# 📍 NIVEL 7 — PRODUCCIÓN. **TEAPP existe y corre.**
+# Pasos **0 y 1 cerrados** en la sesión 30. Costo del día: **$0,00**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
 Ruta:   C:\Users\USUARIO\Documents\Company_TripleS\Test_Edu_TripleS\TEAPP
-Repo:   privado, FUERA de Edu_TripleS
+Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
 ```
 
-⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7, y la razón es la
-pieza 6 (abajo). Los pasos 0 a 6 se hacen enteros en su máquina.
+## 🚨 SIGUIENTE PASO: **el paso 2 — FastAPI**
+
+Una ruta, en local, que devuelva lo mismo que devuelve hoy la terminal.
+Ahí **muere `input()`**. Sigue costando **$0,00**.
+
+⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7. Los pasos 0 a 6 se
+hacen enteros en su máquina.
+
+---
+
+## 🔑 LA DECISIÓN DE MÉTODO DE LA SESIÓN 30: **dos terminales**
+
+Salió de él, y cambia cómo se trabaja de aquí en adelante:
+
+| terminal | papel |
+|---|---|
+| **Edu_TripleS** (esta) | **orienta.** Decide, explica, revisa y guarda el porqué |
+| **TEAPP** (la otra) | **construye.** Ahí vive el código y se hacen sus commits |
+
+*"Me dices qué hacer y yo te digo cómo va todo."* Esta terminal **no toca TEAPP**
+para construir — pero **sí lo lee para revisar**, y eso resultó ser lo más valioso
+del día (ver abajo).
+
+📌 Y una consecuencia práctica: **TEAPP se explica solo.** No lleva ni una
+referencia al curso, ni vocabulario de niveles. Se le quitó a propósito.
+
+## Lo que se construyó en TEAPP (paso 0 y paso 1)
+
+**Paso 0 — el esqueleto y el protocolo:**
+- `CLAUDE.md` **agnóstico** (convención suya): residente solo lo que evita un
+  daño; el detalle en `_context/` con una tabla de *"ábrelo cuando…"*.
+- `_context/` — `scope.md`, `architecture.md`, `roadmap.md`.
+- `_persistence/` — sus 6 archivos, con **formato índice + anclas** (idea suya:
+  *"búscala con grep, no leas el archivo entero"*).
+- **Dos agentes de Claude Code**, que estaban solo diseñados desde la sesión 28:
+  `session-starter` (Haiku, solo lectura) y `session-closer` (Sonnet, escribe
+  desde el `git diff`), cada uno con su skill.
+
+**Paso 1 — el agente FALSO en terminal, $0,00:**
+- `respond(sentence) -> str` como **enchufe**: `input()` existe en **un solo
+  archivo**, `main.py`, que muere entero en el paso 2.
+- 3 herramientas: `count_words` (Python puro), `judge_grammar` (falsa),
+  `read_score`/`add_point` (marcador en disco).
+- **30 tests, 0,07 s, sin red.** El marcador sobrevivió a cerrar la app.
+- Convención adoptada: **nombres en inglés, contenido en español**.
+
+## 🚨 EL HALLAZGO DE LA SESIÓN: el primer defecto salió del harness, no del código
+
+`session-starter` corrió en frío (`/clear`) y reportó que las tres herramientas
+eran *"abrir un archivo, listar archivos y sacar una captura del navegador"*.
+
+**Se las inventó.** Las de verdad son contar palabras, juzgar gramática y el
+marcador — y están escritas en `_context/scope.md`.
+
+**La causa era de diseño, no del modelo:** `protocol-start` mandaba leer
+`progress.md` y `tasks.md`, y **`_context/` no aparecía en ninguna parte**, ni
+obligatorio ni a demanda. Además el freno decía *"no inventes avances, fechas ni
+tareas"* — **no decía "no inventes el proyecto"**. El agujero estaba justo donde
+rompió.
+
+> 🔑 **Un puntero que nadie sigue es peor que no tener puntero.** Si el agente no
+> abre el archivo, no se queda sin la información: **se la inventa**, y suena
+> convincente. Es el precio del `CLAUDE.md` agnóstico, y se paga con lecturas
+> obligatorias.
+
+**Arreglado:** `_context/scope.md` y `roadmap.md` pasaron a lectura obligatoria,
+más la regla *"todo lo que digas sobre QUÉ ES el proyecto tiene que salir de un
+archivo que abriste en esta corrida; si no lo abriste, di **no está
+registrado**"*.
+
+📌 **Y cómo se encontró:** leyendo el transcript `.jsonl` de la otra terminal
+desde aquí. Es el hallazgo de la sesión 28 puesto a trabajar — **el registro que
+Claude Code ya escribía sirvió para auditar a un agente**. Con un hueco anotado:
+**el trabajo interno del subagente no queda en ese archivo**, así que no se pudo
+saber si la invención fue del `session-starter` en Haiku o de la sesión principal
+al reescribir el reporte.
+
+## Los tres defectos que encontró la revisión del paso 1
+
+Los tres los encontró **esta** terminal leyendo el código de la otra. Ninguno lo
+habría visto quien lo escribió.
+
+1. **`read_score` reventaba con el archivo roto** (`JSONDecodeError` / `KeyError`).
+   Se había señalado antes de escribir código —*"ausente no es lo mismo que
+   corrupto"*— y quedó a medias. → Arreglado con `ScoreFileError`, y con la regla
+   🔑 **nunca sobrescribas un dato que no lograste entender**: `add_point` lee
+   antes de escribir, así que con el archivo roto la escritura ni se intenta.
+   **Comprobado a mano:** se rompió el archivo, se corrió la app, salió mensaje
+   claro sin traceback, y el archivo quedó intacto.
+2. **`count_words(None)` → `AttributeError`.** Hoy no molesta; en el paso 2 sí,
+   porque FastAPI recibe JSON de internet. → Arreglado con `TypeError` explícito.
+3. **El juez falso tapaba una pregunta de diseño:** `respond` suma un punto
+   **siempre**, sin mirar el veredicto. ¿El marcador cuenta *frases practicadas*
+   o *frases correctas*? Hoy no se nota porque el falso aprueba todo. **En el
+   paso 8 se vuelve un bug.** ⚠️ **Quedó SIN registrar en TEAPP.**
+
+> 🔑 **Los dos primeros son el mismo defecto: qué hace el código cuando le llega
+> algo que no esperaba.** Y los dos arreglos no hacen que el programa haga algo
+> *más* — hacen que **falle mejor**. Eso es casi todo lo que separa un script de
+> un producto.
+
+📌 **Y una trampa que él cazó solo, sin que nadie se la señalara:**
+`isinstance(True, int)` vale `True` en Python porque `bool` hereda de `int`. Sin
+descartarlo, un `{"score": true}` habría pasado por un `1` válido. Es la misma
+trampa del nivel 5b, reencontrada por su cuenta.
+
+## ⏳ Para el paso 2 — anotado, no arreglado
+
+🚨 **El mensaje de error trae la ruta absoluta del servidor.** En la terminal es
+ayuda: te dice qué archivo abrir. **En el navegador es información regalada**
+sobre cómo está organizado el servidor por dentro.
+
+> **El mismo mensaje sirve para dentro y estorba para fuera.** En el paso 2:
+> el detalle al log, una versión corta y sin rutas al navegador.
+
+## ⚠️ El hábito que no cuajó: `assumptions.md` sigue en cero
+
+```
+decisions.md    6 entradas
+lessons.md      2 entradas
+assumptions.md  0 entradas   ← cerró el paso 0 vacío, y el paso 1 vacío
+```
+
+Y es el archivo del que se dijo, al diseñarlo, que sería **el más valioso del
+proyecto**. La razón de que se quede vacío es humana: una decisión se siente
+terminada y da gusto escribirla; una suposición se siente incómoda.
+
+> 🔑 **`decisions.md` guarda lo que ya resolviste. `assumptions.md` guarda lo que
+> te va a morder.** El vacío no es el archivo: es el hábito.
+
+**Suposiciones vivas que deberían estar ahí:** cuántas vueltas del bucle cuesta
+una frase · cuántas llamadas cuesta un tema · si el `system` y las skills se
+pagan en cada vuelta · los límites reales de la capa gratis de AWS · **y si el
+par `starter`/`closer` ahorra algo de verdad, que nadie ha medido.**
+
+## Dos lecciones que TEAPP anotó solo (candidatas a `L7.x`)
+
+- **`L-001`: la consola de Windows no pinta nada fuera de ASCII.** Los 14 tests
+  en verde y la pantalla mostrando `TEAPP ? write a sentence`. Su conclusión:
+  *un test comprueba lo que la función devuelve, no lo que la persona ve*. Es la
+  **tercera vez** que ese error aparece en el curso, y la primera que queda
+  escrito como regla.
+- **`L-002`: `pip install pytest` no pide "pytest", pide "el más nuevo de hoy".**
+  El global tenía 8.1.1 y el entorno nuevo instaló 9.1.1, el mismo día. →
+  `requirements.txt` con `==` siempre.
 
 ## Lo que decidió la sesión 29 — tres decisiones
 
