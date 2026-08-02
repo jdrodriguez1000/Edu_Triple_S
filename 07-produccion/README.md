@@ -7,18 +7,25 @@
 >
 > Si abres esta carpeta buscando un `07_script.py`, no falta nada: es a propósito.
 
-**Estado:** análisis hecho (piezas 1 a 5 de 7). **Cero código, cero llamadas a la
-API.** Sesión 28, 2026-08-01.
+**Estado:** ✅ **análisis COMPLETO — las 7 piezas.** Cero código, cero llamadas a
+la API, **$0,00** en dos sesiones enteras (28 y 29). Última: 2026-08-02.
+
+> 📌 Y eso es deliberado, no lentitud: **en producción lo caro no es teclear. Es
+> equivocarse de estructura y darse cuenta con el servidor encendido.**
 
 ---
 
 ## Dónde vive el proyecto
 
 ```
-Ruta:     ⏳ SIN DECIDIR — es la primera tarea de la próxima sesión
-Nombre:   ⏳ sin decidir
+Nombre:   TEAPP  (Teaching English Application)
+Ruta:     C:\Users\USUARIO\Documents\Company_TripleS\Test_Edu_TripleS\TEAPP
 Repo:     privado (guarda progreso personal y, después, configuración de AWS)
+Decidido: sesión 29 — 2026-08-02
 ```
+
+⚠️ **Está FUERA de `Edu_TripleS`**, y eso es el punto: si viviera dentro, el Git
+de este repo se lo tragaría y se perdería la separación entera.
 
 📌 Cuando se decida, **esta línea se llena y se mantiene al día**. Es lo único de
 este archivo que no puede quedar desactualizado: es la dirección del proyecto.
@@ -152,6 +159,62 @@ con cuánto practican.** Un estudiante aplicado cuesta más que diez perezosos.
 identidad y el despliegue completos, probados contra un agente falso.** El modelo
 se enchufa al final.
 
+### Pieza 6 — AWS, y el reloj que nadie esperaba
+
+**Verificado en la documentación oficial el 2026-08-02.** Fuentes al pie.
+
+🚨 **Lo primero: "12 meses gratis" ya no existe.** Cambió a mediados de 2025.
+Es lo que dicen todos los tutoriales, y es lo que yo habría dicho de memoria.
+Una cuenta nueva hoy elige entre **dos planes**:
+
+| | **Plan Free** ✅ elegido | Plan Paid |
+|---|---|---|
+| Créditos | **$100** al abrir + hasta **$100** más por tareas = **$200** | los mismos |
+| Duración | **6 meses**, o hasta gastar los créditos — lo primero | no expira |
+| ¿Pueden cobrarte? | **nunca, cero** | sí, pasado el crédito |
+| Al terminar | 🚨 **la cuenta se cierra sola** | no pasa nada |
+| Servicios | solo algunos | todos |
+
+Textual de la documentación:
+
+> *"After your free account plan expires, your account closes automatically, and
+> you lose access to your resources and data. AWS retains your content for 90
+> days before permanently deleting your account."*
+
+📌 Los **créditos expiran a los 12 meses** de abrir la cuenta, con cualquier plan.
+
+**Por qué esto cambia el proyecto, y no es un detalle de factura:**
+
+> 🔑 **Hasta hoy el tiempo era gratis en este curso.** Un script que no corres no
+> gasta. En AWS no: el reloj de 6 meses arranca el día que abres la cuenta,
+> corras o no corras el proyecto. **La nube no solo cobra por estar encendida —
+> en el plan Free cobra en tiempo.**
+
+> 🚨 **Regla que sale de ahí: NO abrir la cuenta de AWS hasta tener algo que
+> subir.** Abrirla "para ir mirando" quema semanas del reloj sin construir nada.
+
+**Decisión: plan Free.** La restricción número uno del proyecto dice *minimizar
+factura manda sobre todo lo demás*, y el plan Free hace la factura **imposible**,
+no improbable: es el `PRESUPUESTO_USD` del nivel 4 impuesto por AWS en vez de por
+tu código. Seis meses alcanzan para el nivel 7 y el 8. Si TEAPP resulta que vale
+la pena, se pasa a Paid ya sabiendo lo que gasta.
+
+⚠️ **La API de Claude no es AWS.** Esos créditos **no** pagan a Anthropic. Las
+llamadas del agente se siguen pagando aparte, como en todo el curso.
+
+⏳ **Lo que quedó SIN verificar, a propósito:** los límites exactos de los
+servicios *Always Free* (cuántas peticiones, cuántos GB al mes). AWS los publica
+en una tabla que se arma con JavaScript y no se puede leer desde aquí. **No se
+escriben de memoria** — es la lección de las últimas cinco sesiones, y esta misma
+pieza acaba de demostrar por qué (habría escrito "12 meses gratis"). Se verifican
+el día que se abra la cuenta, en **Billing → Free Tier** de la consola, que
+además muestra el consumo real. Mejor evidencia que cualquier página.
+
+**Fuentes (leídas 2026-08-02):**
+[aws.amazon.com/free](https://aws.amazon.com/free/) ·
+[Choosing a plan (docs)](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans.html) ·
+[Blog oficial del cambio](https://aws.amazon.com/blogs/aws/aws-free-tier-update-new-customers-can-get-started-and-explore-aws-with-up-to-200-in-credits/)
+
 ---
 
 ## Decisiones tomadas
@@ -165,6 +228,23 @@ se enchufa al final.
 5. **Proyecto nuevo, en repo aparte y privado.**
 6. **Dominio:** práctica de inglés escrito, A1, 3 temas, sin voz.
 7. **El 6b se congela** como línea base. No se toca.
+8. **La pantalla es TypeScript puro** — sin React, sin Next.js, sin Tailwind
+   (sesión 29). Las tres razones, en orden de peso:
+   - **Next.js trae su propio servidor de Node.** Serían **dos** servidores
+     encendidos en AWS en vez de uno, y *la nube cobra por estar encendida*. Con
+     TS puro la pantalla son **archivos quietos** (`.html` + `.css` + `.js`).
+   - **Una cosa nueva a la vez.** El nivel 7 ya trae cinco (FastAPI, identidad,
+     HTTP, AWS, despliegue). React sería la sexta, y es un tema entero.
+   - 🔑 **React sin haber sufrido el problema que resuelve no se entiende.**
+     Existe para no enloquecer actualizando la pantalla a mano; si nunca lo
+     hiciste a mano, parece burocracia sin motivo.
+
+   📌 **Es la única decisión reversible de la lista**, y por eso se toma barata:
+   React/Next/Tailwind viven **dentro** de la caja "pantalla". No mueven la
+   llave, no tocan FastAPI, no tocan el agente.
+   **La señal para que React entre** (v2 o nivel 8): cuando `app.ts` se llene de
+   *"borra esto, pinta aquello, esconde lo otro"* y ya no sepas qué hay en
+   pantalla. Ese dolor es exactamente el que React quita.
 
 ## 🚨 Suposiciones que producción rompe
 
@@ -294,13 +374,49 @@ Y enseñó algo nuevo: en una respuesta real de esta sesión, `input_tokens: 2` 
 
 ---
 
+## Pieza 7 — El orden de los pasos
+
+La regla que decide el orden entero, y sale de la pieza 5:
+
+> 🔑 **La tubería completa se construye y se prueba con un agente FALSO. El
+> modelo se enchufa al final.**
+
+Un *agente falso* es una función de Python que devuelve siempre lo mismo, sin
+llamar a Claude. Y la razón de peso **no es el dinero**: es que el modelo es la
+única pieza que no responde igual dos veces. Sacarlo del camino mientras
+construyes lo demás te quita la variable ruidosa — **es el control del nivel 5**.
+
+| # | Paso | Qué rompe / qué enseña | Costo |
+|---|---|---|---|
+| **0** | Repo y esqueleto: `git init`, `CLAUDE.md` del producto, `_persistence/` | se monta el protocolo | $0 |
+| **1** | El agente en terminal, **falso**. 3 herramientas: contar (Python), juzgar (falso), marcador (archivo) | lo conocido, dominio nuevo | $0 |
+| **2** | **FastAPI** encima. Una ruta, local, mismo resultado que el paso 1 | 🚨 muere `input()` | $0 |
+| **3** | **La pantalla**: `index.html` + `app.ts` contra FastAPI local | el 6c aplicado | $0 |
+| **4** | **Memoria por persona** | 🚨 "un solo usuario" + "historial en variable" | $0 |
+| **5** | **Identidad** | requisito de despliegue, no adorno | $0 |
+| **6** | **Frenos de producción**: tope por persona y por día, timeouts, permisos de antemano | 🚨 "existe la corrida" | $0 |
+| **7** | **AWS.** ⚠️ **alarma de facturación PRIMERO**, luego subir | la tubería entera, falsa | $0 |
+| **8** | **Enchufar el modelo.** Se borra el agente falso | 💰 el primero |
+| **9** | **Observabilidad y evals** con rúbrica | bajo |
+
+**Hasta el paso 7 —TEAPP en internet, con URL pública— no cuesta un centavo.**
+
+**Dos cosas del orden que no son casualidad:**
+
+1. **El paso 8 cae casi al final.** Si algo falla ahí, la puerta, la pantalla, la
+   identidad, la memoria, los frenos y AWS funcionaban ayer. **El sospechoso
+   queda solo.**
+2. **AWS va en el 7, no en el 1.** Por el reloj de 6 meses de la pieza 6: los
+   pasos 0 a 6 se hacen enteros **sin cuenta de AWS**. El día que se abra, ya
+   habrá algo que subir.
+
+---
+
 ## ⏭️ Siguiente paso
 
-1. **Decidir ruta y nombre del repo nuevo**, y llenar la línea de arriba.
-2. **Pieza 6 — AWS.** La más pesada: qué da la capa gratis y por cuánto tiempo,
-   con **documentación oficial y fecha** (no de memoria — es la lección de las
-   últimas cinco sesiones). La alarma de facturación va **antes** que todo.
-3. **Pieza 7 — el orden de los pasos** del proyecto. Y ahí termina el análisis.
+**El análisis se acabó. Empieza el paso 0:** crear `TEAPP` en su ruta, `git init`,
+el `CLAUDE.md` del producto y `_persistence/` con sus 6 archivos.
+Primera sesión con las manos en el teclado desde la 27.
 
 ## Lo que ya sabes (antes de escribir una línea)
 

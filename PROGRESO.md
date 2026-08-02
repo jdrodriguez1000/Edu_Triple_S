@@ -3,22 +3,83 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-01 (sesión 28)
+**Última actualización:** 2026-08-02 (sesión 29)
 
 ---
 
-# 📍 NIVEL 7 — PRODUCCIÓN. Análisis en curso: **5 de 7 piezas hechas.**
-# Sin código, sin API. La sesión 28 costó **$0,00**.
+# 📍 NIVEL 7 — PRODUCCIÓN. ✅ **ANÁLISIS COMPLETO: las 7 piezas.**
+# Sin código, sin API. Las sesiones 28 y 29 costaron **$0,00** cada una.
 
-## 🚨 SIGUIENTE PASO (tres cosas, en este orden)
+## 🚨 SIGUIENTE PASO: **el paso 0 — crear TEAPP**
 
-1. **Decidir ruta y nombre del repo nuevo** y escribirlo en
-   `07-produccion/README.md`. Es la línea que no puede quedar desactualizada.
-2. **Pieza 6 — AWS.** La más pesada. Qué da la capa gratis y por cuánto tiempo,
-   **con documentación oficial y fecha**, no de memoria. La **alarma de
-   facturación va antes que encender nada**.
-3. **Pieza 7 — el orden de los pasos** del proyecto. Ahí termina el análisis y
-   empieza a construirse.
+Crear el proyecto en su ruta, `git init`, el `CLAUDE.md` **del producto** y
+`_persistence/` con sus 6 archivos. **Primera sesión con código desde la 27.**
+
+```
+Nombre: TEAPP  (Teaching English Application)
+Ruta:   C:\Users\USUARIO\Documents\Company_TripleS\Test_Edu_TripleS\TEAPP
+Repo:   privado, FUERA de Edu_TripleS
+```
+
+⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7, y la razón es la
+pieza 6 (abajo). Los pasos 0 a 6 se hacen enteros en su máquina.
+
+## Lo que decidió la sesión 29 — tres decisiones
+
+**1. Nombre y ruta del proyecto** (arriba). Fuera de este repo, que era el punto.
+
+**2. La pantalla es TypeScript puro** — sin React, sin Next.js, sin Tailwind.
+Preguntó él si los tres entraban aquí. Las razones, en orden de peso:
+- **Next.js trae su propio servidor de Node** → serían **dos** servidores
+  encendidos en AWS en vez de uno, y *la nube cobra por estar encendida*.
+- **Una cosa nueva a la vez.** El nivel 7 ya trae cinco (FastAPI, identidad,
+  HTTP, AWS, despliegue). React sería la sexta y es un tema entero.
+- 🔑 **React sin haber sufrido el problema que resuelve no se entiende.**
+
+📌 Y se le dijo lo que la hace barata: **es la única decisión reversible** de la
+lista. Los tres viven **dentro** de la caja "pantalla"; no mueven la llave, no
+tocan FastAPI, no tocan el agente. **La señal para que React entre** (v2 o nivel
+8): cuando `app.ts` se llene de *"borra esto, pinta aquello, esconde lo otro"*.
+
+**3. Plan Free de AWS** (ver el hallazgo abajo).
+
+## 🚨 EL HALLAZGO DE LA SESIÓN: "12 meses gratis" en AWS **ya no existe**
+
+Cambió a mediados de 2025. **Verificado en la documentación oficial el
+2026-08-02** — y es el mejor ejemplo del curso de por qué se verifica: de memoria
+yo habría dicho "12 meses gratis" con toda la confianza, y llevaría un año
+equivocado. La tabla completa y las fuentes están en el puente.
+
+Hoy una cuenta nueva elige entre **plan Free** (hasta $200 en créditos, **6
+meses**, no te pueden cobrar nunca, y al terminar 🚨 **la cuenta se cierra sola**
+y pierdes los datos — 90 días para pasarte a Paid) y **plan Paid** (no expira,
+pero sí cobra).
+
+> 🔑 **Hasta hoy el tiempo era gratis en este curso.** Un script que no corres no
+> gasta. En AWS no: el reloj de 6 meses arranca el día que abres la cuenta.
+> **La nube no solo cobra por estar encendida — en el plan Free cobra en tiempo.**
+
+De ahí salen las dos cosas que hay que recordar:
+- **Regla: no abrir la cuenta de AWS hasta tener algo que subir.**
+- **Se eligió el plan Free**, porque hace la factura **imposible**, no
+  improbable: es el `PRESUPUESTO_USD` del nivel 4 impuesto por AWS.
+
+⚠️ **Los créditos de AWS NO pagan a Anthropic.** La API de Claude se sigue
+pagando aparte. Se le aclaró para que no se lleve la sorpresa en el paso 8.
+
+⏳ **Sin verificar a propósito:** los límites exactos de los servicios *Always
+Free*. AWS los publica en una tabla hecha con JavaScript, ilegible desde aquí, y
+**no se escriben de memoria**. Se comprueban en **Billing → Free Tier** de la
+consola el día que se abra la cuenta — que además muestra el consumo real.
+
+## El orden de construcción (pieza 7), en una línea
+
+> 🔑 **La tubería completa se construye y se prueba con un agente FALSO. El
+> modelo se enchufa al final** (paso 8 de 9).
+
+Y la razón de peso **no es el dinero**: el modelo es la única pieza que no
+responde igual dos veces. Sacarlo del camino **es el control del nivel 5**.
+Los 10 pasos, con qué suposición mata cada uno, están en el puente.
 
 ## ⭐ TODO EL ANÁLISIS ESTÁ EN `07-produccion/README.md`
 
