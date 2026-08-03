@@ -3,12 +3,12 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-03 (sesión 32)
+**Última actualización:** 2026-08-03 (sesión 33)
 
 ---
 
-# 📍 NIVEL 7 — PRODUCCIÓN. **TEAPP se ve en el navegador.**
-# Paso **3 cerrado** en la sesión 32. Costo del día: **$0,00**.
+# 📍 NIVEL 7 — PRODUCCIÓN. **Cada persona tiene su propio marcador.**
+# Paso **4 cerrado** en la sesión 33. Costo del día: **$0,00**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -16,25 +16,157 @@ Ruta:   C:\Users\USUARIO\Documents\Company_TripleS\Test_Edu_TripleS\TEAPP
 Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
 ```
 
-## ✅ EL PASO 3 CERRÓ ENTERO — el primero que lo hace
+## ✅ EL PASO 4 CERRÓ — pero solo después de la revisión cruzada
 
-Verificado desde esta terminal, con el hash y la sincronía:
+Verificado desde esta terminal, corriendo las cosas, no leyéndolas:
 
 ```
-HEAD de TEAPP  : 460b04f   git status: limpio   main...origin/main: sin "ahead"
+origin/main de TEAPP : af40fe9   main...origin/main: sin "ahead"
+pytest               : 121 pasan, 0.92 s, sin red
+npx tsc              : sin cambios → el .js commiteado está al día
+git ls-files data/   : vacío → ningún dato de persona entró a Git
 ```
 
-**Es el primer paso de TEAPP que cierra las tres cosas: construir, registrar y
-guardar.** El 1 falló en el registro, el 2 en el commit, el 3 en ninguna.
+⚠️ **El primer intento de cierre tenía commit y no tenía push.** El paso 4 se
+salvó porque esta terminal hizo `git fetch`. Ver `L-006` abajo.
 
-## SIGUIENTE PASO DEL CURSO: **el paso 4 — memoria por persona**
+## SIGUIENTE PASO DEL CURSO: **el paso 5 — identidad de verdad**
 
-El roadmap lo marca con 🚨: *"se rompe «hay un solo usuario»"*. Y es la
-suposición que **ya se rompió sola en el paso 2**, dos pasos antes de tiempo —
-así que esta vez se ve venir. Sigue costando **$0,00**.
+Hoy la identidad es **declarada, no verificada**: quien usa la app escribe un
+nombre y el servidor se lo cree (`D-013`). Cualquiera puede escribir el nombre
+de otro y sumar a su marcador. Es **conocido y aceptado**, no un descuido — el
+mismo truco del juez falso: se construye la tubería con la pieza falsa y luego
+se sustituye **la pieza, no la tubería**.
+
+📌 `D-013` deja escrito qué tiene que hacer el paso 5: **quitar** la casilla
+"Your name", no ponerle algo al lado. Sigue costando **$0,00**.
+
+**Cabo suelto:** `T-037` (deuda del paso 3) — ningún test comprueba que el `.js`
+esté **compilado al día**, solo que existe. Verificado a mano hoy: está al día.
+Lleva dos pasos abierta.
 
 ⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7. Los pasos 0 a 6 se
 hacen enteros en su máquina.
+
+---
+
+# 🧪 LA SESIÓN 33: el paso 4, y un cierre que se cumplió entero y falló igual
+
+**El día no produjo código en esta terminal: produjo dos revisiones cruzadas.**
+Una antes de construir (el análisis del paso 4) y otra después (la verificación).
+Las dos encontraron cosas, y la de después encontró la más grave.
+
+## ⭐ LO MÁS IMPORTANTE: `L-006` — la regla se cumplió y el cierre falló
+
+La otra terminal cerró el paso 4 con su commit y su hash: `f015a01`. La regla de
+cierre nacida en la sesión 31 decía **"si no hay hash, no hubo cierre"**, y se
+cumplió al pie de la letra.
+
+`git fetch` desde aquí: **`origin/main` seguía en `460b04f`.** El paso 4 entero
+existía **solo en ese disco**. Un disco roto esa noche se lo llevaba con el
+cierre marcado como correcto.
+
+> 🔑 **Un control puede cumplirse entero y no comprobar lo que creías.**
+> "Existe un hash" no es lo mismo que "el trabajo está a salvo fuera de esta
+> máquina". La regla corregida: **si el hash no está en `origin`, no hubo
+> cierre**, y se comprueba con `git status -sb` — si dice `ahead`, no terminaste.
+
+Y fíjate qué animal es: **la comprobación mide algo distinto de lo que su nombre
+promete.** Es el mismo defecto de los cinco tests de TEAPP — pero esta vez en el
+**protocolo**, no en el código. Sexta aparición, sitio nuevo.
+
+**El arreglo no fue acordarse mejor: fue automatizarlo.** El `session-closer`
+hace `push` y comprueba `git status -sb`; si queda `ahead`, lo reporta como
+*"sin resolver"* en vez de taparlo.
+
+## 🚨 La regla que fallaba por el otro extremo, y por poco no se ve
+
+Al arreglarlo apareció algo que **casi se escapa**: el agente repetía la lista de
+prohibidos **por su cuenta**, en sus propios límites. Arreglar solo la skill
+habría dejado **dos fuentes diciendo cosas contrarias de la misma regla** — una
+ordenando `push`, otra prohibiéndolo.
+
+Y el fallo de eso no es un error: es obedecer a una de las dos **sin manera de
+saber a cuál**, distinto cada vez.
+
+> 🔑 **Una regla escrita puede fallar por los dos extremos.**
+>
+> | | la letra | el espíritu |
+> |---|---|---|
+> | `L-006` — *"si no hay hash"* | ✅ cumplida | ❌ el trabajo sin salvar |
+> | la prohibición de `git push` | ❌ lo vetaba | ✅ lo cumplía |
+>
+> `git push` **solo añade** historia. La prohibición decía *"nunca reescribir ni
+> borrar"*. Cumplía el propósito entero y la letra lo vetaba igual.
+
+Y el corolario de operación: **cuando corrijas una regla, pregunta quién más la
+dice.** Eso no se ve leyendo el archivo que estás editando.
+
+## La revisión de ANTES de construir: cuatro huecos, y uno era serio
+
+Se analizó el paso 4 sin tocar código. El análisis de la otra terminal era bueno
+—identificó la lista blanca como el corazón del paso, y bien— pero le faltaban
+cuatro cosas:
+
+| # | hueco | por qué importaba |
+|---|---|---|
+| 🔴 1 | `Juan` y `juan` | Windows **no** distingue mayúsculas y Linux **sí** |
+| 2 | `con`, `prn`, `nul`… | son letras: pasan enteros la lista blanca |
+| 3 | el hueco de la sesión 11 | el test no puede probar que no se escribió **fuera** |
+| 4 | `A-002` cambia de alcance | y nadie lo iba a anotar |
+
+**El 1 es el que valía el día.** Sin normalizar, `Juan` y `juan` son **una**
+persona en su máquina y **dos** en la nube del paso 7. Sin ningún error, con
+todos los tests en verde, y descubriéndose cuando ya hay archivos escritos —
+o sea, migrando datos en vez de cambiando una línea.
+
+> 🔑 **Los bugs que no puedes ver en tu máquina son los caros.** El sistema
+> operativo miente distinto en cada sitio, y ninguna prueba local lo destapa.
+
+## Lo que se construyó, y lo que se hizo mejor de lo pedido
+
+Los cuatro huecos entraron enteros, y dos volvieron **mejor planteados**:
+
+- **"Validar los caracteres no es validar el nombre"** pasó de frase suelta mía a
+  principio con nombre, escrito en `tools.py` encima de la lista de reservados.
+- **`A-002` se marcó 🔻 ENCOGIDA con fecha**, dejando el texto viejo al lado, en
+  vez de reescribirse. Una suposición que cambia de alcance en silencio es peor
+  que una equivocada: la equivocada al menos avisa cuando falla.
+- **El arreglo del test superó lo que pedí.** Yo propuse una línea —comprobar que
+  `escapado.json` no existe—. Pusieron tres, y la tercera es la general:
+  `assert list(tmp_path.iterdir()) == [users_dir]`, o sea *no apareció **nada***.
+  > 🔑 **Comprobar que no pasó *lo que imaginaste* es más débil que comprobar que
+  > no pasó *nada*.** Y la versión débil se disfraza de la fuerte.
+
+**Tres decisiones suyas que valen más que el código:**
+
+1. **`respond(sentence, user)` sin valor por defecto.** Un `user="anonimo"` de
+   repuesto haría que olvidarse de pasarlo **no diera error**: los puntos se
+   irían a un marcador compartido. Es el bug que el paso mata, entrando por la
+   puerta de atrás. **Diseñar para que el olvido falle hacia el lado seguro.**
+2. **El navegador NO repite las reglas de validación**, y el comentario dice por
+   qué: *"lo que corre en el navegador se puede saltar, así que repetirlas aquí
+   daría una sensación de freno que no es real"*.
+3. **El control que faltaba desde hace cinco defectos:**
+   `test_normalize_user_accepts_ordinary_names`, con el comentario *"un validador
+   que rechaza todo también pasaría los tests de arriba"*. Un freno que rechaza
+   absolutamente todo pasa cada prueba de seguridad y rompe la app. Salió sin que
+   nadie lo pidiera.
+
+## De 57 a 121 tests, $0,00, y la cadena de cierre
+
+| | construir | registrar | guardar |
+|---|---|---|---|
+| paso 1 | ✅ | 🟡 | ✅ |
+| paso 2 | ✅ | ✅ | ❌ commit |
+| paso 3 | ✅ | ✅ | ✅ |
+| paso 4 | ✅ | ✅ | ❌ push → ✅ tras revisión |
+
+**El fallo se sigue corriendo un eslabón cada vez.** Se acabaron los eslabones
+del disco local; el siguiente que quede sin comprobar ya es del remoto.
+
+**La revisión cruzada sigue siendo lo más rentable del método**, y hoy dio su
+mejor caso: sin ella el paso 4 estaba en un solo disco y nadie lo sabía.
 
 ---
 
@@ -6716,6 +6848,23 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
 - **Análisis mal atribuido (mío, no del estudiante):** concluí que borrar el turno
   `assistant` causó la brevedad, sin saber que él también había añadido una regla
   al `SYSTEM`. Lección: preguntar **qué se tocó** antes de interpretar. → L1.11
+- **El cierre que se cumplió entero y dejó el trabajo sin salvar** (sesión 33,
+  TEAPP paso 4): la regla decía *"si no hay hash, no hubo cierre"*, y había hash
+  (`f015a01`). Pero `origin/main` seguía dos commits atrás: el paso entero vivía
+  **solo en un disco**. → **Un control puede cumplirse entero y no comprobar lo
+  que creías.** Es el mismo animal que "la prueba mide otra cosa de la que
+  promete", ahora en el protocolo en vez del código. Se comprueba con
+  `git status -sb`: si dice `ahead`, no terminaste.
+- **La misma regla escrita en dos sitios, diciendo cosas contrarias** (sesión 33):
+  al arreglar lo anterior, la skill decía "haz `push`" y los límites del propio
+  agente lo tenían prohibido. No da error: **obedece a una de las dos sin manera
+  de saber a cuál.** → Cuando corrijas una regla, pregunta **quién más la dice**.
+- **`Juan` y `juan`: una persona en Windows, dos en Linux** (sesión 33, análisis
+  previo del paso 4). Si un nombre escrito por el usuario se vuelve un nombre de
+  archivo sin normalizar, el marcador se parte en dos al desplegar — **sin ningún
+  error y con todos los tests locales en verde**. → Normalizar (minúsculas +
+  `strip`) antes de que el texto toque el disco. **Los bugs que no puedes ver en
+  tu máquina son los caros.**
 
 ---
 
