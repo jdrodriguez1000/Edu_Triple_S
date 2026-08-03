@@ -3,12 +3,12 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-02 (sesión 31)
+**Última actualización:** 2026-08-03 (sesión 32)
 
 ---
 
-# 📍 NIVEL 7 — PRODUCCIÓN. **TEAPP contesta por la red.**
-# Paso **2 cerrado** en la sesión 31. Costo del día: **$0,00**.
+# 📍 NIVEL 7 — PRODUCCIÓN. **TEAPP se ve en el navegador.**
+# Paso **3 cerrado** en la sesión 32. Costo del día: **$0,00**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -16,31 +16,173 @@ Ruta:   C:\Users\USUARIO\Documents\Company_TripleS\Test_Edu_TripleS\TEAPP
 Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
 ```
 
-## 🚨 LO PRIMERO DE LA PRÓXIMA SESIÓN: **el cierre de TEAPP no se guardó**
+## ✅ EL PASO 3 CERRÓ ENTERO — el primero que lo hace
 
-⚠️ **Todo el paso 2 está SIN COMMITEAR.** Comprobado al final de la sesión 31:
+Verificado desde esta terminal, con el hash y la sincronía:
 
 ```
-HEAD de TEAPP  : c160a83  ← el commit del paso 1
-progress.md    : sin tocar. Sigue diciendo "paso 1 de 9"
-sin commitear  : app/api.py, tests/test_api.py, y 11 archivos modificados
+HEAD de TEAPP  : 460b04f   git status: limpio   main...origin/main: sin "ahead"
 ```
 
-El `session-closer` **se lanzó** (18:38:09, está en el transcript) y **no dejó
-nada**. Ver el hallazgo abajo. El trabajo no se perdió —está entero en el disco—
-pero **no está en Git**, y Git es lo único que sobrevive a un accidente.
+**Es el primer paso de TEAPP que cierra las tres cosas: construir, registrar y
+guardar.** El 1 falló en el registro, el 2 en el commit, el 3 en ninguna.
 
-👉 **Antes de tocar el paso 3: cerrar TEAPP a mano.** Mirar `git status`,
-escribir `progress.md`, commitear y empujar.
+## SIGUIENTE PASO DEL CURSO: **el paso 4 — memoria por persona**
 
-## SIGUIENTE PASO DEL CURSO: **el paso 3 — la pantalla**
-
-`index.html` + `app.ts` contra la ruta `/practice` local. Es el nivel 6c
-aplicado, y lo primero que va a fallar es **CORS** (ya anotado allá como
-`T-029`). Sigue costando **$0,00**.
+El roadmap lo marca con 🚨: *"se rompe «hay un solo usuario»"*. Y es la
+suposición que **ya se rompió sola en el paso 2**, dos pasos antes de tiempo —
+así que esta vez se ve venir. Sigue costando **$0,00**.
 
 ⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7. Los pasos 0 a 6 se
 hacen enteros en su máquina.
+
+---
+
+# 🧪 LA SESIÓN 32: el paso 3, y la primera vez que se auditó una decisión
+
+**El día no empezó donde terminó.** Arrancó preguntando *"¿cómo configuro CORS?"*
+y terminó con CORS **descartado**, la arquitectura auditada, y un agujero del
+paso 7 escrito con nombre y fecha. Ninguna de las tres cosas estaba en el plan.
+
+## ⭐ LO MÁS IMPORTANTE DEL DÍA: una tarea que predecía un problema inexistente
+
+La otra terminal leyó `_context/architecture.md`, vio que **contradecía a
+`T-029`**, y en vez de obedecer la tarea o ignorarla, **paró y preguntó**.
+
+`T-029` decía: *"Configurar CORS: la pantalla se abrirá desde otro origen"*. Pero
+la arquitectura dice que en la nube hay **un solo servidor** y que la pantalla son
+*"archivos quietos"*. Un solo servidor sirviendo el HTML y `/practice` = **mismo
+origen** = el navegador no tiene nada que bloquear.
+
+**De dónde salió la tarea mala:** la escribió una revisión externa mirando el
+código del paso 2, **antes de que existiera pantalla alguna**. Adivinó cómo se
+iba a servir el HTML, y adivinó mal.
+
+> 🔑 **Una tarea no describe un problema: puede describir una predicción.** Y una
+> predicción hereda las suposiciones de quien la escribió, sin que se vean.
+
+> 🔑 **La mejor configuración de CORS es no necesitar CORS.**
+
+Y el corolario, que es el mismo animal de `L-004` visto por el otro lado:
+**antes de arreglar algo, comprueba que está roto.** Configurar un freno para un
+problema que no existe es fabricarse el problema.
+
+## 🚨 EL SEGUNDO HALLAZGO, y lo destapó una pregunta suya
+
+Preguntó, sin que nadie lo pidiera: ***"¿debió ser la arquitectura diferente?"***
+Esa pregunta —*"¿esto está bien decidido?"* en vez de *"¿cómo lo hago?"*— es el
+cambio de nivel que este proyecto venía a enseñar.
+
+La respuesta, leyendo `architecture.md` entero: **la forma es correcta, pero
+tiene dos silencios, y uno es caro.**
+
+| silencio | qué falta | costo |
+|---|---|---|
+| **barato** | no dice **quién sirve** el `index.html` | es el hueco que produjo `T-029`; se cierra escribiendo |
+| **caro** 🔴 | no dice **dónde vive `data/`** en producción | toca `app/tools.py` entero en el paso 7 |
+
+El documento dice de `data/` **dónde no va** (a Git, no). No dice **dónde vive**.
+En toda la arquitectura no aparece la palabra "base de datos", ni para elegirla
+ni para descartarla. Hoy son archivos en el disco porque es lo que salió del paso
+1, **no porque se haya decidido**.
+
+Y `assumptions.md` sabía algo que `architecture.md` no: `A-002` ya apuntaba al
+paso 7. **El registro de suposiciones iba por delante del documento de diseño.**
+
+> 🔑 **Lo que es barato de deshacer, se decide tarde. Lo que es caro de deshacer,
+> se decide temprano.** `architecture.md` aplica esta regla explícitamente con
+> React —dice que es *"la única decisión reversible"* y deja escrita **la señal**
+> que la revertiría— y no la aplicó con el almacenamiento, que es cara. Se aplazó
+> **en silencio**, que es la única forma mala de aplazar.
+
+## 🔴 `A-005` se cayó dos veces, y ese es el patrón que enseña
+
+Se escribieron dos suposiciones. Sobrevivió una:
+
+| | qué pasó | por qué |
+|---|---|---|
+| `A-004` (mismo origen) | ✅ **nunca llegó a ser suposición** | se decidió el mismo día → nació como `D-011` |
+| `A-005` (dónde vive `data/`) | ❌ se perdió **dos veces** | no era del paso 3 |
+
+La segunda vez se perdió **después de señalarla**, con el texto escrito y listo
+para pegar. No por descuido: porque el cierre del paso 3 cierra lo del paso 3.
+
+> 🔑 **Lo urgente del paso de hoy siempre expulsa lo importante del paso 7.** Por
+> eso las decisiones caras hay que escribirlas el día que se **piensan**, no el
+> día que se necesitan. `A-005` es la primera suposición del proyecto que se
+> escribe **sin tener trabajo asociado hoy** — las otras cuatro nacieron pegadas
+> a algo que se estaba construyendo.
+
+## Lo que se construyó (el paso 3)
+
+- **`index.html` + `frontend/app.ts` compilado con `tsc`** a `app/static/app.js`.
+  El fuente en una carpeta, la salida en otra, para que sea imposible confundir
+  cuál se edita. `strict: true`.
+- **El mismo FastAPI sirve la pantalla** (`StaticFiles` + `GET /`). Mismo origen
+  desde el primer día de desarrollo, igual que en la nube.
+- **El `.js` compilado se versiona**, contra la costumbre: en la nube corre **un
+  solo servicio, en Python**. Si el `.js` no está en Git, el paso 7 sube una
+  pantalla que no existe.
+- **De 53 a 57 tests**, sin red, **$0,00**.
+
+**Tres detalles que valen más que el código:**
+
+1. **Un comentario que documenta una AUSENCIA.** `api.py` explica por qué **no**
+   hay CORS. Casi nadie documenta lo que no está — y es lo que evita que dentro
+   de seis meses alguien "arregle" el hueco.
+2. **Se consultó la documentación en vez de la memoria, y valió:** `"module":
+   "none"` **lo rechazó el compilador** (TypeScript 7 ya no lo acepta).
+   → 🔑 *el compilador es la única fuente que no se queda desactualizada.*
+3. **`STATIC_DIR = Path(__file__).parent / "static"`** — calculado desde el
+   archivo, no desde dónde se lanzó el servidor. Es el mismo patrón que el
+   `load_dotenv(Path(__file__)...)` de todo Edu_TripleS, **aplicado solo, sin que
+   nadie lo recordara.** Conocimiento que ya es suyo.
+
+## 🐛 `L-005`, y el animal va por su quinta aparición
+
+El primer test de la pantalla decía `assert "localhost" not in script`.
+**Falló con el código correcto:** la palabra estaba en el archivo, dentro del
+comentario que explica **por qué no se usa**. El compilador conserva comentarios.
+
+> 🔑 **Cuando un test busca texto dentro de un archivo, el patrón tiene que
+> incluir la parte que lo hace código.** `"localhost"` cabe en un comentario;
+> `fetch("http` no.
+
+Y esta terminal encontró **un sexto caso** el mismo día:
+`test_the_compiled_script_is_served` afirma cubrir el riesgo de `D-012`
+(*editar el `.ts` y olvidar compilar*) y solo detecta *"nunca se compiló"*. Un
+`.js` de hace tres días pasa con un 200 perfecto. → `T-037`.
+
+| # | dónde | qué medía de más |
+|---|---|---|
+| 1 | paso 0 | el `session-starter` inventó las 3 herramientas |
+| 2 | paso 2 | 45 tests que nunca mandaban 2 peticiones juntas |
+| 3 | paso 2 | una prueba de carga contra el servidor equivocado (**la cazó él**) |
+| 4 | paso 3 | un test que buscaba una palabra y encontraba un comentario |
+| 5 | paso 3 | un test que dice cubrir `D-012` y no lo cubre |
+
+> 🔑 El síntoma es siempre el mismo: **la prueba mide algo distinto de lo que su
+> nombre promete.** Y solo se descubre preguntándose *qué tendría que pasar para
+> que fallara*.
+
+## La cadena de cierre, que por fin llegó al final
+
+| | construir | registrar | guardar |
+|---|---|---|---|
+| paso 1 | ✅ | 🟡 | ✅ |
+| paso 2 | ✅ | ✅ | ❌ no se commiteó |
+| paso 3 | ✅ | ✅ | ✅ |
+
+**El fallo se fue corriendo un eslabón cada vez** —registro, commit, push— hasta
+que se acabaron los eslabones. Y la regla que lo cerró nació del fallo del
+`session-closer` de la sesión 31:
+
+> 🔑 **Si no hay hash, no hubo cierre.** Un protocolo que se lanza no es un
+> protocolo que se cumple.
+
+Hoy hubo que revisar **tres veces** desde esta terminal para llegar ahí (después
+del paso 3, después del cierre, después del push). Las tres veces faltaba algo
+distinto. **La revisión cruzada sigue siendo lo más rentable del método.**
 
 ---
 
