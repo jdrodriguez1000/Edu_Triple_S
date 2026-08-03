@@ -82,6 +82,37 @@ llaves, datos de usuarios y cualquier memoria persistente.
 | Un `create()` gastó el triple de lo esperado | Tus reintentos × los del SDK (2 por defecto) se **multiplican** | Si pones reintentos propios, crea el cliente con `max_retries=0` |
 | Un dato sale cortado, ilegible o en mitad de un `{` | Casi siempre lo cortó **tu propio `print`**, no el modelo ni el servidor. Ya pasó 3 veces en el curso: `texto.strip()[:30]`, la fila "cortada" de Sonnet, y `e.message[:80]` | Antes de sospechar de la API, mira qué le hace tu código al dato. Para errores, usa `e.body` (ver §3.b) |
 
+### 3.a Dos shells en la misma máquina, dos gramáticas
+
+En Windows conviven **PowerShell** y **Bash** (el de Git Bash). Se parecen lo
+suficiente para confundirse y **no comparten sintaxis**. Escribir la de uno en el
+otro no siempre da error: a veces "funciona" y ensucia algo.
+
+| Para esto | PowerShell | Bash |
+|---|---|---|
+| Texto de varias líneas | `@'` … `'@` | `<<'EOF'` … `EOF` |
+| Variable de entorno | `$env:NOMBRE` | `$NOMBRE` |
+| Tirar la salida a la basura | `2>$null` | `2>/dev/null` |
+| Escapar un carácter | `` ` `` (tilde invertida) | `\` |
+
+🚨 **El caso real, el 2026-08-03 (sesión 34).** Se escribió un mensaje de commit
+con la sintaxis de PowerShell `@'…'@` dentro de la herramienta de Bash. Bash no
+la conoce: **se tragó el `@` como carácter normal** y lo dejó de primera línea
+del mensaje. El commit `d6924f8` de TEAPP se ve para siempre así:
+
+```
+d6924f8 @ fix: T-048 marcada hecha, y T-049 por el hueco...
+```
+
+> 🔑 **No dio error: dio un resultado ligeramente equivocado.** Un error se
+> arregla en el momento; un commit ya subido, no — arreglarlo pediría
+> `--amend` + `push --force`, que reescriben historia publicada. **Se dejó el
+> ruido a propósito.**
+
+📌 **La regla:** antes de pegar texto de varias líneas en un comando, mira **qué
+shell** lo va a leer. Si dudas, usa el `<<'EOF'` de Bash, que es el que aceptan
+las dos herramientas del proyecto sin sorpresas.
+
 ---
 
 ## 4. Plantilla: script nuevo del curso

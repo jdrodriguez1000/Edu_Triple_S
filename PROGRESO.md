@@ -3,12 +3,12 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-03 (sesión 33)
+**Última actualización:** 2026-08-03 (sesión 34)
 
 ---
 
 # 📍 NIVEL 7 — PRODUCCIÓN. **Cada persona tiene su propio marcador.**
-# Paso **4 cerrado** en la sesión 33. Costo del día: **$0,00**.
+# `T-037` cerrada en la sesión 34. Costo del día: **$0,00**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -16,21 +16,18 @@ Ruta:   C:\Users\USUARIO\Documents\Company_TripleS\Test_Edu_TripleS\TEAPP
 Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
 ```
 
-## ✅ EL PASO 4 CERRÓ — pero solo después de la revisión cruzada
-
-Verificado desde esta terminal, corriendo las cosas, no leyéndolas:
+## ✅ ESTADO, verificado desde esta terminal corriendo las cosas
 
 ```
-origin/main de TEAPP : af40fe9   main...origin/main: sin "ahead"
-pytest               : 121 pasan, 0.92 s, sin red
-npx tsc              : sin cambios → el .js commiteado está al día
-git ls-files data/   : vacío → ningún dato de persona entró a Git
+origin/main de TEAPP : d6924f8   main...origin/main: sin "ahead"
+pytest               : 121 pasan, 0.93 s
+Paso 5b del cierre   : compilar: 0 · comparar: 0 → el .js está al día
 ```
 
-⚠️ **El primer intento de cierre tenía commit y no tenía push.** El paso 4 se
-salvó porque esta terminal hizo `git fetch`. Ver `L-006` abajo.
+El paso 4 cerró en la sesión 33. La 34 no construyó producto: **saldó la última
+deuda del paso 3** (`T-037`) y dejó el cierre vigilando el compilado.
 
-## SIGUIENTE PASO DEL CURSO: **el paso 5 — identidad de verdad**
+## SIGUIENTE PASO DEL CURSO: **el paso 5 — identidad de verdad** (`T-045`)
 
 Hoy la identidad es **declarada, no verificada**: quien usa la app escribe un
 nombre y el servidor se lo cree (`D-013`). Cualquiera puede escribir el nombre
@@ -41,12 +38,180 @@ se sustituye **la pieza, no la tubería**.
 📌 `D-013` deja escrito qué tiene que hacer el paso 5: **quitar** la casilla
 "Your name", no ponerle algo al lado. Sigue costando **$0,00**.
 
-**Cabo suelto:** `T-037` (deuda del paso 3) — ningún test comprueba que el `.js`
-esté **compilado al día**, solo que existe. Verificado a mano hoy: está al día.
-Lleva dos pasos abierta.
+**Cabos sueltos, ninguno bloquea** (los cuatro en `tasks.md` de TEAPP):
+
+| | qué falta |
+|---|---|
+| `T-046` | `A-006` — que la ruta de `mktemp -d` le sirva a `node` **en otra máquina** |
+| `T-047` | `C-001` — desconectar la red de verdad y correr `pytest` |
+| `T-049` | `protocol-close` escribe `tasks.md` **antes** de sus dos últimos pasos |
+| 🔺 nuevo | **pegar en `T-048` las corridas B/C/D** del control fallando (2 líneas) |
 
 ⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7. Los pasos 0 a 6 se
 hacen enteros en su máquina.
+
+---
+
+# 🧪 LA SESIÓN 34: `T-037`, y seis rondas de revisión sobre un control de 8 líneas
+
+**No se escribió una línea de producto.** Se cerró la última deuda del paso 3, y
+el camino hasta ahí produjo más lecciones que cualquier sesión de código.
+
+## Lo que se decidió, y por qué no fue un test
+
+`T-037`: el test `test_the_compiled_script_is_served` se llamaba *compiled* y
+solo medía *"existe un archivo"*. Un `.js` de hace tres días daba **200
+perfecto**.
+
+La pregunta de fondo la contestó la otra terminal, y su argumento es el que
+cierra el asunto:
+
+> 🔑 **Si el arreglo no toca el código, la comprobación no estaba mirando el
+> código.** Cuando falla un test de los 121, abres el `.py`. Cuando falla este,
+> el código está perfecto: corres `npm run build` y commiteas. Es una pregunta
+> sobre **el repositorio**, no sobre el programa — la misma familia que
+> *"¿hiciste push?"*.
+
+Segunda señal, y apunta igual: **en el servidor desplegado no hay `.ts`.** Una
+comprobación que se evapora en producción no hablaba del producto: hablaba de tu
+mesa de trabajo.
+
+→ Vive en `protocol-close`, **Paso 5b, antes del `git add`** (`D-017`).
+
+## ⭐ `L-007` — el animal por su **séptima** aparición, y por la cara nueva
+
+Las seis anteriores **medían de menos**: la prueba pasaba con el código roto.
+La primera versión de este control **medía de más**:
+
+```
+$ diff -r app/static "$OUT"        # con el repo CORRECTO
+Only in app/static: index.html
+diff exit=1                        ← 🚨 declara "viejo" un .js impecable
+```
+
+`diff -r` compara **en las dos direcciones**, y `app/static/` es una carpeta
+**mixta**: ahí vive `index.html`, escrito a mano, que ningún compilador genera.
+
+> 🔑 **Una alarma que siempre suena y una que nunca suena fallan igual.** La
+> segunda no te avisa; la primera **te enseña a no escuchar**, y se lleva por
+> delante tu atención para todo lo demás.
+
+**El arreglo bueno, y el porqué que hay que conservar:** la lista de archivos a
+comparar sale de `$OUT`, **la carpeta del compilador**.
+
+> 🔑 **No es una lista negra de excepciones: es que el compilador declara qué le
+> toca vigilar.** Un `-x index.html` funcionaba hoy y mentía el día que hubiera
+> un segundo archivo. **Una lista negra hay que mantenerla; esta se mantiene sola.**
+
+## 🐛 Dos fallos que detectan, informan, y devuelven éxito
+
+Sobre la versión corregida, medido aquí con dos archivos de mentira:
+
+```
+a.js distinto · b.js igual
+1c1
+< nuevo
+--- > viejo              ← la diferencia SÍ se imprime
+>>> exit del bucle = 0    ← 🚨 y el bucle dice "todo bien"
+```
+
+Un `for` termina con el código del **último** comando, no de *"alguno falló"*.
+Y el fragmento acababa en `rm -rf "$OUT"`, que casi siempre funciona: **exit 0
+pasara lo que pasara.** El segundo fallo era gemelo — el "freno explícito" del
+caso *cero archivos* era un `echo`, que imprime y sigue.
+
+> 🔑 **Un control que reporta el problema sin señalarlo como fallo depende de que
+> alguien lea la salida entera** — justo de lo que huíamos. Se arregla con una
+> bandera: `|| FALLO=1`.
+
+⚠️ **Y aquí está lo que vale la sesión.** Ese bug **solo aparece con dos o más
+archivos generados**. La medición se había hecho con uno.
+
+> 🔑 **El bug vivía en el caso exacto que el diseño presumía manejar, y la prueba
+> se hizo en el único caso donde no se manifiesta.**
+
+## ⭐⭐ La lección madre: `L-008` y la mitad que nadie mide
+
+Las **tres** correcciones del día fueron la misma:
+
+| ronda | qué faltaba |
+|---|---|
+| 1 | la lista de archivos: faltaba `tasks.md`, el archivo donde vive la propia tarea |
+| 2 | se comparó la opción rival **en su versión floja** y se le ganó a esa |
+| 3 | el control se midió **solo contra el caso bueno** |
+
+> 🔑 **Un control se mide dos veces o no se midió:** que **atrape lo malo** y que
+> **deje pasar lo bueno**. Nadie salta la primera mitad. La segunda se salta
+> siempre.
+
+Y el remate: **esa lección ya estaba escrita en TEAPP, por la misma terminal, un
+paso antes** — `test_normalize_user_accepts_ordinary_names`, con el comentario
+*"un validador que rechaza todo también pasaría los tests de arriba"*.
+
+> 🔑 **Saber un principio y aplicárselo a lo que estás escribiendo ahora son dos
+> habilidades distintas.** Por eso el arreglo nunca es "acordarse": es meterlo en
+> el protocolo.
+
+`L-008` es la de la ronda 2: **argumentar contra la peor versión de la otra
+opción no es comparar — es elegir y buscarle razones después.** Y se ve igual
+que un análisis.
+
+## Dos decisiones de operación que valen para todo el curso
+
+1. **`D-018` — un control no puede causar un daño mayor que el que previene.**
+   Si el `.js` está viejo, el cierre **commitea y sube igual**, con la alarma
+   encendida. Un cierre que se planta reproduce `L-006`: el día entero sin
+   guardar. *Un `.js` viejo señalado en rojo es una tarea; trabajo sin subir es
+   el desastre.*
+2. **⛔ No recompilar automáticamente**, ni cuando es obvio. Regenerar el `.js`
+   deja el repo correcto y **borra la señal de que se olvidó**.
+   → 🔑 **El olvido es la información.**
+
+## La regla que hoy había que obedecer, y ayer había que corregir
+
+El commit `d6924f8` de TEAPP salió con un `@` suelto de primera línea (sintaxis
+de PowerShell dentro de Bash — ver `GUIDE.md §3.a`). No se arregló, **y la
+decisión fue correcta**: pedía `--amend` + `push --force` sobre algo ya
+publicado.
+
+| | letra | espíritu |
+|---|---|---|
+| sesión 33 — prohibición de `git push` | ❌ lo vetaba | ✅ lo cumplía |
+| sesión 34 — prohibición de `--amend` | ✅ lo veta | ✅ **y hace bien** |
+
+> 🔑 **La habilidad no es "seguir reglas" ni "cuestionarlas": es distinguir cuál
+> toca.** La señal que lo decide: `push` **solo añade**; `--amend --force`
+> **reescribe lo publicado**.
+
+## Errores míos de esta sesión, corregidos
+
+1. **El contador estaba mal en este archivo.** La prosa de la sesión 32 llamaba a
+   `T-037` *"un sexto caso"* contradiciendo su propia tabla (donde es el 5). La
+   otra terminal lo leyó y creyó que había que renumerar `L-006`.
+   → 🔑 **Un contador mal llevado no se equivoca solo: manda a otro a arreglar
+   algo que no está roto.** Corregido arriba, con la nota.
+2. **Dije que *"la suite corre sin red" estaba anotado***. Estaba anotado **aquí**,
+   no en TEAPP. La otra terminal lo comprobó y me corrigió, con razón. De ahí
+   salió `C-001`, la primera entrada de `constraints.md`.
+   → 🔑 **Una propiedad de la que el proyecto depende y que no está escrita en el
+   proyecto no se puede romper a sabiendas, porque nadie sabe que existe.**
+
+## El método, que hoy dio su mejor día
+
+**Seis rondas de revisión cruzada sobre un control de 8 líneas**, y cada una
+encontró algo que la anterior no veía. Ninguna salió de saber más: **salieron de
+correr las cosas en vez de leerlas.**
+
+Y una técnica nueva que trajo la otra terminal, sin que se le pidiera: **extraer
+el bloque de comandos desde el propio `SKILL.md` y compararlo con el archivo que
+se corrió.**
+
+> 🔑 **La evidencia tiene que poder decir de qué texto es evidencia.** Una
+> medición que no puede señalar el código exacto que midió es una anécdota.
+
+⚠️ **Lo único que quedó a medias:** las corridas del control **fallando**
+(B/C/D) no llegaron a `progress.md`. Solo está anotada la verde.
+→ 🔑 **Una medición que no llega al registro no existe mañana.**
 
 ---
 
@@ -270,7 +435,7 @@ para pegar. No por descuido: porque el cierre del paso 3 cierra lo del paso 3.
    `load_dotenv(Path(__file__)...)` de todo Edu_TripleS, **aplicado solo, sin que
    nadie lo recordara.** Conocimiento que ya es suyo.
 
-## 🐛 `L-005`, y el animal va por su quinta aparición
+## 🐛 `L-005`, y el animal va por su cuarta aparición
 
 El primer test de la pantalla decía `assert "localhost" not in script`.
 **Falló con el código correcto:** la palabra estaba en el archivo, dentro del
@@ -280,10 +445,17 @@ comentario que explica **por qué no se usa**. El compilador conserva comentario
 > incluir la parte que lo hace código.** `"localhost"` cabe en un comentario;
 > `fetch("http` no.
 
-Y esta terminal encontró **un sexto caso** el mismo día:
+Y esta terminal encontró **un quinto caso** el mismo día:
 `test_the_compiled_script_is_served` afirma cubrir el riesgo de `D-012`
 (*editar el `.ts` y olvidar compilar*) y solo detecta *"nunca se compiló"*. Un
 `.js` de hace tres días pasa con un 200 perfecto. → `T-037`.
+
+> ✏️ **Corregido en la sesión 34.** Esta prosa decía *"un sexto caso"* y
+> *"quinta aparición"* arriba, **contradiciendo a la tabla de abajo**, donde
+> `L-005` es el 4 y `T-037` el 5. La numeración buena es la de la tabla. El
+> error se propagó: la otra terminal lo leyó y creyó que cerrar `T-037` obligaba
+> a renumerar `L-006`. **Un contador mal llevado no se equivoca solo: manda a
+> otro a arreglar algo que no está roto.**
 
 | # | dónde | qué medía de más |
 |---|---|---|
