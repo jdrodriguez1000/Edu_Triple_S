@@ -3,12 +3,12 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-04 (sesión 35)
+**Última actualización:** 2026-08-04 (sesión 36)
 
 ---
 
-# 📍 NIVEL 7 — PRODUCCIÓN. **Cada persona tiene su propio marcador.**
-# `T-049` cerrada en la sesión 35. Costo del día: **$0,00**.
+# 📍 NIVEL 7 — PRODUCCIÓN. **La identidad ya no se declara: se prueba.**
+# **Paso 5 CERRADO** en la sesión 36. Costo del día: **$0,00**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -18,52 +18,175 @@ Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
 
 ## ✅ ESTADO, verificado desde esta terminal corriendo las cosas
 
+**Corrido POR MÍ en esta terminal, no reportado por la otra:**
+
 ```
-origin/main de TEAPP : d5f1c6e   main...origin/main: sin "ahead"
-probe/ (repo suelto) : borrado, y NUNCA entró al historial (git log -- probe vacío)
-Paso 2b del cierre   : compilar: 0 · comparar: 0 → el .js está al día
+pytest (suite entera)          : 192 passed in 5.56s
+POST /practice sin cookie,
+  con {"user":"juan"} en el cuerpo → 401   ← el ataque de ayer, muerto
+POST /practice con cookie fabricada
+  a mano para ana                  → 401
+GET /me sin cookie                 → 401
+data/accounts.json             : salt + hash por persona, ninguna clave en claro
+fuentes de identidad en app/   : UNA (_current_user). No hay segunda puerta
 ```
 
-⚠️ **Lo de `pytest` (121 en 0,93 s) es de la sesión 34: hoy no se corrió.** Hoy no
-se tocó código de producto, así que no había motivo — pero se anota de dónde viene
-el dato en vez de arrastrarlo como si fuera de hoy.
+✅ **Y lo comprobó ÉL en el navegador**, que es lo único que ni yo podía hacer:
+`document.cookie` **no devuelve la sesión**, y en la pestaña de Cookies la casilla
+`HttpOnly` está marcada. Existe, viaja sola en cada petición, y el JavaScript de
+la página no la alcanza.
 
-⚠️ **Y el `compilar: 0 / comparar: 0` lo corrió la otra terminal, no yo.** Lo que
-verifiqué aquí fue el estado de Git. La distinción importa: es la diferencia entre
-*"lo comprobé"* y *"me lo reportaron"*, y este archivo la ha confundido antes.
+📌 **Ese fue el testigo que faltaba, y casi no ocurre.** Ver la sesión 36 abajo.
 
-El paso 4 cerró en la sesión 33. Las sesiones 34 y 35 **no construyeron producto**:
-saldaron las dos últimas deudas del paso 3 y dejaron el protocolo de cierre
-comprobando de verdad lo que decía comprobar.
+El paso 4 cerró en la sesión 33; las 34 y 35 saldaron deudas del paso 3. La 36
+construyó el paso 5 entero (la otra terminal) y lo verificó (esta).
 
-## SIGUIENTE PASO DEL CURSO: **el paso 5 — identidad de verdad** (`T-045`)
+## SIGUIENTE PASO DEL CURSO: **el paso 6 — frenos de producción**
 
-Hoy la identidad es **declarada, no verificada**: quien usa la app escribe un
-nombre y el servidor se lo cree (`D-013`). Cualquiera puede escribir el nombre
-de otro y sumar a su marcador. Es **conocido y aceptado**, no un descuido — el
-mismo truco del juez falso: se construye la tubería con la pieza falsa y luego
-se sustituye **la pieza, no la tubería**.
+Del roadmap: *"tope por persona y por día, timeouts. 🚨 se rompe «existe la
+corrida»"*. Sigue costando **$0,00** y sigue siendo en su máquina.
 
-📌 `D-013` deja escrito qué tiene que hacer el paso 5: **quitar** la casilla
-"Your name", no ponerle algo al lado. Sigue costando **$0,00**.
+**Qué significa "se rompe la corrida":** hasta hoy el agente es falso y responde
+al instante. Un tope y un *timeout* solo tienen sentido cuando algo puede tardar
+o costar — y eso llega en el paso 8, con el modelo de verdad. El paso 6 construye
+los frenos **antes** de que haya nada que frenar, que es el mismo orden de siempre.
 
-**Cabos sueltos, ninguno bloquea** (los cuatro en `tasks.md` de TEAPP):
+**Cabos sueltos, ninguno bloquea** (en `tasks.md` de TEAPP):
 
 | | qué falta |
 |---|---|
 | `T-046` | `A-006` — que la ruta de `mktemp -d` le sirva a `node` **en otra máquina** |
 | `T-047` | `C-001` — desconectar la red de verdad y correr `pytest` |
-| 🔺 | **pegar en `T-048` las corridas B/C/D** del control fallando (2 líneas) — **lleva 2 días** |
-| ~~`T-049`~~ | ✅ cerrada hoy |
+| paso 7 | `TEAPP_SECRET_KEY` estable entre despliegues (`A-008`) |
+| paso 7 | `TEAPP_COOKIE_SECURE=true` en la nube |
+| paso 7 | un test que anule el `autouse` y ejerza la rama `secure=True` (`A-009`) |
 
-📌 **De lo pendiente, lo de `T-048` es lo que más se está enfriando**, y la razón
-no es el tamaño: del control del `.js` solo está registrada **la mitad buena**.
-`L-007` y `L-008` dicen que un control se mide dos veces —que atrape lo malo y que
-deje pasar lo bueno—, y la evidencia de la primera mitad **se corrió y no se
-escribió**. Va en el cierre de mañana, de paso; no merece abrir el día.
+📌 **Las tres últimas tienen la misma forma, y la otra terminal lo vio sola:**
+son cosas que **hoy no se pueden comprobar porque no existe el sitio donde
+ocurren**. No es deuda por pereza: es **deuda por calendario**, y es exactamente
+lo que el roadmap decidió al poner la nube en el 7. 🔑 **Distinguir las dos clases
+de deuda evita tanto correr a taparlas como olvidarlas.** → candidata a `LESSONS.md`.
 
 ⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7. Los pasos 0 a 6 se
 hacen enteros en su máquina.
+
+---
+
+# 🧪 LA SESIÓN 36: el paso 5, y la casilla que nadie había marcado
+
+**El paso más grande del nivel 7 hasta ahora, y esta terminal no escribió una
+línea de producto.** El reparto de las dos terminales funcionó entero: la otra
+construyó, esta revisó, y el valor salió tres veces de **ir a abrir el archivo
+del que hablaba la frase**.
+
+## Lo que se construyó (la otra terminal)
+
+El nombre **sale del cuerpo de `/practice`**. Ese hueco es el paso entero: quien
+practica sale de una cookie firmada y de ningún otro sitio. Tres piezas nuevas,
+todas con librería estándar — **cero paquetes añadidos**, así que `C-001` sigue en
+pie sin nada que pensar:
+
+| archivo | qué hace |
+|---|---|
+| `app/accounts.py` | quién existe. `scrypt` con sal por persona, `compare_digest` al comparar |
+| `app/sessions.py` | la tarjeta: `hmac` para firmar, caducidad a una semana |
+| `app/config.py` | de dónde salen los secretos. Lector de `.env` de doce líneas |
+
+Cookie `HttpOnly` + `SameSite=Lax` + `Secure` configurable. Y se cerró la puerta
+de atrás: `main.py` creaba marcadores sin credencial, así que **la terminal pide
+contraseña desde hoy**. Un solo almacén de credenciales, no uno por puerta.
+
+## ⭐ LO MÁS IMPORTANTE: el paso se declaró terminado sin el único testigo que cuenta
+
+La otra terminal preguntó: *"¿Lo pruebas en el navegador y me cuentas qué ves?"*.
+En el mensaje siguiente, **sin haber recibido respuesta**, escribió: *"El paso 5
+está terminado: código, tests, corrida real, prueba negativa y registro"*.
+
+Y la regla del roadmap dice justo lo contrario:
+
+> *"Un paso no está terminado porque el código exista: está terminado **cuando lo
+> viste funcionar**."*
+
+Mira la lista de las cinco pruebas. **Las cinco las hizo ella.** El único testigo
+que el roadmap pide era el que faltaba.
+
+> 🔑 **Una lista de comprobaciones completa no es lo mismo que una comprobación
+> completa. Si todas las casillas las marca quien hizo el trabajo, la que faltaba
+> sigue faltando.**
+
+Es la distinción que este archivo ya se reprochaba en la sesión 35 —*"lo comprobé"*
+vs *"me lo reportaron"*— y esta vez el atajo iba a cerrar un paso entero. **Se
+paró el cierre y se mandó al navegador.** Ahí sí: `document.cookie` no devuelve la
+sesión, y `HttpOnly` está marcado.
+
+## El hueco que encontré en los tests, y por qué es de la familia de `L-010`
+
+`tests/conftest.py:38` pone `COOKIE_SECURE=false` con `autouse=True`. En los 192.
+Busqué en toda la suite: **la rama `secure=True` no se ejecuta nunca.**
+
+- `cookie_secure()` devuelve `true` cuando la variable no está puesta. **Ese es el
+  valor por defecto, el seguro, y no corre en ningún test.**
+- En el paso 7 se pone en `true` **en producción**: esa rama estrenará en la nube.
+
+> 🔑 **El camino por defecto es el que menos se prueba, precisamente porque las
+> pruebas lo apagan para poder trabajar.**
+
+Ella lo anotó como `A-009` y añadió el parentesco con `L-010` mejor de lo que yo lo
+dije: *"las dos veces el hueco no está en lo que el test afirma, sino en lo que ni
+se plantea"*.
+
+## Las dos correcciones que evitaron trabajo perdido
+
+1. **Su argumento contra "entrar con Google" era falso.** Dijo que necesita una
+   dirección pública de vuelta que no existe hasta desplegar; **Google admite
+   `http://localhost`**. El costo real es otro: cuenta de Google Cloud, pantalla de
+   consentimiento, secreto de cliente. Se dejó **anotado como argumento falso, no
+   borrado** — 🔑 *una decisión correcta sostenida por un motivo malo se cae en
+   cuanto alguien comprueba el motivo.*
+2. **Su resumen decía "la cookie va `HttpOnly`, `SameSite=Lax` y `Secure`"**, que
+   leído solo significa que el navegador la descarta en localhost. El código era
+   mejor que la frase: `TEAPP_COOKIE_SECURE=false` en el `.env` local y un aviso en
+   el log al arrancar. → 🔑 **un resumen que describe el caso de producción sin
+   decir que lo es hace que el lector diagnostique un fallo que no existe.**
+
+## Lo que faltaba en su análisis, y lo encontró el disco
+
+Su análisis describía **cómo se entra**, no **cómo se registra**. Y en
+`data/users/` había cuatro marcadores sin dueño: `ana`, `juan`, `maria`, `pedro`,
+12 bytes cada uno, escritos entre las **10:44:02 y las 10:44:42** del 3 de agosto.
+Cuarenta segundos: no son cuatro personas, es una corrida de `curl`.
+
+Con registro abierto, cualquiera se registra como `juan` y hereda sus puntos —
+**el agujero de `D-013` con un formulario delante.** Su respuesta (`D-020`) fue
+mejor que mi pregunta:
+
+> 🔑 **Sembrar esas cuentas no obliga a inventarles un dueño: obliga a inventarles
+> una contraseña.** Fabricar credenciales válidas sin nadie detrás es lo contrario
+> de lo que este paso viene a construir.
+
+Y de ahí salió la regla que cierra el agujero por estructura: **todo marcador nace
+junto a su credencial.** Con dos avisos míos que sí hacían falta:
+
+1. **El borrado se deshacía solo.** `add_point` crea el archivo la primera vez, así
+   que el primer `curl` de prueba resucitaba `juan.json`. → No era una tarea que se
+   completa, era **una condición que solo se estabiliza cuando el registro existe**.
+2. **La regla necesitaba decir según qué archivo.** *"El registro rechaza un nombre
+   que ya existe"* — ¿existe según `data/users/`, una carpeta que cualquiera llena
+   practicando? → 🔑 **la lista de quién existe y la lista de quién tiene puntos no
+   son la misma lista, aunque hoy se parezcan.**
+
+## El fallo que los tests no vieron (suyo, y bien contado)
+
+`/logout` devolvía `HTTP 000` contra el servidor real, con los 191 en verde. El
+test miraba **el efecto** —la sesión quedó cerrada— y no la respuesta. → `L-010`:
+*un test que solo mira consecuencias da por bueno cualquier camino que llegue ahí.*
+
+## El método
+
+Cuarta sesión seguida en que esta terminal no escribe producto y la cuarta que
+vale. Hoy el patrón se vio en su forma más limpia: **los tres hallazgos salieron de
+abrir un archivo que la otra terminal mencionaba pero no había mirado** —
+`conftest.py`, `add_point`, `data/users/` con sus marcas de tiempo.
 
 ---
 
