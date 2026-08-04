@@ -3,12 +3,12 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-03 (sesión 34)
+**Última actualización:** 2026-08-04 (sesión 35)
 
 ---
 
 # 📍 NIVEL 7 — PRODUCCIÓN. **Cada persona tiene su propio marcador.**
-# `T-037` cerrada en la sesión 34. Costo del día: **$0,00**.
+# `T-049` cerrada en la sesión 35. Costo del día: **$0,00**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -19,13 +19,22 @@ Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
 ## ✅ ESTADO, verificado desde esta terminal corriendo las cosas
 
 ```
-origin/main de TEAPP : d6924f8   main...origin/main: sin "ahead"
-pytest               : 121 pasan, 0.93 s
-Paso 5b del cierre   : compilar: 0 · comparar: 0 → el .js está al día
+origin/main de TEAPP : d5f1c6e   main...origin/main: sin "ahead"
+probe/ (repo suelto) : borrado, y NUNCA entró al historial (git log -- probe vacío)
+Paso 2b del cierre   : compilar: 0 · comparar: 0 → el .js está al día
 ```
 
-El paso 4 cerró en la sesión 33. La 34 no construyó producto: **saldó la última
-deuda del paso 3** (`T-037`) y dejó el cierre vigilando el compilado.
+⚠️ **Lo de `pytest` (121 en 0,93 s) es de la sesión 34: hoy no se corrió.** Hoy no
+se tocó código de producto, así que no había motivo — pero se anota de dónde viene
+el dato en vez de arrastrarlo como si fuera de hoy.
+
+⚠️ **Y el `compilar: 0 / comparar: 0` lo corrió la otra terminal, no yo.** Lo que
+verifiqué aquí fue el estado de Git. La distinción importa: es la diferencia entre
+*"lo comprobé"* y *"me lo reportaron"*, y este archivo la ha confundido antes.
+
+El paso 4 cerró en la sesión 33. Las sesiones 34 y 35 **no construyeron producto**:
+saldaron las dos últimas deudas del paso 3 y dejaron el protocolo de cierre
+comprobando de verdad lo que decía comprobar.
 
 ## SIGUIENTE PASO DEL CURSO: **el paso 5 — identidad de verdad** (`T-045`)
 
@@ -44,11 +53,119 @@ se sustituye **la pieza, no la tubería**.
 |---|---|
 | `T-046` | `A-006` — que la ruta de `mktemp -d` le sirva a `node` **en otra máquina** |
 | `T-047` | `C-001` — desconectar la red de verdad y correr `pytest` |
-| `T-049` | `protocol-close` escribe `tasks.md` **antes** de sus dos últimos pasos |
-| 🔺 nuevo | **pegar en `T-048` las corridas B/C/D** del control fallando (2 líneas) |
+| 🔺 | **pegar en `T-048` las corridas B/C/D** del control fallando (2 líneas) — **lleva 2 días** |
+| ~~`T-049`~~ | ✅ cerrada hoy |
+
+📌 **De lo pendiente, lo de `T-048` es lo que más se está enfriando**, y la razón
+no es el tamaño: del control del `.js` solo está registrada **la mitad buena**.
+`L-007` y `L-008` dicen que un control se mide dos veces —que atrape lo malo y que
+deje pasar lo bueno—, y la evidencia de la primera mitad **se corrió y no se
+escribió**. Va en el cierre de mañana, de paso; no merece abrir el día.
 
 ⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7. Los pasos 0 a 6 se
 hacen enteros en su máquina.
+
+---
+
+# 🧪 LA SESIÓN 35: `T-049`, y una promesa que casi se escribe en papel
+
+**Otra sesión sin una línea de producto, y la tercera seguida que lo justifica.**
+Hoy esta terminal no escribió: **revisó**. Todo el trabajo lo hizo la otra, y el
+valor del día salió de una comprobación de treinta segundos.
+
+## El problema, y por qué tenía dos mitades distintas
+
+`T-049`: `protocol-close` escribía `tasks.md` en el Paso 4, pero **dos pasos
+posteriores producen tareas** — el control del `.js` y el push. Su resultado
+llegaba tarde y no había dónde anotarlo.
+
+La otra terminal lo partió bien, y esa partición es lo que hay que conservar:
+
+| mitad | qué tenía | arreglo |
+|---|---|---|
+| el `.js` | un **problema de orden** | mover el control: Paso 5b → **Paso 2b** |
+| el push | una **imposibilidad lógica** | no se arregla: se **escribe** |
+
+🔑 **La segunda es la que enseña.** Para saber si el push funcionó, el commit ya
+tiene que existir — y `tasks.md` va dentro de ese commit. Un segundo commit hereda
+el mismo problema con su propio push, y así al infinito.
+
+> 🔑 **Distinguir "está en el orden equivocado" de "no puede estar en ningún
+> orden" es la mitad del trabajo.** Lo primero se reordena. Lo segundo, si lo
+> tratas como pendiente, se queda de pendiente para siempre y parece un olvido.
+
+## ⭐ LO MÁS IMPORTANTE: la promesa que se apoyaba en un comando que nadie miró
+
+Su arreglo de la segunda mitad decía: *"la sesión siguiente lo recoge leyendo
+`git status -sb` al arrancar"*. La frase **sonaba completa**.
+
+Fui a mirar si era verdad. **`protocol-start` no leía `-sb`: leía
+`git status --short`.** Y lo medí en un repo de mentira, con un commit sin subir
+a propósito:
+
+```
+=== git status --short  (lo que leía protocol-start) ===
+[vacío — no vio nada]
+
+=== git status -sb ===
+## master...origin/main [ahead 1]
+```
+
+`--short` **no imprime la línea de la rama**. Los dos listan los archivos sueltos,
+y por eso se parecen; pero un commit sin subir le resulta **invisible** al primero.
+
+> 🔑 **Una promesa cruzada entre dos archivos solo vale si vas a leer el otro.**
+> Si se hubiera escrito tal cual, el cierre habría quedado entero, en verde, y el
+> trabajo sin salvar. Es `L-006` por tercera vez, con disfraz nuevo.
+
+Y es, literal, el corolario que salió ayer: **cuando corrijas una regla, pregunta
+quién más la dice.** La regla vivía en dos archivos y se iba a tocar uno.
+
+## Lo que la otra terminal hizo mejor de lo que se le pidió
+
+1. **No dio por buena la medición: la volvió a correr.** Y la dejó escrita en
+   `[L-009]` **con la corrida detrás**, no con la conclusión sola.
+2. **Escribió la dependencia donde vive**, avisando al que la vaya a romper:
+   *"si algún día alguien cambia ese comando, esta promesa se convierte en papel"*.
+   → 🔑 **Una nota que solo explica el presente se borra en la siguiente limpieza;
+   una que le habla al que va a romperla, no.**
+3. **Anotó la suposición que nace al mover el control** (`A-007`): entre la
+   comprobación y el `git add` no se toca ningún `.ts`. Hoy es cierto, pero ahora
+   está escrito — la familia de `C-001`.
+4. **Dejó el nombre viejo documentado.** El control se llamó "Paso 5b" dos días y
+   ese nombre está en `decisions.md`, `tasks.md` y aquí. En vez de renombrarlo todo,
+   una nota: *"se llamaba Paso 5b hasta el 2026-08-04; es el mismo control"*.
+   → 🔑 **Renombrar hacia atrás rompe el registro; una nota de equivalencia no.**
+
+## El incidente del `probe/`, que salió bien por el motivo correcto
+
+Su repo de prueba se creó **dentro del proyecto**: el `cd` al scratchpad falló y el
+comando siguió corriendo, en silencio. **El cierre lo cazó y lo reportó en "Sin
+resolver" en vez de commitearlo.**
+
+Se verificó desde aquí que **nunca entró al historial** (`git log -- probe`, vacío).
+Eso no era paranoia: **Git no olvida**, y borrar la carpeta después no lo habría
+borrado del historial. La regla de siempre, estrenada en un caso real.
+
+> 🔑 **Un `cd` que falla no detiene el comando que va detrás.** Es la misma familia
+> del `for` que devolvía 0 de ayer: **en la shell, el fallo no se propaga solo.**
+
+## Lo que se revisó y estaba bien — y lo que está bien por suerte
+
+Se comprobó que **ningún archivo quedó diciendo `--short` como instrucción**, y que
+**los dos agentes no contradicen a las skills** (el fallo de la sesión 33).
+
+⚠️ Pero un matiz que no hay que perder: `session-starter.md` menciona `git status`
+**a secas**. Se comprobó qué imprime — y sí muestra `Your branch is ahead...`, o
+sea no contradice. **Está bien por suerte, no por diseño**: nadie eligió ese
+comando pensando en esto. Cabo anotado, no hace daño hoy.
+
+## El método, otra vez
+
+Tres sesiones seguidas sin producto y las tres han valido. El patrón se repite:
+**la otra terminal construye, esta comprueba lo que la otra da por supuesto.** Hoy
+el hallazgo entero cabía en dos comandos — y no salió de saber más, sino de **ir a
+abrir el archivo del que hablaba la frase.**
 
 ---
 
