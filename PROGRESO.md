@@ -3,12 +3,13 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-04 (sesión 36)
+**Última actualización:** 2026-08-04 (sesión 37)
 
 ---
 
 # 📍 NIVEL 7 — PRODUCCIÓN. **La identidad ya no se declara: se prueba.**
-# **Paso 5 CERRADO** en la sesión 36. Costo del día: **$0,00**.
+# **Paso 5 CERRADO** en la sesión 36. **`T-047` cerrada** en la 37.
+# Costo del día: **$0,00**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -56,7 +57,7 @@ los frenos **antes** de que haya nada que frenar, que es el mismo orden de siemp
 | | qué falta |
 |---|---|
 | `T-046` | `A-006` — que la ruta de `mktemp -d` le sirva a `node` **en otra máquina** |
-| `T-047` | `C-001` — desconectar la red de verdad y correr `pytest` |
+| ~~`T-047`~~ | ✅ **cerrada en la sesión 37** — ver abajo |
 | paso 7 | `TEAPP_SECRET_KEY` estable entre despliegues (`A-008`) |
 | paso 7 | `TEAPP_COOKIE_SECURE=true` en la nube |
 | paso 7 | un test que anule el `autouse` y ejerza la rama `secure=True` (`A-009`) |
@@ -69,6 +70,137 @@ de deuda evita tanto correr a taparlas como olvidarlas.** → candidata a `LESSO
 
 ⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7. Los pasos 0 a 6 se
 hacen enteros en su máquina.
+
+---
+
+# 🧪 LA SESIÓN 37: `T-047`, y la diferencia entre medir algo y dejarlo medido
+
+**Quinta sesión seguida sin escribir producto desde esta terminal, y la quinta que
+vale.** Hoy el trabajo lo hizo la otra terminal entero y bien. Lo que esta aportó
+fueron **cuatro correcciones antes del cierre** y **un sabotaje que nadie más podía
+hacer**. Commit en TEAPP: `00e9925`. Costo: **$0,00**.
+
+## Qué era `T-047`
+
+`C-001` decía *"la suite no toca la red, y nada de lo que corre en el cierre
+tampoco"*. Estaba **escrita y razonada, pero nunca medida**. La forma anotada de
+comprobarla era *"desconecta el WiFi y corre `pytest`"*.
+
+La otra terminal la sustituyó por algo mejor: **un portero dentro de Python** que
+para todo lo que intente salir de la máquina y deja pasar `127.0.0.1`. Equivale a
+apagar el WiFi, pero lo puede correr ella sola y se repite cada día.
+
+## Las cuatro correcciones de esta terminal, y de dónde salieron
+
+Otra vez el mismo método: **abrir el archivo del que hablaba la frase.**
+
+1. **La medición no había quedado escrita.** `git status` en TEAPP: limpio. `T-047`
+   en 🔲, `constraints.md` sin tocar, y el portero viviendo en `AppData\Local\Temp\`,
+   que Windows borra sola. El trabajo estaba bien hecho **y ya empezaba a evaporarse**.
+2. ⭐ **Proponían meter el portero al repo, pero no los controles.** Ellos mismos
+   habían escrito que la fila de los controles es lo único que convierte "pasaron"
+   en prueba — y esos controles estaban en la carpeta temporal.
+3. **El portero mordía menos de lo que decía, y lo comprobé:**
+   `socket().connect_ex(('example.com', 80))` devolvió **0** con el portero puesto.
+   Salió a internet por la puerta de atrás.
+4. **Había una prueba más fuerte y más barata que no usaron:** busqué `requests`,
+   `httpx`, `urllib`, `socket`, `aiohttp`, `subprocess` en **todo** el Python de
+   TEAPP → **cero coincidencias**. Los 192 no pasaron porque el portero los dejara:
+   pasaron **porque nunca hubo nada que interceptar**.
+
+> 🔑 **Un portero en el repo sin sus controles en el repo es exactamente la trampa
+> de la que el portero venía a salvarte.** Dentro de tres meses se rompe en
+> silencio, la suite sigue verde, y ya no queda nadie que pueda demostrar que muerde.
+
+Es la lección de la sesión 36 un piso más abajo: *si todas las casillas las marca
+quien hizo el trabajo, la que faltaba sigue faltando.*
+
+## Las tres cosas que la otra terminal hizo mejor de lo que se le pidió
+
+1. ⭐ **No se fio del primer rojo.** El control de `connect_ex` usaba el nombre
+   `example.com`, que pasa por `getaddrinfo` — **ya parcheado de antes**. O sea que
+   el rojo podía venir del parche viejo. Lo separó con **IP literal** (`1.1.1.1`),
+   y dejó escrito en el docstring **por qué es IP y no nombre**.
+   → 🔑 **Un control que se pone rojo por el motivo equivocado es un control verde
+   disfrazado.** Y sin la nota, alguien lo "arregla" a nombre en seis meses y rompe
+   el control sin verlo.
+2. **Añadió un quinto control que no estaba en la orden:** que el portero **deje
+   pasar `127.0.0.1`**. Se le pidió que mordiera; nadie pidió que **no se pasara de
+   listo**. Un portero que bloquea lo local rompe `TestClient` — y eso se habría
+   descubierto por un incendio, no por un control.
+3. **Invirtió los controles con `pytest.raises`: verde = muerde.** Mejor que la
+   orden de trabajo, que dejaba el veredicto en *"interpreta este rojo"*.
+   → 🔑 **Un veredicto que hay que interpretar se interpreta mal el día que hay prisa.**
+
+## Cómo quedó en el repo de TEAPP (commit `00e9925`)
+
+| pieza | qué es |
+|---|---|
+| `tests/no_network.py` | el portero: `connect`, `connect_ex` y `getaddrinfo` |
+| `tests/check_no_network.py` | sus **5 controles**. No se llama `test_*.py`, así que la suite normal no lo recoge — **salen a internet de verdad si el portero falla** |
+| `tests/conftest.py` | el enganche: fixture `autouse`, vigila en cada corrida sin que nadie lo pida |
+
+**El diseño del enganche es correcto y vale anotarlo:** fixture `autouse` con
+`monkeypatch`, **no** `pytest_configure`. Se deshace solo al acabar cada test y no
+depende de desde dónde se lance `pytest`.
+
+## ✅ LO QUE CORRÍ YO, y el sabotaje que faltaba
+
+```
+sabotaje dentro de la suite normal : 1 failed, 192 passed   ← el portero SÍ vigila
+controles (check_no_network.py)    : 5 passed in 0.11s
+suite limpia                       : 192 passed in 5.46s
+git status TEAPP                   : limpio
+```
+
+**El sabotaje es la comprobación que ninguno de los cinco controles hace.** Quedaba
+una afirmación sin testigo: *"vigila en cada corrida, sin que nadie lo pida"*. Metí
+un `test_*.py` que sale a internet, corrí `pytest` a secas, y se puso rojo con
+`NetworkTouched`. Después lo borré y el repo quedó limpio.
+**Ahora sí: 192 verdes significa algo.**
+
+## `C-001` reescrita, y la mitad que no se puede automatizar nunca
+
+La redacción vieja **era falsa desde `D-016`**, cuando el `git push` entró al
+protocolo de cierre. La nueva, que es de ellos y es mejor: *"nada sale a internet a
+buscar algo que le falta"* — **`npx` es el peligro; `git push` es el trabajo.**
+
+Y quedó **partida en dos mitades de comprobación**, que era el punto más fácil de
+dejar borroso:
+
+| mitad | cómo se mide |
+|---|---|
+| la suite | **automática**, el portero, cada corrida |
+| el cierre (`node`, `git`) | **a mano, y para siempre** |
+
+📌 El portero **solo parchea el `socket` de su proceso**. Un subproceso sale por
+delante de sus narices y el portero ni se entera. **No es un descuido arreglable:
+es cómo está construido**, y está escrito en su docstring.
+→ 🔑 *Saber dónde acaba una prueba es parte de tenerla* — la misma idea que el
+límite del eval del nivel 5b, tres niveles después.
+
+## ⚠️ El `@` en los títulos de commit: ya cobró una vez
+
+El commit de hoy salió con un `@` colgando en el título por meter **sintaxis de
+PowerShell en una shell bash**. Lo enmendaron a tiempo. Pero `git log --all` en
+TEAPP da **una coincidencia**: `d6924f8`, de una sesión anterior, que sí quedó.
+
+Cosmético, y no vale reescribir historia por él. **El patrón sí importa**, y lo vio
+la otra terminal sola: *no es un tropiezo de hoy, ya pasó antes*.
+
+> 🔑 **Dos veces el mismo error con dos meses de distancia no son dos descuidos: es
+> una trampa del entorno que sigue armada.**
+
+→ **Pendiente:** un renglón en `lessons.md` de TEAPP o en el protocolo de cierre —
+*el mensaje de commit va por heredoc, y se relee el título antes de confirmar.*
+
+## El dato que se retiró, y por qué está bien retirarlo
+
+Habían presentado *"5,8s con portero contra 7,0s con red"* como si comparara algo.
+No compara nada: **no había red que ahorrar**. Lo vieron y lo sacaron antes de que
+quedara escrito.
+→ 🔑 **Un número que no compara nada es peor que ningún número, porque el lector
+supone que sí compara.** Misma familia que el `@`.
 
 ---
 
