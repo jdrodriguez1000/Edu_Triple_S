@@ -3,12 +3,12 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-04 (sesión 37)
+**Última actualización:** 2026-08-04 (sesión 38)
 
 ---
 
-# 📍 NIVEL 7 — PRODUCCIÓN. **La identidad ya no se declara: se prueba.**
-# **Paso 5 CERRADO** en la sesión 36. **`T-047` cerrada** en la 37.
+# 📍 NIVEL 7 — PRODUCCIÓN. **Los frenos existen antes de que haya nada que frenar.**
+# **Paso 6 CERRADO** en la sesión 38. El paso 5 cerró en la 36; `T-047` en la 37.
 # Costo del día: **$0,00**.
 
 ```
@@ -22,11 +22,14 @@ Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
 **Corrido POR MÍ en esta terminal, no reportado por la otra:**
 
 ```
-pytest (suite entera)          : 192 passed in 5.56s
+pytest (suite entera)          : 258 passed in 13.42s
+43 peticiones a la vez con el
+  tutor colgado                → 40 al tutor, 40 cobradas, 0 pagando por nada
+lecturas del reloj por spend() : 1   (eran 2, y la medianoche cabía en medio)
+vigilante del pool, saboteado  : verde con 40, ROJO con 15  ← el control muerde
+anyio ... total_tokens         : 40  ← la afirmación del comentario, medida
 POST /practice sin cookie,
-  con {"user":"juan"} en el cuerpo → 401   ← el ataque de ayer, muerto
-POST /practice con cookie fabricada
-  a mano para ana                  → 401
+  con {"user":"juan"} en el cuerpo → 401   ← el ataque del paso 5, muerto
 GET /me sin cookie                 → 401
 data/accounts.json             : salt + hash por persona, ninguna clave en claro
 fuentes de identidad en app/   : UNA (_current_user). No hay segunda puerta
@@ -40,36 +43,156 @@ la página no la alcanza.
 📌 **Ese fue el testigo que faltaba, y casi no ocurre.** Ver la sesión 36 abajo.
 
 El paso 4 cerró en la sesión 33; las 34 y 35 saldaron deudas del paso 3. La 36
-construyó el paso 5 entero (la otra terminal) y lo verificó (esta).
+construyó el paso 5 entero (la otra terminal) y lo verificó (esta). La 38 cerró
+el paso 6, y con él **los pasos 0 a 6 están enteros y sin gastar un centavo**.
 
-## SIGUIENTE PASO DEL CURSO: **el paso 6 — frenos de producción**
+## SIGUIENTE PASO DEL CURSO: **el paso 7 — la nube**
 
-Del roadmap: *"tope por persona y por día, timeouts. 🚨 se rompe «existe la
-corrida»"*. Sigue costando **$0,00** y sigue siendo en su máquina.
+Del roadmap: *"AWS. ⚠️ **alarma de facturación PRIMERO**, luego subir. La tubería
+entera, falsa."* Es el **primer paso que sale de su máquina**, y sigue costando
+**$0,00** si la alarma se pone antes que nada.
 
-**Qué significa "se rompe la corrida":** hasta hoy el agente es falso y responde
-al instante. Un tope y un *timeout* solo tienen sentido cuando algo puede tardar
-o costar — y eso llega en el paso 8, con el modelo de verdad. El paso 6 construye
-los frenos **antes** de que haya nada que frenar, que es el mismo orden de siempre.
+🚨 **El orden del paso 7 no es negociable, y está escrito así a propósito:**
+primero la alarma de facturación, después subir. Al revés, la primera factura la
+descubre la tarjeta.
 
-**Cabos sueltos, ninguno bloquea** (en `tasks.md` de TEAPP):
+**Las siete deudas con dueño en el paso 7** (todas en `tasks.md` de TEAPP). Se
+revisan **antes** de abrir la cuenta, no después:
 
 | | qué falta |
 |---|---|
+| `T-033` | configurar el log de verdad — hoy escribe por el handler de último recurso |
 | `T-046` | `A-006` — que la ruta de `mktemp -d` le sirva a `node` **en otra máquina** |
-| ~~`T-047`~~ | ✅ **cerrada en la sesión 37** — ver abajo |
-| paso 7 | `TEAPP_SECRET_KEY` estable entre despliegues (`A-008`) |
-| paso 7 | `TEAPP_COOKIE_SECURE=true` en la nube |
-| paso 7 | un test que anule el `autouse` y ejerza la rama `secure=True` (`A-009`) |
+| `T-050` | `TEAPP_SECRET_KEY` estable entre despliegues (`A-008`) |
+| `T-051` | `TEAPP_COOKIE_SECURE=true` en la nube |
+| `T-052` | un test que anule el `autouse` y ejerza la rama `secure=True` (`A-009`) |
+| `T-053` | tope de intentos fallidos contra `/login`, **por origen y no por persona** |
+| `T-054` | tope de tamaño de cuerpo en el proxy de delante (`C-002`) |
 
-📌 **Las tres últimas tienen la misma forma, y la otra terminal lo vio sola:**
-son cosas que **hoy no se pueden comprobar porque no existe el sitio donde
-ocurren**. No es deuda por pereza: es **deuda por calendario**, y es exactamente
-lo que el roadmap decidió al poner la nube en el 7. 🔑 **Distinguir las dos clases
-de deuda evita tanto correr a taparlas como olvidarlas.** → candidata a `LESSONS.md`.
+📌 **Casi todas tienen la misma forma, y la otra terminal lo vio sola:** son cosas
+que **hoy no se pueden comprobar porque no existe el sitio donde ocurren**. No es
+deuda por pereza: es **deuda por calendario**, y es exactamente lo que el roadmap
+decidió al poner la nube en el 7. 🔑 **Distinguir las dos clases de deuda evita
+tanto correr a taparlas como olvidarlas.** → candidata a `LESSONS.md`.
 
-⚠️ **NO abrir todavía la cuenta de AWS.** Va en el paso 7. Los pasos 0 a 6 se
-hacen enteros en su máquina.
+⚠️ **La cuenta de AWS se abre en el paso 7, y con la alarma antes que nada.**
+Los pasos 0 a 6 se hicieron enteros en su máquina, tal como se planeó.
+
+---
+
+# 🧪 LA SESIÓN 38: el paso 6, y dos fallos que solo aparecen cuando algo va mal
+
+**Sexta sesión seguida sin escribir producto desde esta terminal, y la sexta que
+vale.** La otra terminal construyó el paso 6 entero. Esta encontró **cinco
+huecos**, y **dos de ellos los midió con sabotajes propios** en vez de razonarlos.
+Commits en TEAPP: `499879a` y `9f33182`. Costo: **$0,00**.
+
+## Qué se construyó (la otra terminal)
+
+Los cuatro frenos del paso 6, todos con librería estándar:
+
+| pieza | qué hace |
+|---|---|
+| `app/quota.py` | cuota por persona y por día, en `data/quota/<nombre>.json` |
+| `MAX_SENTENCE_LENGTH` | tope al tamaño de la frase — 422 antes de llegar al tutor |
+| `TUTOR_TIMEOUT_SECONDS` | el tutor corre en otro hilo; a los 10 s, 504 |
+| el motivo | cada 429 y cada 504 dicen **por qué**, en la respuesta y en el log |
+
+## ⭐ EL MÉTODO DEL DÍA: no discutir el diseño, sabotearlo
+
+Las dos cosas que de verdad valieron no salieron de leer el código con cuidado.
+Salieron de **escribir un programa que lo rompiera**.
+
+**Sabotaje 1 — saturar la cola del tutor:**
+
+```
+23 peticiones a la vez, tutor colgado, pool de 20 hilos
+respuestas                  : {504: 23}
+veces que se llamo al tutor : 20
+cuota gastada               : 23
+=> 3 personas pagaron por un trabajo que NADIE empezo nunca
+```
+
+La causa: **`future.result(timeout=)` cuenta desde que se llama, no desde que la
+tarea arranca.** El tiempo de espera en la cola se le cargaba a quien esperaba.
+
+**Sabotaje 2 — la medianoche dentro de una sola llamada:**
+
+`spend()` leía el reloj **dos veces** (una en `spend`, otra dentro de
+`read_usage`). Con la medianoche en medio: comprobaba el tope contra el día nuevo
+y escribía bajo el día viejo. **Cuota gratis, una vez al día, justo a quien esté
+practicando a esa hora.**
+
+> 🔑 **Los dos fallos son invisibles cuando todo va bien.** El primero solo existe
+> con el servidor lleno; el segundo, un instante cada noche. Ninguna lectura del
+> código los habría dado por seguros — y por eso hubo que provocarlos.
+
+## Los otros tres huecos, y uno era de registro
+
+3. **Nada estaba commiteado ni registrado.** Las decisiones y lecciones sí; la
+   tarea y el paso, no. Es la trampa de la sesión 37 otra vez.
+4. **El marcador subía después del 504:** el hilo del tutor sigue vivo y llama a
+   `add_point`. Se **decidió y se escribió**, no se "arregló": el marcador cuenta
+   frases practicadas (`A-001`) y esa se practicó.
+5. **`/login` sin tope de intentos.** Fuera del alcance del paso — anotado como
+   `T-053`, con dueño en el paso 7.
+
+## ⭐ Lo que la otra terminal hizo mejor de lo que se le pidió
+
+1. **El arreglo del cobro es más fino que el diagnóstico.** Yo pedí *"decidan qué
+   pasa con la cuota en la cola"*. Ellos vieron que **`future.cancel()` ya sabe la
+   respuesta**: devuelve `True` solo si la tarea nunca arrancó. Eso convirtió una
+   decisión de política en un dato que el sistema ya tenía.
+   → 🔑 **Antes de decidir a mano, mira si el sistema ya sabe la respuesta.**
+2. **Encontraron el límite de mi propio freno.** `MAX_SENTENCE_LENGTH` frena el
+   gasto, **no la subida**: un cuerpo de 5 MB se sube entero antes del 422. Es
+   `T-054`, y salió de ellos.
+3. **`warning` y no `info`, porque se midió.** Con uvicorn de verdad: 20 frenazos,
+   cero líneas en el log. Y el test pide `WARNING` en vez de bajar el listón con
+   `at_level(INFO)` — que habría salido verde con el renglón invisible.
+
+## La razón prestada, y el vigilante que la cuida
+
+El pool se fijó en **40 a mano**, para que no lo decidiera el número de CPUs de la
+máquina. Correcto. Pero el 40 seguía apoyado en algo heredado: **es el defecto del
+limitador de `anyio`**, la librería que FastAPI usa para las rutas `def`. Lo
+verifiqué: hoy vale 40. Y `anyio` **ni siquiera está en `requirements.txt`** —
+entra de rebote con `fastapi`.
+
+> 🔑 **Cambiaron un número heredado por uno escrito, pero la RAZÓN del número
+> seguía heredada.** Un invariante que se apoya en el defecto de otro necesita
+> quien lo vigile, o se rompe en silencio el día que ese otro cambie de versión.
+
+Ahora hay un test que compara los dos números. **Y lo comprobé como se comprueba
+un control: rompiéndolo.**
+
+```
+con el 40 de verdad      : VERDE
+el pool bajado a 15      : ROJO   ← el vigilante muerde
+```
+
+## ✅ LO QUE CORRÍ YO
+
+```
+suite de TEAPP                      : 258 passed in 13.42s
+sabotaje del pool, DESPUES           : 43 peticiones, 40 al tutor,
+                                       40 cobradas, 0 pagando por nada
+sabotaje de medianoche, DESPUES      : 1 lectura del reloj por spend()  (antes 2)
+control del vigilante de anyio       : verde con 40, rojo con 15
+anyio.to_thread ... total_tokens     : 40  ← la afirmación del comentario, medida
+git status TEAPP                     : limpio
+```
+
+## La lección que se lleva el día
+
+> 🔑 **Un freno solo se conoce cuando falla.** Los cuatro frenos del paso 6
+> funcionaban en la corrida feliz desde el primer día. Los dos fallos de verdad
+> vivían en la cola llena y en el cambio de día — dos sitios donde nadie mira
+> hasta que duele. **Leer el código no bastó; hubo que escribir el que lo rompía.**
+
+Es la hermana mayor de la lección de la sesión 37 (*un portero sin sus controles
+es la trampa de la que venía a salvarte*): ahí faltaba el control, aquí faltaba
+**el escenario malo** en el que el control significa algo.
 
 ---
 
