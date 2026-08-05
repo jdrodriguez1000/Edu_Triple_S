@@ -2858,6 +2858,10 @@ la documentación oficial antes de corregir — no de memoria otra vez.
 > trabajamos. Salió de la sesión 43, una conversación **sin una línea de código**.
 > Se numera `LM.x` para que no se confunda con las lecciones de nivel.
 >
+> 📌 **Creció en la sesión 44** (`LM.6` a `LM.11`): cómo se corta el trabajo —
+> feature, vertical slice, walking skeleton, tracer bullet, MVP y cuánta
+> arquitectura se decide antes de escribir código. También sin una línea de código.
+>
 > 📌 El nivel 7 todavía no tiene bloque, y es correcto: **no ha cerrado.**
 
 ### LM.1 — Producir se abarató. Decidir, limitar y demostrar cuestan lo mismo
@@ -2986,3 +2990,225 @@ la otra arregla y reporta   →  y vuelve a empezar
 > Cinco renglones, y son la mitad del valor del esquema. Hoy funciona porque hay
 > una persona en medio recordándolo. **En el proyecto siguiente, sin ella, se
 > pierde** — por eso está escrito.
+
+### LM.6 — Feature y vertical slice miden ejes distintos
+
+Se confunden porque los dos dicen "algo completo". Pero completan cosas distintas:
+
+| | Feature | Vertical slice |
+|---|---|---|
+| Unidad de… | **valor** (producto) | **trabajo** (construcción) |
+| Responde | *qué* quiere el usuario | *cómo* lo construyes y entregas |
+| Quién la nombra | el negocio / el usuario | quien construye |
+| Vive en | la especificación | el plan, y cambia cada semana |
+| Tamaño | el que necesite | lo más delgado posible |
+
+Un slice atraviesa **todas las capas** —datos, backend, interfaz— y al terminarlo
+**algo se puede usar**. La feature "buscar productos" son cuatro slices: búsqueda
+exacta y fea → tolera errores de escritura → filtros → historial.
+
+> **Una feature suele necesitar varios slices. Un slice casi nunca es más de una
+> feature.** Cuando la feature es pequeña, el primer slice ya la completa — y ahí
+> es donde los dos términos parecen sinónimos. La diferencia solo se ve en lo grande.
+
+Y el contrario aclara el concepto: el corte **horizontal** —toda la base de datos,
+luego todo el backend, luego toda la interfaz— deja cimientos. Nada que un usuario
+pueda tocar, y ningún error descubierto hasta el final.
+
+📌 Ejemplo trabajado: "login" **no es una feature, son dos**. *Autenticación*
+(¿quién eres?) y *autorización* (¿qué puedes hacer?). Autenticación siempre va
+primero: no se puede decidir qué puede hacer alguien sin saber quién es.
+
+### LM.7 — Desplegar y publicar son dos cosas, y separarlas es la libertad
+
+- **Deploy:** el código corre en producción.
+- **Release:** los usuarios lo ven y lo usan.
+
+Lo normal es que vayan juntos. **No tienen que ir juntos**, y ahí está el truco: el
+slice 1 del login —un usuario metido a mano, sin registro— **se despliega** y se
+deja **apagado** con un *feature flag*. Encender un interruptor es infinitamente
+menos riesgoso que desplegar código.
+
+La pregunta para publicar no es *"¿está completo?"* sino **"¿un usuario real que
+toque esto sale bien parado?"**.
+
+Y el argumento que suena al revés y no lo es: **desplegar seguido es lo seguro.**
+Un deploy cada dos semanas lleva cincuenta cambios y, cuando algo revienta, no
+sabes cuál fue. Un deploy por slice lleva uno. Y como se hace seguido, se vuelve
+**aburrido** — el mejor adjetivo que puede tener un deploy.
+
+> Corolario de seguridad: la contraseña se guarda **hasheada desde el slice 1**.
+> Guardarla en texto plano no es una versión simple de la feature, es una versión
+> **rota**. Un slice puede ser incompleto; no puede estar mal hecho. → LM.8.
+
+### LM.8 — Walking skeleton, tracer bullet y prototipo no son lo mismo
+
+Los tres atraviesan todas las capas. Se distinguen por **para qué se disparan**:
+
+| | Walking skeleton | Tracer bullet | Prototipo |
+|---|---|---|---|
+| Pregunta | *¿está conectada la tubería?* | *¿le apunto a lo correcto?* | *¿esto es posible?* |
+| Valida | arquitectura, deploy | requisitos, dirección | una duda técnica |
+| Funcionalidad | ninguna | una real, delgadita | la mínima para dudar |
+| Destino del código | **se queda** | **se queda** | **se bota** |
+| Se le muestra a | el equipo | **el usuario** | nadie |
+
+El nombre viene de la munición trazadora: lleva fósforo, deja rastro luminoso, y el
+que dispara **ve dónde pega y corrige** en vez de calcular la trayectoria en papel.
+
+**Cuántos de cada uno:**
+
+- **Walking skeleton: uno por sistema desplegable.** No es por feature. Se hace una
+  vez, antes de la primera feature. Única excepción: cuando aparece una tubería
+  genuinamente nueva (una app móvil, una cola en segundo plano) se hace un
+  mini-esqueleto de *ese* camino.
+- **Tracer bullets: muchas.** Una por cada zona de incertidumbre.
+
+> La frase que ordena todo: **el walking skeleton es una cosa que construyes; la
+> tracer bullet es un papel que un slice desempeña.** No se elige entre los dos.
+> "Tracer bullet" es un adjetivo: describe *por qué* haces ese slice.
+
+El primer slice de cada feature normalmente **es** la tracer bullet de esa feature.
+No se construye aparte. Y el filtro para saber si le toca serlo:
+
+> *"¿Sé cómo debe funcionar esto, o me lo estoy imaginando?"* Si lo sé (login,
+> CRUD), es solo el slice 1. Si me lo imagino, es tracer bullet — **y hay que ir a
+> mostrárselo a alguien antes del slice 2.** Una bala trazadora que nadie mira caer
+> es solo un slice; el rastro luminoso no sirve si no hay quien lo vea.
+
+### LM.9 — El MVP se define primero; los slices se cortan apuntando a él
+
+El error natural es pensar que el MVP **aparece** cuando ya llevas suficientes
+slices acumulados. Al revés: sin MVP definido antes, no hay forma de saber cuándo
+parar — siempre hay un slice más que se ve razonable, y así un proyecto de dos
+meses se vuelve de dos años.
+
+**Y la parte que casi todos hacen mal:** el MVP no es terminar la feature A, luego
+la B, luego la C. Es **los primeros slices de varias features a la vez**.
+
+| Enfoque | Resultado a las N semanas |
+|---|---|
+| ❌ Feature por feature | La autenticación más pulida del mundo protegiendo una app vacía |
+| ✅ En diagonal | Incompleto en todo, pero **usable de punta a punta** |
+
+Nadie usa un producto por el login. El login es peaje.
+
+**Construir en diagonal**, concretamente, es el orden de recorrido de la cuadrícula
+`features × slices`: bajas por la **columna 1** entera, luego por la columna 2.
+
+| Feature | Slice 1 | Slice 2 | Slice 3 |
+|---|---|---|---|
+| Cuenta | 1️⃣ | 5️⃣ | 9️⃣ |
+| Catálogo | 2️⃣ | 6️⃣ | 🔟 |
+| Carrito | 3️⃣ | 7️⃣ | ⬜ |
+| Pago | 4️⃣ | 8️⃣ | ⬜ |
+
+Es cómo dibuja un retrato un artista: trazos suaves de **toda** la cara, y después
+otra pasada con detalle. No un ojo perfecto primero — porque si luego la cara sale
+torcida, hay que borrar el ojo perfecto.
+
+**Los dos regalos:** los errores de *conexión* entre piezas aparecen en la semana 1
+con 30 líneas encima, no en el mes 3 con mil; y al final de cada columna hay algo
+**entero**, así que se puede parar en cualquier momento.
+
+No es una diagonal perfecta, es una escalera irregular. La regla real:
+
+> **Nunca refines una feature más allá de lo necesario mientras otra feature del
+> MVP siga en cero.** Y al elegir el siguiente slice: *"¿esto hace la aplicación
+> más **completa** o más **buena**?"* Antes del MVP, siempre "más completa".
+
+📌 Después de publicar el MVP **el orden deja de decidirlo tu intuición y empieza a
+decidirlo lo que ves**. Ese es el premio real de haber publicado temprano.
+
+### LM.10 — Antes de escribir código, decide solo las puertas de una vía
+
+La pregunta no es *"¿cuánta arquitectura por adelantado?"* sino **"¿cuáles
+decisiones?"** — y eso sí tiene criterio, no intuición.
+
+- **Puerta de dos vías:** entras, no te gusta, sales. Barato de deshacer.
+- **Puerta de una vía:** deshacerlo cuesta meses.
+
+> Es **LM.2 aplicada al diseño**: lo barato es lo reversible. Aquí decide *qué* se
+> piensa en papel y qué se aplaza.
+
+| Decide ahora (una vía) | Aplaza (dos vías) |
+|---|---|
+| Modelo de datos central y sus fronteras | Framework, librerías, ORM |
+| ¿Multi-tenant? ¿cómo se aísla cada cliente? | Estructura de carpetas |
+| Síncrono o asíncrono en el flujo principal | Dónde va el caché |
+| Modelo de identidad y permisos | Forma de los endpoints, la UI entera |
+| Lenguaje y runtime | Herramienta de pruebas, proveedor de correo |
+| Un servicio o varios (**empieza con uno**) | |
+
+Aplazar no es pereza: las decisiones tempranas se toman con la **menor** cantidad
+de información que vas a tener en todo el proyecto. Si estás debatiendo una de dos
+vías y no has escrito código, elige la aburrida y sigue.
+
+**Y la pieza que conecta con LM.8:** un documento de arquitectura es una
+**hipótesis** —un conjunto de suposiciones sobre cómo encajan las piezas— y una
+hipótesis sin experimento no vale nada.
+
+> **El walking skeleton es el experimento que pone a prueba el documento de
+> arquitectura.** → L2.11 y L4.13: "encaja con lo que veo" ≠ "es correcto".
+
+```
+Requisitos + BDD → decisiones de una vía (1–2 págs) → WALKING SKELETON
+     → CORRIGES las decisiones ← el paso que nadie hace
+     → slices, en diagonal
+```
+
+El paso de corregir es lo que hace que esto sea evolutivo de verdad. **Si el
+documento no cambia después del esqueleto, no lo estabas usando: lo estabas
+obedeciendo.**
+
+Por eso el formato recomendado es un **ADR** (*Architecture Decision Record*): una
+decisión por archivo, media página, con contexto / decisión / **por qué** /
+consecuencias, **fechada**. El "por qué" es lo que sobrevive — el código dice el
+qué. Y se reversa sin vergüenza: `ADR-011 supersede ADR-003`, y el histórico queda.
+Un documento de arquitectura grande, en cambio, nadie lo actualiza: se vuelve
+mentira y todos lo saben.
+
+⚠️ **"Arquitectura evolutiva" no significa "sin arquitectura, ya veremos".**
+Significa diseñar para que cambiar sea barato, y eso cuesta trabajo desde el día
+uno: **fronteras claras** (si todo toca todo, nada se puede cambiar), **pruebas**
+(sin ellas no te atreves a tocar) y **deploy automático**. Sin esas tres,
+"evolutivo" es una palabra bonita para *improvisado*.
+
+### LM.11 — Los slices no van en la especificación: salen del BDD
+
+La especificación define **las features** — el *destino*. Los slices son cómo
+decides cortar y en qué orden — la *ruta*. Y cambian a ritmos distintos:
+
+| Documento | Contiene | Cambia |
+|---|---|---|
+| Requisitos / Spec / BDD | features, comportamiento esperado | poco: si cambia el negocio |
+| Plan / backlog | slices, orden, qué sigue | **cada semana** |
+| ADRs | decisiones de una vía | cuando una se supera |
+
+Meter los slices en la especificación la pudre: el orden cambia constantemente —y
+**debe** cambiar, es lo que aprendiste de los usuarios— y el documento pronto dice
+una cosa mientras el proyecto hace otra. Ahí nadie vuelve a confiar en él.
+
+**El puente que faltaba:**
+
+> **Un vertical slice es un subconjunto de escenarios BDD que se ponen en verde
+> juntos.** Los slices no se inventan: se **cortan** agrupando escenarios.
+
+```
+Feature: Autenticación
+  entro con credenciales correctas    → Slice 1
+  rechazo credenciales incorrectas    → Slice 1
+  me registro con un correo nuevo     → Slice 2
+  rechazo un correo ya registrado     → Slice 2
+  bloqueo tras 5 intentos fallidos    → Slice 6
+```
+
+Tres cosas gratis: el slice queda definido **sin ambigüedad** (no es "hacer el
+login más o menos", es "estos dos escenarios pasan"); **verde = terminado**, se
+acabó la discusión; y el **MVP se vuelve una lista de escenarios**, no una
+sensación — marcas los indispensables y sabes exactamente dónde parar.
+
+📌 El BDD alimenta **dos** cosas, y por eso es el documento que más trabajo hace:
+el **plan** (los slices) y la **arquitectura** — cuando dos escenarios hablan de
+cosas distintas y no comparten datos, ahí hay una **costura natural** del sistema.
+Los escenarios no son solo pruebas: son un mapa de por dónde se parte la aplicación.

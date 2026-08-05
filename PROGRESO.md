@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-05 (sesión 43)
+**Última actualización:** 2026-08-05 (sesión 44)
 
 ---
 
@@ -15,7 +15,10 @@
 # La 43 **no tocó código ni la nube**: fijó qué es ser senior con agentes, **qué
 # información necesita la terminal que supervisa**, y registró **su método
 # profesional de brief a MVP** — sin construirlo, porque falta contarlo entero.
-# Ver abajo. La cuenta sigue cerrada.
+# La 44 **tampoco tocó código**: cómo se corta el trabajo (feature, vertical
+# slice, walking skeleton, tracer bullet, MVP en diagonal, cuánta arquitectura
+# antes de teclear) → `LM.6`–`LM.11`. **El paso 7 de su método dejó de estar
+# vacío.** Ver abajo. La cuenta sigue cerrada y el reloj sin arrancar.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -123,6 +126,45 @@ EC2 el disco persiste y **TEAPP sube sin cambiar una línea de código**.
 no está en el historial). La sacó él en el navegador, sin cuenta de AWS y sin
 arrancar el reloj. **Lo verificó esta terminal con `nslookup`, no la que la hizo.**
 
+## 🗣️ SESIÓN 44 — cómo se corta el trabajo: del brief al MVP, y **el paso 7 empezó a contarse**
+
+Segunda sesión seguida de pura conversación. **No se tocó TEAPP, no se abrió la
+cuenta, $0,00.** Seis lecciones nuevas en `LESSONS.md`, en el mismo bloque
+**Método**: **`LM.6` a `LM.11`**.
+
+Las seis preguntas, en orden, porque otra vez una llevó a la otra:
+
+1. *¿Cuál es la diferencia entre vertical slice y feature?* → Miden **ejes
+   distintos**: la feature es unidad de **valor**, el slice es unidad de
+   **trabajo** (`LM.6`).
+2. *Con un login, ¿cuál es la feature, cuál el slice mínimo, qué otros slices?* →
+   **"Login" no es una feature, son dos**: autenticación y autorización (`LM.6`).
+3. *¿Puedo hacer deploy al terminar cada slice?* → Sí, y aparece la distinción
+   **deploy ≠ release** + el *feature flag* (`LM.7`).
+4. *¿Entonces slices hasta que se junte un MVP?* → **No: el MVP se define
+   primero**, y se construye **en diagonal** (`LM.9`).
+5. *¿Qué es una tracer bullet? ¿Es lo mismo que walking skeleton?* → No, y el
+   prototipo es un tercer animal — **el único que se bota** (`LM.8`).
+6. *¿Cuánta arquitectura antes de escribir código?* → Solo las **puertas de una
+   vía**; el resto se aplaza. ADRs, no un documento grande (`LM.10`).
+
+⭐ **La mejor del día fue la 4**, por el mismo motivo que la 3 de la sesión 43:
+cazó que mi respuesta anterior dejaba el MVP como algo que *emerge* de acumular
+slices. No emerge: **se define primero, o no hay forma de saber cuándo parar.**
+
+⭐ **Y la última pregunta cerró el círculo con lo que él ya tenía:** preguntó si
+los slices van en la especificación. No — pero **salen del BDD**, que ya está en
+su método (paso 2). *Un vertical slice es un subconjunto de escenarios BDD que se
+ponen en verde juntos* (`LM.11`). Es el puente entre su proceso y esta sesión.
+
+📌 **Ojo con el reparto de documentos**, porque es el bicho de la sesión 33 otra
+vez: los slices **no** van en la especificación. Cambian cada semana; la spec no.
+Si entran ahí, la spec dice una cosa mientras el proyecto hace otra.
+
+🔗 **Esto avanza la `TAREA APARTADA (3ª)`** (su método de brief a MVP, más abajo):
+el **paso 7 —"el proceso continúa con las demás etapas"— dejó de estar vacío**.
+Lo de hoy es material de ese paso. Sigue sin construirse nada, como él pidió.
+
 ## 🗣️ SESIÓN 43 — sin una línea de código, y no fue una sesión perdida
 
 Toda la sesión fue conversación. **No se tocó TEAPP, no se abrió la cuenta, no se
@@ -220,6 +262,21 @@ son hallazgos sobre un proceso que aún no se ha visto entero.
 6. **Puerta:** si es exitoso → se define el MVP. Si no → se mata el proyecto o se
    reconfigura el prototipo con lo que dijeron los usuarios.
 7. El proceso continúa con las demás etapas. *(← aquí está lo que falta contar.)*
+
+> 🔗 **Actualizado en la sesión 44.** El paso 7 ya no está del todo vacío: esa
+> sesión cubrió **cómo se corta el trabajo de ahí en adelante** — features vs
+> vertical slices, walking skeleton, tracer bullet, el MVP definido primero y
+> construido **en diagonal**, y cuánta arquitectura se decide antes de teclear
+> (`LM.6`–`LM.11` en `LESSONS.md`).
+>
+> ⚠️ **Pero el método sigue sin estar contado entero, y sigue sin construirse
+> nada** — es lo que él pidió. Lo de la sesión 44 es **teoría general del
+> oficio**, no su proceso particular: falta saber cómo encaja con sus pasos 3–6
+> (prototipo de tres actores, métricas, la puerta). Ahí es donde puede chocar.
+>
+> 📌 Y ya hay una **costura suya identificada**: los slices salen de los
+> escenarios **BDD**, que él ya produce en el paso 2 (`LM.11`). Su proceso y esto
+> se tocan en un punto concreto, no en abstracto.
 
 ### ⭐ Lo mejor del proceso, y no se toca
 
