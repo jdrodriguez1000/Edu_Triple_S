@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-05 (sesión 42)
+**Última actualización:** 2026-08-05 (sesión 43)
 
 ---
 
@@ -12,6 +12,8 @@
 # La 40 cerró la PLATAFORMA. La 41 **escribió `deploy/` entera antes de abrir la
 # cuenta**. La 42 **midió desde fuera lo que la otra terminal dio por no medible**:
 # `T-058` cerrada y comprobada por DNS. **$0,00** y la cuenta **sigue sin abrirse**.
+# La 43 **no tocó código ni la nube**: fijó qué es ser senior con agentes y **qué
+# información necesita la terminal que supervisa**. Ver abajo. La cuenta sigue cerrada.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -118,6 +120,62 @@ EC2 el disco persiste y **TEAPP sube sin cambiar una línea de código**.
 `teapp.duckdns.org` existe, resuelve, y el token quedó fuera del repo (auditado:
 no está en el historial). La sacó él en el navegador, sin cuenta de AWS y sin
 arrancar el reloj. **Lo verificó esta terminal con `nslookup`, no la que la hizo.**
+
+## 🗣️ SESIÓN 43 — sin una línea de código, y no fue una sesión perdida
+
+Toda la sesión fue conversación. **No se tocó TEAPP, no se abrió la cuenta, no se
+gastó un centavo.** Salieron cinco lecciones nuevas, que están en `LESSONS.md`
+como bloque **`LM.x` — Método**, aparte de los bloques de nivel (`LM.1` a `LM.5`).
+
+Las cuatro preguntas que hizo, en orden, porque una llevó a la otra:
+
+1. *¿Es distinto el ingeniero tradicional del que trabaja con IA?* → **Sí, pero
+   no en lo que casi todos creen** (`LM.1`).
+2. *¿Entonces lo caro es todo lo que rodea al código?* → Casi. Lo caro es **lo
+   irreversible** (`LM.2`).
+3. *¿Es que antes no decidíamos ni demostrábamos? ¿O era más barato?* →
+   **Ninguna de las dos.** Costaba lo mismo; estaba tapado (`LM.1`).
+4. *¿Qué es ser senior en época de agentes?* → No es producir código, y nunca lo
+   fue (`LM.3`).
+
+⭐ **La pregunta 3 fue la mejor del día:** cazó que mi respuesta anterior insinuaba
+que decidir y demostrar eran categorías **nuevas**. No lo son. Corregido en el
+momento, y por eso `LM.1` está escrita con la proporción y no con el precio.
+
+## 🔑 Y LA DECISIÓN DE MÉTODO: `METODO.md` NO es un archivo, son DOS
+
+Preguntó si el esquema de las dos terminales sirve para todo proyecto futuro y
+**qué información debe tener la terminal supervisora**. Respuesta corta: **sí
+sirve, y ya lleva 13 sesiones funcionando** desde la 30.
+
+🚨 **Lo que quedó decidido hoy, y es lo que hay que recordar dentro de diez
+sesiones:** lo que se preguntó **no es** la tarea apartada de `METODO.md`.
+
+| artefacto | qué responde | quién lo lee |
+|---|---|---|
+| **`METODO.md`** | *Cómo se construye un agente.* Frenos, SDD/TDD, evals, el bucle | **el agente** del repo nuevo, solo |
+| **el segundo** (sin nombre aún) | *Cómo se supervisa a quien construye.* El reparto de las dos terminales | **la persona** — describe un harness humano |
+
+**Por qué separados:** el primero es contenido; el segundo es método de trabajo.
+En el mismo archivo, **el segundo se traga al primero** — es más corto y más
+interesante. Salen juntos, en archivos distintos.
+
+📌 **Es la misma trampa de la sesión 33 y de la 41** (la misma cosa escrita en dos
+sitios) atacada **antes** de que ocurra: si nadie escribe que son dos, dentro de
+diez sesiones se fusionan por descuido.
+
+**El contenido del segundo ya está redactado** — es `LM.4` y `LM.5` de
+`LESSONS.md`: *quien construye no puede ser su propio testigo*, las **cuatro**
+cosas que necesita la supervisora (contrato · cómo comprobar desde fuera ·
+catálogo de fallos · lo irreversible), las **tres** que no debe tener, y **el
+ciclo de cinco renglones** que hasta hoy solo vivía en la cabeza del estudiante.
+
+⏳ **Los dos siguen aplazados hasta después del nivel 8**, y por la razón de
+siempre: **para destilar hay que tener qué destilar.** Falta el ensayo de
+reconstrucción (`T-069`) y falta que algo salga mal en producción — que es
+justo el paso que más va a enseñar sobre supervisar, y aún no ha ocurrido.
+
+---
 
 ## SIGUIENTE PASO CONCRETO: `T-057` — **abrir la cuenta de AWS**
 
@@ -2820,6 +2878,14 @@ Se paga 16 veces y se cobra 3.
 
 **No es para la próxima sesión.** Va después del nivel 8, y por eso queda aquí
 escrita: para que no se pierda y para que no se adelante.
+
+> 🔑 **ACTUALIZADO EN LA SESIÓN 43: son DOS archivos, no uno.** `METODO.md`
+> responde *cómo se construye un agente* y lo lee el agente del repo nuevo. El
+> segundo responde *cómo se supervisa a quien construye* — el método de las dos
+> terminales — y lo lee una persona. **No los fusiones:** el segundo es más corto
+> y más interesante, y se traga al primero. El contenido del segundo ya está
+> redactado en `LM.4` y `LM.5` de `LESSONS.md`. Ver la sección de la sesión 43
+> arriba del todo.
 
 **De dónde salió:** al cerrar la sesión 21 el estudiante preguntó si este repo
 sirve de base para construir apps —su próximo proyecto es una **app del clima**

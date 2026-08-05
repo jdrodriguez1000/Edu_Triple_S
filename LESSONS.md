@@ -2848,3 +2848,141 @@ la documentación oficial antes de corregir — no de memoria otra vez.
 
 > **Tener mediciones viejas escritas es lo que hace que las mentiras nuevas se
 > noten.** La bitácora no es archivo muerto: es el detector.
+
+---
+
+## Método — el oficio y las dos terminales
+
+> ⚠️ **Este bloque no es de un nivel.** Los demás bloques cierran un nivel del
+> curso; este recoge lo que se entendió **sobre el oficio mismo** y sobre cómo
+> trabajamos. Salió de la sesión 43, una conversación **sin una línea de código**.
+> Se numera `LM.x` para que no se confunda con las lecciones de nivel.
+>
+> 📌 El nivel 7 todavía no tiene bloque, y es correcto: **no ha cerrado.**
+
+### LM.1 — Producir se abarató. Decidir, limitar y demostrar cuestan lo mismo
+
+La respuesta fácil —*"antes escribías el código y ahora lo escribe la IA"*— es
+falsa en la parte que importa. Decidir qué construir, poner límites y demostrar
+con hechos **son el oficio desde siempre**. No son categorías nuevas.
+
+Lo que cambió es la **proporción**:
+
+```
+antes                              ahora
+decidir y limitar ....  20         decidir y limitar ....  20   ← igual
+escribir el código ... 100         escribir el código ...   5   ← se desplomó
+demostrar ............  30         demostrar ............  30   ← igual
+                      ----                                ----
+                       150  (67% escribir)                  55  (9% escribir)
+```
+
+El trabajo total **bajó**. Pero lo que rodea al código no se movió de precio y
+ahora es casi todo el trabajo. Antes quedaba tapado detrás de las 100 unidades de
+teclear.
+
+> **Siempre costó esto. Al desaparecer lo de escribir, quedó a la vista lo que
+> siempre estuvo debajo.**
+
+Y dos cosas sí son nuevas de verdad, no proporción: **el sistema no repite** (la
+misma entrada da salidas distintas → L5.x, rúbricas y juez) y **la corrida
+cobra** (*"un agente roto gasta antes de fallar"*, nivel 3).
+
+### LM.2 — Lo barato es lo que se puede deshacer
+
+Mejor regla que *"escribir es barato, probar es caro"*:
+
+> **Lo barato es lo reversible. Lo caro es lo que no se deshace.**
+
+El código se borra y no pasó nada. No se deshacen: **el reloj** (los 6 meses de
+AWS), **la factura**, **el historial de Git** y **el dato de una persona**.
+Escribir la IP en `PROGRESO.md` costó un segundo; borrarla del historial, no
+existe (sesión 42).
+
+Corolario que explica cuatro sesiones del nivel 7 con **$0,00** gastados: el
+trabajo caro se hace mientras **todavía es reversible**.
+
+### LM.3 — Producir código nunca fue lo que hacía a alguien senior
+
+Quien solo sabe producir **sí está en problemas**: su ventaja era la velocidad, y
+la velocidad se abarató para todo el mundo. Pero eso no describe a alguien senior
+de verdad — describe a un productor veloz con muchos años. Los agentes no lo
+destronaron: **le quitaron el disfraz.**
+
+Nadie fue senior por teclear rápido. Fue senior por haber estado presente cuando
+las cosas se rompieron. *"Esa prueba pasa siempre, no prueba nada"* **es** decidir,
+limitar y demostrar. Venía empaquetado con la producción y no se veía aparte.
+
+| ser senior hoy | |
+|---|---|
+| Saber qué **NO** construir | La decisión más cara, y no la toma un agente |
+| Saber qué **puede** fallar | Antes de que falle, sin haberlo visto fallar aquí |
+| Saber qué **prueba de verdad** | Distinguir el test que mide del que solo pasa |
+| Saber qué es **irreversible** | Y tratarlo distinto (LM.2) |
+| **Responder** por el resultado | Un agente no firma nada. Alguien firma |
+
+> **Los agentes cerraron la brecha de producción y ensancharon la de criterio.**
+
+El hábito de verificar se aprende en una semana. Saber **qué** verificar tarda
+años, porque se aprende chocando. Y con agentes es peor: el código sale limpio,
+comentado y con tests en verde, así que **un junior se siente senior** — y falla
+por algo que nunca estuvo en pantalla (`cp1252`, `Juan` vs `juan`, la IP pública).
+
+📌 La buena noticia: hoy se puede entrenar el criterio desde el principio, porque
+la producción ya no consume el tiempo. **El camino es más corto que antes. Corto
+no es instantáneo.**
+
+### LM.4 — Quien construye no puede ser su propio testigo
+
+La lección que sostiene todo el método de las dos terminales. Tres pruebas del
+propio proyecto, y las tres son el mismo animal:
+
+| | qué pasó |
+|---|---|
+| **Sesión 30** | `session-starter` **se inventó** las tres herramientas del proyecto. Lo cazó la otra terminal leyendo `scope.md` — el documento, no el reporte |
+| **Sesión 33** | El cierre **se cumplió entero** y el trabajo vivía en un solo disco. El protocolo estaba conforme consigo mismo; `git status -sb` no |
+| **Sesión 42** | *"nada que verificar, es una cuenta externa"*, dicho por quien hizo la tarea. `nslookup` tardó dos segundos y lo desmintió |
+
+> Un sistema que se revisa a sí mismo comprueba **que es coherente**, no que sea
+> cierto.
+
+### LM.5 — La terminal que supervisa vale por lo que NO sabe
+
+Contraintuitivo y es el corazón del esquema:
+
+> Si le das a la supervisora todo el contexto de la que construye —su narrativa,
+> su archivo de progreso, su versión de lo ocurrido— **deja de ser un control y
+> se vuelve un eco.** Dos terminales de acuerdo no valen más que una.
+
+**Las cuatro cosas que sí necesita:**
+
+1. **El contrato, no la construcción.** Qué se prometió y qué cuenta como
+   cumplido (`_context/scope.md`, las tareas con su criterio). **No** el relato
+   de lo que se hizo.
+2. **Cómo comprobarlo desde fuera.** Los comandos que corre ella misma:
+   `pytest`, `git status -sb`, `nslookup`, un `curl` contra el puerto real. Es lo
+   único que la otra no puede darle.
+3. **El catálogo de cómo fallan las cosas** — la **forma** del fallo, no la
+   anécdota. No viaja *"la IP entró el 5 de agosto"*; viaja *"un dato que no
+   parece secreto entra al historial público, y Git no olvida"*. La primera es
+   historia; la segunda es un **detector reutilizable**.
+4. **La lista de lo irreversible** (LM.2). Es el `T-068` de TEAPP, generalizado.
+
+**Lo que NO debe tener:** el `progress.md` del otro **como fuente de verdad** (se
+lee como *afirmación por verificar*); el estado del curso (**ruido con
+autoridad**); y **permiso de escribir** en el repo del otro — en el momento en
+que edita, deja de poder revisar.
+
+**Y el ciclo, que hasta hoy solo vivía en la cabeza del estudiante:**
+
+```
+la otra terminal reporta    →  la supervisora NO lo cree
+la supervisora mide         →  con sus propios comandos
+compara: lo dicho vs medido →  la diferencia es el hallazgo
+devuelve una LISTA          →  no un parche: ella no edita
+la otra arregla y reporta   →  y vuelve a empezar
+```
+
+> Cinco renglones, y son la mitad del valor del esquema. Hoy funciona porque hay
+> una persona en medio recordándolo. **En el proyecto siguiente, sin ella, se
+> pierde** — por eso está escrito.
