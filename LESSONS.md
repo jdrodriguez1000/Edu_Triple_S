@@ -2862,6 +2862,10 @@ la documentación oficial antes de corregir — no de memoria otra vez.
 > feature, vertical slice, walking skeleton, tracer bullet, MVP y cuánta
 > arquitectura se decide antes de escribir código. También sin una línea de código.
 >
+> ✏️ **Y en la sesión 45:** él corrigió `LM.8` —su prototipo es un wireframe o un
+> HTML clicable, **desechable y puede que sin una línea de código**— y de ahí
+> salió `LM.12`, la que más le sirve a este proyecto.
+>
 > 📌 El nivel 7 todavía no tiene bloque, y es correcto: **no ha cerrado.**
 
 ### LM.1 — Producir se abarató. Decidir, limitar y demostrar cuestan lo mismo
@@ -3045,13 +3049,22 @@ sabes cuál fue. Un deploy por slice lleva uno. Y como se hace seguido, se vuelv
 
 Los tres atraviesan todas las capas. Se distinguen por **para qué se disparan**:
 
-| | Walking skeleton | Tracer bullet | Prototipo |
+| | Prototipo | Walking skeleton | Tracer bullet |
 |---|---|---|---|
-| Pregunta | *¿está conectada la tubería?* | *¿le apunto a lo correcto?* | *¿esto es posible?* |
-| Valida | arquitectura, deploy | requisitos, dirección | una duda técnica |
-| Funcionalidad | ninguna | una real, delgadita | la mínima para dudar |
-| Destino del código | **se queda** | **se queda** | **se bota** |
-| Se le muestra a | el equipo | **el usuario** | nadie |
+| Pregunta | *¿lo quieren? ¿se entiende?* | *¿está conectada la tubería?* | *¿le apunto a lo correcto?* |
+| Valida | **deseabilidad** | arquitectura, deploy | requisitos, dirección |
+| Cuesta | horas, **puede que cero código** | poco código, cero lógica | código real |
+| Si sale mal | **se mata el proyecto** | se corrige la arquitectura | se corrige el rumbo |
+| El artefacto | **se bota** | **se queda** | **se queda** |
+| Se le muestra a | **el usuario** | el equipo | **el usuario** |
+
+> ✏️ **Corregido en la sesión 45.** Esta tabla nació poniendo el prototipo como
+> *"código que se bota"* y como una duda **técnica** (*"¿esto es posible?"*). Las
+> dos cosas estaban mal para su proceso, y su versión es **más fuerte**: el
+> prototipo es **lo más barato que se pueda construir** para someterlo a usuarios
+> —un wireframe, un HTML clicable— y **puede no ser código nunca**. Valida
+> **deseabilidad**, no factibilidad. Mata un proyecto malo **antes de que exista
+> una línea**: lo más reversible que hay (LM.2).
 
 El nombre viene de la munición trazadora: lleva fósforo, deja rastro luminoso, y el
 que dispara **ve dónde pega y corrige** en vez de calcular la trayectoria en papel.
@@ -3075,6 +3088,27 @@ No se construye aparte. Y el filtro para saber si le toca serlo:
 > CRUD), es solo el slice 1. Si me lo imagino, es tracer bullet — **y hay que ir a
 > mostrárselo a alguien antes del slice 2.** Una bala trazadora que nadie mira caer
 > es solo un slice; el rastro luminoso no sirve si no hay quien lo vea.
+
+**Y no compiten: el prototipo muere antes de que nazca el esqueleto.** Nunca se
+encuentran, y por eso no había conflicto con su método (paso 3):
+
+```
+brief → requisitos/BDD → 3 actores → PROTOTIPO (desechable)
+   → métricas → usuarios → PUERTA ──┐
+                                     │ si pasa
+   walking skeleton ← definir MVP ←──┘
+   → slices en diagonal (el primero de cada feature = tracer bullet)
+```
+
+⚠️ **El hueco que deja, y hay que saberlo:** un prototipo valida que **lo
+quieren**, no que **se pueda construir**. Los usuarios dicen que sí con
+entusiasmo a un dibujo de algo imposible, carísimo, o que necesita un dato que
+nadie tiene — el wireframe no toca la base de datos, no llama a ninguna API y no
+tarda nada porque no hace nada.
+
+> Se pasa la puerta de *"lo quieren"* sin haber pasado la de *"se puede"*. Ahí
+> entran el walking skeleton y las primeras tracer bullets: **no son redundantes
+> con el prototipo, cubren el riesgo que el prototipo, por barato, no puede tocar.**
 
 ### LM.9 — El MVP se define primero; los slices se cortan apuntando a él
 
@@ -3212,3 +3246,44 @@ sensación — marcas los indispensables y sabes exactamente dónde parar.
 el **plan** (los slices) y la **arquitectura** — cuando dos escenarios hablan de
 cosas distintas y no comparten datos, ahí hay una **costura natural** del sistema.
 Los escenarios no son solo pruebas: son un mapa de por dónde se parte la aplicación.
+
+### LM.12 — En un producto de IA, el wireframe valida la idea, no el producto
+
+Caso particular de `LM.8`, y es el que más le importa a este proyecto.
+
+Dibujas la pantalla del agente. En la burbuja escribes la respuesta perfecta que
+quieres que dé. Se lo muestras a un usuario y **le encanta** — claro que le
+encanta: es la mejor respuesta posible, **la escribiste tú**.
+
+El prototipo salió aprobado y no probó nada, porque en un producto de IA:
+
+> **El riesgo no está en la interfaz. Está en si el modelo puede hacer esa tarea
+> con calidad suficiente, a un costo tolerable, de forma repetible.**
+
+Y las tres cosas están medidas en este curso, no supuestas:
+
+| Riesgo real | Ya medido en |
+|---|---|
+| La misma entrada da salidas distintas | L1.6, L2.5, L3.14 |
+| Un agente cuesta el doble, como mínimo | L3.10, L3.12, L4.20 |
+| El defecto sale **1 de 3 veces**, y se mueve de sitio | L3.15, L4.23 |
+| Se factura razonamiento que nadie ve | L4.26 |
+
+Ninguna aparece en un HTML clicable. **El wireframe no espera, no falla y no
+cobra.** El producto hace las tres.
+
+📌 **Por eso un producto de IA necesita dos prototipos, no uno:**
+
+1. **El de flujo** — wireframe o HTML clicable, desechable. Valida que se
+   entienda y que lo quieran.
+2. **El de calidad** — **20 casos reales pasados por el modelo a mano**, en la
+   consola, sin construir nada. Se miran las respuestas y se decide si aguantan.
+   Cuesta **dólares, no semanas**.
+
+El segundo responde la pregunta que el primero no puede tocar. Y no es un
+invento: es una **evaluación en su forma más barata** — el nivel 5 hecho a mano,
+antes de que exista una aplicación donde meterla (→ L1.16: sin respuesta esperada
+escrita **antes**, "funciona" es una opinión).
+
+> Un wireframe aprobado en un producto de IA no significa *"construyámoslo"*.
+> Significa *"ahora sí, midamos si el modelo puede"*.

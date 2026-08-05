@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-05 (sesión 44)
+**Última actualización:** 2026-08-05 (sesión 45)
 
 ---
 
@@ -18,7 +18,10 @@
 # La 44 **tampoco tocó código**: cómo se corta el trabajo (feature, vertical
 # slice, walking skeleton, tracer bullet, MVP en diagonal, cuánta arquitectura
 # antes de teclear) → `LM.6`–`LM.11`. **El paso 7 de su método dejó de estar
-# vacío.** Ver abajo. La cuenta sigue cerrada y el reloj sin arrancar.
+# vacío.** La 45 **corrigió `LM.8` con un dato suyo** —su prototipo es desechable
+# y puede no ser código— y de ahí salió **`LM.12`: en un producto de IA el
+# wireframe valida la idea, no el producto.** Ver abajo. La cuenta sigue cerrada
+# y el reloj sin arrancar.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -125,6 +128,38 @@ EC2 el disco persiste y **TEAPP sube sin cambiar una línea de código**.
 `teapp.duckdns.org` existe, resuelve, y el token quedó fuera del repo (auditado:
 no está en el historial). La sacó él en el navegador, sin cuenta de AWS y sin
 arrancar el reloj. **Lo verificó esta terminal con `nslookup`, no la que la hizo.**
+
+## 🗣️ SESIÓN 45 — él corrigió una lección, y salió la que más le sirve
+
+Sesión corta y **sin código otra vez** ($0,00, la cuenta sigue cerrada). Una sola
+intervención suya, y valió por toda la sesión:
+
+> *"En mi caso el prototipo es totalmente desechable, es lo más barato que se
+> pueda construir para someterlo a futuros usuarios, por ejemplo wireframes"* —
+> y después: *"puede ser un HTML clicable, pero también es desechable"*.
+
+⭐ **Eso desmintió mi `LM.8`**, que lo describía como *"código que se bota"* y como
+una duda **técnica**. Su definición es mejor en dos cosas: valida
+**deseabilidad**, no factibilidad; y **puede no ser código nunca**. Corregido en
+`LESSONS.md` con la marca de corrección, sin borrar lo anterior.
+
+📌 **El choque que yo había dejado anotado como pendiente no existía**: el
+prototipo muere **antes** de que nazca el walking skeleton. Nunca se encuentran.
+
+🚨 **Y de ahí salió `LM.12`, que es lo importante del día:** en un producto de
+**IA** un wireframe aprobado no prueba nada. La respuesta perfecta de la burbuja
+**la escribió uno mismo**; el riesgo real es si el modelo puede hacer la tarea con
+calidad, costo y repetibilidad — y eso ya está medido en el curso (L1.6, L3.10,
+L3.14, L4.23, L4.26), no supuesto.
+
+→ **Su paso 3 necesita DOS prototipos:** el de **flujo** (wireframe/HTML,
+desechable) y el de **calidad** (20 casos reales pasados por el modelo a mano, en
+consola, sin construir nada). El segundo cuesta dólares, no semanas, y es **el
+nivel 5 en su forma más barata**.
+
+⚠️ **Lo que queda abierto:** los pasos **4, 5 y 6** de su método (métricas,
+usuarios, la puerta) todavía no se han mirado contra nada de esto. Y hay una
+sospecha con dos razones ya: **las métricas llegan tarde**.
 
 ## 🗣️ SESIÓN 44 — cómo se corta el trabajo: del brief al MVP, y **el paso 7 empezó a contarse**
 
@@ -272,11 +307,31 @@ son hallazgos sobre un proceso que aún no se ha visto entero.
 > ⚠️ **Pero el método sigue sin estar contado entero, y sigue sin construirse
 > nada** — es lo que él pidió. Lo de la sesión 44 es **teoría general del
 > oficio**, no su proceso particular: falta saber cómo encaja con sus pasos 3–6
-> (prototipo de tres actores, métricas, la puerta). Ahí es donde puede chocar.
+> (prototipo de tres actores, métricas, la puerta).
 >
 > 📌 Y ya hay una **costura suya identificada**: los slices salen de los
 > escenarios **BDD**, que él ya produce en el paso 2 (`LM.11`). Su proceso y esto
 > se tocan en un punto concreto, no en abstracto.
+>
+> ✅ **CERRADO en la sesión 45 el choque que se temía en el paso 3.** No había
+> choque, y **la corrección fue suya**: su prototipo es *"lo más barato que se
+> pueda construir, por ejemplo wireframes o un HTML clicable, **totalmente
+> desechable**"*. `LM.8` estaba corta —lo describía como *"código que se bota"* y
+> como una duda **técnica**— y quedó corregida: **valida deseabilidad, y puede no
+> ser código nunca.** El prototipo muere antes de que nazca el walking skeleton;
+> nunca se encuentran.
+>
+> 🚨 **Lo que sí salió de ahí, y es lo más útil del día: `LM.12`.** Un wireframe
+> aprobado en un producto de **IA** no prueba nada, porque el riesgo no está en la
+> interfaz sino en si el modelo puede hacer la tarea con calidad, costo y
+> repetibilidad. → **su paso 3 necesita DOS prototipos**: el de flujo (wireframe)
+> y el de **calidad** (20 casos reales pasados por el modelo a mano, en consola,
+> sin construir nada). El segundo es el nivel 5 en su forma más barata.
+>
+> ⏳ **Siguen sin verse los pasos 4–6** (métricas, usuarios, la puerta) contra
+> esto. Ahí es donde queda pendiente mirar — y ya hay una sospecha anotada más
+> abajo: **las métricas llegan tarde**, y ahora hay una segunda razón para
+> pensarlo, porque las métricas de un producto de IA no son las del flujo.
 
 ### ⭐ Lo mejor del proceso, y no se toca
 
