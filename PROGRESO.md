@@ -3,13 +3,13 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-04 (sesión 38)
+**Última actualización:** 2026-08-04 (sesión 39)
 
 ---
 
 # 📍 NIVEL 7 — PRODUCCIÓN. **Los frenos existen antes de que haya nada que frenar.**
-# **Paso 6 CERRADO** en la sesión 38. El paso 5 cerró en la 36; `T-047` en la 37.
-# Costo del día: **$0,00**.
+# **Paso 6 CERRADO** en la sesión 38. La 39 pagó **tres deudas del paso 7 sin
+# tocar la nube**: `T-053`, `/register` cerrado y `T-033`. Costo del día: **$0,00**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -22,7 +22,20 @@ Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
 **Corrido POR MÍ en esta terminal, no reportado por la otra:**
 
 ```
-pytest (suite entera)          : 258 passed in 13.42s
+pytest (suite entera)          : 310 passed in 15.95s   (eran 258 al empezar el dia)
+POST /register por la red      : 403   ← la puerta de la calle, cerrada
+create_account.py sin teclado  : cuenta creada, salida 0 ← la de servicio, abierta
+6 fallos desde un mismo origen : 429 + Retry-After: 900
+7º intento, contraseña BUENA   : 429   ← el freno no se abre acertando
+log con uvicorn real           : INFO app.config | Registro por red CERRADO
+                                 INFO app.api    | Cuota agotada: ... 20 de 20
+git TEAPP                      : limpio, 3 commits (f1b7b3d, 9306463, 1a0f3e7)
+```
+
+**Lo verificado en la sesión 38, que sigue en pie:**
+
+```
+pytest (aquel dia)             : 258 passed in 13.42s
 43 peticiones a la vez con el
   tutor colgado                → 40 al tutor, 40 cobradas, 0 pagando por nada
 lecturas del reloj por spend() : 1   (eran 2, y la medianoche cabía en medio)
@@ -45,6 +58,7 @@ la página no la alcanza.
 El paso 4 cerró en la sesión 33; las 34 y 35 saldaron deudas del paso 3. La 36
 construyó el paso 5 entero (la otra terminal) y lo verificó (esta). La 38 cerró
 el paso 6, y con él **los pasos 0 a 6 están enteros y sin gastar un centavo**.
+La 39 no avanzó de paso a propósito: **pagó deudas del 7 que no necesitaban nube.**
 
 ## SIGUIENTE PASO DEL CURSO: **el paso 7 — la nube**
 
@@ -56,18 +70,20 @@ entera, falsa."* Es el **primer paso que sale de su máquina**, y sigue costando
 primero la alarma de facturación, después subir. Al revés, la primera factura la
 descubre la tarjeta.
 
-**Las siete deudas con dueño en el paso 7** (todas en `tasks.md` de TEAPP). Se
-revisan **antes** de abrir la cuenta, no después:
+**Las deudas con dueño en el paso 7** (todas en `tasks.md` de TEAPP). Se revisan
+**antes** de abrir la cuenta, no después. La sesión 39 tachó dos y añadió dos:
 
 | | qué falta |
 |---|---|
-| `T-033` | configurar el log de verdad — hoy escribe por el handler de último recurso |
+| ~~`T-033`~~ | ✅ **sesión 39** — el log configurado; `info` volvió a significar algo |
+| ~~`T-053`~~ | ✅ **sesión 39** — tope de intentos, por origen, en `app/login_guard.py` |
 | `T-046` | `A-006` — que la ruta de `mktemp -d` le sirva a `node` **en otra máquina** |
 | `T-050` | `TEAPP_SECRET_KEY` estable entre despliegues (`A-008`) |
 | `T-051` | `TEAPP_COOKIE_SECURE=true` en la nube |
 | `T-052` | un test que anule el `autouse` y ejerza la rama `secure=True` (`A-009`) |
-| `T-053` | tope de intentos fallidos contra `/login`, **por origen y no por persona** |
 | `T-054` | tope de tamaño de cuerpo en el proxy de delante (`C-002`) |
+| `T-055` | **nueva** — el origen real detrás del proxy; leer `X-Forwarded-For` sin proxy de confianza es peor que no tener freno (`A-014`) |
+| `T-056` | **nueva** — poner `TEAPP_REGISTRATION_OPEN` explícito en la nube |
 
 📌 **Casi todas tienen la misma forma, y la otra terminal lo vio sola:** son cosas
 que **hoy no se pueden comprobar porque no existe el sitio donde ocurren**. No es
@@ -75,8 +91,177 @@ deuda por pereza: es **deuda por calendario**, y es exactamente lo que el roadma
 decidió al poner la nube en el 7. 🔑 **Distinguir las dos clases de deuda evita
 tanto correr a taparlas como olvidarlas.** → candidata a `LESSONS.md`.
 
+⚠️ **Y la sesión 39 encontró la otra mitad de esa idea:** `T-033` y `T-053`
+estaban en la misma lista **y no eran deuda por calendario** — se podían hacer
+hoy, en la máquina de casa, por $0,00. Estaban ahí por contagio.
+🔑 **Una lista de "esto es del paso 7" hay que releerla de vez en cuando: las
+tareas se apuntan juntas, pero no todas esperan lo mismo.**
+
+📌 **Las cinco que quedan de la nube son la MISMA decisión disfrazada de cinco:**
+`T-050`, `T-051`, `T-054`, `T-055` y `T-056` son todas *"configurar lo que hay
+delante"*. Ninguna se puede escribir antes de elegir la plataforma. Por eso la
+39 **no hizo `T-054`** aunque estaba pedida: empezar por ahí es empezar por el final.
+
 ⚠️ **La cuenta de AWS se abre en el paso 7, y con la alarma antes que nada.**
 Los pasos 0 a 6 se hicieron enteros en su máquina, tal como se planeó.
+
+---
+
+# 🧪 LA SESIÓN 39: tres deudas del paso 7 pagadas **sin abrir la cuenta de AWS**
+
+**Séptima sesión seguida sin escribir producto desde esta terminal, y la séptima
+que vale.** La otra terminal hizo `T-053`, cerró `/register` y remató `T-033`.
+Esta aportó **un hallazgo que cambió el alcance del día**, la forma de retirar una
+suposición, y las comprobaciones. Commits en TEAPP: `f1b7b3d`, `9306463`,
+`1a0f3e7`. La suite pasó de **258 a 310**. Costo: **$0,00**.
+
+## ⭐ EL HALLAZGO DEL DÍA (de esta terminal): el registro abierto **anulaba la cuota**
+
+Vino de una pregunta que parecía de producto —*¿quién puede registrarse?*— y
+resultó ser sobre el freno del paso 6:
+
+> 🔑 **Un límite por persona presupone que las personas son caras de conseguir.**
+> `quota.py` topa el gasto **por persona y por día**. Si cualquiera puede fabricar
+> personas, el tope sigue funcionando perfectamente y **no protege nada**: 200
+> cuentas son 200 cuotas. Deja de ser un techo y pasa a ser **una tarifa**.
+
+Y detrás de cada cuota hay llamadas al modelo, en una cuenta de AWS con su
+tarjeta. **El curso lleva 39 sesiones a $0,00.** Un registro abierto y la alarma
+de facturación del paso 7 no caben en la misma app.
+
+📌 **Lo que hay que llevarse:** el fallo no estaba en `quota.py`, que está bien
+escrito. Estaba en **una suposición que nadie escribió** — *"las cuentas las crea
+alguien de confianza"*. 🔑 **Un freno se puede romper sin tocarlo, cambiando lo
+que hay a su alrededor.**
+
+## La decisión, y por qué NO fue la que yo recomendé primero
+
+Yo dije *"cerrado, con invitaciones"*. Al pasarlo por la regla que el propio
+`scope.md` de TEAPP fija para los casos dudosos —*"¿es necesario para que la
+tubería funcione en producción? Si no, es v2"*— **las invitaciones no pasan la
+regla**: son producto, y este proyecto trata de lo que rodea al agente.
+
+Quedó en **cerrado a secas**: `TEAPP_REGISTRATION_OPEN`, que **por defecto vale
+`false`**. La palanca no se estrechó, **desapareció** — desde una petición anónima
+ya no se llega ni al `scrypt` ni al archivo.
+
+⚠️ **Y la otra terminal afinó la regla mejor que yo:** el defecto seguro aquí es
+`false` y en `cookie_secure()` es `true`. No es incoherencia. **La regla no es
+"el defecto es `true`": es DENEGAR POR DEFECTO**, y eso cae de un lado distinto en
+cada ajuste. Por eso además abrir exige la palabra exacta `true`: un `yes` mal
+escrito **no abre nada**, porque aquí equivocarse abriría la puerta.
+
+## ⭐ La medición que convirtió un requisito en un hallazgo
+
+Yo pedí, como punto de una lista, *"hace falta crear cuentas sin la ruta"*. La
+otra terminal **fue a comprobar si `main.py` ya lo hacía** en vez de escribir algo
+nuevo — y se colgó. `getpass` en Windows **lee del teclado, no de la entrada
+estándar**: sirve a quien está sentado delante, no a un servidor.
+
+> 🔑 **Un freno nuevo cambia qué OTRAS cosas son críticas.** Con `/register`
+> abierto, `main.py` colgado era una molestia. Con `/register` cerrado era la
+> única puerta, **y estaba tapiada**: en el paso 7 nadie habría podido crear la
+> primera cuenta. Eso no se descubre leyendo — se descubre corriéndolo.
+
+→ Nació `create_account.py`: nombre por argumento, contraseña por variable de
+entorno, nunca impresa. Verificado de punta a punta con uvicorn: cuenta creada
+sin teclado, `POST /register` → **403**, `POST /login` con esa cuenta → **200**.
+**La puerta de la calle cerrada, la de servicio abierta.**
+
+## `A-012` no se retiró: **se partió en dos**
+
+Preguntaron si `A-012` (*"nadie prueba contraseñas a la fuerza"*) salía de
+`assumptions.md` ahora que existía el tope, y si `D-026` la sustituía.
+
+**Sí a lo primero, no a lo segundo.** Una decisión dice *qué elegimos y por qué*;
+una suposición dice *qué damos por cierto, qué se rompe si es falso y cuándo
+caduca*. `D-026` no contesta ninguna de las tres.
+
+> 🔑 **Al cerrar una suposición la pregunta no es "¿quién hereda el archivo?" sino
+> "¿qué seguimos dando por cierto?".** Lo que no vale es mudar el riesgo a un
+> registro que no sabe cargarlo.
+
+Quedó así, y las dos mitades **caducan el mismo día**:
+`A-013` = los números 5 y 15 son **predicción, no medida**.
+`A-014` = que `request.client.host` sea el origen real **depende de que no haya
+nada delante**.
+
+✅ **Y ellos vieron la segunda mitad, que era mejor que la pregunta:** al ir a
+retirarla descubrieron que `A-012` **eran dos suposiciones pegadas y solo una se
+había resuelto**. Eso es `L-014`.
+
+## ⚠️ Tres verdes que mentían, y las tres cayeron igual
+
+| tarea | el verde | lo que pasaba de verdad |
+|---|---|---|
+| `T-053` | `Retry-After` parecía faltar | la sonda la buscaba en mayúsculas; el servidor la manda en minúsculas |
+| `/register` | test en verde con `logger.info` | con uvicorn la línea **no salía** — el handler de último recurso empieza en `WARNING` |
+| `T-033` | el test del log en verde | un fixture no limpiaba: `caplog` repone los handlers, y `basicConfig` no hace nada si la raíz ya los tiene. **El test medía el estado que ponía pytest** |
+
+> 🔑 **Tres veces en un día, y las tres se cayeron al medir en las condiciones de
+> verdad.** Ya no es una anécdota: es el método del proyecto. Un test que corre en
+> un sitio que no es el sitio real puede estar midiéndose a sí mismo.
+
+Y el tercero trae su propia lección (`L-015`), con dos partes que valen aparte:
+1. **Lo delató el par, no el test.** El del estado bueno solo habría seguido verde
+   para siempre; fue tenerlo **al lado del estado malo** lo que hizo visible que
+   los dos medían lo mismo. → *Un test del estado bueno no demuestra nada si no hay
+   uno del estado malo que se comporte distinto.*
+2. **La solución fue cambiar de condiciones, no de aserción:** medirlo en otro
+   proceso, porque **un intérprete recién arrancado es la única condición honesta —
+   es la de uvicorn.**
+
+## Lo que arregló `T-033`, que no es el formato bonito
+
+Hasta la 39 mandaba el handler de último recurso de Python, que **empieza en
+`WARNING`**: cualquier `info` no se perdía por poco — **no existía**. La única
+forma de que un renglón saliera era subirlo de nivel, **y eso obliga a mentir
+sobre su importancia**.
+
+> 🔑 **Un log donde todo es aviso no tiene avisos.** Con el log configurado,
+> bajaron a `info` la cuota agotada (*el freno funcionando*) y el registro cerrado
+> (*el estado normal de la v1*), y se quedó en `warning` "demasiados intentos",
+> que **no describe el sistema funcionando: describe a alguien intentando entrar
+> en una cuenta ajena** — y en memoria es el único rastro que sobrevive a un reinicio.
+
+## Los carteles que apuntaban a un mundo que ya había cambiado
+
+Dos hallazgos de esta terminal, pequeños de escribir y del mismo tipo:
+
+1. **El log decía "las cuentas se crean con `main.py`"** — la herramienta que
+   acababan de medir que **se cuelga en un servidor**. Y ese renglón existe para
+   una sola persona: quien administra y ve un 403 sin explicación. **El único
+   mensaje pensado para desatascar a alguien lo mandaba al sitio donde se atasca.**
+2. **`L-012`** decía *"`warning` y no `info`, porque se midió"*. Cierto **mientras
+   `T-033` no existiera** — y ese mismo renglón acaba de bajar a `info`.
+
+> 🔑 **Al arreglar algo, busca los carteles que lo señalaban.** El registro sigue
+> siendo verdad sobre el pasado y mentira sobre el presente, y nadie lo nota hasta
+> que alguien lo obedece.
+
+## ✅ LO QUE CORRÍ YO
+
+```
+pytest, tres veces en el dia   : 278 -> 301 -> 310 passed
+app/login_guard.py             : leido entero; frenos, barrido y candado
+/register en app/api.py        : SIN freno (hallazgo) -> luego cerrado y reverificado
+T-055 citada en api.py y en
+  decisions.md                 : NO EXISTIA en tasks.md (hallazgo) -> creada
+T-053 en tasks.md              : seguia en 🔲 (hallazgo) -> a ✅
+log_cookie_mode()              : `info` invisible en su rama segura — confirmado
+T-033 citada en app/           : 4 sitios doblados esperandola — el argumento para hacerla
+git TEAPP al cerrar            : limpio, 3 commits
+```
+
+## La lección que se lleva el día
+
+> 🔑 **Las deudas se apuntan juntas y no todas esperan lo mismo.** Siete tareas
+> vivían en la lista del paso 7. Tres se podían pagar hoy, en la máquina de casa,
+> por $0,00 — estaban ahí **por contagio**, no por calendario. Releer la lista
+> valió más que empezar la tarea que tocaba.
+
+Es la hermana de la lección de la 38 (*un freno solo se conoce cuando falla*):
+allí había que provocar el escenario malo; aquí había que **dudar del rótulo**.
 
 ---
 
