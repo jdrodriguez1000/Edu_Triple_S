@@ -3,15 +3,15 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-05 (sesión 41)
+**Última actualización:** 2026-08-05 (sesión 42)
 
 ---
 
 # 📍 NIVEL 7 — PRODUCCIÓN. **Los frenos existen antes de que haya nada que frenar.**
 # **Paso 6 CERRADO** en la sesión 38. La 39 pagó tres deudas sin tocar la nube.
 # La 40 cerró la PLATAFORMA. La 41 **escribió `deploy/` entera antes de abrir la
-# cuenta**, y le encontró tres formas del mismo defecto. **$0,00** y la cuenta
-# **sigue sin abrirse**.
+# cuenta**. La 42 **midió desde fuera lo que la otra terminal dio por no medible**:
+# `T-058` cerrada y comprobada por DNS. **$0,00** y la cuenta **sigue sin abrirse**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -30,6 +30,18 @@ Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (PÚBLICO)
 > `.pem`, ni un token entraron nunca.
 
 ## ✅ ESTADO, verificado desde esta terminal corriendo las cosas
+
+**Corrido POR MÍ en esta terminal (sesión 42), no reportado por la otra:**
+
+```
+nslookup teapp.duckdns.org  : 181.58.xx.xx  ← el nombre EXISTE y RESUELVE
+curl api.ipify.org          : 181.58.xx.xx  ← es la IP de su casa: coinciden
+TTL del registro            : 60 s           ← el cambio de T-059 tarda 1 minuto
+pytest (suite entera)       : 310 passed in 13.77s
+bash -n deploy/install.sh   : sintaxis OK
+git status -sb TEAPP        : limpio, 0 ahead, sincronizado
+git log -p --all | token    : ni un token ni un UUID. Historial limpio
+```
 
 **Corrido POR MÍ en esta terminal (sesión 41), no reportado por la otra:**
 
@@ -101,22 +113,27 @@ AWS + EC2 pequeña (t3.micro) + Caddy + nombre gratis de DuckDNS + IP fija
 son archivos, y casi todas las plataformas modernas dan disco **efímero**. En
 EC2 el disco persiste y **TEAPP sube sin cambiar una línea de código**.
 
-## SIGUIENTE PASO CONCRETO: `T-058` — **sacar el nombre de DuckDNS**
+## ✅ `T-058` CERRADA en la sesión 42, y comprobada desde fuera
 
-**Navegador, sin cuenta de AWS y sin arrancar el reloj.** Entrar en
-`duckdns.org` (se entra con Google/GitHub/Reddit/Twitter: no hay usuario propio),
-sacar `teapp.duckdns.org` y guardar el token.
+`teapp.duckdns.org` existe, resuelve, y el token quedó fuera del repo (auditado:
+no está en el historial). La sacó él en el navegador, sin cuenta de AWS y sin
+arrancar el reloj. **Lo verificó esta terminal con `nslookup`, no la que la hizo.**
 
-- 🚨 **El token es un secreto y no hace falta que ninguna terminal lo vea.** Se
-  usa en el navegador. Y **no vive en el servidor**: la mitad dinámica de DuckDNS
-  no se usa, porque la Elastic IP es fija (`console_steps.md` paso 2).
-- **El nombre es para quedarse.** Cambiarlo obliga a reemitir el certificado y a
-  tocar el `Caddyfile`.
-- Al crearlo apunta a la IP de casa, y **eso es normal**: la buena se pone en el
-  paso 3, cuando exista la Elastic IP.
+## SIGUIENTE PASO CONCRETO: `T-057` — **abrir la cuenta de AWS**
 
-**Y DESPUÉS, `T-057`: abrir la cuenta.** 🚨 Con la alarma de facturación como
-PRIMER clic, umbral en **cualquier cargo distinto de cero**, no una cifra alta.
+🚨 **Este sí arranca el reloj irreversible de 6 meses** (`C-006`). Por eso no se
+abre hasta que no quede nada más por decidir fuera.
+
+- **La alarma de facturación es el PRIMER clic.** Umbral en **cualquier cargo
+  distinto de cero**, no una cifra alta: el primer cargo no nulo ya significa que
+  se cruzó al plan de pago (`C-005`, y son **siete** puertas, no tres).
+- **MFA en el `root` en el mismo acto**, y correo con alias `+aws` (`D-031`).
+  ⚠️ El valor literal del correo **no va al repo**: TEAPP es público.
+- Y de paso: **verificar cuánto retraso llevan los datos de facturación.** Una
+  alarma que mira un dato de hace horas avisa tarde.
+
+🚨 **Y en cuanto exista la Elastic IP (`T-059`), repuntar el nombre de DuckDNS.**
+Hoy apunta a la casa (ver hallazgo 2 de la sesión 42).
 
 **Las 14 tareas nuevas del paso 7** (`T-057` a `T-070`, en `tasks.md` de TEAPP).
 Las cinco deudas fantasma **por fin tienen dueño**:
@@ -124,7 +141,7 @@ Las cinco deudas fantasma **por fin tienen dueño**:
 | | qué falta |
 |---|---|
 | `T-057` | **abrir la cuenta** + alarma + correo con alias `+aws` + MFA en el `root` |
-| `T-058` | el nombre de DuckDNS — 🚨 **sin él no hay HTTPS y no entra nadie** |
+| ~~`T-058`~~ | ✅ **HECHA** (sesión 42). `teapp.duckdns.org` existe y resuelve |
 | `T-059` · `T-060` | la instancia con IP fija · cortafuegos solo en 80 y 443 |
 | `T-061` · `T-062` | Caddy (HTTPS solo) · uvicorn en arranque automático, atado a `127.0.0.1` |
 | `T-063` | 📦 la carpeta `deploy/` — **sin Terraform** (PI-2) |
@@ -141,6 +158,107 @@ plataforma. Elegirla las desbloqueó todas a la vez. **Por eso el orden fue
 decidir en papel primero y abrir la cuenta después** — y hay una razón dura
 debajo: **el reloj de 6 meses arranca el día del clic, no el día del despliegue.**
 Cada hora dentro de la consola decidiendo es regalo quemándose.
+
+---
+
+# 🧪 LA SESIÓN 42: `T-058` cerrada, y **lo que se dio por no medible se midió en dos segundos**
+
+Sesión corta y de una sola pieza: revisar lo que la otra terminal hizo en **dos
+tramos** que esta bitácora no tenía (`S-016` y `S-017`). Ningún código escrito
+aquí, ningún gasto de API, y la cuenta de AWS **sigue sin abrirse**.
+
+## Lo que había pasado en la otra terminal
+
+- **`S-016`** — `A-017` nueva: DuckDNS **comprobado** en vez de heredado (existe,
+  es gratis, se sostiene con donaciones, y tiene caídas registradas). Y dos
+  revisiones seguidas de `install.sh`, que quedaron como una sola lección `L-017`.
+- **`S-017`** — `T-058`: `teapp.duckdns.org` creado, token guardado fuera del repo.
+
+## ⭐ HALLAZGO 1 — *"no había nada que correr"* era falso, y el testigo era gratis
+
+La entrada `S-017` cierra la tarea diciendo textualmente:
+
+> *"Verificado: nada que correr — es una cuenta externa, no un artefacto en este
+> repo."*
+
+**Sí había qué correr: `nslookup`.** Y tardó dos segundos.
+
+```
+nslookup teapp.duckdns.org  → 181.58.xx.xx
+```
+
+🔑 **La distinción que se saltó:** ver el nombre en el panel de DuckDNS demuestra
+que *el panel te lo enseña*. **No demuestra que el mundo lo resuelva** — que es lo
+único que le va a importar a Let's Encrypt cuando vaya a emitir el certificado.
+Son dos afirmaciones distintas, y la primera no implica la segunda.
+
+📌 **Es el animal de la sesión 36 otra vez** (*el paso se declaró terminado sin el
+único testigo que cuenta*) y el de la 33 (*un control puede cumplirse entero y no
+comprobar lo que creías*). Pero con una vuelta nueva y peor: **aquí ni siquiera se
+buscó el testigo.** Se decidió de antemano que no existía.
+
+> **La lección, y es la que se lleva el día: "externo" no significa "no medible".**
+> Antes de escribir *"no hay nada que verificar"*, la pregunta correcta no es
+> *"¿es mío este artefacto?"* sino **"¿qué podría mirar alguien de fuera?"**
+
+## 🚨 HALLAZGO 2 — el nombre publica la IP de su casa
+
+`teapp.duckdns.org` es un nombre **público**. DuckDNS lo rellenó solo con la
+dirección desde la que se entró. Se comprobó que son la misma:
+
+```
+nslookup teapp.duckdns.org  → 181.58.xx.xx
+curl api.ipify.org          → 181.58.xx.xx   ← la IP de su casa
+```
+
+**No es una alarma hoy:** el router no reenvía ningún puerto y no hay nada
+escuchando detrás. Pero mientras dure hay dos reglas, y la segunda es una tarea:
+
+1. ⚠️ **No abrir puertos en el router de casa.** Hoy el nombre no lleva a ninguna
+   parte. Abrir un puerto lo convertiría en **una puerta con la dirección
+   publicada**, que es peor que una puerta anónima.
+2. 🚨 **Repuntar el nombre en cuanto exista la Elastic IP** (`T-059`).
+
+### ⚠️ Y el hallazgo 2 casi se comete a sí mismo, al escribir esto
+
+Al redactar esta entrada escribí **la IP completa** en este archivo. **Y este
+repo también es público.** Se cazó al mirar `git status` antes del commit, y se
+enmascaró a `181.58.xx.xx` — el dato que enseña la lección es el prefijo, no los
+cuatro octetos.
+
+🔑 **La diferencia entre publicarla en DNS y publicarla aquí:** en DNS es
+**efímera** — cambia cuando el proveedor la rote, y desaparece cuando `T-059`
+repunte el nombre. **En Git es para siempre**, y queda pegada a su nombre y a su
+cara. **Git no olvida:** borrar el renglón mañana no la borra.
+
+📌 Es la regla de `CLAUDE.md` (*"mira qué entra antes de commitear"*) mordiendo
+por primera vez en algo que **no era una llave ni un `.env`**. Un dato personal
+no necesita parecer un secreto para no querer que sea permanente.
+
+✅ **Y el TTL quitó un riesgo que sí preocupaba: 60 segundos.** Cuando se cambie
+la IP en `T-059`, el mundo se entera en un minuto. Un TTL largo habría dejado a
+Let's Encrypt mirando la IP vieja durante horas **con el reloj de AWS corriendo** —
+justo el recurso que las sesiones 40 y 41 se esforzaron en no quemar.
+
+## ✏️ Corrección pendiente PARA LA OTRA TERMINAL
+
+`S-017` dice que el nombre coincidía con el que esperaban `install.sh`,
+`Caddyfile.template` y `console_steps.md`. **`Caddyfile.template` no contiene
+ningún nombre**: tiene `DOMAIN_PLACEHOLDER`, y es `install.sh` quien lo sustituye
+(línea 177). Los otros dos sí lo nombran.
+
+El efecto es el mismo, pero la frase **manda a buscar el nombre donde no está**.
+Es la semilla del bicho de la sesión 33, en pequeño. Dos cosas para el próximo
+tramo de TEAPP, y **no las hace esta terminal** (método de las dos terminales):
+
+- Corregir ese renglón de `S-017`.
+- Anotar que `T-058` **quedó comprobada por DNS**, no solo declarada.
+
+## Lo que sigue sin estar probado
+
+⚠️ Lo mismo que ayer, sin cambios: **nada de `deploy/` se ha corrido nunca.** El
+nombre resuelve, pero no hay máquina, ni certificado, ni Caddy. `T-069` (borrar la
+máquina y levantarla solo desde `deploy/`) sigue siendo la prueba que lo dirá.
 
 ---
 
@@ -8032,6 +8150,19 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   al arreglar lo anterior, la skill decía "haz `push`" y los límites del propio
   agente lo tenían prohibido. No da error: **obedece a una de las dos sin manera
   de saber a cuál.** → Cuando corrijas una regla, pregunta **quién más la dice**.
+- **"No hay nada que verificar", dicho sin haberlo buscado** (sesión 42, `T-058`):
+  el cierre de la tarea decía *"nada que correr — es una cuenta externa"*. Había
+  qué correr, era `nslookup`, y tardó dos segundos. **Ver el nombre en el panel
+  del proveedor demuestra que el panel te lo enseña, no que el mundo lo resuelva.**
+  → Es la sesión 36 (declarar hecho sin el testigo) con una vuelta peor: **el
+  testigo ni se buscó.** Antes de escribir "no se puede verificar", la pregunta
+  no es *"¿es mío este artefacto?"* sino **"¿qué podría mirar alguien de fuera?"**
+- **El dato personal que no parecía un secreto** (sesión 42): al escribir el
+  hallazgo de la IP, la IP completa entró en `PROGRESO.md` — **y este repo es
+  público**. Se cazó mirando `git status` antes del commit. No era una llave ni
+  un `.env`, que es justo por lo que casi pasa. → **En DNS la IP es efímera; en
+  Git es para siempre.** La regla de "mira qué entra" no es solo para
+  credenciales.
 - **`Juan` y `juan`: una persona en Windows, dos en Linux** (sesión 33, análisis
   previo del paso 4). Si un nombre escrito por el usuario se vuelve un nombre de
   archivo sin normalizar, el marcador se parte en dos al desplegar — **sin ningún
