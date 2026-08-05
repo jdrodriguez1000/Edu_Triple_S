@@ -3,28 +3,52 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-05 (sesión 40)
+**Última actualización:** 2026-08-05 (sesión 41)
 
 ---
 
 # 📍 NIVEL 7 — PRODUCCIÓN. **Los frenos existen antes de que haya nada que frenar.**
 # **Paso 6 CERRADO** en la sesión 38. La 39 pagó tres deudas sin tocar la nube.
-# La 40 **cerró la PLATAFORMA del paso 7 sin escribir una línea de código**:
-# AWS + EC2 + Caddy + DuckDNS + IP fija. La cuenta **sigue sin abrirse**. **$0,00**.
+# La 40 cerró la PLATAFORMA. La 41 **escribió `deploy/` entera antes de abrir la
+# cuenta**, y le encontró tres formas del mismo defecto. **$0,00** y la cuenta
+# **sigue sin abrirse**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
 Ruta:   C:\Users\USUARIO\Documents\Company_TripleS\Test_Edu_TripleS\TEAPP
-Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
+Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (PÚBLICO)
 ```
+
+> ✏️ **Corregido el 2026-08-05 (sesión 41).** Este renglón decía **privado**
+> desde que se escribió, y `gh repo view` dice `isPrivate: false`. La otra
+> terminal siempre operó con el dato bueno —`deploy/console_steps.md` no escribe
+> el correo literal *porque el repo es público*—, así que la copia equivocada era
+> **esta**. 🔑 **Es el bicho de la sesión 33 otra vez: la misma cosa escrita en
+> dos sitios diciendo cosas contrarias.** No da error; un día alguien consulta la
+> copia mala y escribe un secreto "porque es privado".
+> ✅ **Auditado el historial entero y limpio:** ni un `.env`, ni `data/`, ni un
+> `.pem`, ni un token entraron nunca.
 
 ## ✅ ESTADO, verificado desde esta terminal corriendo las cosas
 
-⚠️ **La sesión 40 no corrió nada: fue día de decidir y verificar.** Lo de abajo
-sigue siendo lo último medido, y es de la sesión 39. Nada lo ha invalidado — el
-commit `790b111` de TEAPP **solo tocó `_persistence/`**, ni una línea de código.
+**Corrido POR MÍ en esta terminal (sesión 41), no reportado por la otra:**
 
-**Corrido POR MÍ en esta terminal (sesión 39), no reportado por la otra:**
+```
+pytest, tres veces (una por commit) : 310 passed  ← 310 desde la sesión 39
+bash -n deploy/install.sh           : sintaxis OK, en cada versión
+git TEAPP                           : limpio y sincronizado, 0 ahead
+historial público de TEAPP, auditado: ni .env, ni data/, ni .pem, ni token
+gh repo view TEAPP                  : isPrivate: FALSE  ← ver la corrección arriba
+uvicorn de verdad, puerto 8011, y el
+  curl EXACTO del instalador contra /: salida 0 (200)
+  el mismo curl contra /me           : salida 22 (401)  ← el contraste que importa
+```
+
+⚠️ **El código de la app no se tocó en toda la sesión.** Los tres commits del día
+(`efd853a`, `cfe074c`, `956ac83` + `732404a`) son `_persistence/` y `deploy/`.
+Por eso 310 sigue siendo 310: no es que nada se rompiera, es que nada se movió.
+
+**Lo verificado en la sesión 39, que sigue en pie:**
 
 ```
 pytest (suite entera)          : 310 passed in 15.95s   (eran 258 al empezar el dia)
@@ -64,6 +88,8 @@ El paso 4 cerró en la sesión 33; las 34 y 35 saldaron deudas del paso 3. La 36
 construyó el paso 5 entero (la otra terminal) y lo verificó (esta). La 38 cerró
 el paso 6, y con él **los pasos 0 a 6 están enteros y sin gastar un centavo**.
 La 39 no avanzó de paso a propósito: **pagó deudas del 7 que no necesitaban nube.**
+La 40 eligió la plataforma en papel y la 41 escribió `deploy/` entera: **el paso 7
+lleva tres sesiones construyéndose con el reloj parado y sin gastar un centavo.**
 
 ## LA PLATAFORMA DEL PASO 7, CERRADA EN LA SESIÓN 40
 
@@ -75,10 +101,22 @@ AWS + EC2 pequeña (t3.micro) + Caddy + nombre gratis de DuckDNS + IP fija
 son archivos, y casi todas las plataformas modernas dan disco **efímero**. En
 EC2 el disco persiste y **TEAPP sube sin cambiar una línea de código**.
 
-## SIGUIENTE PASO CONCRETO: **abrir la cuenta** (`T-057`)
+## SIGUIENTE PASO CONCRETO: `T-058` — **sacar el nombre de DuckDNS**
 
-🚨 **Y la alarma de facturación como PRIMER clic**, con un umbral que la sesión 40
-cambió: **cualquier cargo distinto de cero**, no una cifra alta. Ver abajo.
+**Navegador, sin cuenta de AWS y sin arrancar el reloj.** Entrar en
+`duckdns.org` (se entra con Google/GitHub/Reddit/Twitter: no hay usuario propio),
+sacar `teapp.duckdns.org` y guardar el token.
+
+- 🚨 **El token es un secreto y no hace falta que ninguna terminal lo vea.** Se
+  usa en el navegador. Y **no vive en el servidor**: la mitad dinámica de DuckDNS
+  no se usa, porque la Elastic IP es fija (`console_steps.md` paso 2).
+- **El nombre es para quedarse.** Cambiarlo obliga a reemitir el certificado y a
+  tocar el `Caddyfile`.
+- Al crearlo apunta a la IP de casa, y **eso es normal**: la buena se pone en el
+  paso 3, cuando exista la Elastic IP.
+
+**Y DESPUÉS, `T-057`: abrir la cuenta.** 🚨 Con la alarma de facturación como
+PRIMER clic, umbral en **cualquier cargo distinto de cero**, no una cifra alta.
 
 **Las 14 tareas nuevas del paso 7** (`T-057` a `T-070`, en `tasks.md` de TEAPP).
 Las cinco deudas fantasma **por fin tienen dueño**:
@@ -103,6 +141,132 @@ plataforma. Elegirla las desbloqueó todas a la vez. **Por eso el orden fue
 decidir en papel primero y abrir la cuenta después** — y hay una razón dura
 debajo: **el reloj de 6 meses arranca el día del clic, no el día del despliegue.**
 Cada hora dentro de la consola decidiendo es regalo quemándose.
+
+---
+
+# 🧪 LA SESIÓN 41: `deploy/` escrita antes de abrir la cuenta, y **tres formas del mismo defecto** dentro de quince líneas
+
+**Novena sesión seguida sin escribir producto desde esta terminal**, y la segunda
+sin correr un test propio de la app: el día fue **verificar lo ajeno**. Tres
+commits en TEAPP (`efd853a`, `cfe074c`, `956ac83`, más `732404a`).
+Costo: **$0,00**. La cuenta de AWS **sigue sin abrirse**.
+
+## Lo que pasó, en orden
+
+1. La otra terminal cerró `T-068`: **`A-016` comprobada y FALSA.** Las puertas al
+   plan de pago no eran tres, eran **siete**.
+2. Esta terminal fue a las tres fuentes y **encontró que una parte del hallazgo no
+   estaba en la documentación** (ver abajo). `C-005` se corrigió a media sesión.
+3. Se decidió el orden: **`T-063` antes que `T-057`** — escribir `deploy/` antes
+   de abrir la cuenta.
+4. La otra terminal escribió `deploy/` entera. Esta la revisó y sacó **tres
+   defectos**; se arreglaron en `cfe074c`.
+5. La revisión del arreglo sacó **un cuarto**, que era el mismo de antes con el
+   signo cambiado. `956ac83`.
+
+## ⭐ HALLAZGO 1 — el silencio de un documento no es una respuesta
+
+`C-005` quedó diciendo que solo las dos primeras puertas evaporan los créditos y
+que **las otras cinco los conservan**. Fui a comprobarlo y **la documentación no
+dice eso**. La frase literal nombra dos:
+
+> *"if you upgrade to paid plan **by joining an AWS Organization or setting up an
+> AWS Control Tower landing zone**, your Free Tier credits expire immediately"*
+
+De las otras cinco **no dice ni que se salvan ni que se pierden**. La frase de
+"los créditos se aplican a facturas futuras" existe, pero es del **upgrade
+manual** — el que haces tú a propósito. Se le había pegado al caso equivocado.
+
+> 🔑 **Y es el MISMO defecto que acababa de matar a `A-016`, un piso más abajo.**
+> `A-016` cayó porque **una lista que tiene sentido parece completa**. Esto casi
+> cae porque **un documento que no dice "no" parece que dice "sí"**. Las dos
+> veces el hecho no salió del texto: salió de la **forma** del texto.
+
+**Cómo quedó:** las cinco desconocidas se tratan **como si evaporaran**. No es
+pesimismo, es **denegar por defecto** — la misma regla que está en el código
+desde el nivel 4 con `PERMISOS.get(nombre, "prohibir")`.
+
+**Y una corrección de método que salió de paso:** se había escrito que "las tres
+fuentes repiten literalmente la misma frase". Cierto para la lista de siete;
+falso para el matiz de los créditos — los **Términos**, que son la fuente que
+manda porque es la que se firma, solo hablan de Organizations, ni mencionan
+Control Tower, y lo dicen peor (*"no longer be able to **use or earn** credits"*).
+
+> 📌 **Tres fuentes que coinciden en un párrafo no coinciden automáticamente en
+> el siguiente.** La coincidencia se verifica **por afirmación, no por documento.**
+
+## ⭐ HALLAZGO 2 — el decisivo: **tres formas del mismo descuido en quince líneas**
+
+`deploy/install.sh` terminaba citando el principio del proyecto —*terminado =
+visto funcionando*— y **dos líneas después no lo cumplía**: lo único que
+comprobaba era `systemctl is-active`, que demuestra que systemd **lanzó** el
+proceso, no que la app conteste.
+
+El hueco era **alcanzable y mudo**: uvicorn arranca, revienta medio segundo
+después por un `.env` que no puede leer, `Restart=always` lo relanza, y el
+`is-active` de la línea siguiente lo ve `active`. El guion imprimía
+**"Listo. TEAPP corriendo en…"** sobre una app muerta.
+
+Se arregló. Y **al revisar el arreglo apareció el mismo defecto invertido**:
+
+| | qué miraba | qué le pasaba |
+|---|---|---|
+| **1. falso verde** | `is-active` | decía verde **sin haber mirado** |
+| **2. falso rojo** | `curl` al HTTPS **sin reintentos** | diría rojo **por mirar demasiado pronto** |
+| **3. la ruta** | `curl` a `/` | `/me` suena más representativa, y **pararía cada instalación en rojo estando todo bien** |
+
+El 2 es fino: le habían dado **10 reintentos** al `curl` que espera a uvicorn
+(segundos) y **ninguno** al que espera a que Let's Encrypt emita un certificado
+(decenas de segundos, más si el DNS acaba de crearse).
+
+> 🔑 **La lección, y es de la otra terminal, no mía.** Yo llevé el hallazgo como
+> *"falta un bucle"*. Lo que vale es cómo lo escribieron:
+>
+> **Un falso verde y un falso rojo no son errores opuestos: son el MISMO error
+> —no haber pensado *cuándo* es válido preguntar— y por eso el segundo se coló
+> mientras se arreglaba el primero.**
+
+**Y lo más incómodo de los tres: el comentario correcto no evitó el fallo, lo
+escondió.** Es `L-017` en TEAPP: *un bloque que se declara auditado es un bloque
+que nadie vuelve a auditar — y eso incluye a quien lo escribió media hora antes.*
+Misma familia que la sesión 33, donde el cierre se recitó entero y el trabajo se
+quedó sin subir: **el procedimiento completo, el resultado sin mirar.**
+
+📌 **La regla práctica que quedó escrita:** cuando un comentario prometa que algo
+está comprobado, leer lo de debajo con **más** desconfianza, no con menos. Es
+donde menos ojos van a mirar.
+
+## Lo que se verificó corriendo, y por qué importó
+
+El `curl` del instalador no me lo creí: **levanté TEAPP en el puerto 8011** y le
+pegué el comando exacto.
+
+```
+curl -fsS -o /dev/null http://127.0.0.1:8011/     → salida 0   (200)
+curl -fsS -o /dev/null http://127.0.0.1:8011/me   → salida 22  (401)
+```
+
+El contraste es el hallazgo 3 medido: `-f` convierte un 401 en fallo. La ruta
+sostenía el control entero **y no estaba dicho por qué**. Ahora sí.
+
+## El orden del día, que fue una decisión y no una casualidad
+
+Se eligió **escribir `deploy/` antes de abrir la cuenta**, por la lección de la
+sesión 40: **el reloj arranca el día del clic**. Escribir el documento de clics
+con la cuenta abierta es escribirlo con los 6 meses corriendo, y no necesita nube
+para nada. Segundo motivo, más fuerte: **el documento de clics es el guión de
+`T-057`** — escrito antes, se entra a la consola a *ejecutar*; escrito después,
+se entra a *decidir*, que es justo lo que la 40 sacó fuera de la consola.
+
+**Salió bien:** los cuatro defectos se encontraron y se arreglaron **con el reloj
+parado**. En la nube, cada uno habría costado tiempo de una ventana irrepetible.
+
+## Lo que sigue sin estar probado, y hay que decirlo
+
+⚠️ **Nada de `deploy/` se ha corrido nunca — no hay máquina.** "Está todo
+escrito" **no es** "está medido". Por eso `T-069` (borrar la máquina y levantarla
+otra vez solo desde `deploy/`) va **pronto y no al final**: cuesta céntimos y deja
+meses de margen para arreglar lo que falte.
 
 ---
 
