@@ -3,13 +3,14 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-04 (sesión 39)
+**Última actualización:** 2026-08-05 (sesión 40)
 
 ---
 
 # 📍 NIVEL 7 — PRODUCCIÓN. **Los frenos existen antes de que haya nada que frenar.**
-# **Paso 6 CERRADO** en la sesión 38. La 39 pagó **tres deudas del paso 7 sin
-# tocar la nube**: `T-053`, `/register` cerrado y `T-033`. Costo del día: **$0,00**.
+# **Paso 6 CERRADO** en la sesión 38. La 39 pagó tres deudas sin tocar la nube.
+# La 40 **cerró la PLATAFORMA del paso 7 sin escribir una línea de código**:
+# AWS + EC2 + Caddy + DuckDNS + IP fija. La cuenta **sigue sin abrirse**. **$0,00**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -19,7 +20,11 @@ Repo:   https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
 
 ## ✅ ESTADO, verificado desde esta terminal corriendo las cosas
 
-**Corrido POR MÍ en esta terminal, no reportado por la otra:**
+⚠️ **La sesión 40 no corrió nada: fue día de decidir y verificar.** Lo de abajo
+sigue siendo lo último medido, y es de la sesión 39. Nada lo ha invalidado — el
+commit `790b111` de TEAPP **solo tocó `_persistence/`**, ni una línea de código.
+
+**Corrido POR MÍ en esta terminal (sesión 39), no reportado por la otra:**
 
 ```
 pytest (suite entera)          : 310 passed in 15.95s   (eran 258 al empezar el dia)
@@ -60,50 +65,202 @@ construyó el paso 5 entero (la otra terminal) y lo verificó (esta). La 38 cerr
 el paso 6, y con él **los pasos 0 a 6 están enteros y sin gastar un centavo**.
 La 39 no avanzó de paso a propósito: **pagó deudas del 7 que no necesitaban nube.**
 
-## SIGUIENTE PASO DEL CURSO: **el paso 7 — la nube**
+## LA PLATAFORMA DEL PASO 7, CERRADA EN LA SESIÓN 40
 
-Del roadmap: *"AWS. ⚠️ **alarma de facturación PRIMERO**, luego subir. La tubería
-entera, falsa."* Es el **primer paso que sale de su máquina**, y sigue costando
-**$0,00** si la alarma se pone antes que nada.
+```
+AWS + EC2 pequeña (t3.micro) + Caddy + nombre gratis de DuckDNS + IP fija
+```
 
-🚨 **El orden del paso 7 no es negociable, y está escrito así a propósito:**
-primero la alarma de facturación, después subir. Al revés, la primera factura la
-descubre la tarjeta.
+**La decidió el disco, no la nube.** `data/accounts.json` y `data/quota/*.json`
+son archivos, y casi todas las plataformas modernas dan disco **efímero**. En
+EC2 el disco persiste y **TEAPP sube sin cambiar una línea de código**.
 
-**Las deudas con dueño en el paso 7** (todas en `tasks.md` de TEAPP). Se revisan
-**antes** de abrir la cuenta, no después. La sesión 39 tachó dos y añadió dos:
+## SIGUIENTE PASO CONCRETO: **abrir la cuenta** (`T-057`)
+
+🚨 **Y la alarma de facturación como PRIMER clic**, con un umbral que la sesión 40
+cambió: **cualquier cargo distinto de cero**, no una cifra alta. Ver abajo.
+
+**Las 14 tareas nuevas del paso 7** (`T-057` a `T-070`, en `tasks.md` de TEAPP).
+Las cinco deudas fantasma **por fin tienen dueño**:
 
 | | qué falta |
 |---|---|
-| ~~`T-033`~~ | ✅ **sesión 39** — el log configurado; `info` volvió a significar algo |
-| ~~`T-053`~~ | ✅ **sesión 39** — tope de intentos, por origen, en `app/login_guard.py` |
-| `T-046` | `A-006` — que la ruta de `mktemp -d` le sirva a `node` **en otra máquina** |
-| `T-050` | `TEAPP_SECRET_KEY` estable entre despliegues (`A-008`) |
-| `T-051` | `TEAPP_COOKIE_SECURE=true` en la nube |
-| `T-052` | un test que anule el `autouse` y ejerza la rama `secure=True` (`A-009`) |
-| `T-054` | tope de tamaño de cuerpo en el proxy de delante (`C-002`) |
-| `T-055` | **nueva** — el origen real detrás del proxy; leer `X-Forwarded-For` sin proxy de confianza es peor que no tener freno (`A-014`) |
-| `T-056` | **nueva** — poner `TEAPP_REGISTRATION_OPEN` explícito en la nube |
+| `T-057` | **abrir la cuenta** + alarma + correo con alias `+aws` + MFA en el `root` |
+| `T-058` | el nombre de DuckDNS — 🚨 **sin él no hay HTTPS y no entra nadie** |
+| `T-059` · `T-060` | la instancia con IP fija · cortafuegos solo en 80 y 443 |
+| `T-061` · `T-062` | Caddy (HTTPS solo) · uvicorn en arranque automático, atado a `127.0.0.1` |
+| `T-063` | 📦 la carpeta `deploy/` — **sin Terraform** (PI-2) |
+| `T-064` · `T-065` · `T-066` · `T-067` | subir y crear la 1ª cuenta · comprobar el disco · el origen real · el presupuesto real |
+| `T-068` | la lista de **"esto NUNCA se toca"** |
+| `T-069` | 🚨 **el ensayo de reconstrucción, y va PRONTO** |
+| `T-070` | el **cierre planeado** del paso 7 |
+| `T-050` `T-051` `T-054` `T-055` `T-056` | las cinco de siempre, ya **escribibles** |
+| `T-046` | `A-006` — la única que no es de la nube |
 
-📌 **Casi todas tienen la misma forma, y la otra terminal lo vio sola:** son cosas
-que **hoy no se pueden comprobar porque no existe el sitio donde ocurren**. No es
-deuda por pereza: es **deuda por calendario**, y es exactamente lo que el roadmap
-decidió al poner la nube en el 7. 🔑 **Distinguir las dos clases de deuda evita
-tanto correr a taparlas como olvidarlas.** → candidata a `LESSONS.md`.
+📌 **Las cinco fantasma eran la MISMA decisión disfrazada de cinco:** todas eran
+*"configurar lo que hay delante"*, y ninguna se podía escribir antes de elegir la
+plataforma. Elegirla las desbloqueó todas a la vez. **Por eso el orden fue
+decidir en papel primero y abrir la cuenta después** — y hay una razón dura
+debajo: **el reloj de 6 meses arranca el día del clic, no el día del despliegue.**
+Cada hora dentro de la consola decidiendo es regalo quemándose.
 
-⚠️ **Y la sesión 39 encontró la otra mitad de esa idea:** `T-033` y `T-053`
-estaban en la misma lista **y no eran deuda por calendario** — se podían hacer
-hoy, en la máquina de casa, por $0,00. Estaban ahí por contagio.
-🔑 **Una lista de "esto es del paso 7" hay que releerla de vez en cuando: las
-tareas se apuntan juntas, pero no todas esperan lo mismo.**
+---
 
-📌 **Las cinco que quedan de la nube son la MISMA decisión disfrazada de cinco:**
-`T-050`, `T-051`, `T-054`, `T-055` y `T-056` son todas *"configurar lo que hay
-delante"*. Ninguna se puede escribir antes de elegir la plataforma. Por eso la
-39 **no hizo `T-054`** aunque estaba pedida: empezar por ahí es empezar por el final.
+# 🧪 LA SESIÓN 40: la plataforma del paso 7, **decidida en papel y sin abrir la cuenta**
 
-⚠️ **La cuenta de AWS se abre en el paso 7, y con la alarma antes que nada.**
-Los pasos 0 a 6 se hicieron enteros en su máquina, tal como se planeó.
+**Octava sesión seguida sin escribir producto desde esta terminal.** Y la primera
+en que **no se corrió ni un test**: todo el día fue **decidir y verificar**. Esta
+terminal aportó **cuatro hechos comprobados contra la documentación** que
+cambiaron el plan; la otra los convirtió en `D-029`, `D-030`, `D-031`, `C-003` a
+`C-006`, `A-015`, `A-016` y **14 tareas nuevas**. Commit en TEAPP: `790b111`.
+Costo: **$0,00**. La cuenta de AWS **sigue sin abrirse**.
+
+## El punto de partida: cero experiencia, y había que decirlo
+
+Él nunca ha trabajado con AWS ni con ninguna nube. No tiene cuenta. **La otra
+terminal no lo sabía**, y eso cambiaba cómo explicar el paso entero. Fue lo
+primero del mensaje de traspaso.
+
+## ⭐ HALLAZGO 1 — el plan gratuito de AWS **ya no es el que dicen los tutoriales**
+
+🚨 **El 15 de julio de 2025 AWS cambió el modelo.** El famoso "12 meses gratis"
+**no existe** para cuentas nuevas. Lo que hay hoy:
+
+| | |
+|---|---|
+| créditos | $100 al abrir + hasta $100 más = **$200** |
+| duración | **6 meses**, o hasta gastar los créditos |
+| al terminar | **AWS cierra la cuenta**. 90 días de gracia, luego borrado |
+| la tarjeta | 🔑 **no puede cobrar**: *"AWS will not charge your payment method until you upgrade to paid plan"* |
+
+📌 **Eso RECOLOCA la alarma de facturación, no la cancela.** El roadmap la pedía
+para proteger la tarjeta. Ahora protege **otra cosa**: los 6 meses y los $200.
+
+## ⭐ HALLAZGO 2 — el disco, que fue lo que decidió la plataforma entera
+
+**`data/` son archivos.** En una máquina local eso no significa nada; en la nube
+es el nudo del paso 7, porque casi todo lo moderno da **disco efímero**.
+
+| con disco efímero | cómo se vería |
+|---|---|
+| reinicio → `accounts.json` desaparece | **se nota en 5 minutos**: nadie entra |
+| dos copias → dos `accounts.json` | me registro en una, entro por la otra |
+| 🚨 reinicio → **cuota nueva** | **no se nota NUNCA**: la factura del paso 8 habla |
+
+> 🔑 **La tercera es la grave, y por ser la muda.** El freno del paso 6 se
+> rompería **sin que nadie le tocara una línea**. Tercera aparición del patrón de
+> la sesión 39: *un freno se rompe cambiando lo que lo rodea*.
+
+→ Lambda y Fargate quedaron descartados **por una sola columna**. EC2 ✅.
+
+## ⭐ HALLAZGO 3 — el que **casi mata el despliegue entero**
+
+La otra terminal preguntó si "no tengo dominio" complicaba el certificado, y dijo
+tener *"la fuerte impresión, pero es impresión, no dato"* de que Let's Encrypt
+rechaza los nombres de AWS. **Se verificó, y era dato:**
+
+```
+"The ACME server refuses to issue a certificate for this domain name,
+ because it is forbidden by policy."
+```
+
+Es política deliberada, con hilos en su foro **desde 2016**. No hay forma de
+convencerlo.
+
+> 🚨 **Sin certificado, `T-051` no se cumple y NADIE ENTRA A TEAPP.** La cookie
+> `Secure` no viaja por HTTP, y el fallo es **mudo**. Un despliegue entero muerto
+> por la política de una autoridad certificadora — **y se descubrió preguntando,
+> no desplegando.**
+
+→ Se resuelve con un nombre **gratuito** de DuckDNS. 📌 Su límite era **el dinero,
+no el nombre**, y esa distinción valió el despliegue.
+
+## ⭐ HALLAZGO 4 — el freno que se pierde **sin querer**, con clics inocentes
+
+AWS pasa la cuenta al plan de pago **sola** —Organization, Control Tower, Partner
+Network— y entonces: **los créditos se evaporan, la tarjeta queda viva, y no hay
+vuelta atrás.**
+
+> 🔑 **"AWS no puede cobrarme" no es propiedad de la cuenta: es propiedad del
+> PLAN.** Un clic la desactiva entera y desde dentro todo se ve igual. **Cuarta
+> aparición del mismo patrón en dos días.**
+
+📌 **Y de ahí salió lo más útil del día, que no es la lista de nombres:** cambió
+**el umbral de la alarma**. No es *"avísame si gasto mucho"* — es **avísame ante
+CUALQUIER cargo distinto de cero**, porque el primer cargo no nulo significa que
+ya se cruzó. 🔑 **Nació de una pregunta que parecía administrativa** (*"¿esto es
+realmente gratis?"*) y acabó cambiando la configuración de la primera cosa del paso 7.
+
+## ⚠️ Y un hallazgo que salió AL REVÉS de lo que se temía
+
+La otra terminal avisó, con razón, de que EC2 **consume créditos** (ya no hay
+franja de 750 horas) y dedujo: *"el reloj lo marca la resta, no el calendario"*,
+y habría que escribir una pieza que apagara la máquina sola.
+
+**Al ponerle números, no aguanta:** ~$7,59/mes × 6 meses + disco ≈ **$50 de $200**.
+
+> 🔑 **Gana el calendario, y sobra un factor de cuatro.** La pieza se descartó
+> **por medición, no por pereza.** Tenía razón en el HECHO y se equivocó en la
+> CONSECUENCIA — y eso solo se ve poniendo números. Es la lección de la sesión 12
+> otra vez: *separar "¿esto es cierto?" de "¿qué se sigue de esto?"*.
+
+⚠️ Quedó como `A-015`, **marcada como suposición**: son precios de lista, no una
+factura, y le falta el renglón de la IPv4 pública.
+
+## ⚠️ Tres cosas que la otra terminal devolvió MEJOR de como se las mandaron
+
+| se mandó | volvió |
+|---|---|
+| *"sé quién escribe `X-Forwarded-For` porque el proxy es mío"* | **falso**. La garantía viene de que **nadie más pueda hablar con FastAPI**: uvicorn en `127.0.0.1` **y** cortafuegos solo en 80/443. **Sin las dos no hay certeza, hay costumbre** |
+| *"verificar `deploy/` al apagar"* (`T-070`) | 🚨 **`T-069`: el ensayo va PRONTO, no al final.** Borrar la máquina y levantarla solo desde `deploy/`, **con cinco meses de margen para arreglar lo que falte** |
+| *"la lista de puertas al plan de pago"* | **partida en dos**: el **mecanismo** está verificado → `C-005`. El **inventario** no → `A-016`. 🔑 Y de ahí sale cuál capa protege de verdad: como la lista puede estar incompleta, **la alarma pasa a ser la capa principal** — detecta el resultado sin saber la puerta |
+
+## Lo que se verificó desde esta terminal (todo documentación, ninguna corrida)
+
+```
+plan gratuito nuevo, 6 meses, $200  : aws.amazon.com/free + FAQ
+"no cobra hasta que subas a pago"   : FAQ, literal
+upgrades automaticos al plan pago   : FAQ  -> C-005 + A-016
+free tier = UNO POR PERSONA         : aws.amazon.com/free/terms -> C-006
+Let's Encrypt rechaza AWS EC2       : foro Let's Encrypt, hilos desde 2016
+EC2 ya NO tiene franja de 750h      : para cuentas post 15-jul-2025
+precio t3.micro ~$7,59/mes          : ⚠️ calculadora de TERCEROS, no AWS -> A-015
+forma de TEAPP (data/ en disco)     : leido en la otra carpeta
+commit 790b111 de TEAPP             : revisado entero; repo limpio
+```
+
+⚠️ **Una fuente devolvió números inventados** ($300, 12 meses) confesando que no
+había leído la página. Se descartó. 🔑 **La regla 6 aplica también a lo que dice
+esta terminal**, no solo a lo que dice el usuario.
+
+## Las decisiones personales que se tomaron hoy
+
+1. **AWS queda cerrado sin comparar con otras nubes**, y se escribió *por qué*
+   para que nadie lo reabra creyendo que se olvidó: es elección **del curso**, no
+   del proyecto. Una plataforma que esconda el proxy **contradice el método**.
+2. **Un nombre gratis SÍ entra**: su límite es el dinero, no el nombre.
+3. **Final planeado** (`T-070`): bajar TEAPP con fecha en el calendario. Cuesta
+   lo mismo que no hacer nada — 🔑 **un cierre planeado se aprende y uno
+   automático solo se sufre.** 📌 **La cuenta es desechable; `deploy/` no.**
+4. **Correo con alias `+aws` y MFA en el `root` el mismo día.** El `root` es la
+   llave maestra y **no se puede limitar**; el correo de compras está pensado
+   para circular. Son dos trabajos opuestos para un mismo buzón.
+
+## La lección que se lleva el día
+
+> 🔑 **Decidir en papel no gasta reloj.** El regalo empieza a contar el día que
+> abres la cuenta, no el día que despliegas. Y encima es **uno por persona en
+> toda la vida**: una sola ventana de 6 meses para todo lo que quiera aprender
+> de AWS.
+
+Es la hermana de la lección de la 39 (*las deudas se apuntan juntas y no todas
+esperan lo mismo*): allí había que **dudar del rótulo**; aquí había que **dudar
+de que empezar ya fuera empezar antes**.
+
+📌 **Y una segunda, sobre el método de las dos terminales:** hoy no hubo código
+que revisar, así que lo único que esta terminal aportó fue **ir a comprobar**.
+Los cuatro hallazgos salieron de negarse a contestar de memoria. 🔑 **Cuando no
+hay nada que correr, verificar ES el trabajo.**
 
 ---
 
