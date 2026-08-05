@@ -12,8 +12,10 @@
 # La 40 cerró la PLATAFORMA. La 41 **escribió `deploy/` entera antes de abrir la
 # cuenta**. La 42 **midió desde fuera lo que la otra terminal dio por no medible**:
 # `T-058` cerrada y comprobada por DNS. **$0,00** y la cuenta **sigue sin abrirse**.
-# La 43 **no tocó código ni la nube**: fijó qué es ser senior con agentes y **qué
-# información necesita la terminal que supervisa**. Ver abajo. La cuenta sigue cerrada.
+# La 43 **no tocó código ni la nube**: fijó qué es ser senior con agentes, **qué
+# información necesita la terminal que supervisa**, y registró **su método
+# profesional de brief a MVP** — sin construirlo, porque falta contarlo entero.
+# Ver abajo. La cuenta sigue cerrada.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -142,7 +144,13 @@ Las cuatro preguntas que hizo, en orden, porque una llevó a la otra:
 que decidir y demostrar eran categorías **nuevas**. No lo son. Corregido en el
 momento, y por eso `LM.1` está escrita con la proporción y no con el precio.
 
-## 🔑 Y LA DECISIÓN DE MÉTODO: `METODO.md` NO es un archivo, son DOS
+## 🔑 Y LA DECISIÓN DE MÉTODO: `METODO.md` NO es un archivo, son TRES
+
+> ✏️ **Corregido más tarde en la misma sesión 43.** Esta sección nació diciendo
+> **DOS**. Al final de la sesión apareció el tercero —su método profesional de
+> brief a MVP, ver la tarea apartada más abajo— y **son tres**. Se corrige aquí
+> en vez de dejar el número viejo: es exactamente el bicho que esta misma sección
+> denuncia. La tabla de abajo ya trae los tres.
 
 Preguntó si el esquema de las dos terminales sirve para todo proyecto futuro y
 **qué información debe tener la terminal supervisora**. Respuesta corta: **sí
@@ -155,6 +163,11 @@ sesiones:** lo que se preguntó **no es** la tarea apartada de `METODO.md`.
 |---|---|---|
 | **`METODO.md`** | *Cómo se construye un agente.* Frenos, SDD/TDD, evals, el bucle | **el agente** del repo nuevo, solo |
 | **el segundo** (sin nombre aún) | *Cómo se supervisa a quien construye.* El reparto de las dos terminales | **la persona** — describe un harness humano |
+| **el tercero** — `_metodo/` | *Cómo se lleva un proyecto de brief a MVP.* Su método profesional | **él y su equipo** |
+
+🚨 **Y el tercero es el más peligroso de fusionar:** es el más grande y el que
+llega antes en el tiempo. Si entra en el mismo archivo, **se come a los dos
+técnicos.**
 
 **Por qué separados:** el primero es contenido; el segundo es método de trabajo.
 En el mismo archivo, **el segundo se traga al primero** — es más corto y más
@@ -174,6 +187,114 @@ ciclo de cinco renglones** que hasta hoy solo vivía en la cabeza del estudiante
 siempre: **para destilar hay que tener qué destilar.** Falta el ensayo de
 reconstrucción (`T-069`) y falta que algo salga mal en producción — que es
 justo el paso que más va a enseñar sobre supervisar, y aún no ha ocurrido.
+
+---
+
+## 📌 TAREA APARTADA (3ª) — SU MÉTODO DE TRABAJO PROFESIONAL, de brief a MVP
+
+**Nace en la sesión 43. NO se construye todavía, y lo pidió él explícitamente:**
+
+> *"Quiero que registres esto y no construyas nada. Cuando trabajemos el punto del
+> método, lo volveremos a retomar, porque **mi forma de trabajo tiene más puntos
+> que solo los anteriores** y sería bueno que los analicemos todos, antes de
+> construir algo."*
+
+⭐ **Es la decisión correcta y va anotada como tal:** los 7 pasos de abajo son
+**un extracto**, no el método completo. Diseñar plantillas sobre un método
+incompleto es fabricar algo que hay que rehacer. **Primero el mapa entero,
+después el artefacto.**
+
+🚫 **Y por eso esto NO fue a `LESSONS.md` todavía, a propósito.** Lo que hay aquí
+son hallazgos sobre un proceso que aún no se ha visto entero.
+
+### Los 7 pasos, como los contó él (extracto, faltan puntos)
+
+1. El **cliente entrega un brief** — desordenado y muchas veces ambiguo.
+2. Una persona lo lee y **entrevista al cliente** → documento de requerimientos
+   funcionales y no funcionales. *(Él hoy lo llama `BDD`.)*
+3. Un ingeniero determina **tres actores mínimos** y con ellos define el prototipo,
+   construido **lo más barato posible**, solo el **camino feliz del generador**.
+   A veces el prototipo ni incluye registrarse, y es a propósito.
+4. Ese ingeniero **define las métricas** de éxito del prototipo.
+5. El prototipo **se somete a posibles usuarios** (internos o externos).
+6. **Puerta:** si es exitoso → se define el MVP. Si no → se mata el proyecto o se
+   reconfigura el prototipo con lo que dijeron los usuarios.
+7. El proceso continúa con las demás etapas. *(← aquí está lo que falta contar.)*
+
+### ⭐ Lo mejor del proceso, y no se toca
+
+El **modelo de tres actores mínimos**: **generador → operador → administrador**
+(y otros no mínimos, p. ej. el gerencial). Con su filtro:
+
+> *Sin el actor generador —o si ese actor no usa la aplicación— **no hay razón de
+> ser** para construir la solución.*
+
+📌 Eso es una **prueba de muerte temprana disfrazada de definición de actores**:
+en la semana uno y sobre papel dice si el proyecto tiene sentido. Y la tríada es
+plantilla real: sirve para un crédito, para salud, para un marketplace.
+
+### 🚨 Los tres defectos detectados hoy — a resolver ANTES de escribir plantillas
+
+**1. Las métricas llegan tarde (paso 4 después del 3).**
+Definir el prototipo y después cómo se mide su éxito hace que se elijan métricas
+**que el prototipo ya diseñado pueda pasar**. No por deshonestidad: por gravedad.
+→ Es la *demostración que no demostraba nada* del nivel 2, en versión de negocio:
+**la prueba mide otra cosa de la que promete.**
+✅ Las métricas van **antes** del prototipo o a la vez. Nunca después: el umbral
+debe **dictar** qué prototipo se construye, no al revés.
+
+**2. No hay criterio de MUERTE escrito por adelantado.**
+*"Si se determina que el prototipo es exitoso"* — ¿determinado por quién, contra
+qué número, decidido cuándo? Un umbral fijado **después** de ver los resultados
+**siempre se cumple**: hay una reunión en medio y en esa reunión hay gente con el
+proyecto ya vendido. → Es el *"Haiku cuesta 5x menos"* y el *"~$0.02"*: **un
+número que salió de una cabeza y no de una medición.**
+✅ Antes de enseñarle el prototipo al primer usuario, firmado: el umbral en
+números, **el número que MATA el proyecto**, y **quién firma** (una persona, con
+nombre). Un método sin criterio de muerte no tiene puerta: tiene un pasillo.
+
+**3. `BDD` es una palabra prestada.**
+En la industria significa *Behavior-Driven Development* (`Given/When/Then`), no
+un documento de requisitos. Funciona dentro de su equipo; rompe con alguien de
+fuera — o con un agente que sí conoce el término estándar. → **Es la advertencia
+de *meta-harness* otra vez: el concepto es bueno, la palabra está prestada.**
+✅ Candidatos: `requisitos.md` o `alcance.md`.
+
+### Lo que se dijo sobre cómo empaquetarlo (para retomarlo, NO para hacerlo hoy)
+
+- Separar **tres cosas de naturaleza distinta**: las **plantillas** (la forma de
+  cada documento), el **protocolo** (la secuencia y sobre todo **las puertas**), y
+  el **catálogo de fallos** (`FALLOS.md`, que **solo crece**, como `LESSONS.md`).
+- En el catálogo va **la forma del fallo, no la anécdota**. No *"en Acme el
+  cliente movió el alcance en la semana 6"*, sino *"si el brief no nombra al
+  generador con nombre y cargo, el alcance se mueve"*. La primera es un chisme;
+  la segunda es un **detector** que sirve en el proyecto siguiente.
+- El alcance del prototipo necesita **"qué queda fuera y por qué"**. Él ya lo
+  decide; sin escribirlo, en la revisión parece un olvido en vez de una decisión.
+- **Dónde entran los agentes:** sacar el borrador de requisitos del brief y marcar
+  lo ambiguo, generar las preguntas de la entrevista, proponer los actores y
+  **avisar cuando el generador no está claro**, redactar el borrador de métricas.
+- **Dónde NO:** entrevistar al cliente, y **cruzar la puerta del paso 6**. Matar
+  o seguir un proyecto es una firma, y un agente no firma nada (`LM.3`).
+- 📌 Y encaja solo el método de las dos terminales: **el agente que redacta el
+  documento no es el que lo revisa** (`LM.4`).
+
+### ⚠️ La trampa a vigilar cuando se escriba
+
+Un método de trabajo es un control, y **los controles se vuelven ritual**: se
+rellena la plantilla, se marca la casilla, nadie mira si el contenido dice algo.
+Es la sesión 33 —*el cierre se cumplió entero y no comprobó lo que creías*—
+esperando a repetirse en papelería de proyecto.
+✅ Defensa: **cada paso con una pregunta que se pueda responder mal.** *"¿Quién es
+el generador, con nombre y cargo?"* Si no hay respuesta, no se pasa. **Una
+plantilla que solo se puede rellenar bien no comprueba nada.**
+
+### Por qué este NO espera al nivel 8 (a diferencia de los otros dos)
+
+`METODO.md` y el de supervisión esperan porque **falta material por vivir**.
+Este es al revés: **el material ya existe** — sale de sus proyectos reales, de
+años, no del curso. No espera a aprender nada. Espera a **contar los pasos que
+faltan** y a sentarse.
 
 ---
 
@@ -2879,13 +3000,14 @@ Se paga 16 veces y se cobra 3.
 **No es para la próxima sesión.** Va después del nivel 8, y por eso queda aquí
 escrita: para que no se pierda y para que no se adelante.
 
-> 🔑 **ACTUALIZADO EN LA SESIÓN 43: son DOS archivos, no uno.** `METODO.md`
+> 🔑 **ACTUALIZADO EN LA SESIÓN 43: son TRES archivos, no uno.** `METODO.md`
 > responde *cómo se construye un agente* y lo lee el agente del repo nuevo. El
 > segundo responde *cómo se supervisa a quien construye* — el método de las dos
 > terminales — y lo lee una persona. **No los fusiones:** el segundo es más corto
 > y más interesante, y se traga al primero. El contenido del segundo ya está
-> redactado en `LM.4` y `LM.5` de `LESSONS.md`. Ver la sección de la sesión 43
-> arriba del todo.
+> redactado en `LM.4` y `LM.5` de `LESSONS.md`. Y hay un **tercero** —su método
+> profesional de brief a MVP, `_metodo/`—, que es el más grande y **se los come a
+> los dos** si entra aquí. Ver la sección de la sesión 43 arriba del todo.
 
 **De dónde salió:** al cerrar la sesión 21 el estudiante preguntó si este repo
 sirve de base para construir apps —su próximo proyecto es una **app del clima**
