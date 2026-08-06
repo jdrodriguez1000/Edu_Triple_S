@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-06 (sesión 47)
+**Última actualización:** 2026-08-06 (sesión 48)
 
 ---
 
@@ -34,6 +34,11 @@
 # adelantó lo que no toca la nube: `T-055` MEDIDA con uvicorn real y `T-052`
 # cerrada.** De 310 a 314 tests. Y salió `LM.14`, que es **la otra mitad de
 # `LM.4`**: esta terminal entregó un dato falso y lo cazó la que construye.
+# 🚨 **La 48 cerró `T-054` —el tope de cuerpo de Caddy, ahora MEDIDO— sin tocar la
+# nube ni gastar un centavo.** De 314 a 328 tests. Salió **`LM.15`, la más fuerte
+# de estas tres sesiones**: un instrumento ciego no da un dato falso, da
+# **silencio**, y el silencio se lee como confirmación. Tercera cara en dos
+# sesiones del mismo defecto — **nadie audita un verde**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -422,6 +427,142 @@ faltan** y a sentarse.
 
 ---
 
+## ✅ SESIÓN 48 — `T-054` cerrada y MEDIDA, y el defecto del proyecto ya tiene nombre
+
+**Tercera sesión del mismo día.** El experimento de `A-018` seguía sin poderse
+leer (t=0 a las 15:29 UTC, ~4 h de las ~24), así que otra vez se adelantó trabajo
+que **no gasta el reloj de los 6 meses ni un centavo**. La cuenta de AWS sigue con
+**cero máquinas encendidas** y la Elastic IP **no se tocó a propósito**: ella
+misma es el disparador del experimento, y soltarla lo habría cortado.
+
+### Lo que auditó ESTA terminal, corrido aquí
+
+```
+pytest, al empezar            : 314 passed
+pytest, al cerrar             : 328 passed in 16.73s   (+14)
+git status TEAPP              : 5 archivos, ni uno de codigo de la app
+git check-ignore -v data/     : .gitignore:18  ← el hallazgo del dia
+fechas de data/users/*.json   : nada escrito despues de las 14:48
+sabotaje MIO, no suyo:
+  MAX_SENTENCE_LENGTH 500→5000 → 4 rojos, y api.py restaurado
+docs de Caddy (ctx7)          : "formats supported by go-humanize"
+```
+
+### Dos correcciones mías al empezar, y las dos las cazó él
+
+1. **Dije que `T-068` estaba pendiente. Está ✅ desde la sesión 45.** Lo que
+   `PROGRESO.md` decía era *"se **lee** antes del primer clic"* — un freno de
+   lectura, no una tarea. **Yo leí "hacer" donde decía "releer".**
+2. De paso apareció que el **traspaso 2 de la sesión 46** (la alerta de coste
+   previsto) figuraba aquí como deuda y **ya estaba hecha y verificada en
+   pantalla** desde `S-019`. Corregido en su sitio.
+
+📌 Es `LM.14` funcionando **en el sentido contrario**: esta vez el dato malo lo
+dio la supervisora y lo cazó él. Dos sesiones seguidas.
+
+### `T-054` — la mitad archivo ya existía; lo que faltaba era la báscula
+
+Yo propuse escribir la directiva de Caddy. **Él avisó de que ya estaba escrita**
+desde `T-063` (`deploy/Caddyfile.template:28`), con el comentario que confiesa su
+propio defecto: *"el número es por criterio, no por medida"*.
+
+**Lo que faltaba era pesarlo**, y eso sí se podía hacer sin nube. Cinco alfabetos,
+frase de 500 caracteres (el máximo que acepta la app), los cinco con **200**:
+
+| frase de 500 caracteres | cuerpo | % de 16000 |
+|---|---|---|
+| inglés (ASCII) | 516 B | 3,2 % |
+| español con tildes | 1016 B | 6,4 % |
+| chino | 1516 B | 9,5 % |
+| emoji (UTF-8 crudo) | 2016 B | 12,6 % |
+| **emoji escapado `\uXXXX`** | **6016 B** | **37,6 %** |
+
+🔑 **El hallazgo suyo, y es bueno: un carácter cuesta entre 1 y 12 bytes.**
+`MAX_SENTENCE_LENGTH` acota **caracteres**. Un emoji ocupa 4 bytes en UTF-8, pero
+JSON permite escribirlo con **dos** escapes `\uXXXX` seguidos —un *surrogate
+pair*— y eso son **12 bytes ASCII para un solo carácter**. No es un ataque: es lo
+que produce cualquier cliente que serialice con `ensure_ascii=True`, **el valor
+por defecto de Python**.
+
+⚠️ **Y el criterio viejo no estaba solo sin medir: estaba MAL.** Decía *"500
+caracteres no llegan a 2 KB"* y el peor caso son 6 KB. **Falso por 3x.** Los 16 KB
+estaban bien **por suerte**. Un tope puesto "a unos pocos KB" —que era el
+enunciado literal de `T-054`— habría roto el uso normal con emoji.
+→ **Un número a ojo no se equivoca al azar: se equivoca en el orden de magnitud
+del caso que no imaginaste.**
+
+### 🚨 La corrección de esta terminal: `KB` son 1000, no 1024
+
+Él iba a atar el test a `16_384`. Fui a la documentación de Caddy (`ctx7`, no de
+memoria): los tamaños se leen con **go-humanize**, donde **`KB`=1000 y
+`KiB`=1024**. El techo real de `max_size 16KB` es **16000**.
+
+Un test contra 16384 se pondría **verde en una franja de 384 bytes donde Caddy ya
+está devolviendo 413**. → **Un control verde midiendo un número que no rige es
+peor que no tener control.**
+
+⚠️ **Y esto está LEÍDO, no medido** — el mismo estado del "~24 h" de facturación.
+Quedó como `A-019` en TEAPP, con su forma de comprobarlo escrita: `caddy adapt`
+imprime el entero. **Necesita el binario → se paga gratis el día de `T-061`.**
+
+### Las tres correcciones al test, y por qué
+
+1. **El número se lee del `Caddyfile`, no se copia.** Copiarlo habría creado una
+   **tercera** copia (Caddyfile, test, máquina) — y sería el archivo que existe
+   para cazar números descoordinados quien introdujera uno.
+2. **El ×12 va como constante con nombre y porqué**, no como un `12` suelto.
+3. **El techo conservador (16000)**: quedarse corto no rompe nada; pasarse sí.
+
+Y él encontró un hueco propio que yo no vi: sabotear el Caddyfile a `16KiB` salía
+**verde correctamente**, o sea que no había testigo de que el conversor
+**aplicara** la unidad, solo de que la tabla existiera. Añadió
+`test_el_conversor_aplica_la_unidad_y_no_solo_la_conoce`. **Es el mejor test del
+archivo.**
+
+### 🚨🚨 EL HALLAZGO DEL DÍA — `LM.15`, y es el más importante de las tres sesiones
+
+Él escribió: *"verifiqué con `git status` que `data/` quedó intacto"*.
+**`data/` está en el `.gitignore` de TEAPP, línea 18.** `git status` **no la
+mira**: habría callado igual si los tests hubieran escrito ahí.
+
+La conclusión era **correcta** —lo comprobé por las fechas de los archivos, que sí
+ven esa carpeta— pero **se supo por suerte, no por la prueba citada.**
+
+| instrumento | qué produce | qué pasa después |
+|---|---|---|
+| **equivocado** | un dato **falso** | otro dato lo contradice y se investiga |
+| **ciego** | **silencio** | se lee como confirmación, y nadie vuelve |
+
+⭐ **La distinción la afinó él, y es la frase que hay que conservar:** *un dato
+falso se puede contradecir; el silencio no choca con nada.* Y la ató a `L-016`:
+las cinco puertas ❓ de `C-005` eran silencio de AWS leído como un "no pasa nada".
+**Mismo animal: allá un texto callado, aquí una herramienta callada.**
+
+🚨 **Tercera cara del mismo defecto en dos sesiones** — el suplantador por
+`127.0.0.1` (47), el techo de 16384 (48), y esto (48). Ya no es casualidad: es el
+**modo de fallo característico del proyecto**, y tiene razón estructural —
+**nadie audita un verde.** El rojo pide explicación; el verde se cobra y se pasa
+de página. Quedó como `L-020` en TEAPP y `LM.15` aquí.
+
+### Y el sabotaje que faltaba lo corrió esta terminal
+
+Sus cuatro sabotajes atacaban el `Caddyfile` y el conversor — **el instrumento**.
+**Ninguno atacaba el escenario que el test dice existir para cazar.** Lo corrí:
+`MAX_SENTENCE_LENGTH` de 500 a 5000 → **4 rojos**, `api.py` restaurado.
+→ **Un guardián al que solo se le sabotea el instrumento no ha demostrado morder
+en su propia dirección.**
+
+### 📤 Lo que queda pendiente de la 48
+
+- 🔲 **`T-071`, propuesta y con el texto ya escrito** (la redactó él; la mete el
+  cierre de TEAPP): `conftest.py` aísla cuentas, cuota y `login_guard`, **pero no
+  el marcador (`USERS_DIR`)**. Ese aislamiento está **duplicado en dos fixtures
+  locales**. La trampa sigue armada para el próximo archivo de tests.
+- 🔲 **`A-019`**: el entero real de `16KB` vía `caddy adapt`, gratis en `T-061`.
+- ⏳ **Y lo de siempre, sin moverse:** los dos datos del experimento de `A-018`.
+
+---
+
 ## ✅ SESIÓN 47 — `T-055` y `T-052` cerradas sin tocar la nube, y **el supervisor se equivocó**
 
 **Mismo día que la 46.** El experimento de `A-018` no se podía leer todavía (t=0
@@ -682,7 +823,9 @@ Las cinco deudas fantasma **por fin tienen dueño**:
 | `T-070` | el **cierre planeado** del paso 7 |
 | ~~`T-055`~~ | ✅ **la mitad de Python** (sesión 47), medida con uvicorn real. Faltan las dos mitades que **no son código**: que Caddy escriba la cabecera, y `T-060` |
 | ~~`T-052`~~ | ✅ **HECHA** (sesión 47). 4 tests, de 310 a 314. `A-009` encogida |
-| `T-050` `T-051` `T-054` `T-056` | las que quedan de las cinco de siempre, ya **escribibles** |
+| ~~`T-054`~~ | ✅ **HECHA y MEDIDA** (sesión 48). El tope de Caddy, 5 alfabetos, 14 tests. Queda `A-019`: el entero real de `16KB` vía `caddy adapt`, gratis en `T-061` |
+| `T-050` `T-051` `T-056` | las que quedan de las cinco de siempre, ya **escribibles** |
+| 🔲 `T-071` | **nueva, propuesta en la 48**: el aislamiento de `USERS_DIR` vive en fixtures locales, no en `conftest.py`. La mete el cierre de TEAPP |
 | 🚨 `T-060` | **subió de categoría en la 47**: no es "un clic de la consola", es **la mitad que sostiene a `T-055`**. Sin ella, `--forwarded-allow-ips` no protege de nada |
 | `T-046` | `A-006` — la única que no es de la nube |
 
@@ -707,6 +850,12 @@ es un **control no observado**:
   de significar nada. **Es ahora o no es.**
 
 **2. Una alarma de coste PREVISTO, además de la de coste real que ya existe.**
+> ✅ **HECHA y verificada en pantalla (sesión 46, `S-019`).** Comprobado el
+> 2026-08-06 en el `progress.md` de TEAPP, no reportado: son **dos alertas en UN
+> solo presupuesto** (no dos presupuestos), `ACTUAL` y `FORECASTED`, ambas a
+> 0,01 US$ absoluto y al mismo correo. Se dejó anotado aquí como deuda y ya
+> estaba pagada: **el bicho de siempre, la misma cosa en dos sitios.**
+
 La que hay es un presupuesto de 1 USD con umbral al 1% — o sea, salta con **1
 céntimo** de cargo real, que es lo más cerca de "cualquier cargo distinto de cero"
 que AWS deja poner. Está bien. Pero es de **coste real**, y el coste real llega con

@@ -3400,3 +3400,70 @@ como pregunta, obliga a comprobarlo — y el error se muere ahí.
 por eso sus datos concretos son los menos fiables de los dos lados, y sus
 comprobaciones desde fuera (`pytest`, `git status`, `nslookup`) las más. **Lo que
 corre, vale; lo que deduce, se verifica.**
+
+> ✏️ **Matizado el 2026-08-06 (sesión 48), y con el ejemplo peor posible.** Este
+> último párrafo se queda corto: *"lo que corre"* también miente si la
+> herramienta no puede ver el fallo. `git status` está en esa lista, y **fue
+> exactamente el instrumento que falló ese mismo día** — ver `LM.15`. La frase
+> buena es: **lo que corre vale si la herramienta puede ver el fallo que
+> descartas.**
+
+---
+
+### LM.15 — Un instrumento ciego no da un dato falso: da silencio
+
+El 2026-08-06, cerrando `T-054` en TEAPP, la terminal que construye escribió un
+archivo de tests nuevo y comprobó que no hubiera ensuciado los datos reales:
+
+> *"Verifiqué con `git status` que `data/` quedó intacto."*
+
+**`data/` está en el `.gitignore` de TEAPP, línea 18.** `git status` no la mira.
+Habría dicho lo mismo si los tests hubieran escrito ahí.
+
+La conclusión era **correcta** —se comprobó luego por las fechas de los archivos,
+que sí ven esa carpeta— pero se supo **por suerte, no por la prueba citada.**
+
+#### Por qué esto es peor que un instrumento equivocado
+
+Es la distinción que hay que llevarse, y no es sutil:
+
+| instrumento | qué produce | qué pasa después |
+|---|---|---|
+| **equivocado** | un dato **falso** | otro dato lo contradice y se investiga |
+| **ciego** | **silencio** | el silencio se lee como confirmación, y nadie vuelve |
+
+Un dato falso deja huella y choca con algo. **El silencio no choca con nada.** Se
+parece demasiado a un "todo bien" como para que alguien lo mire dos veces.
+
+🔗 Y no es nuevo: es `L-016` de TEAPP con otro disfraz. Allí, cinco de las siete
+puertas de `[C-005]` eran ❓ **porque AWS no decía nada**, y la tentación era leer
+ese silencio como un "no pasa nada". Se decidió tratarlas como si evaporaran los
+créditos. **Mismo animal: allá un texto callado, aquí una herramienta callada.**
+
+> Antes de citar una prueba, preguntar si el instrumento **puede ver** el fallo
+> que se está descartando. Si no puede, no ha dicho que no. No ha dicho nada.
+
+#### Lo que lo hace una lección de método y no una anécdota
+
+Fue la **tercera** cara del mismo defecto en dos sesiones, y por eso quedó con
+nombre en TEAPP (`L-020`):
+
+| dónde | el verde decía | lo producía en realidad |
+|---|---|---|
+| `T-055` (sesión 47) | *"el suplantador no engaña a uvicorn"* | Windows poniendo `127.0.0.1` como origen |
+| `T-054` (sesión 48) | *"el peso cabe en el tope"* | un techo de 16384 que no rige — el real es 16000 |
+| `T-054` (sesión 48) | *"`data/` quedó intacto"* | una herramienta que no mira esa carpeta |
+
+🚨 **Tres veces seguidas no es casualidad: es el modo de fallo característico de
+este proyecto.** Un verde producido por algo distinto de lo que el verde afirma.
+Y tiene una razón estructural — **nadie audita un verde.** El rojo pide
+explicación y por eso se investiga; el verde se cobra y se pasa de página.
+
+📌 Por eso el sabotaje (`L-019`) no es opcional aquí, y por eso hay que
+saboteárselo **al escenario**, no solo al instrumento. Ese día los cuatro
+sabotajes de quien construye atacaban el Caddyfile y el conversor —el
+instrumento—; **ninguno atacaba el escenario que el test decía existir para
+cazar** (que alguien suba `MAX_SENTENCE_LENGTH` sin subir el tope). Lo corrió la
+supervisora y salió rojo, que era lo que había que ver.
+→ **Un guardián al que solo se le sabotea el instrumento no ha demostrado morder
+en su propia dirección.**
