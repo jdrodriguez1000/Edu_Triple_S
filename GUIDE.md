@@ -59,6 +59,81 @@ llaves, datos de usuarios y cualquier memoria persistente.
 
 ---
 
+## 2.b Auditar el historial de un repo público
+
+Esto se corre **desde la terminal que supervisa**, no desde la que construye
+(`LM.4`: quien construye no puede ser su propio testigo). Sirve para responder una
+sola pregunta: **¿entró alguna vez algo que no debía?**
+
+```powershell
+cd <ruta del repo>
+
+# 1. ¿Existió alguna vez un archivo prohibido? (mira NOMBRES, no contenido)
+git log --all --name-only --pretty=format: | Sort-Object -Unique |
+  Select-String -Pattern '^\.env$|^data/|\.pem$|\.key$|memoria\.json'
+
+# 2. ¿Entró alguna vez una llave? (mira CONTENIDO de todos los commits)
+git log -p --all | Select-String -CaseSensitive -Pattern `
+  '(AKIA|ASIA|AIDA|AROA)[0-9A-Z]{16}', 'sk-ant-[A-Za-z0-9_-]{20,}', `
+  'ghp_[A-Za-z0-9]{36}', '-----BEGIN [A-Z ]*PRIVATE KEY-----'
+
+# 3. ¿Entró un correo personal? (el patrón, no tu dirección escrita aquí)
+git log -p --all | Select-String -Pattern '[A-Za-z0-9._%+-]+@(gmail|hotmail|outlook)\.com'
+```
+
+**Lo esperado es CERO en las tres.** Si alguna devuelve algo, el arreglo no es
+borrar el archivo: es reescribir el historial o rotar la llave. Casi siempre,
+**rotar la llave** — es más barato y más seguro.
+
+### 🚨 La trampa: un patrón flojo miente, y mentir mucho es peor que no mirar
+
+El 2026-08-06, auditando TEAPP, la búsqueda `AKIA|ASIA|aws_secret` devolvió
+**21 coincidencias**. Las 21 eran falsas. Todas la misma palabra:
+
+```
+dem·ASIA·do
+```
+
+`ASIA` vive dentro de "demasiado", y `Select-String` en PowerShell es
+**insensible a mayúsculas por defecto**. Dos descuidos que se suman.
+
+| lo flojo | por qué falla | lo anclado |
+|---|---|---|
+| `ASIA` | cae dentro de palabras normales | `(AKIA\|ASIA)[0-9A-Z]{16}` |
+| sin `-CaseSensitive` | `asia` = `ASIA` | `-CaseSensitive` |
+| `token` | sale en prosa, en comentarios, en todo | busca el **formato** del token |
+
+### Y el patrón anclado se probó en rojo, que es lo único que lo vuelve creíble
+
+Un detector que solo se ha visto en verde no sirve (regla del 5b). Así que se le
+dieron cuatro líneas **envenenadas a propósito** — dos llaves de verdad y dos
+"demasiado" — y se compararon los dos patrones. **Medido, no supuesto:**
+
+| | flojo (`AKIA\|ASIA`) | anclado |
+|---|---|---|
+| llave de AWS | ✅ la caza | ✅ la caza |
+| llave de Anthropic (`sk-ant-…`) | ❌ **NO la ve** | ✅ la caza |
+| dos líneas con "demasiado" | 🔴 las marca | ✅ las ignora |
+| **total** | **3 avisos: 1 bueno, 2 basura, 1 llave perdida** | **2 avisos, 2 buenos** |
+
+🚨 **El patrón flojo era peor en las dos direcciones a la vez:** hacía más ruido
+**y además se le escapaba una llave entera**. No es que fuera "exagerado pero
+seguro" — que es justo lo que uno supone de un control ruidoso. Era ruidoso **y**
+ciego, y lo segundo no se habría sabido nunca sin ponerlo en rojo a propósito.
+
+🔑 **Y la lección, que no es de sintaxis:** un control que grita 21 veces y las 21
+son mentira **es un control que dejarás de mirar**. El día que haya una llave de
+verdad estará enterrada entre "demasiado", y tus ojos ya aprendieron a saltárselo.
+
+> **Un detector con falsos positivos no es un detector menos bueno: al cabo de unas
+> semanas es un detector apagado, y nadie recuerda haberlo apagado.**
+
+Es el mismo bicho que los **26 evals verdes con el contrato roto** (nivel 5b): la
+diferencia es que allí el control callaba de más y aquí habla de más. Las dos
+formas acaban igual — **nadie se entera de nada**.
+
+---
+
 ## 3. Errores comunes y cómo salir de ellos
 
 > Esta tabla es de **Python**. Los errores de TypeScript (los que empiezan por

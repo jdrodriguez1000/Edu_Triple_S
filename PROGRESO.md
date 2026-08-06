@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-05 (sesión 45)
+**Última actualización:** 2026-08-06 (sesión 46)
 
 ---
 
@@ -20,8 +20,11 @@
 # antes de teclear) → `LM.6`–`LM.11`. **El paso 7 de su método dejó de estar
 # vacío.** La 45 **corrigió `LM.8` con un dato suyo** —su prototipo es desechable
 # y puede no ser código— y de ahí salió **`LM.12`: en un producto de IA el
-# wireframe valida la idea, no el producto.** Ver abajo. La cuenta sigue cerrada
-# y el reloj sin arrancar.
+# wireframe valida la idea, no el producto.** Ver abajo.
+# 🚨 **La 46 ABRIÓ LA CUENTA DE AWS (`T-057`) — el reloj de 6 meses ARRANCÓ el
+# 2026-08-06 y vence el 2027-02-06.** Esta terminal auditó el historial público y
+# está limpio. Y de la auditoría salió `LM.13`: **un freno que no has visto morder
+# es una nota, no un freno.**
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -410,28 +413,110 @@ faltan** y a sentarse.
 
 ---
 
-## SIGUIENTE PASO CONCRETO: `T-057` — **abrir la cuenta de AWS**
+## ✅ SESIÓN 46 — `T-057` CERRADA. La cuenta existe y el reloj corre
 
-🚨 **Este sí arranca el reloj irreversible de 6 meses** (`C-006`). Por eso no se
-abre hasta que no quede nada más por decidir fuera.
+**Lo hizo la otra terminal con él. Esta lo auditó.** El trabajo de aquí fue el de
+siempre: no creer el reporte (`LM.4`).
 
-- **La alarma de facturación es el PRIMER clic.** Umbral en **cualquier cargo
-  distinto de cero**, no una cifra alta: el primer cargo no nulo ya significa que
-  se cruzó al plan de pago (`C-005`, y son **siete** puertas, no tres).
-- **MFA en el `root` en el mismo acto**, y correo con alias `+aws` (`D-031`).
-  ⚠️ El valor literal del correo **no va al repo**: TEAPP es público.
-- Y de paso: **verificar cuánto retraso llevan los datos de facturación.** Una
-  alarma que mira un dato de hace horas avisa tarde.
+```
+Cuenta abierta, plan gratuito           hecho
+MFA en el root, en el mismo acto        hecho
+Camino de vuelta del MFA                probado en el iPad  ← no supuesto
+Alarma a un céntimo, con correo         hecho
+Retraso de facturación (~24 h)          documentación + pantalla
+Fin del plan: 2027-02-06                leído en la consola ("185 días")
+Desviación del alias +aws               registrada en D-031
+```
 
-🚨 **Y en cuanto exista la Elastic IP (`T-059`), repuntar el nombre de DuckDNS.**
-Hoy apunta a la casa (ver hallazgo 2 de la sesión 42).
+⏱️ **El reloj de `C-006` arrancó el 2026-08-06. Es una sola ventana en toda la
+vida y no se renueva.** Todo lo que queda del paso 7 cabe dentro, y `D-030` dice
+que el cierre lo elegimos nosotros: **la fecha real de trabajo es antes.**
+
+### Lo que auditó ESTA terminal, corrido aquí (commit `d811295` de TEAPP)
+
+```
+git log --all --name-only | .env|data/|.pem|.key   : 0   ← nunca entraron
+git log -p --all | llaves ANCLADAS (4 formatos)    : 0   ← historial limpio
+git log -p --all | correo personal literal         : 0   ← la regla de D-031 AGUANTÓ
+git status TEAPP                                   : limpio, 0 ahead
+```
+
+✅ **Lo mejor del día, y es de método, no de nube:** soltó el alias `+aws`, y la
+regla que de verdad importaba —**el correo literal fuera de un repo público**— no
+se cayó con ella. Y la desviación se **anotó** en `D-031` en vez de reescribir la
+decisión para que pareciera que siempre fue así. **Es exactamente lo contrario de
+la sesión 33.**
+
+⚠️ **Lo que esta terminal NO puede verificar, y está bien que no pueda:** la
+consola de AWS. No tiene credenciales y no debe tenerlas. El MFA activo, la alarma
+y los "185 días" son hechos de pantalla y **el testigo es él** — misma categoría
+que el `HttpOnly` de la sesión 36.
+
+### 🚨 EL HALLAZGO DEL DÍA: la alarma es una red, no un semáforo → `LM.13`
+
+Su frase fue *"la alarma existía antes de que existiera nada que pudiera gastar"*,
+y el orden **es** el correcto. Lo que faltaba es media frase, y sale de cruzar dos
+datos que ya estaban escritos por separado:
+
+| qué puede pasar | ¿la alarma llega a tiempo? |
+|---|---|
+| máquina encendida y olvidada, goteando | ✅ sí — 24 h de retraso no importan |
+| cruzar una de las **7 puertas** de `C-005` | ❌ **no.** Los créditos *"se evaporan en el acto"* |
+
+**La alarma protege del goteo, no del acantilado.** Contra las 7 puertas el único
+freno real es `T-068` (la lista de "esto NUNCA se toca"), porque ahí no hay aviso
+posible: cuando llega el correo, ya pasó ayer.
+
+📌 **Y la alarma nunca se ha visto saltar.** No se puede poner en rojo barato —
+habría que gastar de verdad y esperar un día. Cuando un control no se puede probar,
+**se escribe que no está probado**, no se hace como si lo estuviera.
+
+⏳ **Ventana gratis que se cierra sola:** con cero máquinas encendidas, el silencio
+de la alarma **significa algo**. En cuanto exista la EC2 (`T-059`), el silencio ya
+no distingue *"no hay gasto"* de *"la alarma está mal montada"*.
+
+### El caso hermano, y salió de un sabotaje hecho aquí
+
+La búsqueda de llaves que esta terminal venía corriendo desde la sesión 41 usaba
+`AKIA|ASIA` y devolvía **21 avisos. Los 21 falsos**: `ASIA` vive dentro de
+**dem·ASIA·do**, y `Select-String` ignora mayúsculas por defecto.
+
+Se ancló el patrón, y **se probó en rojo a propósito** con líneas envenenadas.
+Ahí salió lo que nadie sospechaba:
+
+```
+flojo   (AKIA|ASIA)  -> 3 avisos: 1 bueno, 2 basura, y SE LE ESCAPA la llave sk-ant
+anclado              -> 2 avisos, los 2 buenos
+```
+
+🚨 **El patrón flojo era peor en las dos direcciones a la vez: ruidoso Y ciego.**
+Uno supone que un control ruidoso al menos es seguro. No lo era. Y eso **solo se
+supo al ponerlo en rojo**. → Quedó escrito en `GUIDE.md` **§2.b** (nueva).
+
+📌 Los dos casos del día son el mismo animal: **un control que nunca habla y uno
+que habla de más acaban los dos apagados.** Es el defecto de los *26 evals verdes
+con el contrato roto*, ahora sobre **dinero y llaves, que no tienen `git revert`**.
+
+---
+
+## SIGUIENTE PASO CONCRETO: `T-059` — **la instancia con IP fija**
+
+`T-057` ✅ y `T-058` ✅ están hechas. Lo que sigue **sí enciende una máquina**, y
+con ella se cierra la ventana de calibración de la alarma. Antes de encenderla:
+
+- 🚨 **Repuntar el nombre de DuckDNS a la Elastic IP** en cuanto exista. Hoy
+  apunta a la casa (hallazgo 2 de la sesión 42). TTL 60 s: tarda un minuto.
+- 🚨 **`T-068` —la lista de "esto NUNCA se toca"— se lee ANTES del primer clic**,
+  no después. Es el único freno que corre a la velocidad del acantilado (`LM.13`).
+- ⏳ **Deuda para la otra terminal:** anotar el riesgo de que la alarma es un
+  control no observado (ver el traspaso al final de esta entrada).
 
 **Las 14 tareas nuevas del paso 7** (`T-057` a `T-070`, en `tasks.md` de TEAPP).
 Las cinco deudas fantasma **por fin tienen dueño**:
 
 | | qué falta |
 |---|---|
-| `T-057` | **abrir la cuenta** + alarma + correo con alias `+aws` + MFA en el `root` |
+| ~~`T-057`~~ | ✅ **HECHA** (sesión 46). Cuenta + MFA + alarma. ⏱️ El reloj corre |
 | ~~`T-058`~~ | ✅ **HECHA** (sesión 42). `teapp.duckdns.org` existe y resuelve |
 | `T-059` · `T-060` | la instancia con IP fija · cortafuegos solo en 80 y 443 |
 | `T-061` · `T-062` | Caddy (HTTPS solo) · uvicorn en arranque automático, atado a `127.0.0.1` |
@@ -442,6 +527,54 @@ Las cinco deudas fantasma **por fin tienen dueño**:
 | `T-070` | el **cierre planeado** del paso 7 |
 | `T-050` `T-051` `T-054` `T-055` `T-056` | las cinco de siempre, ya **escribibles** |
 | `T-046` | `A-006` — la única que no es de la nube |
+
+---
+
+## 📤 TRASPASO A LA OTRA TERMINAL — sesión 46
+
+> Esto lo produce la terminal que supervisa y lo ejecuta la que construye
+> (`LM.4`, `LM.5`). **Son tres cosas, y ninguna es código.**
+
+**1. Un riesgo nuevo en `_persistence/assumptions.md`** — la alarma de facturación
+es un **control no observado**:
+
+- Nunca se la ha visto saltar, y **no se puede probar barato**: haría falta gastar
+  de verdad y esperar ~24 h. Está montada, probablemente. Nadie lo sabe.
+- Con ~24 h de retraso **no puede frenar las 7 puertas de `C-005`**, que evaporan
+  los créditos *"en el acto"*. Protege del **goteo**, no del **acantilado**.
+- Contra el acantilado el único freno es **`T-068`**, y por eso `T-068` deja de ser
+  papeleo: **es el freno**. Debe estar leída antes del primer clic de `T-059`.
+- ⏳ **Y hay una calibración gratis que caduca:** con cero máquinas encendidas, si
+  la alarma suena hoy es que algo pasa. En cuanto exista la EC2 ese silencio deja
+  de significar nada. **Es ahora o no es.**
+
+**2. Una alarma de coste PREVISTO, además de la de coste real que ya existe.**
+La que hay es un presupuesto de 1 USD con umbral al 1% — o sea, salta con **1
+céntimo** de cargo real, que es lo más cerca de "cualquier cargo distinto de cero"
+que AWS deja poner. Está bien. Pero es de **coste real**, y el coste real llega con
+~24 h de retraso.
+→ Una segunda alerta sobre **coste previsto** avisa *antes* de que el cargo exista,
+porque AWS lo proyecta. **No arregla el acantilado** —las 7 puertas siguen sin
+aviso posible— pero recorta el retraso en el caso del **goteo**, que es justamente
+el único del que esta alarma protege (`LM.13`). Cuesta cero y es un clic.
+
+> ✅ **Comprobado, no supuesto:** `progress.md` y `tasks.md` **ya** dan `T-057` por
+> cerrada y ya dicen que lo siguiente es `T-059`. Aquí yo había anotado que
+> faltaba; fui a mirarlo y estaba hecho. Las dos menciones que quedan a *"siguiente:
+> `T-057`"* viven **dentro de entradas viejas del diario** (`S-016`, `S-017`), que
+> es donde deben estar: un diario registra lo que era cierto ese día.
+
+**3. El dato del retraso de facturación está tomado de la documentación, no de la
+pantalla** — y el propio `console_steps.md` lo marca honradamente. El paso original
+pedía medirlo en la consola (*"no se escribe de memoria — regla 6"*). **No urge, y
+se paga gratis:** el día que aparezca el primer cargo real, mirar cuánto tardó en
+verse. Ahí el ~24 h deja de ser documentación y pasa a ser medición.
+
+**Lo que NO hay que pasarle, y conviene decirlo:** nada de la auditoría de llaves.
+`GUIDE.md` §2.b vive **aquí a propósito** — es la herramienta de la terminal que
+vigila, y si la que construye también la corre, vuelve a ser su propio testigo.
+
+---
 
 📌 **Las cinco fantasma eran la MISMA decisión disfrazada de cinco:** todas eran
 *"configurar lo que hay delante"*, y ninguna se podía escribir antes de elegir la

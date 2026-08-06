@@ -3287,3 +3287,70 @@ escrita **antes**, "funciona" es una opinión).
 
 > Un wireframe aprobado en un producto de IA no significa *"construyámoslo"*.
 > Significa *"ahora sí, midamos si el modelo puede"*.
+
+---
+
+### LM.13 — Un freno que no has visto morder es una nota, no un freno
+
+Salió el 2026-08-06, al cerrar `T-057`: la cuenta de AWS abierta, con la **alarma
+de facturación puesta antes de encender ninguna máquina**. El orden es el correcto
+—el extintor colgado antes que la cocina— y aun así la alarma **no es lo que
+parece**, por una razón que solo aparece cuando se miran dos datos juntos:
+
+| dato | de dónde salió |
+|---|---|
+| la alarma avisa con **cualquier cargo distinto de cero** | decisión propia (`C-005`) |
+| los datos de facturación llegan con **~24 h de retraso** | documentación de AWS |
+| cruzar una de las 7 puertas evapora los créditos **"en el acto"** | `C-005`, verificado |
+
+**Un aviso que llega un día tarde no puede frenar algo que ocurre al instante.**
+
+> La alarma protege del **goteo** (una máquina encendida y olvidada). No protege
+> del **acantilado** (cruzar al plan de pago). Contra el acantilado no hay aviso
+> posible: cuando llega el correo, ya pasó ayer.
+
+Contra el acantilado el único freno real es una **lista de lo que nunca se toca**,
+escrita antes y leída antes de cada clic. Es papel, y es el único freno que actúa
+a la velocidad del riesgo.
+
+#### Y lo que de verdad hay que llevarse, que es más general
+
+La alarma **nunca se ha visto saltar**. Está bien montada, probablemente. Nadie lo
+sabe. Y es la misma regla con la que se construyó todo el nivel 5b:
+
+> **Ninguna prueba se da por buena sin verla ponerse roja primero.**
+
+Aquí no se puede: para ver saltar esa alarma hay que gastar dinero de verdad, y el
+resultado tardaría un día en llegar. Cuando un control **no se puede poner en rojo
+barato**, no se hace como si estuviera probado: **se escribe que no lo está.** Un
+riesgo anotado se vigila; un riesgo que uno cree cubierto, no.
+
+📌 **Hay una ventana que se cierra sola, y es gratis mientras dure.** Ahora mismo,
+con cero máquinas encendidas, **el silencio de la alarma significa algo**: si suena
+hoy, hay algo que no sabes. En cuanto haya una máquina arriba, el silencio deja de
+distinguir *"no hay gasto"* de *"la alarma está mal montada"*.
+→ **El único momento en que un detector se puede calibrar es cuando sabes con
+certeza que no hay nada que detectar.** Ese momento no vuelve.
+
+#### El caso hermano del mismo día (→ `GUIDE.md` §2.b)
+
+La auditoría del historial de TEAPP buscaba llaves con el patrón `AKIA|ASIA` y
+devolvía **21 avisos, los 21 falsos**: `ASIA` vive dentro de *"dem·asia·do"*. Al
+probarlo en rojo a propósito se vio lo que nadie sospechaba: el patrón flojo
+**además se le escapaba una llave de Anthropic entera**.
+
+**Los dos casos son el mismo animal, y por eso van juntos:**
+
+| | la alarma de AWS | el patrón `ASIA` |
+|---|---|---|
+| el fallo | nunca se vio en rojo | se vio en rojo 21 veces, todas mentira |
+| el resultado | se confía sin motivo | se deja de mirar |
+| lo que pasa el día malo | **nadie se entera** | **nadie se entera** |
+
+> Un control que nunca habla y un control que habla de más terminan en el mismo
+> sitio: **apagados**. Uno porque nadie lo comprobó; el otro porque todos
+> aprendieron a ignorarlo — y nadie recuerda haberlo apagado.
+
+Es el defecto del nivel 5b (`26 evals verdes con el contrato roto`) subido de
+nivel: allí el control callaba de más sobre código. Aquí callan y gritan sobre
+**dinero y llaves**, que no tienen `git revert`.
