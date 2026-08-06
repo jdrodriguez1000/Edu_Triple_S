@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-06 (sesión 46)
+**Última actualización:** 2026-08-06 (sesión 47)
 
 ---
 
@@ -30,6 +30,10 @@
 # experimento corriendo y la predicción **sellada en Git antes del clic**.
 # ⏳ **Se espera con dos datos: la factura y la bandeja.** Primeros céntimos
 # gastados del curso.
+# 🚨 **La 47 no pudo leer el experimento —el dato de facturación tarda ~24 h— y
+# adelantó lo que no toca la nube: `T-055` MEDIDA con uvicorn real y `T-052`
+# cerrada.** De 310 a 314 tests. Y salió `LM.14`, que es **la otra mitad de
+# `LM.4`**: esta terminal entregó un dato falso y lo cazó la que construye.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -418,6 +422,129 @@ faltan** y a sentarse.
 
 ---
 
+## ✅ SESIÓN 47 — `T-055` y `T-052` cerradas sin tocar la nube, y **el supervisor se equivocó**
+
+**Mismo día que la 46.** El experimento de `A-018` no se podía leer todavía (t=0
+a las 15:29 UTC, el dato de facturación tarda ~24 h), así que **se adelantó
+trabajo que no gasta el reloj de los 6 meses ni un centavo.** La cuenta de AWS
+sigue con **cero máquinas encendidas**.
+
+### Lo que auditó ESTA terminal, corrido aquí
+
+```
+pytest, al empezar el tramo   : 310 passed in 13.56s
+pytest, al cerrarlo           : 314 passed in 16.13s
+git TEAPP                     : limpio, 2 commits (1c87836, 0d53775), 2 ahead
+install.sh copia el .service  : cp literal, linea 167  ← el cambio llega a la maquina
+ExecStart                     : --proxy-headers --forwarded-allow-ips 127.0.0.1
+uvicorn instalado             : 0.52.1
+  proxy_headers por defecto   : True
+  forwarded_allow_ips         : 127.0.0.1
+```
+
+### `T-055` — no necesitaba ni una línea de Python, **y eso está MEDIDO**
+
+La tarea traía escrito *"el nombre exacto de la opción se consulta en la
+documentación el día que se haga — no se escribe de memoria (regla 6)"*. Se
+consultó. Las dos banderas ya vienen puestas de fábrica y hacen exactamente lo
+que pedía la tarea: leer `X-Forwarded-For` **solo** si la petición llega por
+loopback.
+
+⚠️ **Pero eso era un razonamiento, no una medición** — y la otra terminal lo
+midió con **uvicorn de verdad, no `TestClient`** (que es la trampa de `L-010`):
+servidor levantado como lo levanta `teapp.service`, logins fallidos hasta el 429,
+y mirar qué dirección escribía el log. **Cuatro escenarios, los cuatro verdes.**
+
+El que no era obvio: uvicorn recorre la cadena **al revés** buscando el primer
+host no confiable. Como Caddy **añade** la dirección real al final, la cabecera
+que traiga quien ataca **queda delante y se descarta sola**. Leído en
+`proxy_headers.py`, no supuesto.
+
+### 🎭 El susto del día, y es de la familia de `LM.13`
+
+El escenario del suplantador salió **rojo**, y el rojo era **del montaje**: se
+fingió ser un extraño hablando por `127.0.0.2`, y Windows pone `127.0.0.1` como
+dirección de **origen** aunque el destino sea otro. La petición entraba
+**disfrazada de Caddy** — el sabotaje llegaba vestido de aquello que quería
+atacar. Quedó como `L-019` en TEAPP.
+
+🚨 **Lo grave no es el rojo: es la simetría.** El rojo pedía explicación y por eso
+se fue a mirar. **El mismo montaje en cualquiera de los otros tres escenarios
+habría salido verde por la razón falsa**, y `T-055` se habría cerrado sobre una
+medición que no midió nada. **Nadie audita un verde.**
+→ Es el defecto de los *26 evals verdes con el contrato roto*, una vuelta más
+arriba: allí el control no miraba; aquí el control miraba **otra cosa**.
+
+### 🔎 Los dos hallazgos de esta terminal, y ninguno era un bug
+
+**1. `tasks.md` contradecía a `decisions.md`.** `D-034` daba `T-055` por resuelta
+y `tasks.md` la tenía en 🔲. Es el bicho de la sesión 33 y de la 41 otra vez: la
+misma cosa en dos sitios diciendo cosas contrarias. **No da error** — un día
+alguien lee el cuadrito vacío y rehace el trabajo, o lo rehace distinto.
+
+**2. El acoplamiento mudo entre `teapp.service` y el `Caddyfile`.** Los dos
+dependen de que la dirección sea `127.0.0.1` **literal**, y ningún archivo lo
+decía. El día que alguien escriba `localhost:8000` —que parece lo mismo y se lee
+mejor— puede resolverse a `::1`, uvicorn no se fía de esa dirección y **descarta
+la cabecera en silencio**: todo el mundo al mismo cubo, sin un solo error en el
+log. **Es el fallo mudo de `A-008` con otro disfraz.** Avisado junto al
+`reverse_proxy`.
+
+### ⭐ Y la quinta copia obsoleta estaba EN EL CÓDIGO
+
+La cazó la otra terminal aplicando `L-018` antes de commitear: el docstring de
+`_request_origin` seguía diciendo, **en presente y como pendiente**, *"ahí hay que
+leer la dirección real de la cabecera"*.
+
+🚨 **Es la peor de las cinco, y por una razón concreta: el código se lee más que
+`_persistence/`.** Quien lo leyera mañana implementaría a mano justo el arreglo
+peligroso que `D-034` descartó — con la mejor intención. Reescrito (solo el
+docstring, ninguna línea de lógica), y ahora cierra la puerta por delante: *"si
+algún día parece que falta leerla, la respuesta está en `D-034`"*.
+→ **Un comentario obsoleto no es ruido: es una instrucción equivocada con la
+autoridad de estar dentro del archivo.**
+
+### `T-052` — cuatro tests, y dos desviaciones del enunciado que mejoraron el test
+
+- El fixture **borra** la variable en vez de ponerla a `"true"`: así se mide el
+  valor por defecto **de verdad** —el que correrá en la nube si nadie escribe
+  nada— y no una copia nuestra de lo que creemos que vale.
+- Se mira la cabecera `Set-Cookie` **en crudo**, no el tarro del cliente: el tarro
+  descarta la cookie **con razón**, porque habla por `http://`. Lo que hay que
+  medir es lo que el servidor envió.
+- **Sabotaje doble**, con `L-019` recién escrita delante: invertido el valor por
+  defecto → los cuatro en rojo (miden lo que dicen); quitado el fixture a uno →
+  rojo también (**el fixture es quien hace el trabajo**). Se verificó el
+  **montaje**, no solo el resultado.
+- `A-009` **encogida, no muerta**: la rama ya tiene testigo, pero nadie ha visto
+  un navegador de verdad guardar esa cookie por `https://`. Muere con `T-051`.
+
+### 🚨 EL HALLAZGO DE MÉTODO: esta terminal entregó un dato falso → `LM.14`
+
+En el traspaso se escribió *"`cookie_secure()` aparece en `app/api.py:295` y
+`app/api.py:512` — **registro y login**"*. Los números eran correctos; **los
+nombres se dedujeron sin abrir la función que los contenía**. Los sitios reales
+son `_start_session` (ayudante compartido por registro y login) y el
+`delete_cookie` de **`/logout`**.
+
+⚠️ **Y el dato malo era peligroso en una dirección concreta:** obedecido al pie de
+la letra, `/logout` se habría quedado **sin testigo** — justo el camino que se
+olvida, porque no se parece al otro. `A-009` se habría cerrado con la mitad
+medida.
+
+**Lo cazó quien construye, mirando el código en vez de obedecer la lista.**
+→ `LM.14` en `LESSONS.md`: **el reparto no funciona porque el supervisor acierte,
+sino porque quien construye comprueba en vez de obedecer.** Y de ahí sale una
+regla de forma: **el traspaso se escribe como cosas que mirar, no como órdenes** —
+una orden transmite el error con autoridad; una pregunta lo mata ahí.
+
+📌 **Corrección de reparto, anotada:** la otra terminal **no sabe que esta
+existe**. Los traspasos van redactados **en primera persona de él**, sin `LM.x`
+ni números de sesión de este repo: allá solo existen `L-0xx`, `D-0xx`, `A-0xx` y
+`T-0xx` de TEAPP. Se corrigió a mitad de sesión.
+
+---
+
 ## ✅ SESIÓN 46 — `T-057` CERRADA. La cuenta existe y el reloj corre
 
 **Lo hizo la otra terminal con él. Esta lo auditó.** El trabajo de aquí fue el de
@@ -553,7 +680,10 @@ Las cinco deudas fantasma **por fin tienen dueño**:
 | `T-068` | la lista de **"esto NUNCA se toca"** |
 | `T-069` | 🚨 **el ensayo de reconstrucción, y va PRONTO** |
 | `T-070` | el **cierre planeado** del paso 7 |
-| `T-050` `T-051` `T-054` `T-055` `T-056` | las cinco de siempre, ya **escribibles** |
+| ~~`T-055`~~ | ✅ **la mitad de Python** (sesión 47), medida con uvicorn real. Faltan las dos mitades que **no son código**: que Caddy escriba la cabecera, y `T-060` |
+| ~~`T-052`~~ | ✅ **HECHA** (sesión 47). 4 tests, de 310 a 314. `A-009` encogida |
+| `T-050` `T-051` `T-054` `T-056` | las que quedan de las cinco de siempre, ya **escribibles** |
+| 🚨 `T-060` | **subió de categoría en la 47**: no es "un clic de la consola", es **la mitad que sostiene a `T-055`**. Sin ella, `--forwarded-allow-ips` no protege de nada |
 | `T-046` | `A-006` — la única que no es de la nube |
 
 ---

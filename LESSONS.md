@@ -3354,3 +3354,49 @@ probarlo en rojo a propósito se vio lo que nadie sospechaba: el patrón flojo
 Es el defecto del nivel 5b (`26 evals verdes con el contrato roto`) subido de
 nivel: allí el control callaba de más sobre código. Aquí callan y gritan sobre
 **dinero y llaves**, que no tienen `git revert`.
+
+### LM.14 — Quien supervisa también entrega datos sin verificar
+
+Es **la otra mitad de `LM.4`**, y sin ella el método se lee al revés. `LM.4` dice
+que quien construye no puede ser su propio testigo. Faltaba decir lo incómodo:
+**el testigo tampoco es infalible.**
+
+Salió el 2026-08-06, cerrando `T-052` en TEAPP. La terminal que supervisa entregó
+una lista de sitios que había que cubrir con tests, y escribió esto:
+
+> *"`secure=cookie_secure()` aparece en dos sitios, `app/api.py:295` y
+> `app/api.py:512` — registro y login."*
+
+Los números de línea eran correctos. **Los nombres eran inventados.** Se dedujeron
+de dos números sin abrir la función que los contenía. Los sitios reales eran
+`_start_session` —un ayudante compartido por registro y login— y el
+`delete_cookie` de `/logout`.
+
+🚨 **Y el dato malo era peligroso en una dirección concreta.** Obedecido al pie de
+la letra, habría producido tests para "registro y login" y **`/logout` se habría
+quedado sin testigo** — que es justo el camino que se olvida, porque no se parece
+al otro. La suposición cerrada habría quedado cerrada con la mitad medida.
+
+**Lo cazó quien construye, mirando el código en vez de obedecer la lista.**
+
+> El reparto de las dos terminales no funciona porque quien supervisa acierte.
+> Funciona porque quien construye **comprueba lo que le llega en vez de
+> obedecerlo.**
+
+#### Lo que esto cambia en la forma de escribir el traspaso
+
+La supervisora **no da órdenes: da cosas que mirar.** La diferencia no es de
+cortesía, es de seguridad:
+
+| forma | qué produce cuando el dato es falso |
+|---|---|
+| *"cubre las líneas 295 y 512"* | se cubren esas dos y nadie mira más |
+| *"`cookie_secure()` aparece en más de un sitio — búscalos"* | se buscan, y aparecen los de verdad |
+
+📌 Un traspaso escrito como orden **transmite el error con autoridad**. Escrito
+como pregunta, obliga a comprobarlo — y el error se muere ahí.
+
+🔑 Y encaja con `LM.5`: la supervisora vale por lo que **no** sabe. Precisamente
+por eso sus datos concretos son los menos fiables de los dos lados, y sus
+comprobaciones desde fuera (`pytest`, `git status`, `nslookup`) las más. **Lo que
+corre, vale; lo que deduce, se verifica.**
