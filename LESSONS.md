@@ -3467,3 +3467,99 @@ cazar** (que alguien suba `MAX_SENTENCE_LENGTH` sin subir el tope). Lo corrió l
 supervisora y salió rojo, que era lo que había que ver.
 → **Un guardián al que solo se le sabotea el instrumento no ha demostrado morder
 en su propia dirección.**
+
+---
+
+### LM.16 — Una salvedad correcta no arregla un titular falso
+
+El 2026-08-06, analizando `T-071`, la terminal que construye escribió esto sobre
+los cinco marcadores que había en `data/users/` de TEAPP:
+
+> **3. La trampa no está armada: ya se disparó**
+>
+> […] *"No puedo demostrarlo del todo, porque `data/` no va a Git y no hay
+> historial que consultar — te lo doy como sospecha fuerte, no como hecho
+> medido."*
+
+**La salvedad es impecable.** Nombra el límite, dice por qué existe, y clasifica
+su propia afirmación. Es exactamente como hay que escribir una sospecha.
+
+Y el titular, tres renglones más arriba, dice **"ya se disparó"** en indicativo,
+como hecho cerrado. El párrafo se contradice a sí mismo.
+
+#### Por qué gana el titular
+
+Porque **el titular es lo que se recuerda**, lo que se copia a la lista de
+tareas, y lo único que lee quien vuelva dentro de seis meses. La salvedad vive
+tres renglones más abajo y muere con la sesión.
+
+> Si el titular y la salvedad discrepan, el que se cambia es **el titular**.
+> Una salvedad no rebaja una afirmación: la deja convivir con su contraria.
+
+#### Y lo que había debajo, medido
+
+La supervisora lo comprobó, porque **sí se podía comprobar**: huella `md5` y
+fecha de los cinco archivos → suite entera (`328 passed`) → misma huella.
+**Idéntica.** La suite de hoy no escribe ahí. Ninguno de esos nombres
+(`otronombrelargo`, `probe-log`, `john`) aparece en el código de tests.
+
+Estado real: **la trampa estaba armada y la suite no la disparaba.** Ni lo uno
+ni lo otro — y la diferencia importa, porque "ya se disparó" habría mandado a
+buscar un culpable dentro de pytest, que es donde no estaba.
+
+🔗 Es `LM.15` por el otro lado. Allí el silencio de una herramienta ciega se leyó
+como **confirmación**; aquí el mismo silencio —`data/` sin historial— se leyó
+como **acusación**. **El silencio no sostiene ninguna de las dos.** Quedó como
+`L-021` en TEAPP.
+
+---
+
+### LM.17 — Un `md5` no dice "todo igual": dice "los bytes, iguales"
+
+Cerrando `T-071` el 2026-08-06 hubo que sabotear el portero nuevo para verlo
+morder, y el sabotaje escribe en los datos de verdad. Se hizo bien: copia de
+`data/` antes, `cp -r` de vuelta después, y verificación con huella de contenido
+— **siete archivos, siete huellas idénticas.** Restauración correcta.
+
+Y lo era: **ningún dato de la aplicación se perdió.**
+
+Lo que se destruyó fue el **`mtime`**. Los siete archivos quedaron marcados con
+el segundo de la copia, y con ellos se fue la prueba física del hallazgo del
+día: que un marcador y su cuota llevaban **el mismo nanosegundo**, que era el
+argumento de que las 14:48 fueron *una petición a `/practice`* y no alguien
+editando archivos a mano.
+
+Se cazó porque la supervisora había guardado las fechas al abrir la sesión, por
+costumbre. **Por poco.**
+
+#### La vuelta nueva sobre `LM.15`
+
+Las tres caras anteriores eran instrumentos **ciegos a un cambio**: no veían
+nada de lo que buscaban. Este vio **perfectamente** el cambio que le importaba
+—¿se corrompió un byte?— y fue ciego a **una dimensión entera del objeto**.
+
+| la pregunta | ¿la responde `md5`? |
+|---|---|
+| ¿se corrompió el contenido? | **sí, y bien** |
+| ¿quedó todo como estaba? | **no puede** |
+
+Son dos preguntas distintas y la respuesta de la primera se leyó como respuesta
+de la segunda. **Un archivo es contenido y metadatos; la huella mira la mitad.**
+
+> Antes de restaurar por copia, preguntarse **qué del original no viaja en los
+> bytes**: fechas, permisos, dueño, enlaces, orden.
+
+#### Las dos reglas que quedan
+
+1. 🔑 **La prueba de un defecto no puede vivir en la carpeta que el defecto
+   ensucia.** Se copia a un sitio versionado **antes** de tocar nada. En TEAPP
+   fue `_persistence/` (`A-020`), porque `data/` no va a Git y no tiene vuelta
+   atrás.
+2. **Un punto ciego encontrado se hereda**: el portero de `T-071` compara
+   contenido, así que tampoco ve fechas. Quedó escrito en los tres sitios donde
+   alguien lo va a leer —el portero, el fixture y `D-036`— junto al otro punto
+   ciego, el de vivir dentro de pytest.
+
+⚠️ **Y estrenó `LM.15` el mismo día en que se escribió, dentro de la verificación
+del portero construido contra ese defecto.** No es ironía: es la medida de lo
+difícil que es. Quedó como `L-022` en TEAPP.

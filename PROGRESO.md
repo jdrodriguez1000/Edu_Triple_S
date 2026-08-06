@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-06 (sesión 48)
+**Última actualización:** 2026-08-06 (sesión 49)
 
 ---
 
@@ -39,6 +39,13 @@
 # de estas tres sesiones**: un instrumento ciego no da un dato falso, da
 # **silencio**, y el silencio se lee como confirmación. Tercera cara en dos
 # sesiones del mismo defecto — **nadie audita un verde**.
+# 🚨 **La 49 cerró `T-071`** —el aislamiento del marcador, arreglado en el ORIGEN
+# (`app/tools.py`) y vigilado por un **portero sobre `data/` entera**— de 328 a
+# **329 tests**, sin nube y sin gastar. Cuarta seguida así. Y el saldo del día no
+# fue la trampa: **de mirar cinco fechas salió `A-020`, un camino que escribe en
+# los datos de verdad POR FUERA de pytest.** Dos lecciones: **`LM.16`** (una
+# salvedad correcta no arregla un titular falso) y **`LM.17`** (un `md5` no dice
+# "todo igual", dice "los bytes, iguales" — y se llevó por delante la prueba).
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -427,6 +434,128 @@ faltan** y a sentarse.
 
 ---
 
+## ✅ SESIÓN 49 — `T-071` cerrada, y de mirar cinco fechas salió algo mayor
+
+**Cuarta sesión del mismo día, y la cuarta sin tocar la nube.** El experimento de
+`A-018` seguía sin poderse leer (t=0 a las 15:29 UTC, ~5 h de las ~24; el dato no
+está antes del 2026-08-07 a esa hora). Cero máquinas encendidas, cero gasto.
+
+### Lo que auditó ESTA terminal, corrido aquí
+
+```
+pytest, al empezar             : 328 passed
+pytest, al cerrar              : 329 passed in 34.72s
+check_no_data_writes.py        : 6 passed   ← los controles del portero nuevo
+huella de data/users/ ANTES de
+  que la otra terminal tocara  : guardada al abrir la sesion  ← salvo el dia
+md5 antes / despues de la suite: IDENTICO — la suite no escribe en data/
+defaults congelados de tools.py: medido con __defaults__, no leido
+los 3 sitios del punto ciego   : comprobados uno por uno
+```
+
+### La tarea decía dos archivos y eran tres
+
+El maniquí `autouse` —`monkeypatch.setattr(english_tutor, "add_point", lambda
+user: 7)`, palabra por palabra— estaba en `test_api.py`, `test_deploy_limits.py`
+**y `test_english_tutor.py`**. `T-071`, escrita la noche antes, nombraba dos.
+📌 **Borrar dos y olvidar el tercero es el bicho de las sesiones 33, 41 y 47**:
+la misma regla en varios sitios, y un día alguien lee la copia vieja.
+
+### El diagnóstico bueno lo trajo la otra terminal
+
+Las tres funciones del marcador llevaban la carpeta **como valor por defecto en
+la firma** (`users_dir: Path = USERS_DIR`), y Python congela ese valor al
+importar. O sea: el arreglo "obvio" —un `setattr` en `conftest.py`— **no habría
+hecho nada, y el `conftest.py` se habría visto arreglado.** Lo medí aquí en vez
+de creerlo: `add_point.__defaults__` sigue apuntando a la carpeta real después de
+cambiar `tools.USERS_DIR`. 🔑 **Un aislamiento que parece puesto y no lo está es
+peor que no tenerlo.**
+
+Se arregló en el **origen** (`app/tools.py`, como ya hacía `quota.py`), no en los
+tests. La tarea estaba escrita como si fuera solo de tests, y eso no era un
+contrato sobre qué se puede tocar: era la descripción del síntoma.
+
+### Portero, no test — y por qué se escribieron los dos
+
+Preguntó, antes de escribir nada, si el testigo debía ser un test normal o un
+control aparte al estilo de `no_network.py`. **La respuesta fue el portero**, y
+la razón es lo que hay que conservar: lo que hace fuerte a `no_network.py` no es
+dónde vive, es **qué vigila** — no vigila a un inquilino, vigila **la puerta**.
+
+Un test sobre `add_point` habría seguido verde el día que apareciera una segunda
+ruta hacia `data/`. **Y esa ruta ya existe** (ver abajo).
+
+Pero se escribieron **los dos**, y la asimetría vale: el portero se queda verde
+si alguien vuelve a poner un maniquí —nadie escribe— y eso solo lo caza el test
+que **exige ver el archivo aparecer** en `tmp_path`.
+
+Las tres condiciones que se le pusieron al portero, y las tres son maneras de
+entregar uno ciego: que compare **contenido** y no `iterdir()`; que mire **por
+test** y no por sesión; y que la carpeta real **no** pase por el desvío, o se
+pondría verde mirándose a sí mismo.
+
+### 🚨 El hallazgo del día no era la trampa: `A-020`
+
+De mirar las fechas de `data/users/` salió esto:
+
+```
+data/users/otronombrelargo.json   2026-08-06 14:48:33.051240000
+data/quota/otronombrelargo.json   2026-08-06 14:48:33.051240000  ← mismo nanosegundo
+```
+
+El mismo instante en dos carpetas no es alguien tocando archivos: son **cinco
+peticiones a `/practice` completas**, de una cuenta que **no existe** en
+`data/accounts.json`. Y no pudo ser pytest —`conftest.py` desvía la cuota de
+verdad—, lo que corrobora por otro camino la medida del `md5`.
+
+📌 **Existe un camino que escribe en los datos reales sin pasar por
+`conftest.py`, y el portero de `T-071` no lo ve ni lo verá nunca**, igual que
+`no_network.py` no ve los subprocesos. Quedó como `A-020` en TEAPP, y de ahí sale
+una tarea nueva que **no** es `T-071`.
+
+### `LM.16` — el titular que su propia salvedad desmentía
+
+El análisis decía **"la trampa ya se disparó"** en el titular y, tres renglones
+abajo, *"te lo doy como sospecha fuerte, no como hecho medido"*. La salvedad es
+impecable; el titular es lo que se recuerda. **Se midió**: la suite no escribe
+ahí. Estado real: **armada, no disparada.**
+
+🔗 Es `LM.15` por el otro lado — allí el silencio se leyó como confirmación, aquí
+como acusación. **No sostiene ninguna de las dos.**
+
+### `LM.17` — y estrenó `LM.15` dentro del arreglo de `LM.15`
+
+Para ver morder el portero hubo que sabotearlo, y el sabotaje escribe de verdad.
+Se hizo con copia previa y se verificó la restauración con `md5`: siete archivos,
+siete huellas idénticas. **Correcto — no se perdió ningún dato de la app.**
+
+Lo que se destruyó fue el **`mtime`**: los siete quedaron marcados a las
+15:56:56, y con ellos se fue la prueba física del nanosegundo compartido. Se cazó
+porque esta terminal había guardado las fechas al abrir la sesión. **Por poco.**
+
+🔑 **Un `md5` no dice "todo igual": dice "los bytes, iguales".** Las tres caras
+anteriores eran instrumentos ciegos **a un cambio**; este vio el cambio que le
+importaba y fue ciego a **una dimensión entera del archivo**.
+→ **La prueba de un defecto no puede vivir en la carpeta que el defecto ensucia.**
+Las siete fechas están ahora en `A-020`, en `_persistence/`, que sí va a Git.
+
+### Lo que quedó escrito allá
+
+`D-036` (el arreglo y por qué dos testigos), `A-020` (el camino de fuera, con las
+fechas), `L-021` (el titular) y `L-022` (el `md5`). El punto ciego heredado —el
+portero tampoco ve fechas— está en los **tres** sitios donde alguien lo va a
+leer: el portero, el fixture y `D-036`. Comprobado uno por uno desde aquí.
+
+### 📤 Lo que queda pendiente de la 49
+
+- 🔲 **La tarea nueva del camino que escribe fuera de pytest**, con `A-020`
+  detrás como motivo. La mete el cierre de TEAPP, **aparte de `T-071`**.
+- 🔲 **`A-019`**: el entero real de `16KB` vía `caddy adapt`, gratis en `T-061`.
+- ⏳ **Y lo de siempre:** los dos datos del experimento de `A-018`. **Mañana
+  2026-08-07 después de las 15:29 UTC** ya se pueden leer.
+
+---
+
 ## ✅ SESIÓN 48 — `T-054` cerrada y MEDIDA, y el defecto del proyecto ya tiene nombre
 
 **Tercera sesión del mismo día.** El experimento de `A-018` seguía sin poderse
@@ -554,10 +683,10 @@ en su propia dirección.**
 
 ### 📤 Lo que queda pendiente de la 48
 
-- 🔲 **`T-071`, propuesta y con el texto ya escrito** (la redactó él; la mete el
-  cierre de TEAPP): `conftest.py` aísla cuentas, cuota y `login_guard`, **pero no
-  el marcador (`USERS_DIR`)**. Ese aislamiento está **duplicado en dos fixtures
-  locales**. La trampa sigue armada para el próximo archivo de tests.
+- ~~🔲 **`T-071`, propuesta y con el texto ya escrito**~~ → ✅ **CERRADA en la
+  sesión 49.** ✏️ Y el texto de la tarea tenía un dato mal: decía **dos** fixtures
+  locales y eran **tres** (faltaba `test_english_tutor.py`). `conftest.py` aísla
+  cuentas, cuota y `login_guard`, pero no el marcador (`USERS_DIR`).
 - 🔲 **`A-019`**: el entero real de `16KB` vía `caddy adapt`, gratis en `T-061`.
 - ⏳ **Y lo de siempre, sin moverse:** los dos datos del experimento de `A-018`.
 
@@ -825,7 +954,8 @@ Las cinco deudas fantasma **por fin tienen dueño**:
 | ~~`T-052`~~ | ✅ **HECHA** (sesión 47). 4 tests, de 310 a 314. `A-009` encogida |
 | ~~`T-054`~~ | ✅ **HECHA y MEDIDA** (sesión 48). El tope de Caddy, 5 alfabetos, 14 tests. Queda `A-019`: el entero real de `16KB` vía `caddy adapt`, gratis en `T-061` |
 | `T-050` `T-051` `T-056` | las que quedan de las cinco de siempre, ya **escribibles** |
-| 🔲 `T-071` | **nueva, propuesta en la 48**: el aislamiento de `USERS_DIR` vive en fixtures locales, no en `conftest.py`. La mete el cierre de TEAPP |
+| ~~`T-071`~~ | ✅ **HECHA** (sesión 49). Arreglada en el **origen** (`app/tools.py`), no en los tests, y vigilada por un portero sobre `data/` entera + 6 controles. Eran **tres** maniquíes, no dos. De 328 a 329 tests |
+| 🔲 **sin número todavía** | **nueva, salida de la 49**: el camino que escribe en `data/` real **por fuera de pytest** (`A-020`). El portero no lo ve. La mete el cierre de TEAPP |
 | 🚨 `T-060` | **subió de categoría en la 47**: no es "un clic de la consola", es **la mitad que sostiene a `T-055`**. Sin ella, `--forwarded-allow-ips` no protege de nada |
 | `T-046` | `A-006` — la única que no es de la nube |
 
