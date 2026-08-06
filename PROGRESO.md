@@ -23,8 +23,13 @@
 # wireframe valida la idea, no el producto.** Ver abajo.
 # 🚨 **La 46 ABRIÓ LA CUENTA DE AWS (`T-057`) — el reloj de 6 meses ARRANCÓ el
 # 2026-08-06 y vence el 2027-02-06.** Esta terminal auditó el historial público y
-# está limpio. Y de la auditoría salió `LM.13`: **un freno que no has visto morder
-# es una nota, no un freno.**
+# está limpio. De la auditoría salió `LM.13`: **un freno que no has visto morder
+# es una nota, no un freno.** Y de ahí, todo el día: la alarma se examinó, esta
+# terminal **se equivocó y la otra la corrigió con una pantalla**, la región se
+# cazó **antes** de decidirse sola, y `T-059` quedó **partida** con un
+# experimento corriendo y la predicción **sellada en Git antes del clic**.
+# ⏳ **Se espera con dos datos: la factura y la bandeja.** Primeros céntimos
+# gastados del curso.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -499,10 +504,26 @@ con el contrato roto*, ahora sobre **dinero y llaves, que no tienen `git revert`
 
 ---
 
-## SIGUIENTE PASO CONCRETO: `T-059` — **la instancia con IP fija**
+## 🔬 SIGUIENTE PASO: **LEER LOS DOS DATOS DEL EXPERIMENTO** (no encender nada)
 
-`T-057` ✅ y `T-058` ✅ están hechas. Lo que sigue **sí enciende una máquina**, y
-con ella se cierra la ventana de calibración de la alarma. Antes de encenderla:
+`T-057` ✅, `T-058` ✅, `T-059` 🔄 **partida**: la Elastic IP está reservada, la
+máquina no. **Hay un experimento corriendo desde el 2026-08-06, 15:29 UTC.**
+
+```
+1. ¿Hubo cargo bruto?  -> la FACTURA.  Es la PREMISA.
+2. ¿Llego el correo?   -> la BANDEJA.  Es la PRUEBA.
+```
+
+Se leen **contra la tabla de `A-018`**, que está sellada en `cfba50a` desde antes
+del clic. **Los tres veredictos ya están escritos**: no se decide ahora qué
+significa cada caso.
+
+- ⏱️ **Y se anota cuánto tardó**: ese número sustituye al "~24 h" de documentación.
+- ⚠️ **Después**, el umbral definitivo (**$200 ÷ 6 ≈ $33/mes**) — no antes.
+- 🚨 **Y soltar o asociar la Elastic IP**: mientras espera, cobra por existir.
+
+**Solo entonces la segunda mitad de `T-059`**, que **sí enciende una máquina**.
+Antes de encenderla:
 
 - 🚨 **Repuntar el nombre de DuckDNS a la Elastic IP** en cuanto exista. Hoy
   apunta a la casa (hallazgo 2 de la sesión 42). TTL 60 s: tarda un minuto.
@@ -584,6 +605,14 @@ vigila, y si la que construye también la corre, vuelve a ser su propio testigo.
 ---
 
 ## 🚨 ADENDA de la sesión 46 (tras `S-019`) — LA ALARMA MIDE LO QUE NO CREÍAMOS
+
+> ⛔ **LA PREMISA DE ESTA SECCIÓN ES FALSA. No la leas suelta.** La métrica NO era
+> neta: se miró en pantalla y dice **"costes sin combinar"** (bruta). El error fue
+> de esta terminal y está desmontado en la **CORRECCIÓN**, dos secciones más
+> abajo. Se conserva entera porque **el razonamiento sí era correcto sobre la
+> premisa equivocada**, y porque borrarla escondería cómo se llegó al hallazgo.
+> 📌 Este aviso existe por `L-018`: una copia que ya no es cierta y que nadie
+> marca es exactamente el bicho de las cinco copias.
 
 **Salió de una frase suya al cerrar**, y por eso está escrita aquí y no perdida:
 
@@ -848,6 +877,103 @@ acaba pagando por otro.**
 4. Reservar SOLO la Elastic IP.
 5. Esperar. Mirar FACTURA y BANDEJA, las dos, contra la tabla de A-018.
 ```
+
+---
+
+## ✅ CIERRE DE LA SESIÓN 46 — el orden se cumplió, y esta vez es DEMOSTRABLE
+
+**Ejecutado por la otra terminal (`S-020`), verificado aquí commit por commit:**
+
+```
+10:17  cfba50a  sella la prediccion de A-018   <- ANTES de reservar
+10:23  9cc1b72  D-033 elige us-east-1          <- ANTES de tocar el selector
+10:29           t=0: se reserva la Elastic IP  (15:29 UTC)
+10:30  3ff793e  experimento lanzado, t=0 sellado
+10:33  cd20c4d  cierre S-020
+```
+
+⭐ **LA COMPROBACIÓN QUE IMPORTABA, y es la novedad del día:**
+
+```
+git diff cfba50a 3ff793e -- assumptions.md
+-> SOLO lineas anadidas. Ni una linea de la tabla de prediccion, tocada.
+```
+
+🔑 **El sello aguanta.** Ayer yo solo podía *pedir* que la predicción se escribiera
+antes; hoy **la secuencia la cuenta Git, no el reporte**. Eso convierte la
+honestidad del experimento en algo verificable por cualquiera **en vez de en una
+cuestión de confianza** — que es exactamente lo que `LM.4` persigue.
+
+### Lo que hizo bien y no se lo pidió nadie
+
+- **La región:** eligió `us-east-1` **contra** el Ohio que traía la consola, y
+  `D-033` da el motivo bueno — `A-015` ya calculaba con Virginia, así que Ohio
+  obligaba a corregir esa tabla. 📌 **Alineó la decisión con la copia que ya
+  existía en vez de crear una segunda.** Y dejó dicho lo que **no** comprobó:
+  *"los precios entre regiones NO se compararon"* (regla 6).
+- **`console_steps.md` remite a `D-033` en vez de repetir el porqué.** `L-018`
+  aplicándose el mismo día que se escribió.
+- **Anticipó el hallazgo que esta terminal traía:** que la Elastic IP reservada y
+  sin usar **es literalmente el goteo del que avisa `A-018`**. Ya estaba escrito:
+  *"si esto se queda aquí olvidado, la entrada que avisaba del goteo lo habrá
+  causado"*. Y **no se quedó en prosa**: `T-059` está en 🔄 con *"soltarla o
+  asociarla al terminar el experimento"* dentro de la tarea.
+  → **Es la diferencia entre una nota y un freno (`LM.13`), aplicada a su propio
+  residuo.**
+- **No escribió la dirección IP** en un repo público.
+
+### 🚦 T-059 partida en dos — primera vez en el proyecto
+
+La Elastic IP ✅, la máquina ❌. **Se partió porque hay un experimento en medio**,
+no por cansancio. La segunda mitad (instancia + asociar la IP + repuntar DuckDNS)
+espera a los dos datos.
+
+### Lo que queda vivo y no depende de nadie
+
+```
+¿hubo cargo bruto?  -> la FACTURA.  Es la PREMISA.
+¿llego el correo?   -> la BANDEJA.  Es la PRUEBA.
+```
+
+⏱️ **Con `t=0` sellado a las 15:29 UTC, la diferencia hasta que aparezca el cargo
+es el número que sustituye al "~24 h" de documentación.** Esa medición vale más
+que el resultado del experimento: **se hace una vez y sirve los seis meses.**
+
+⚠️ Y sigue pendiente el umbral definitivo (**$200 ÷ 6 ≈ $33/mes**), que **no se
+toca hasta ver si llega un correo o uno cada día**.
+
+---
+
+## 🏁 BALANCE DE LA SESIÓN 46
+
+**Sin una línea de código, y con la cuenta abierta el mismo día.**
+
+| | |
+|---|---|
+| lo irreversible | cuenta AWS abierta, MFA probado en 2 dispositivos, **reloj corriendo** |
+| lo construido | 2 alertas, región decidida, Elastic IP reservada |
+| gastado | **unos céntimos** — los primeros del curso |
+| quedan | **185 días y $200** |
+
+### ⭐ Lo que hace este día distinto, y no es el clic
+
+**La terminal que audita se equivocó y la que construye la corrigió con una
+pantalla.** Yo afirmé que `NET_UNBLENDED_COST` era el valor por defecto; era un
+**ejemplo** de la documentación de la API, y lo presenté como hecho verificado.
+
+📌 **El reparto de dos terminales dejó de ser una jerarquía hoy.** No es "una
+manda y otra obedece": es que **ninguna de las dos es fiable sola**, y el mismo
+día quedó demostrado en las dos direcciones — yo cacé su frase falsa, ella cazó mi
+premisa falsa, y **ninguna de las dos llegó a la consola**.
+
+### Y `L-018` cobró su primera factura antes de que hubiera daño
+
+La región estaba escrita en un sitio (`A-015`) y a punto de decidirse en otro (un
+desplegable). **Se cazó antes de que la segunda copia existiera** — no después de
+divergir, como las sesiones 33, 41 y las cinco de esta mañana.
+
+🔑 **Esa es la única forma en que un catálogo de fallos vale lo que cuesta:** no
+explicando lo que salió mal, sino **impidiendo la siguiente**.
 
 ---
 
