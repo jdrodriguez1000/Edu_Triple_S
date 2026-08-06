@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-06 (sesión 49)
+**Última actualización:** 2026-08-06 (sesión 50)
 
 ---
 
@@ -46,6 +46,12 @@
 # los datos de verdad POR FUERA de pytest.** Dos lecciones: **`LM.16`** (una
 # salvedad correcta no arregla un titular falso) y **`LM.17`** (un `md5` no dice
 # "todo igual", dice "los bytes, iguales" — y se llevó por delante la prueba).
+# 🚨 **La 50 resolvió `T-072` en dos minutos y el culpable era de casa: el
+# instrumento de medida.** El camino que escribía en `data/` real era
+# `measure_body.py`, la báscula de `T-054` de la sesión 48 — desvió UNO de los
+# TRES sitios. De ahí salió **`D-037`**: la raíz de los datos sale de
+# `TEAPP_DATA_DIR`, **absoluta y sin valor por defecto**, y sin ella la app no
+# arranca. De 329 a **342 tests**. Quinta seguida sin nube y sin gastar.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -431,6 +437,126 @@ plantilla que solo se puede rellenar bien no comprueba nada.**
 Este es al revés: **el material ya existe** — sale de sus proyectos reales, de
 años, no del curso. No espera a aprender nada. Espera a **contar los pasos que
 faltan** y a sentarse.
+
+---
+
+## ✅ SESIÓN 50 — `T-072` resuelta, y el culpable era el instrumento de medida
+
+**Quinta sesión del mismo día, y la quinta sin tocar la nube.** El experimento de
+`A-018` sigue sin poderse leer: t=0 fueron las 15:29 UTC y el dato no está antes
+del **2026-08-07 a esa hora**. Cero máquinas encendidas, cero gasto.
+
+### Lo que corrió ESTA terminal, y por qué importa el orden
+
+Lo primero del día, antes de opinar de nada, fue **tomar la huella de `data/`**:
+bytes **y** fechas. Fue `L-022`/`LM.17` aplicada al día siguiente de aprenderla, y
+sirvió: esa huella fue el testigo independiente que verificó **todas** las
+afirmaciones posteriores de la otra terminal.
+
+```
+pytest TEAPP (al abrir)   : 329 passed in 28.54s
+pytest TEAPP (al cerrar)  : 342 passed in 14.66s
+data/ al abrir vs cerrar  : ni un byte, ni una fecha  ← huella propia, no la suya
+git status -sb TEAPP      : limpio y sincronizado al abrir
+.env.example:36           : TEAPP_DATA_DIR=  ← vacío, el defecto no volvió a colarse
+load_env_file(), quién lo llama: SOLO app/api.py:42
+```
+
+### 🚨 `T-072` cerrada en dos minutos, y el rastro no estaba donde se buscaba
+
+La otra terminal propuso —y era el movimiento correcto— buscar en el historial de
+comandos del día. Estaba **medio bien**: `ConsoleHost_history.txt` de PowerShell
+no se había tocado desde las 07:51, así que **lo de las 14:48 no lo tecleó nadie**.
+Lo había ejecutado un agente, y eso vive en las **transcripciones de sesión**.
+
+```
+19:48:17.409 UTC  Write   → measure_body.py           (la báscula de T-054)
+19:48:32.094 UTC  Bash    → ejecutarla desde la raíz de TEAPP
+19:48:33.051 local        → nacen los dos archivos en data/     ← 1 segundo
+```
+
+**El culpable era la medición de `T-054`, de la sesión 48, seis horas antes.** El
+script se registraba como `otronombrelargo` y hacía 5 llamadas a `/practice` —los
+5 casos de `CASES`—, de ahí `{"score": 5}` y `{"used": 5}`.
+
+🔑 **El mecanismo es de manual: el aislamiento necesitaba TRES desvíos y la
+báscula se acordó de UNO.** Desvió `accounts.ACCOUNTS_FILE` a un temporal —con su
+comentario *"medir no debe tocar `data/`"*— y dejó `USERS_DIR` y `QUOTA_DIR`
+apuntando a los datos de verdad. Y eso explica el "misterio" que abrió `A-020`:
+la cuenta no salía en `accounts.json` **porque `accounts.json` fue justo el único
+que sí se desvió**.
+
+📌 **No fue un accidente: `probe-log.json`, el otro huérfano, sale del 2026-08-05.**
+Otro día, otra sesión, mismo patrón.
+
+### Y una corrección al análisis de la otra terminal
+
+Había concluido que *"`/practice` nunca comprueba que la cuenta exista, así que un
+script que se firme su propia cookie entra sin registrarse"*. **El script sí se
+registró.** La evidencia que sostenía el titular tenía otra explicación → `LM.16`
+otra vez, un día después. Se le pidió **re-verificarlo por su cuenta**, lo hizo con
+los tres desvíos puestos y el portero delante, y el mecanismo resultó **cierto
+pero más pequeño**: no hay puerta abierta —firmar exige la llave—, lo que no
+existe es la **revocación selectiva**. Quedó en `A-021`.
+
+⚠️ **Y esta terminal le corrigió una frase falsa a esa misma entrada:** decía que
+no había forma de cortar una sesión. La hay, tosca: **rotar `TEAPP_SECRET_KEY`
+las invalida todas de golpe.** Lo que no existe es cortar *una*.
+
+### `D-037` — la raíz de los datos sale del entorno
+
+El arreglo no fue perseguir al culpable, sino **cerrar la puerta**: hoy `data/`
+real era alcanzable por defecto desde cualquier cosa que importara `app`.
+
+```
+TEAPP_DATA_DIR — absoluta, obligatoria, SIN valor por defecto.
+Si falta, o no es absoluta, o no es un directorio: la app NO ARRANCA.
+```
+
+**Por qué absoluta y no relativa**, que fue la pregunta que él trajo: una ruta
+relativa se resuelve contra *algo*, y ese "algo" es el bicho original — la báscula
+acabó tomando la raíz de `sys.argv[1] = "."`, el directorio de trabajo. Y el
+argumento que cerró la discusión era suyo: *"con relativa el `.env.example` puede
+traer un valor que sirve"*. **Un ejemplo que funciona sin editarlo es un valor por
+defecto con pasos extra** — la alternativa que el propio ADR había descartado,
+entrando por la puerta de atrás. `TEAPP_SECRET_KEY` ya paga ese precio: en
+`.env.example` está vacía, por el mismo motivo.
+
+Tres detalles pedidos desde aquí y puestos: **rechazar la relativa explícitamente**
+(no resolverla en silencio), `.resolve()` + `is_dir()` en vez de `exists()`, y
+**una línea de log en INFO con la ruta ya resuelta** — que además es el testigo
+gratis de `T-066` y el primer ladrillo de observabilidad del paso 7.
+
+⭐ **Dos huecos que encontró ÉL, no yo, y son los que salvan el despliegue:**
+`create_account.py` no cargaba el `.env` —y es la **puerta de servicio**, la única
+forma de crear la primera cuenta con el registro por red cerrado (sesión 39)—, e
+`install.sh` no toca un `.env` que ya existe, para no regenerar la llave, así que
+se habría quedado **sin la variable nueva**. Las dos rutas solo se recorren el día
+del despliegue: se habrían roto justo cuando no hay otra manera de entrar.
+
+### ⭐ El sabotaje encontró un test flojo, y esa es la mejor parte del día
+
+Puso `if False` en la comprobación de ruta absoluta esperando **dos** rojos. Cayó
+**uno**. El otro seguía verde por la razón equivocada: la ruta relativa `data` se
+resolvía contra un `cwd` donde esa carpeta no existía, así que saltaba *el otro*
+freno. **El test decía "rechaza la relativa" y medía "la carpeta no existe".**
+
+🔑 **`LM.15` era "nadie audita un verde", escrita esa misma mañana. Hoy auditó uno
+y estaba podrido.** Cuarta cara del mismo animal en dos días, y la primera que
+caza él antes de que muerda. Arreglado creando la carpeta en el `cwd` del test:
+ahora la única forma de ponerlo rojo es que la relativa se acepte.
+
+### Lo que queda para mañana, en este orden
+
+1. ⏳ **El experimento de `A-018`**: la factura (la premisa) y la bandeja (la
+   prueba), **a partir de las 15:29 UTC**, leídos contra la tabla sellada en
+   `cfba50a`. Y anotar cuánto tardó.
+2. 🚨 **Soltar o asociar la Elastic IP** — lleva todo el día cobrando por existir.
+3. 🚨 **`T-068`**, la lista de "esto NUNCA se toca". Se aplazó a propósito: es el
+   único freno que corre a la velocidad del acantilado (`LM.13`), y una lista así
+   **se escribe y se usa en el mismo aliento**, con la consola delante.
+4. **Repuntar DuckDNS a la Elastic IP** (TTL 60 s) antes de encender nada.
+5. Solo entonces, la segunda mitad de `T-059`.
 
 ---
 

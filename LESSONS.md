@@ -3563,3 +3563,56 @@ de la segunda. **Un archivo es contenido y metadatos; la huella mira la mitad.**
 ⚠️ **Y estrenó `LM.15` el mismo día en que se escribió, dentro de la verificación
 del portero construido contra ese defecto.** No es ironía: es la medida de lo
 difícil que es. Quedó como `L-022` en TEAPP.
+
+---
+
+### LM.18 — El instrumento que mide puede ensuciar lo que mide
+
+*(sesión 50, del cierre de `T-072`)*
+
+Durante una sesión entera se buscó **un camino desconocido** que escribía en los
+datos reales de las personas. Se habló de "un proceso", "algún script", incluso de
+alguien firmándose su propia credencial. El culpable resultó ser **la báscula que
+midió la tarea de la sesión anterior**, escrita con cuidado y ejecutada seis horas
+antes.
+
+**El mecanismo, y es de manual:** el aislamiento necesitaba **tres** desvíos y el
+script se acordó de **uno**. Desvió el archivo de cuentas —con su comentario
+*"medir no debe tocar los datos"*— y dejó los otros dos apuntando a los de verdad.
+
+🔑 **Y por eso la contradicción que abrió la investigación apuntaba al sitio
+equivocado:** la cuenta "no existía" precisamente **porque el archivo de cuentas
+fue el único que sí se desvió**. La pista más llamativa era la sombra del arreglo
+a medias, no la del defecto.
+
+#### Las tres cosas que se llevan
+
+1. **El instrumento de medida es código que corre en tu máquina y escribe.** Un
+   test lo sabe y lo trata como tal; un script de medición se escribe "para ver un
+   número" y nadie le pone frenos. **Corre con los mismos permisos y sin ninguna
+   red debajo.**
+2. **Un vigilante solo ve el patio donde vive.** El portero de `T-071` toma huella
+   antes y después de cada test — y no vio nada, porque una báscula corre **fuera**
+   de la suite. Es el mismo punto ciego que `no_network.py` con los subprocesos.
+3. **El arreglo no es perseguir al culpable: es cerrar la puerta.** Mientras el
+   aislamiento dependa de que alguien se acuerde de tres líneas, el olvido es
+   cuestión de tiempo. → `D-037`: la raíz de los datos sale de una variable de
+   entorno **sin valor por defecto**, y sin ella **la app no arranca**. Es
+   *denegar por defecto* (nivel 4) aplicado a dónde se escribe.
+
+⚠️ **Y un aviso sobre la comodidad:** se discutió si esa variable podía aceptar una
+ruta **relativa**, para que el archivo de ejemplo trajera *"un valor que funciona"*.
+No. **Un ejemplo que funciona sin editarlo es un valor por defecto con pasos
+extra** — la alternativa que ya se había descartado, entrando por la puerta de
+atrás. Una ruta relativa además se resuelve contra *algo*, y ese "algo" es el
+directorio de trabajo: exactamente la variable que el arreglo existía para quitar.
+
+📌 **Dónde estaba la prueba, que es lo que casi cuesta la investigación:** no en el
+historial de comandos —ese archivo no se había tocado en siete horas, porque **lo
+que corre un agente no se teclea**— sino en las **transcripciones de la sesión**.
+Cerró en dos minutos con una cadena de relojes: escritura del script, ejecución, y
+los archivos naciendo **un segundo después**.
+
+🔗 Encadena con `LM.15` (un instrumento ciego da silencio) y `LM.17` (un `md5` dice
+"los bytes, iguales"). Aquellas dos eran instrumentos que **no veían**; esta es un
+instrumento que **hace daño**. Quedó como `L-023` en TEAPP.
