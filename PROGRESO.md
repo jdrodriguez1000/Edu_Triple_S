@@ -509,7 +509,11 @@ con ella se cierra la ventana de calibración de la alarma. Antes de encenderla:
 - 🚨 **`T-068` —la lista de "esto NUNCA se toca"— se lee ANTES del primer clic**,
   no después. Es el único freno que corre a la velocidad del acantilado (`LM.13`).
 - ⏳ **Deuda para la otra terminal:** anotar el riesgo de que la alarma es un
-  control no observado (ver el traspaso al final de esta entrada).
+  control no observado (ver el traspaso al final de esta entrada). ✅ Hecho en
+  `S-019`: `A-018` existe.
+- 🚨 **ANTES de encender nada: mirar si la alarma mide coste NETO o BRUTO.** Si es
+  neto, no avisa de nada mientras queden créditos. **Ver la ADENDA abajo — esto
+  cambia el orden de mañana.**
 
 **Las 14 tareas nuevas del paso 7** (`T-057` a `T-070`, en `tasks.md` de TEAPP).
 Las cinco deudas fantasma **por fin tienen dueño**:
@@ -573,6 +577,85 @@ verse. Ahí el ~24 h deja de ser documentación y pasa a ser medición.
 **Lo que NO hay que pasarle, y conviene decirlo:** nada de la auditoría de llaves.
 `GUIDE.md` §2.b vive **aquí a propósito** — es la herramienta de la terminal que
 vigila, y si la que construye también la corre, vuelve a ser su propio testigo.
+
+---
+
+## 🚨 ADENDA de la sesión 46 (tras `S-019`) — LA ALARMA MIDE LO QUE NO CREÍAMOS
+
+**Salió de una frase suya al cerrar**, y por eso está escrita aquí y no perdida:
+
+> *"En los días siguientes, si no llega correo, la alarma está bien montada."*
+
+**Está al revés, y es `LM.13` con otra ropa.** El silencio nunca demuestra que un
+control funcione. Pero al ir a comprobarlo apareció algo peor que el razonamiento:
+**el mecanismo.** Documentación de AWS, consultada el 2026-08-06:
+
+```
+Métrica por defecto de un presupuesto de coste : NET_UNBLENDED_COST
+"NET" = DESPUES de aplicar creditos y reembolsos
+"AWS Free Tier credits are automatically applied to cover eligible costs
+ BEFORE standard AWS billing rates are charged"
+```
+
+Con **$200 en créditos**, la cuenta sale sola:
+
+| | mañana, al encender la EC2 |
+|---|---|
+| la máquina genera coste | ✅ sí, unos dólares al mes |
+| los créditos lo cubren | ✅ sí — para eso están |
+| coste **neto** resultante | **$0,00** |
+| ¿salta el umbral de $0,01? | ❌ **no, y hace bien** |
+
+🚨 **No va a llegar correo — y no llegaría aunque la alarma estuviera rota, aunque
+el correo estuviera mal escrito, aunque se hubiera borrado sin querer.** El
+silencio está garantizado **por diseño, no por corrección**.
+
+📌 **Es el defecto de los 26 evals verdes con el contrato roto, exacto:** verde
+porque no existía nada capaz de ponerlo rojo. → `T-059` **NO comprueba `A-018`**,
+al contrario de lo que dice el cierre de `S-019`.
+
+### La consecuencia grande: la alarma no vigila el goteo
+
+Si la métrica es neta, una máquina encendida y olvidada **quema créditos en
+silencio durante meses**, y el primer correo llega el día en que los $200 se
+acabaron. Cuando avise, ya no queda nada que salvar.
+
+Y ahí `A-015` empieza a doler: dice que el paso 7 gasta *"del orden de $50"* de
+los $200 — **por aritmética de lista de precios, no por una corrida**. Ese número
+es hoy la única defensa contra el goteo, **y no lo vigila nadie**.
+
+⚠️ **Dos alarmas muy distintas con el mismo nombre**, y hay que mirar en pantalla
+cuál es (esta terminal no ve la consola): según esté la casilla de **créditos**,
+la alarma dice *"algo empezó a gastar"* o dice *"los $200 se terminaron"*.
+
+✅ **El arreglo, si se confirma:** un segundo presupuesto sobre coste **bruto**
+(créditos excluidos), umbral bajo. Ese salta con el primer dólar real, **lo paguen
+los créditos o él**. Es el detector del goteo, que hoy no existe.
+
+### Y cómo se comprueba `A-018` de verdad, gratis
+
+No hay que gastar. Un presupuesto **de prueba con el umbral por debajo de lo ya
+gastado** dispara la notificación en el siguiente ciclo y **el correo llega de
+verdad**: prueba que la dirección es buena, que no cae en spam, y que el mecanismo
+anda. Luego se borra.
+
+🔑 **Es el sabotaje de siempre, aplicado a una alarma en vez de a una función: no
+se sube el riesgo, se BAJA EL LISTÓN hasta que el control tenga que morder.**
+Mismo gesto que poner el vigilante del pool en 15 (sesión 38) y verlo rojo.
+
+### ✅ Lo que se resolvió bien en `S-019`, y no hay que tocar
+
+Decidió **no** abrir entrada en `decisions.md` para lo de meter la alerta prevista
+en el mismo presupuesto: el porqué ya está en `console_steps.md`, donde se va a
+leer. **Correcto, y por el motivo correcto** — duplicarlo crea dos sitios donde
+mañana uno miente. Es el bicho de la sesión 33 y de la 41, cazado ahora en su
+propia documentación y no en el código, que es la parte difícil.
+📌 Y que el agente **señalara el hueco sin escribirlo** es `LM.3` funcionando: el
+archivo tiene dueño, y un agente no firma.
+
+⏳ **El orden de mañana importa, y por eso esto se escribió hoy:** si la EC2 se
+enciende antes de arreglar la alarma, **la ventana de calibración se cierra y no
+vuelve** (ver `LM.13`).
 
 ---
 
