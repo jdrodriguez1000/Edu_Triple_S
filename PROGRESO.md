@@ -511,9 +511,12 @@ con ella se cierra la ventana de calibración de la alarma. Antes de encenderla:
 - ⏳ **Deuda para la otra terminal:** anotar el riesgo de que la alarma es un
   control no observado (ver el traspaso al final de esta entrada). ✅ Hecho en
   `S-019`: `A-018` existe.
-- 🚨 **ANTES de encender nada: mirar si la alarma mide coste NETO o BRUTO.** Si es
-  neto, no avisa de nada mientras queden créditos. **Ver la ADENDA abajo — esto
-  cambia el orden de mañana.**
+- ✅ **Mirado en pantalla: la alarma mide coste BRUTO** ("costes sin combinar").
+  La premisa contraria de esta terminal era falsa — ver la CORRECCIÓN abajo.
+- 🚨 **`T-059` se parte en dos: primero SOLO la Elastic IP, y se espera el correo.**
+  La IP ociosa cobra igual y hace falta de todos modos. La instancia va después.
+  ⚠️ Y se miran **dos** cosas, no una: el **coste bruto en la factura** (la
+  premisa) y **el correo** (la prueba). Con una sola, el silencio es ambiguo.
 
 **Las 14 tareas nuevas del paso 7** (`T-057` a `T-070`, en `tasks.md` de TEAPP).
 Las cinco deudas fantasma **por fin tienen dueño**:
@@ -656,6 +659,110 @@ archivo tiene dueño, y un agente no firma.
 ⏳ **El orden de mañana importa, y por eso esto se escribió hoy:** si la EC2 se
 enciende antes de arreglar la alarma, **la ventana de calibración se cierra y no
 vuelve** (ver `LM.13`).
+
+---
+
+## ✏️ CORRECCIÓN — la métrica es BRUTA, y el error fue de ESTA terminal
+
+**Se miró en pantalla y la pantalla ganó:**
+
+```
+Campo "qué mide" del presupuesto : "costes sin combinar"  ← BRUTO
+"costes netos sin combinar"      : existe como opción, SIN marcar
+Importe utilizado                : 0,00 sobre presupuesto de 1,00
+```
+
+🚨 **Mi premisa era falsa.** Escribí *"la métrica por defecto es
+`NET_UNBLENDED_COST`"*. Lo que había visto era **un ejemplo** de la documentación
+de la API que llevaba ese valor dentro. **Un ejemplo no es un valor por defecto**,
+y lo presenté como hecho verificado, con bloque de código y todo.
+
+📌 **Es el `~$0.02` de la sesión 43 y el "Haiku cuesta 5x menos": un número que
+salió de una cabeza y no de una medición.** Y lo cometió la terminal cuyo único
+trabajo es cazar exactamente eso. → La defensa no falló: **funcionó la de al
+lado.** La otra terminal no me creyó, fue a mirar, y trajo la pantalla.
+
+### Lo que la corrección cambia, en las dos direcciones
+
+| | con métrica bruta |
+|---|---|
+| ¿la alarma vigila el goteo? | ✅ **sí.** El segundo presupuesto que propuse **NO hace falta** |
+| ¿`T-059` garantiza silencio? | ❌ no. Al revés: **tiene que sonar** |
+| ¿mi paso 3 era ejecutable? | ❌ **no.** Bajar el umbral por debajo de lo gastado **no existe cuando lo gastado es $0,00** |
+
+### ⭐ Y de ahí salió algo mejor que mi propuesta, y lo trajo la otra terminal
+
+**La Elastic IP cobra estando ociosa**, sin instancia — verificado en la
+documentación de EC2. Y la Elastic IP **hace falta para `T-059` de todos modos**.
+
+> Se reserva **solo la IP** —lo más pequeño, reversible y ya necesario— y se
+> espera el correo. Sin máquina, sin sistema operativo, sin nada que administrar.
+
+🔑 **Es mi paso 3 con la forma correcta: no bajar el listón, sino subir el suelo
+lo mínimo imprescindible hasta que el control tenga que morder.** Y convierte
+`T-059` de *destructor del experimento* en **el experimento**.
+
+### ⚠️ PERO el experimento aún NO es falsable — el cabo suelto pesa
+
+La otra terminal lo anotó honradamente y luego siguió como si no pesara. Pesa: en
+la misma consulta apareció *"750 hours of public IPv4 address usage at no cost"*,
+lenguaje del plan viejo (anterior al 2025-07-15). Si esas horas aplicaran, **la IP
+ociosa no generaría cargo y el silencio volvería a tener dos significados.**
+
+✅ **El arreglo es la lección del 5b (sesión 12) literal: separar "¿mi control está
+bien?" de "¿el mundo está como creo?".** Son dos observaciones, no una:
+
+1. **¿Hubo coste bruto?** → se lee en la **factura**, no en la bandeja. Es la premisa.
+2. **¿Llegó el correo?** → es la prueba.
+
+```
+coste > $0.01  +  correo    -> A-018 CERRADA, y se mide cuanto tardo
+coste > $0.01  +  silencio  -> LA ALARMA ESTA ROTA. Hallazgo grande, y a tiempo
+coste = $0.00               -> las horas de IPv4 aplican: experimento no concluyente,
+                               pero se aprende algo que hoy nadie sabe, y C-003 queda tocada
+```
+
+🚨 **Sin la observación 1, el tercer caso se disfraza del segundo** y se saca la
+conclusión contraria. Es el mismo animal que el silencio de ayer, más fino.
+
+### ⚠️ "Va a sonar todos los días" TAMPOCO está medido — y no hace falta
+
+Es la afirmación que sostiene *"hay que subir el umbral"*. **Se fue a comprobar y
+no se pudo:** la documentación confirma el retraso de notificación, pero no dice
+si una alerta se repite mientras el umbral siga superado o si suena una vez por
+período. **No se afirma lo que no se sabe** — es el error que esta terminal acaba
+de cometer, no se repite doce horas después.
+
+📌 **Y el experimento que ya se va a correr lo mide gratis:** llegará **un** correo
+o llegará **uno cada día**. Observación en vez de razonamiento.
+
+→ **Por eso el umbral NO se toca todavía.** Cambiarlo ahora arreglaría un problema
+**predicho**, y de paso destruiría el único experimento capaz de confirmar que
+existe. Es el error de forma de ayer con el signo cambiado.
+
+### Lo que sí queda decidido para después del correo
+
+`$0.01` no puede ser el umbral con el que se convive 6 meses, suene una vez o
+cien. Y el número que lo sustituya **sale de una división, no de un gusto**:
+**$200 ÷ 6 meses ≈ $33 al mes.** Un presupuesto mensual por ahí convierte la
+alarma en lo único que hoy no existe: **un vigilante del ritmo de quema de
+créditos** — el riesgo real de `A-015`, que nadie mira.
+
+### La frase falsa estaba en CINCO sitios, y la peor era nueva
+
+Al corregir `S-019` aparecieron **cinco copias**: la entrada, la fila del índice,
+"Estado actual", `A-018` en dos puntos, y `console_steps.md` paso 1.
+
+🚨 **La peor era de ese mismo día y propia, no heredada:** *"los $200 descuentan,
+así que el coste debería quedarse en cero"*, escrito en tono tranquilizador sobre
+un presupuesto que, si eso fuera cierto, **no podría saltar nunca**. Y se dijo en
+voz alta en vez de arreglarse callando. **Para eso existe el reparto de dos
+terminales.**
+
+📌 **Tercera vez con el mismo bicho** (sesiones 33, 41, y ahora): ya no es
+casualidad. **En este proyecto los datos se replican solos, y al corregir uno hay
+que ir a buscar las copias.** Tocar `progress.md` fuera de turno estuvo bien: una
+frase falsa sobre un control de dinero no espera al próximo cierre.
 
 ---
 
