@@ -764,6 +764,91 @@ casualidad. **En este proyecto los datos se replican solos, y al corregir uno ha
 que ir a buscar las copias.** Tocar `progress.md` fuera de turno estuvo bien: una
 frase falsa sobre un control de dinero no espera al próximo cierre.
 
+✅ **Y la otra terminal escribió `L-018` sobre esto, aplicándola sobre sí misma:**
+la tabla del experimento vive en **un** sitio y `console_steps.md` la **referencia
+en vez de copiarla**. Documentar el problema de las copias haciendo una copia
+habría sido la sexta. Después corrió el `grep` que la propia lección exige y
+**encontró dos copias más ya obsoletas**. Sin el grep se le escapan: **la lección
+trae su propio control, que es lo que la separa de un buen propósito.**
+
+---
+
+## 🚦 LAS DOS COSAS DE ANTES DEL CLIC (auditado el 2026-08-06, tercer tramo)
+
+### 1. 🚨 Las 207 líneas estaban SIN COMMITEAR — y eso rompía el experimento
+
+```
+git log TEAPP -1 : 23a1ecb (S-019)   ← el trabajo del tramo NO estaba dentro
+git status       : 4 archivos modificados, en el arbol de trabajo
+```
+
+En un día normal esto es *"commitea al cerrar"*. Hoy no:
+
+> **`A-018` contiene una predicción escrita antes de mirar. Una predicción sin
+> commitear no es una predicción: es un borrador que se puede editar después de
+> ver el resultado.**
+
+No por mala fe — porque **nadie podrá demostrar que no se editó**, empezando por
+él mismo dentro de tres meses. Lo que da valor a esa tabla es el sello de tiempo,
+y **el sello lo pone Git, no la buena intención**.
+
+📌 Es lo de los sabotajes de la sesión 12: *"se predijo por escrito ANTES de
+correr"*, y por eso el *"salió exacto"* significa algo. **Commit antes del clic.**
+
+### 2. 🚨 LA REGIÓN NO ESTABA DECIDIDA, y la Elastic IP se reserva dentro de una
+
+Buscado en todo TEAPP: `us-east-1` aparece **una sola vez en el repo entero**, y
+**no como decisión**:
+
+```
+assumptions.md:240
+| t3.micro, Linux, us-east-1, $0.0104/hora | ~$7.59/mes |
+```
+
+Está **dentro de una tabla de precios de `A-015`**, como insumo de una cuenta.
+**No hay ningún `D-xxx` que elija región.** `D-029` eligió AWS, EC2, Caddy,
+DuckDNS e IP fija — la región no.
+
+Una Elastic IP se reserva en **la región seleccionada en la consola**. Si no es la
+misma en la que se lanzará la EC2, la IP no sirve: hay que soltarla y pedir otra,
+**y la nueva no es la misma dirección**, así que `teapp.duckdns.org` habría que
+repuntarlo dos veces.
+
+🔑 **Es el bicho de las cinco copias en su forma PREVENTIVA, y por eso vale más
+que las otras cinco:** la región está escrita en un sitio (una estimación) y a
+punto de decidirse en otro (un desplegable). **La segunda copia nace en el clic.**
+Si no coinciden, mañana `A-015` calcula precios de una región donde no hay nada.
+
+→ **Decidirla a propósito y escribirla ANTES de reservar.** Si sale `us-east-1`,
+`A-015` ya cuadra. Si sale otra, hay que corregir esa tabla en el mismo acto.
+
+📌 **La lección general, que es nueva:** hasta ahora las copias se cazaban
+**después** de divergir. Esta se cazó **antes de que la segunda existiera**. Ese
+es el uso barato del catálogo de fallos del que se habló en la sesión 43: no un
+chisme, **un detector que sirve en el siguiente proyecto**.
+
+### ✅ Y algo que refuerza la predicción, escrito hace dos días por otro motivo
+
+`A-015` ya decía el 2026-08-05:
+
+> *"le falta un renglón que se sabe que existe: AWS cobra por cada dirección IPv4
+> pública, esté o no en uso, del orden de $3-4/mes"*
+
+**La predicción de que la IP ociosa cobra no es de hoy: estaba anotada desde
+antes**, por otra razón y sin saber que serviría para esto. Sube la confianza en
+el caso `coste > $0.01`. → `D-029` otra vez: **una nota tomada por un motivo que
+acaba pagando por otro.**
+
+### El orden acordado antes de tocar la consola
+
+```
+1. Commit de los 4 archivos.        <- sella la prediccion
+2. Decidir y ESCRIBIR la region.    <- antes del desplegable, no despues
+3. Leer la lista de T-068.
+4. Reservar SOLO la Elastic IP.
+5. Esperar. Mirar FACTURA y BANDEJA, las dos, contra la tabla de A-018.
+```
+
 ---
 
 📌 **Las cinco fantasma eran la MISMA decisión disfrazada de cinco:** todas eran
