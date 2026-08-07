@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-06 (sesión 50)
+**Última actualización:** 2026-08-07 (sesión 51)
 
 ---
 
@@ -52,6 +52,21 @@
 # TRES sitios. De ahí salió **`D-037`**: la raíz de los datos sale de
 # `TEAPP_DATA_DIR`, **absoluta y sin valor por defecto**, y sin ella la app no
 # arranca. De 329 a **342 tests**. Quinta seguida sin nube y sin gastar.
+# 🚨 **La 51 abrió con "no hay nada que hacer sin la nube" y cerró con cinco
+# artefactos**: `install.sh` corrió por primera vez —en un contenedor Ubuntu, no
+# en EC2—, el freno de `T-050` **se vio morder**, y `A-019` murió con el borde
+# del `413` de Caddy medido en **16000/16001**. De 342 a **348 tests**. Sexta
+# seguida sin nube. De ahí `LM.19`: **la lista de pendientes dice qué falta por
+# construir, nunca dijo qué falta por saber** — y la reserva estaba en `A-xxx`.
+# ⚠️ **Dos errores de ESTA terminal, los dos medidos por la otra:** recomendó
+# `T-068`, cerrada hacía cinco sesiones; y afirmó que invertir la precedencia
+# rompería la suite (falso: 346 verdes, `data/` intacta). El miedo tenía blanco,
+# pero **fuera de pytest** — que es donde vivía `T-072`. → `LM.20`: la corrección
+# de `T-068` **ya estaba escrita en este archivo** y nadie la alcanzó.
+# ⏳ **El experimento de `A-018` SIGUE SIN LEERSE, y ahora se sabe por qué:** el
+# reloj de las 24 h cuelga de **la primera visita a la consola**, no del cargo.
+# El `0,00 USD` de la página de Facturas viene con `Sin datos`: **no es un cero
+# medido**, y se disfraza de la fila 3 de la tabla sellada.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -440,6 +455,186 @@ faltan** y a sentarse.
 
 ---
 
+## ✅ SESIÓN 51 — el día empezó con "no hay nada que hacer sin la nube" y salieron cinco cosas
+
+**Sexta sesión sin tocar la nube.** Cero máquinas encendidas, cero gasto. Y la
+sesión arrancó con la otra terminal diciendo, revisadas las pendientes, que
+**ninguna se podía cerrar hoy**. Era cierto de las *tareas*. No de la ignorancia.
+
+### 🚨 Lo primero fue un error MÍO, y es el bicho de las sesiones 33, 41 y 50
+
+Le recomendé `T-068` como el trabajo del día. **Estaba hecha desde la sesión 46.**
+
+```
+tasks.md:79   T-068 ... | ✅ | 7 |     ← cerrada en dos mitades
+progress.md   "A-016 comprobada y FALSA: son SIETE puertas, no tres"
+              "console_steps.md, líneas 14-39, minutos antes del primer clic"
+```
+
+⚠️ **Dije "cuatro menciones muertas" y al ir a arreglarlas eran DOS.** Las otras
+dos decían *"se **lee** antes del primer clic"* — correctas, y no se tocaron.
+**Verificar también lo que resultó ser verdad**, incluso cuando lo acusado es tuyo.
+
+🚨 **Y lo peor no es el error, es que ya estaba corregido en este mismo archivo.**
+Línea 874, de una sesión anterior:
+
+> *"Dije que `T-068` estaba pendiente. Está ✅. Lo que `PROGRESO.md` decía era
+> «se **lee** antes del primer clic» — un freno de lectura, no una tarea.
+> **Yo leí "hacer" donde decía "releer".»*
+
+**Segunda vez con el mismo malentendido, y la corrección de la primera llevaba
+sesiones escrita cuatro mil líneas más abajo.** No es una copia desactualizada:
+es una copia **correcta que nadie alcanza**.
+→ **`PROGRESO.md` tiene 7.700 líneas y ha cruzado el punto en que corregirlo por
+dentro deja de servir.** Primera deuda estructural del archivo de memoria. Ver el
+hueco al final.
+
+⚠️ **Y su censo también estaba mal:** dijo *"las once pendientes"*; `grep -c 🔲`
+da **17**. La conclusión resultó sostenerse igual, pero **"ninguna" es una
+afirmación sobre un conjunto, y el conjunto estaba mal contado.**
+
+### Lo medido en el contenedor (Docker, ~25 min de tanteo que acabaron en dato)
+
+`deploy/install.sh` —escrito el 5 de agosto, **nunca corrido**, con `bash -n` como
+única verificación— corrió entero en Ubuntu 24.04 hasta morir en `systemctl`,
+que es donde se predijo. Todo lo que importaba queda antes.
+
+| qué | resultado |
+|---|---|
+| `T-050`, el mecanismo | 1ª y 2ª corrida: **misma huella**. Con el `.env` borrado: **huella nueva** |
+| `T-050`, **el freno visto morder** | guarda anulada (`if false`) → la llave **cambia** entre corridas |
+| `A-019` | `caddy adapt` → `"max_size":16000`. Control: `16KiB` → `16384` |
+| `A-019`, el borde real | 15999 y 16000 → **401** · 16001 y 16384 → **413** |
+| `D-038`, el señuelo de `data/` | guion viejo: crea carpeta vacía ❌ · arreglado: no ✅ |
+
+🔑 **El par 16000/16001 es el que vale.** El `401` prueba que el cuerpo llegó
+(falta de sesión, no de tamaño), y uvicorn directo contesta `401` a los cinco
+tamaños → **el `413` es de Caddy y de nadie más.** Se retira la salvedad de
+dentro de `T-054`, y `A-019` deja de ser documentación: **asciende a `D-035`.**
+
+### El hallazgo del `data/` señuelo — leído aquí, medido allá
+
+Salió de leer `install.sh:126-129`: `mkdir -p "${DATA_DIR}"` corre **antes** de
+mirar el `.env` que ya existe, y `DATA_DIR` es siempre `${INSTALL_DIR}/data`. Si
+una instalación anterior movió los datos a otro disco, el guion fabrica igualmente
+una **carpeta vacía al lado de la app**.
+
+🔑 Es exactamente el señuelo que `D-037` existe para evitar —*"una carpeta vacía y
+quien use la app parecería haber perdido su marcador"*—. **El guion lo fabricaba
+con la mano.** Arreglado en el origen, con el guion viejo como control rojo.
+
+### `D-039` — una regla muda que ahora habla, y la pregunta estaba mal planteada
+
+`app/config.py` decía, **dentro del código que corre**, que *"en la nube no hay
+ningún `.env`: los secretos los pone la plataforma"*. Falso desde `D-029`: la nube
+es EC2 y `install.sh` escribe un `.env`. Llevaba **dos días justificando
+`os.environ.setdefault` con un motivo muerto**, y un comentario pegado a la línea
+se lee como la explicación autorizada de esa línea.
+
+La pregunta que llegó era binaria: *¿invierto la precedencia o cambio solo el
+comentario?* **Ninguna de las dos.**
+
+> **La regla de precedencia no está mal. Está MUDA.** Lo específico (el entorno)
+> debe ganarle a lo general (el `.env`) — es el canal del que dependen `pytest`,
+> el contenedor y cualquier corrida de una vez. Lo que falta es que **diga que
+> está mandando.**
+
+Implementado: `config.value_origin` compara el valor vivo contra el que proponía
+el archivo, y el log del arranque dice `(TEAPP_DATA_DIR, origen: .env | entorno)`.
+**Compara valores en vez de apuntar quién ganó**, porque un apunte envejecería mal
+—`monkeypatch` cambia la variable después—.
+
+### ⚠️ Y AQUÍ ME EQUIVOQUÉ YO, con titular y todo
+
+Afirmé que invertir la precedencia haría que **"los 342 tests empezaran a escribir
+en `data/`"**. Se saboteó en el contenedor: **346 pasaron, `data/` con 0 archivos.**
+
+**Dónde se me paró el razonamiento:** seguí la cadena hasta el import y me bajé
+ahí. `load_env_file` corre **una** vez; el fixture `autouse` corre **342**. El
+último que escribe gana, y `D-036` obliga a resolver la ruta en cada llamada.
+**Miré el orden de arranque y lo tomé por el orden de la suite.**
+
+→ **La decisión sigue en pie; el motivo era falso.** Es `LM.16` apuntándome a mí.
+
+🔑 **Pero el miedo sí tenía un blanco, y se midió después:** el riesgo nunca
+estuvo en pytest, sino en **lo que no es pytest**. Un guion suelto
+(`create_account.py`, `measure_body.py`) llama a `load_env_file()` y ahí se acaba:
+no hay fixture que pise después, y el portero de `no_data_writes.py` **vive dentro
+de pytest**. Con la precedencia invertida, escribiría en `data/` de verdad.
+**Es `T-072` exacta y `A-020` con otro disfraz.**
+→ **Conclusión correcta apuntando al blanco equivocado.** Eso enseña algo;
+*"tenías razón"* no.
+
+### El sabotaje de un solo lado, y lo que escondía
+
+Se saboteó `value_origin` fijándola en `"entorno"`: cayeron los 2 que afirman
+`.env`. Se pidió **el espejo**, y ahí estaba lo bueno:
+
+| `value_origin` fijada en | qué cae |
+|---|---|
+| `"entorno"` | los **2** que afirman `.env` |
+| `".env"` | los **4** que afirman entorno, sin valor, y el renglón del log |
+
+🚨 **Con el sabotaje de un solo lado, esos cuatro se quedaban verdes sin que nadie
+supiera por qué.** Es la sesión 50 otra vez (*el test decía "rechaza la relativa" y
+medía "la carpeta no existe"*), un día después. **Un sabotaje asimétrico audita la
+mitad de lo que crees.**
+
+### El punto ciego del instrumento nuevo, escrito antes de que muerda
+
+Cuando el entorno y el `.env` traen **el mismo valor**, `value_origin` no los
+distingue. Es benigno —el valor es el mismo— y define **qué mide de verdad** el
+renglón: *delata anulaciones, no procedencias.* Queda en el docstring y en `D-039`.
+
+### 🐛 `L-025` — y la regla pescó dos copias que yo había dado por completas
+
+El barrido que exige la propia lección encontró, **después** de que yo cerrara mi
+lista: `app/api.py:40-42` (la misma frase muerta, en un segundo archivo) y
+`assumptions.md:633` dentro de `A-008`. → **Una lección con su propio control no
+es un buen propósito.** Séptima cara del bicho de las copias en tres días.
+
+### Saldo del día
+
+`A-008` encogida y su freno visto morder · `A-019` **muerta** y ascendida a
+`D-035` · `D-038` un señuelo real arreglado en el origen · `D-039` una regla muda
+que habla · `L-024` y `L-025`, las dos con control propio.
+**342 → 348 tests verdes. `data/` sin un solo cambio. Diez archivos en el diff,
+ninguno que nadie pidiera. $0,00.**
+
+⭐ **Cuatro de las cinco salieron de que alguien no se creyó un titular** — incluida
+la otra terminal con el suyo, y yo con el mío.
+
+### ⏳ HUECO ABIERTO — el experimento de `A-018`, sin leer todavía
+
+**No se leyó en esta sesión, y no por olvido.** A las 14:25 UTC el instrumento
+seguía sin estar listo.
+
+🚨 **El hallazgo del día sobre esto, y cambia el reloj:** la consola dice que los
+datos de coste tardan hasta 24 h **desde la primera visita a la consola de
+facturación** — no desde el cargo. **Es un t=0 distinto del que quedó sellado en
+`cfba50a`.** Confirmado que el aviso ya salía el día 6, así que el reloj arrancó
+ese día.
+
+⚠️ **Y la página de Facturas dice `Total general estimado: 0,00 USD` con
+`Sin datos` tres veces.** Eso **no es un cero medido**: es la suma de un conjunto
+vacío. **Se disfraza de la fila 3 de la tabla sellada** (*"las horas de IPv4
+aplican"*) y se habría anotado la conclusión contraria.
+
+> **La tabla sellada NO se edita.** La cuarta fila entra como enmienda fechada:
+> ```
+> instrumento "preparando"  ->  NO HAY LECTURA. No se anota nada.
+> ```
+
+🔑 **Y de aquí sale lo que faltaba en el diseño del experimento:** `A-018` predijo
+los tres resultados, pero **no predijo cómo sabrías que ya se puede mirar**. El
+criterio existe y es gratis: **cuando desaparezca el aviso "Estamos preparando sus
+datos de costos y uso".** Hasta entonces no se lee el número, se lee el aviso.
+
+**Pendiente inmediato:** mirar después de ~15:30 UTC. Primero el aviso; el número
+solo si el aviso ya no está. Y anotar cuánto tardó.
+
+---
+
 ## ✅ SESIÓN 50 — `T-072` resuelta, y el culpable era el instrumento de medida
 
 **Quinta sesión del mismo día, y la quinta sin tocar la nube.** El experimento de
@@ -552,9 +747,10 @@ ahora la única forma de ponerlo rojo es que la relativa se acepte.
    prueba), **a partir de las 15:29 UTC**, leídos contra la tabla sellada en
    `cfba50a`. Y anotar cuánto tardó.
 2. 🚨 **Soltar o asociar la Elastic IP** — lleva todo el día cobrando por existir.
-3. 🚨 **`T-068`**, la lista de "esto NUNCA se toca". Se aplazó a propósito: es el
-   único freno que corre a la velocidad del acantilado (`LM.13`), y una lista así
-   **se escribe y se usa en el mismo aliento**, con la consola delante.
+3. ~~🚨 **`T-068`**, la lista de "esto NUNCA se toca".~~
+   ✏️ **FALSO, corregido en la sesión 51: `T-068` está ✅ desde la sesión 46.**
+   Lo que queda de ella no es escribirla, es **releerla** antes del primer clic.
+   Este renglón hizo que la 51 arrancara recomendando una tarea ya cerrada.
 4. **Repuntar DuckDNS a la Elastic IP** (TTL 60 s) antes de encender nada.
 5. Solo entonces, la segunda mitad de `T-059`.
 
@@ -1073,7 +1269,7 @@ Las cinco deudas fantasma **por fin tienen dueño**:
 | `T-061` · `T-062` | Caddy (HTTPS solo) · uvicorn en arranque automático, atado a `127.0.0.1` |
 | `T-063` | 📦 la carpeta `deploy/` — **sin Terraform** (PI-2) |
 | `T-064` · `T-065` · `T-066` · `T-067` | subir y crear la 1ª cuenta · comprobar el disco · el origen real · el presupuesto real |
-| `T-068` | la lista de **"esto NUNCA se toca"** |
+| ~~`T-068`~~ | ✅ **HECHA** (sesión 46). Son **siete** puertas, no tres (`A-016` resultó FALSA). En `deploy/console_steps.md:14-39`. Lo que queda es **releerla** antes del primer clic, no escribirla |
 | `T-069` | 🚨 **el ensayo de reconstrucción, y va PRONTO** |
 | `T-070` | el **cierre planeado** del paso 7 |
 | ~~`T-055`~~ | ✅ **la mitad de Python** (sesión 47), medida con uvicorn real. Faltan las dos mitades que **no son código**: que Caddy escriba la cabecera, y `T-060` |

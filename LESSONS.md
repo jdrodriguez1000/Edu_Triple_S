@@ -3616,3 +3616,79 @@ los archivos naciendo **un segundo después**.
 🔗 Encadena con `LM.15` (un instrumento ciego da silencio) y `LM.17` (un `md5` dice
 "los bytes, iguales"). Aquellas dos eran instrumentos que **no veían**; esta es un
 instrumento que **hace daño**. Quedó como `L-023` en TEAPP.
+
+---
+
+### LM.19 — La lista de tareas pendientes no es la lista de trabajo disponible
+
+**Sesión 51.** El día abrió con un veredicto razonado y honesto: *"revisé las
+pendientes y **ninguna** se puede cerrar hoy sin la nube"*. Era cierto. Y el día
+cerró con cinco artefactos y seis tests nuevos, sin encender una máquina.
+
+No fue suerte ni terquedad. Fue que **el veredicto se había hecho sobre el
+conjunto equivocado**.
+
+| conjunto | qué es | ¿necesita la máquina? |
+|---|---|---|
+| **tareas** (`T-xxx`) | trozos de **producto** que faltan | casi siempre **sí** |
+| **supuestos** (`A-xxx`) | trozos de **ignorancia** que quedan | casi siempre **no** |
+
+Una tarea es algo que hay que **construir**; un supuesto es algo que hay que
+**averiguar**. Construir el servidor exige el servidor. Averiguar si `16KB` son
+16000 o 16384 exige un binario y diez minutos.
+
+> **La lista de pendientes responde "qué falta por construir".
+> Nunca respondió "qué falta por saber", y ahí es donde está la reserva.**
+
+Ese día murieron `A-019` (16000, con el borde medido en 16001) y se encogió
+`A-008`, y ninguna de las dos era una tarea. **La reserva de trabajo sin nube
+estaba entera y nadie la había contado, porque vivía en otro archivo.**
+
+⚠️ **Y el censo estaba mal contado además:** se dijo *"las once pendientes"* y
+`grep -c` daba **17**. La conclusión se sostuvo igual, pero **"ninguna" es una
+afirmación sobre un conjunto**, y una afirmación de exhaustividad sobre un
+conjunto mal contado no es exhaustiva: es una corazonada con forma de censo.
+
+🔑 **La regla práctica, y cuesta un `grep`:** antes de declarar un día bloqueado,
+mirar **las dos** listas. Si el bloqueo es de máquina, los supuestos siguen
+disponibles — y son justo los que, sin medir, acaban sosteniendo decisiones.
+
+🔗 Encadena con `LM.13` (*un freno que no has visto morder es una nota*): un
+supuesto sin medir es la misma criatura, un renglón que todos tratan como dato.
+Aquí se añade **dónde encontrarlos el día que parezca que no hay nada que hacer.**
+
+---
+
+### LM.20 — Un archivo de memoria puede crecer hasta que corregirlo por dentro deja de servir
+
+**Sesión 51, y salió de un error repetido.** Esta terminal recomendó una tarea
+(`T-068`) que llevaba cinco sesiones cerrada. Al ir a arreglar las menciones
+falsas aparecieron dos cosas incómodas:
+
+1. **Eran dos, no cuatro.** Las otras dos decían *"se **lee** antes del primer
+   clic"* — correctas. El error fue leer *"hacer"* donde decía *"releer"*.
+2. 🚨 **Ese mismo error, con esa misma explicación, ya estaba corregido en el
+   propio archivo**, sesiones atrás y cuatro mil líneas más abajo.
+
+La corrección no estaba desactualizada. **Estaba bien escrita, era exacta, y no
+llegó.** Es una categoría distinta del bicho de las copias que contradicen:
+
+> **Una copia falsa te engaña. Una copia correcta que nadie alcanza te deja
+> cometer el mismo error dos veces, y encima con la respuesta ya escrita dentro.**
+
+`PROGRESO.md` pasó de 7.500 líneas. A ese tamaño el protocolo *"leerlo al empezar
+cada sesión"* ya no se cumple de verdad: se leen la cabecera y la última entrada,
+que es exactamente lo que se hizo — y por eso la corrección de la línea 874 no
+existió para nadie.
+
+⚠️ **Lo que NO es la solución:** borrar lo viejo. El valor del archivo es que
+conserva cómo se llegó a cada cosa, y las lecciones fuertes salieron justo de
+releer entradas antiguas.
+
+✅ **Lo que sí:** que el archivo tenga **una zona viva** —estado, pendientes,
+correcciones vigentes— separada del **diario**, que solo crece. Un diario registra
+lo que era cierto ese día; el estado tiene que ser cierto **hoy**, y hoy no cabía
+en un sitio donde había que bajar cuatro mil líneas para encontrarlo.
+
+🔗 Es `LM.15` a escala de documento: no dio un dato falso, **dio silencio** — y el
+silencio se leyó como *"aquí no hay nada corregido"*.
