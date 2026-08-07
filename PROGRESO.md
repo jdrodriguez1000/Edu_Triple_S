@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-07 (sesión 51)
+**Última actualización:** 2026-08-07 (sesión 52)
 
 ---
 
@@ -67,6 +67,24 @@
 # reloj de las 24 h cuelga de **la primera visita a la consola**, no del cargo.
 # El `0,00 USD` de la página de Facturas viene con `Sin datos`: **no es un cero
 # medido**, y se disfraza de la fila 3 de la tabla sellada.
+# 🚨 **La 52 fue de SUPERVISIÓN, y encontró que la tabla sellada de `A-018` decía
+# algo FALSO.** La fila 3 no decía solo "no concluyente": nombraba una causa —
+# *"las horas de IPv4 aplican"*— que la otra terminal **desmintió esa misma
+# mañana sin ver lo que estaba matando**. Verificado aquí en la fuente de AWS:
+# *"no change in pricing for idle public IPv4 addresses"*. Enmienda **sellada
+# antes de la lectura** → `LM.21`: **un sello protege de decidir tarde, no de que
+# el mundo desmienta lo que sellaste.** Era lo único con fecha de caducidad.
+# ⚠️ **Y de un reparo mío sobre la fila 2 salió algo peor de lo que planteaba:**
+# los presupuestos se refrescan 3 veces al día (8–12 h). La guardia se queda, pero
+# su motivo escrito cambió — *no sabemos si lo que se muestra y lo que se evalúa
+# comparten reloj*. **Regla correcta, razón que podía no serlo: `D-039` con el
+# signo cambiado.** Y la espera se convirtió en dato: `h2 − h1`, gratis.
+# ✅ **`T-060a` HECHA** (el grupo de seguridad, `us-east-1`, sin 8000), partida en
+# `a`/`b` por esta terminal: existir no es morder. La octava puerta salió de
+# `T-068` y pasó al protocolo de lectura → `LM.22`: **el riesgo se mide por el
+# tráfico, no por lo peligrosa que es la puerta.**
+# ⏳ **Mañana 2026-08-08: UN campo** (`Importe utilizado`), la hora anotada, y
+# decidir qué se hace con la Elastic IP — lleva dos días cobrando por existir.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -452,6 +470,129 @@ plantilla que solo se puede rellenar bien no comprueba nada.**
 Este es al revés: **el material ya existe** — sale de sus proyectos reales, de
 años, no del curso. No espera a aprender nada. Espera a **contar los pasos que
 faltan** y a sentarse.
+
+---
+
+## ✅ SESIÓN 52 — la tabla sellada llevaba un día diciendo algo falso
+
+**Sesión de supervisión pura desde esta terminal.** Cero código escrito aquí. El
+trabajo del día fue auditar a la otra terminal y **un clic** en la consola.
+
+### 🚨 Lo primero: la sesión 51 estaba escrita y NO commiteada
+
+`git log` iba por la 50; `PROGRESO.md` y `LESSONS.md` (con `LM.19` y `LM.20`
+dentro) llevaban 277 líneas **en un solo disco**. Es el bicho de la sesión 33 en
+versión pequeña. Commiteado y subido: `f1ae968`, verificado con `git status -sb`
+→ **sin `ahead`**. Que haya hash no basta; el testigo es el remoto.
+
+### 🚨 EL HALLAZGO: la fila 3 de la tabla sellada estaba muerta
+
+La tabla de `A-018`, sellada en `cfba50a` **antes del primer clic**, decía:
+
+```
+coste = $0.00  ->  las horas de IPv4 aplican: experimento no concluyente
+```
+
+Esa fila **no dice solo "no concluyente": nombra una causa.** Y esa causa la
+desmintió la otra terminal **esa misma mañana** —se cazó a sí misma antes de
+escribir *"es gratis por las 750 horas"*— **sin ver que al hacerlo mataba una
+fila de la tabla.**
+
+✅ **Comprobado por MÍ en la fuente**, no aceptado de su informe:
+
+> *"There is no change in pricing for idle public IPv4 addresses that you
+> allocate in your account but don't attach to an EC2 instance."*
+
+Las 750 h son para direcciones **en uso**. La IP ociosa cobra: `23 h × $0,005 ≈
+$0,12`, **doce veces el umbral**. La premisa del experimento está viva.
+
+🔑 La 51 cazó que el `0,00` **se disfrazaba** de la fila 3. Nadie miró si la fila 3
+**seguía siendo verdad.** Se auditó el dato nuevo, no el papel viejo. → **`LM.21`**
+
+⏱️ **Y solo se podía hacer ese día.** Leído el número, la enmienda ya no habría
+sido un criterio: habría sido una explicación buscada para lo que ya estaba en
+pantalla. Era **lo único con fecha de caducidad** de toda la sesión.
+
+### El cambio de instrumento: bien razonado, con un precio que había que decir
+
+Pasaron de la **factura** al `Importe utilizado` del presupuesto — mejor, porque
+es el mismo instrumento que alimenta la alarma y desaparece una suposición. El
+precio, escrito por esta terminal y aceptado:
+
+| | |
+|---|---|
+| **Se pierde** | ya no detecta un fallo en la **entrada** de datos al presupuesto |
+| **Se conserva** | el tramo *"el presupuesto vio el dinero → mandó el correo"* |
+| **Falla del lado** | **seguro**: si el servicio está ciego, ambos callan → se lee *"aún no hay cargo"* y se sigue esperando |
+
+### La guardia de la fila 2 — mi reparo se quedó corto
+
+Planteé un camino a conclusión falsa: declarar *"alarma rota"* por un correo que
+solo iba con retraso. **Resultó peor:** los presupuestos se refrescan *"up to
+three times a day… 8–12 hours after the previous update"*.
+
+⚠️ **Pero el motivo que escribieron primero era doble conteo** (`24 + 12 = 36`):
+el refresco ya está dentro de que el importe sea visible. Corregido. La guardia
+de ≥12 h **se queda** —esperar de más no produce conclusiones falsas, solo
+tarda— con el motivo bueno: **no sabemos si lo que se muestra y lo que se evalúa
+comparten reloj.**
+
+🔑 **Una regla correcta sostenida por una razón que podía no serlo. Es `D-039`
+con el signo cambiado**, y peor: un motivo escrito se lee como verificado.
+📌 Anotado también que la corrección **contenía el mismo defecto que corregía**
+(afirmaba sin seto el doble conteo, que es el mismo desconocido). Segunda vez en
+dos sesiones que una corrección trae dentro su propio bicho.
+
+✅ **Y la espera dejó de ser tiempo muerto:** `h1` (importe visible) y `h2`
+(correo). **`h2 − h1` es un número que hoy no tiene ni la documentación**, y
+decide la duda gratis. `LM.19` otra vez: la lista decía qué falta por construir,
+no qué falta por saber.
+
+### `T-060a` hecha, y lo que esta terminal aportó al clic
+
+| aporte | qué era |
+|---|---|
+| **`T-060` partida** en `a`/`b` | crear el grupo **no es** tener cortafuegos. `T-060b` = medido desde fuera con la máquina viva. Si no, es `LM.13` con otro traje |
+| **La octava puerta** | *"Actualizar plan"* salió de `T-068` y pasó al **protocolo de lectura** → `LM.22` |
+| **`T-068` reclasificada** | único control **estructuralmente inverificable**: probarlo es el desastre. No es freno, es **disciplina** — y se degrada. (`L-026`) |
+| **La región** | `us-east-1` = `D-033`, sellada en `9cc1b72` antes de tocar el selector. Cuadra |
+| **La trampa de la VPC** | el piso de abajo de la trampa de la región: grupo en la VPC mala **no da error**, solo no aparece al lanzar |
+| **La salida se queda abierta** | "denegar por defecto" es de **entrada**. Endurecer la salida mata `install.sh` **pareciendo un fallo de red** |
+| **El aviso del 22** | le faltaba el final: si tu IP cambia, se arregla en un minuto. Molestia, **no** cierre de puerta |
+
+### Verificado por MÍ al cierre, corriéndolo
+
+```
+4a0a88a                 : existe
+git status -sb TEAPP    : ## main...origin/main   <- SIN "ahead"
+archivos del commit     : 6, TODOS .md            <- ni una linea de codigo
+sg- / cuenta / IP / ARN : cero coincidencias en el diff entero
+docker teapp-test       : Up 2 hours, ubuntu:24.04  <- sigue vivo
+```
+
+**No corrí `pytest`, a propósito:** el diff no tiene código, así que 348 sigue
+siendo 348 **porque nada se movió**, no porque nada se rompiera. Mismo
+razonamiento que la 41.
+
+### Saldo del día
+
+Un clic y mucho papel — **y el papel era el trabajo.** `T-060a` ✅ · la enmienda
+de `A-018` sellada a tiempo · `LM.21` y `LM.22` · `L-026` · `D-040`.
+**$0,00, séptima sesión sin encender una máquina.**
+
+⭐ **Lo de más valor no fue crear el cortafuegos.** Fue cazar que un papel sellado
+seguía diciendo algo falso, y arreglarlo **antes** de mirar el dato.
+
+### ⏳ Pendiente para mañana, 2026-08-08
+
+1. 🔬 **UN campo:** `Importe utilizado` del presupuesto. **Y anotar `h1`** — sin
+   esa hora, la segunda medición no existe. **No tocar la cabecera de la página.**
+2. 🚨 **Decidir la Elastic IP**: soltarla o asociarla. Lleva **dos días** cobrando.
+3. `T-068` releída antes del siguiente clic (7 puertas + la octava en el protocolo).
+4. Sueltos: el contenedor `teapp-test` encendido · las 2 menciones muertas de `L-025`.
+   ❓ **Y una pregunta abierta:** ¿el `.env` que `install.sh` escribió dentro del
+   contenedor llevaba una API key real o falsa? Muere con el contenedor, pero
+   **mejor saberlo que suponerlo.**
 
 ---
 

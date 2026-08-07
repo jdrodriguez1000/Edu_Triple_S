@@ -3692,3 +3692,69 @@ en un sitio donde había que bajar cuatro mil líneas para encontrarlo.
 
 🔗 Es `LM.15` a escala de documento: no dio un dato falso, **dio silencio** — y el
 silencio se leyó como *"aquí no hay nada corregido"*.
+
+---
+
+### LM.21 — Una predicción sellada envejece, y el sello no la protege de eso
+
+**Sesión 52, y es el hallazgo del día.** La tabla de `A-018` se selló en `cfba50a`
+antes del primer clic, justo para que nadie decidiera el veredicto **después** de
+ver el número. Eso funcionó: el sello hizo exactamente su trabajo.
+
+Pero la tercera fila no decía solo *"no concluyente"*. **Nombraba una causa:**
+
+```
+coste = $0.00  ->  las horas de IPv4 aplican: experimento no concluyente
+```
+
+Y esa causa quedó desmentida **por la propia terminal que construye**, la misma
+mañana, comprobando en la página de AWS que las 750 horas gratis son para
+direcciones *asociadas* — una IP ociosa cobra siempre. Cazó su error y no vio
+que, al cazarlo, **acababa de matar una fila de la tabla sellada.**
+
+> **Un sello protege de decidir tarde. No protege de que el mundo desmienta lo
+> que sellaste.** Y una predicción sellada se lee con más autoridad que
+> cualquier otro papel del proyecto — que es justo lo que la hace peligrosa
+> cuando caduca.
+
+🔑 **La regla que sale de aquí:** cuando llegue un dato nuevo, no basta con
+auditar el dato. Hay que preguntar **qué papel viejo acaba de quedar falso**. La
+sesión 51 cazó que el `0,00` *se disfrazaba* de la fila 3; nadie miró si la fila 3
+**seguía siendo verdad**.
+
+⚠️ **Y la enmienda no borra: anula a la vista y con fecha.** La original vive en
+el commit sellado y alguien la leerá algún día. Si desaparece del archivo vivo,
+esa copia vuelve a ser la única — con su causa muerta intacta. Es `LM.20` con el
+signo cambiado.
+
+📌 Solo se podía hacer **en la ventana de ese día**. Leído el dato, ya no habría
+sido un criterio: habría sido una explicación buscada para el número que ya
+estaba en pantalla.
+
+---
+
+### LM.22 — El riesgo de una puerta se mide por el tráfico, no por lo peligrosa que es
+
+**Sesión 52.** `T-068` es la lista de *"esto NUNCA se toca"*: siete puertas que
+pasan la cuenta al plan de pago sin confirmación y sin vuelta atrás. Las siete
+comparten una propiedad — **hay que ir a buscarlas.** Nadie aterriza en Control
+Tower sin desviarse. Contra puertas así, una lista funciona.
+
+La octava apareció después: **"Actualizar plan"**, en la cabecera de Facturación
+y costos. Y no es de la misma especie:
+
+> Las siete son puertas en las que puedes entrar **por error**. La octava está
+> en el camino que **ya te comprometiste a recorrer a diario** — el experimento
+> de `A-018` obliga a abrir esa página todos los días para leer un campo.
+
+**Meterla como renglón 8 le daba el mismo peso que a Control Tower, y no lo
+tiene.** Salió de la lista y pasó al **protocolo de lectura**: *se lee UN campo,
+no se toca la cabecera*. La defensa tiene que vivir donde está el tráfico.
+
+🔗 **Y la cara incómoda de `T-068` entera** (`L-026` en TEAPP): es el único
+control del proyecto **estructuralmente inverificable**. `LM.13` pide ver morder
+el freno; aquí probarlo **es** el desastre. Eso no lo invalida, lo reclasifica:
+
+> **No es un freno, es disciplina.** Y la diferencia importa: un freno no se
+> degrada con la repetición, la disciplina sí. El desgaste ya tiene fecha de
+> inicio — el día que abrir esa página se volvió rutina.
