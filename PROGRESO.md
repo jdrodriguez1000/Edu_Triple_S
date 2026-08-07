@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-07 (sesión 52)
+**Última actualización:** 2026-08-07 (sesión 53)
 
 ---
 
@@ -88,9 +88,29 @@
 # sueltos: **tercera cara del mismo bicho en un día, de tres dueños distintos**—;
 # **`T-055` amaneció costando una máquina y se acostó costando cero**; y `LM.23`,
 # marcada por la otra terminal sola: **medido no es lo mismo que anotado.**
+# 🔒 **La 53 paró un lanzamiento.** La otra terminal recomendó hacer hoy la segunda
+# mitad de `T-059` (la EC2) — y el freno que lo impedía **estaba escrito por ellos
+# mismos** en `tasks.md`: *"no se hace todavía a propósito"*. `LM.20` por segunda
+# vez en tres sesiones. Se revisó si el freno seguía valiendo y **sí**: lanzar hoy
+# mata `t_cargo − t=0`, la medición irrepetible que sirve seis meses; enciende lo
+# primero que puede quemar los $200 **con la alarma sin verificar** (`LM.13`); y el
+# ahorro iba al revés (una EC2 24/7 cuesta más bruto que la IP ociosa). **Esperar
+# un día cuesta ~$0,12.** Decisión suya con los tres costos delante: **esperar.**
+# 🔒 **Y la espera quedó SELLADA HOY, con fecha de caducidad:** la lectura del
+# 2026-08-08 **es el límite** — diga lo que diga, después se lanza `T-059`. Si
+# sigue `0,00`, eso es la **causa (b)** y es un hallazgo, no una excusa. Se sella
+# hoy porque mañana, con el número delante, *"un día más"* vuelve a parecer
+# razonable. Es `D-040` aplicado a la decisión, no a la lectura.
+# ✅ **La Elastic IP dejó de ser decisión suelta:** no se suelta (mataría el
+# generador) y se asocia mañana, que es la segunda mitad de `T-059`. Dos pendientes
+# que eran una.
+# 🐛 **Y el informe de la otra terminal traía dos datos viejos:** dijo 342 tests
+# (**son 348**, corridos aquí) y llamó *"segunda lectura"* a un día en que ya había
+# hecho la **tercera** (`1c3118d`, 11:13) — la que encontró el **cuarto reloj**,
+# que era justo el argumento a favor de esperar.
 # ⏳ **Mañana 2026-08-08: UN campo** (`Importe utilizado`), la hora `h1` anotada,
-# **`T-055` ya medible sin EC2**, y decidir qué se hace con la Elastic IP — lleva
-# dos días cobrando por existir.
+# **y después el lanzamiento.** Hoy queda libre `T-055` (mitad de Caddy), medible
+# en el contenedor sin EC2.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -476,6 +496,123 @@ plantilla que solo se puede rellenar bien no comprueba nada.**
 Este es al revés: **el material ya existe** — sale de sus proyectos reales, de
 años, no del curso. No espera a aprender nada. Espera a **contar los pasos que
 faltan** y a sentarse.
+
+---
+
+## 🔒 SESIÓN 53 — el freno de `T-059` se sostuvo, y la espera quedó con fecha de caducidad
+
+**Sesión de supervisión.** La otra terminal abrió recomendando **lanzar la EC2 hoy**
+(`T-059`, segunda mitad): *"desbloquea todo lo demás y apaga el goteo de la IP"*.
+Se paró. **Decisión suya, tomada con los tres costos delante: esperar un día.**
+
+### 🚨 El choque: la recomendación contradecía un freno escrito por ellos mismos
+
+`_persistence/tasks.md`, entrada `T-059`, de su puño:
+
+> *"No se hace todavía **a propósito**: primero hay que leer el resultado del
+> experimento de `[A-018]`."*
+
+`T-059` es la **primera tarea partida en dos** del proyecto, y se partió por ese
+experimento. Hoy se recomendó hacer la segunda mitad **sin mencionar el motivo del
+freno**. → **`LM.20` por segunda vez en tres sesiones: la razón ya estaba escrita
+y nadie la alcanzó.** No la contradijeron: no la vieron.
+
+📌 Y no se resolvió citando la regla. Se volvió a mirar si el freno seguía valiendo.
+
+### Las tres razones por las que sigue valiendo — y ninguna es "por precaución"
+
+**1. Lanzar hoy mata una medición irrepetible.** Con la IP ociosa como **único**
+gasto y `t=0` sellado (15:29 UTC del 06), `t_cargo − t=0` es el retraso real de la
+alarma. La bitácora ya decía que **vale más que el experimento**: se mide una vez y
+sirve seis meses. Encendida la EC2, el `Importe utilizado` mezcla dos fuentes y
+**el cargo deja de ser atribuible**. La cuenta se abre una sola vez.
+
+**2. Es encender el fuego antes de probar el detector.** La EC2 es lo primero que
+puede quemar los $200 de verdad, y la alarma **nunca se ha visto saltar** —
+`LM.13`. Siete sesiones defendiendo ese orden para invertirlo el día 8.
+
+**3. El argumento del dinero iba al revés.** *"Apagar el goteo"* sustituye la IP
+ociosa por una instancia encendida 24/7 **más su disco**, que bruto cuesta más.
+⚠️ **Aritmética de lista, no corrida, y va marcado como tal** — no se verificó el
+precio hoy. Lo que sí es firme es el otro lado: **esperar un día cuesta ~$0,12.**
+
+### 🎁 Y el hallazgo de las 11:13 empujaba al mismo lado, sin que nadie lo notara
+
+El commit `1c3118d` (tercera lectura) encontró el **cuarto reloj** — el de relleno
+del presupuesto, que vence **durante el 07**. O sea: **mañana es la primera lectura
+con los cuatro relojes vencidos.** Es el día en que el experimento por fin puede
+hablar. La recomendación de lanzar hoy se lo comía — **y salió de la misma terminal
+que descubrió el reloj, tres horas antes.**
+
+### 🔒 EL SELLO — escrito HOY, antes de ver el número de mañana
+
+> **La lectura del 2026-08-08 es la fecha de caducidad de la espera.**
+> **Diga lo que diga, después de esa lectura se lanza `T-059`.**
+> - Si `Importe utilizado` > 0,00 → el experimento concluye, y además se lleva `h1`.
+> - Si sigue en `0,00` → **eso ya no es "esperar más"**: es la causa **(b)** de la
+>   enmienda (*algo absorbe el cargo*), y es un **hallazgo**, no una excusa.
+
+🔑 **Por qué se sella hoy y no mañana:** mañana, con el número en pantalla,
+*"esperemos un día más"* vuelve a estar disponible y **siempre parece razonable**.
+Es `D-040` aplicado a la decisión en vez de a la lectura. Una espera sin fecha de
+caducidad no es prudencia: es la puerta del paso 6 de su método convertida en
+pasillo.
+
+⚠️ **Y el reparo honesto, anotado porque la otra terminal tenía parte de razón:**
+`T-059` **es** el cuello de botella y tres tareas cuelgan de ella. En algún punto
+esperar deja de ser criterio y pasa a ser miedo. El sello existe para que ese punto
+tenga fecha en vez de sensación.
+
+### ✅ Y la Elastic IP se resolvió sola
+
+El punto 2 de las pendientes de ayer (*"soltarla o asociarla"*) **deja de ser una
+decisión suelta**: no se suelta —mataría el generador del experimento— y se asocia
+mañana, que es **la segunda mitad de `T-059` de todos modos.** Dos pendientes que
+eran una.
+
+### 🐛 Dos datos viejos en el informe de la otra terminal
+
+| dijo | es | de cuándo |
+|---|---|---|
+| `342 tests verdes` | **348** (corridos aquí: `348 passed in 17.43s`) | 342 es de la sesión 50 |
+| *"S-026 (hoy) — **Segunda** lectura"* | hubo una **tercera**, `1c3118d`, hoy 11:13 | su propio commit, 3 h antes |
+
+Ninguno cambia la decisión. Se anotan porque **el informe iba detrás de su propio
+Git**, y el segundo es el que escondía el argumento bueno: el cuarto reloj.
+→ **`LM.23` con el signo cambiado: no es que se midiera y no se anotara — se anotó
+en un sitio y se informó desde otro.**
+
+### Verificado por MÍ en esta terminal, corriéndolo
+
+```
+pytest (suite entera TEAPP) : 348 passed in 17.43s   <- el informe decia 342
+git -C TEAPP log            : 1c3118d  <- tercera lectura, no estaba en el informe
+git -C TEAPP status -sb     : ## main...origin/main  <- sin "ahead"
+git status (Edu_TripleS)    : solo PROGRESO.md       <- ni .env ni claves
+```
+
+### Saldo de la sesión 53
+
+**Cero código escrito. Octava sesión seguida sin encender una máquina, $0,00.**
+El trabajo del día fue **parar un lanzamiento** y ponerle fecha de caducidad a la
+espera. `T-059` sigue partida; la Elastic IP sigue reservada y sigue siendo el
+generador del experimento.
+
+⭐ **Lo de más valor no fue tener razón, fue el orden:** el freno se revisó antes de
+invocarlo. Si el freno no hubiera aguantado las tres preguntas, hoy habría EC2.
+
+⚠️ **Nada nuevo en `LESSONS.md`, y es correcto.** Lo de hoy son `LM.13`, `LM.20` y
+`LM.23` **repitiéndose**, no lecciones nuevas. Inventar una `LM.24` para que el día
+parezca productivo sería la trampa del ritual que este mismo archivo denuncia.
+
+### ⏳ Pendiente para mañana, 2026-08-08 — en este orden
+
+1. 🔬 **UN campo:** `Importe utilizado`. **Anotar `h1`.** No tocar la cabecera.
+2. 🔓 **Después, y diga lo que diga: lanzar `T-059`** (instancia + asociar la IP +
+   apuntar DuckDNS). **Está sellado hoy** — ver arriba.
+3. `T-068` releída antes del clic (7 puertas + la octava del protocolo).
+4. `T-060b` en cuanto la máquina viva: el 8000 escaneado **desde fuera**.
+5. Suelto de hoy: `T-055`, la mitad de Caddy en el contenedor. Gratis, sin EC2.
 
 ---
 
