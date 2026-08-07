@@ -83,8 +83,14 @@
 # `a`/`b` por esta terminal: existir no es morder. La octava puerta salió de
 # `T-068` y pasó al protocolo de lectura → `LM.22`: **el riesgo se mide por el
 # tráfico, no por lo peligrosa que es la puerta.**
-# ⏳ **Mañana 2026-08-08: UN campo** (`Importe utilizado`), la hora anotada, y
-# decidir qué se hace con la Elastic IP — lleva dos días cobrando por existir.
+# 📎 **Y DESPUÉS del cierre salieron tres cosas** (ver el apéndice de la 52): un
+# error mío —di por existente un aparejo Caddy+uvicorn que eran dos procesos
+# sueltos: **tercera cara del mismo bicho en un día, de tres dueños distintos**—;
+# **`T-055` amaneció costando una máquina y se acostó costando cero**; y `LM.23`,
+# marcada por la otra terminal sola: **medido no es lo mismo que anotado.**
+# ⏳ **Mañana 2026-08-08: UN campo** (`Importe utilizado`), la hora `h1` anotada,
+# **`T-055` ya medible sin EC2**, y decidir qué se hace con la Elastic IP — lleva
+# dos días cobrando por existir.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -590,9 +596,78 @@ seguía diciendo algo falso, y arreglarlo **antes** de mirar el dato.
 2. 🚨 **Decidir la Elastic IP**: soltarla o asociarla. Lleva **dos días** cobrando.
 3. `T-068` releída antes del siguiente clic (7 puertas + la octava en el protocolo).
 4. Sueltos: el contenedor `teapp-test` encendido · las 2 menciones muertas de `L-025`.
-   ❓ **Y una pregunta abierta:** ¿el `.env` que `install.sh` escribió dentro del
-   contenedor llevaba una API key real o falsa? Muere con el contenedor, pero
-   **mejor saberlo que suponerlo.**
+   ✅ **RESUELTO en el mismo cierre:** el `.env` del contenedor tenía
+   `ANTHROPIC_API_KEY=` **vacía** — la llave entra en el paso 8. Medido pidiendo
+   **la longitud, no el valor**. Ver el apéndice.
+
+---
+
+## 📎 APÉNDICE DE LA SESIÓN 52 — lo que pasó DESPUÉS del cierre
+
+**El cierre ya estaba commiteado (`07b06ed`) y salieron tres cosas más.** Se
+anotan aquí en vez de fingir que estaban dentro.
+
+### 🚨 Un error MÍO, y es el tercero del mismo día con distinto dueño
+
+Recomendé cobrarle a `T-055` su mitad de Caddy en el contenedor, diciendo que ahí
+había *"un Caddy de verdad hablando con un uvicorn de verdad"*. **Falso, y no lo
+medí: lo deduje** de que `progress.md` decía *"con uvicorn y Caddy dentro"*.
+
+Eran **dos procesos sueltos con el Caddyfile de fábrica.** Lo cazó la otra
+terminal al ir a hacerlo.
+
+> **"Dentro" dice que el binario está instalado. No dice que esté delante de la
+> app.** Leí una frase de inventario y saqué una conclusión de topología.
+
+🔑 Es `LM.17` otra vez —*un `md5` no dice "todo igual", dice "los bytes,
+iguales"*—. **Y es la tercera cara del mismo bicho en un solo día, de tres
+participantes distintos:** las horas de IPv4 (la otra terminal), la fila 3 de la
+tabla sellada (el papel), y el aparejo inexistente (yo).
+
+### ✅ `T-055` amaneció costando una máquina y se acostó costando cero
+
+`7630862`. Su mitad de Caddy estaba en la lista como **"espera máquina"**. No la
+espera: se puede medir en el contenedor, gratis y sin EC2.
+
+📌 **No apareció trabajo nuevo. Apareció que un trabajo conocido costaba mucho
+menos de lo que decía su etiqueta.** `LM.19` por tercera vez en dos días.
+⚠️ Con su límite escrito **por delante**: ese Caddy sirve por HTTP sin dominio,
+así que mide **si escribe la cabecera**, no el `https` final. Media medición
+declarada es honesta; media medición callada, no.
+
+### El contenedor se queda vivo, y mi paso 3 se retira
+
+Propuse borrarlo. **La otra terminal lo discutió y tenía razón**, porque la
+contaminación solo descalifica para **un** uso:
+
+| uso | veredicto |
+|---|---|
+| banco de pruebas de `install.sh` **limpio** | ❌ el estado previo falsea el verde |
+| caja Linux con Caddy y venv ya dentro | ✅ el estado previo **es el punto de partida** |
+
+Y el riesgo que yo temía —que alguien pruebe ahí dentro de tres sesiones y se
+crea el verde— **ya no depende de la memoria de nadie: está en `deploy/README.md`,
+donde se mira antes de desplegar.** Borrarlo protege una vez; el README, cada vez.
+✅ **Seguro puesto:** `teapp-rig:latest` (1,05 GB), la base congelada. El
+`apt-get` se paga una vez.
+
+### 🐛 Y el cabo que la otra terminal marcó sola — `LM.23`
+
+La comprobación de la API key **no dejó artefacto**: vive en la conversación, no
+en el repo. Lo marcó como *sin resolver* en vez de darlo por registrado, sin que
+nadie se lo pidiera. → **Medido no es lo mismo que anotado.** Cierra el arco del
+día: `LM.20` (cierto y no alcanzado) · `LM.21` (sellado y ya falso) · `LM.15`
+(silencio leído como verde) · **`LM.23` (cierto y no escrito).**
+
+### Verificado por MÍ al cierre del apéndice
+
+```
+TEAPP, 4 commits del dia : 4a0a88a c0f0201 7630862 f08b7b8
+git status -sb           : ## main...origin/main   <- sin "ahead"
+archivos .py tocados hoy : 0        <- el diff ES lo que se hizo
+docker images            : teapp-rig:latest  1.05GB
+docker ps                : teapp-test  Up 2 hours
+```
 
 ---
 

@@ -3758,3 +3758,43 @@ el freno; aquí probarlo **es** el desastre. Eso no lo invalida, lo reclasifica:
 > **No es un freno, es disciplina.** Y la diferencia importa: un freno no se
 > degrada con la repetición, la disciplina sí. El desgaste ya tiene fecha de
 > inicio — el día que abrir esa página se volvió rutina.
+
+---
+
+### LM.23 — Medido no es lo mismo que anotado
+
+**Sesión 52, y lo marcó la terminal que construye, en el cierre.** Se comprobó si
+el `.env` del contenedor llevaba una API key real. Se hizo bien: se pidió **la
+longitud del valor, no el valor**, para no dejar la llave escrita en ningún sitio.
+Resultado: vacía.
+
+Y entonces vino la parte buena:
+
+> *"La comprobación no dejó artefacto. Medimos que estaba vacía, pero eso vive en
+> la conversación, no en el repo. Mañana no habrá forma de releerlo."*
+
+**Nadie lo pidió. Se marcó como *sin resolver* en vez de darlo por registrado**,
+que es lo cómodo y lo que nadie habría auditado.
+
+🔑 **Una medición que no deja artefacto no existe para quien no estuvo delante.**
+Y quien no estuvo delante incluye **a ti dentro de tres sesiones**. La
+conversación se cierra; el repo se queda.
+
+⚠️ **Lo importante es que esto NO es un fallo de la medición.** La medición fue
+correcta, cuidadosa y con el hábito bueno. **El hueco está en el paso siguiente**,
+que no se parece a trabajo y por eso se salta: escribir que se midió, qué dio, y
+cómo se pidió.
+
+🔗 Cierra el arco del día entero, que fue todo sobre la distancia entre lo escrito
+y lo cierto:
+
+| lección | el hueco |
+|---|---|
+| `LM.20` | escrito y cierto, pero **nadie lo alcanza** |
+| `LM.21` | escrito, sellado, **y ya no es cierto** |
+| `LM.15` | el instrumento ciego que **no escribe nada** y se lee como verde |
+| **`LM.23`** | **cierto y medido, pero no escrito** |
+
+📌 Y no todo hueco hay que taparlo: aquí se decidió **no** arreglarlo —el
+contenedor es desechable y la llave entra en el paso 8—. La disciplina no era
+registrarlo, era **no llamarlo registrado**.
