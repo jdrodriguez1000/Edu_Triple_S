@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-08 (sesión 54)
+**Última actualización:** 2026-08-08 (sesión 55)
 
 ---
 
@@ -127,8 +127,37 @@
 # fecha de caducidad** (*"hasta que deje de ser 0,00"*), que es justo lo que
 # `D-041` prohibió. → **`LM.20` por TERCERA vez en cuatro sesiones**, con una vuelta
 # nueva: la razón no solo estaba escrita, **estaba escrita por quien informó.**
-# ⏳ **Próxima sesión: lanzar `T-059` es lo PRIMERO, antes de leer nada.** El orden
-# se invierte a propósito — ver el cierre de la 54.
+# 🚀 **La 55 LANZÓ LA MÁQUINA. `T-059` cerrada del todo: TEAPP tiene por primera
+# vez un servidor propio en internet** (`t3.micro`, Ubuntu Server 24.04 LTS,
+# Elastic IP asociada, DuckDNS resolviendo). **Décima sesión sin código de la app,
+# y la primera que enciende algo.** El orden invertido funcionó: `T-059` fue lo
+# primero y por eso ocurrió.
+# ✅ **Y esta terminal MIDIÓ DESDE FUERA la cadena que la otra dio por no
+# verificable** — `session-closer` lo marcó honradamente como *"reportado, no
+# visto"*, pero añadió *"si algo no cuadra, saldrá mañana por SSH"*, aplazando a
+# mañana una comprobación de doce segundos. **Es la sesión 42 por segunda vez**
+# (`T-058`: *"nada que verificar"*, y era `nslookup`).
+# 🔬 **`T-060b` NO estaba bloqueada por `T-062`, y ya está medida su primera
+# mitad.** El commit razonaba con `L-020` —*nada escucha en el 8000, un escaneo
+# saldría cerrado igual*— y era `L-020` bien aplicada, pero **tenía cura: el
+# control al lado**, que es el método de la sesión 8. 🔑 **`RECHAZADO` y `TIMEOUT`
+# no son la misma palabra:** el 80 y el 443 devuelven `RST` (permitidos, nada
+# detrás) y el 8000 no devuelve nada (descartado). Contra ese control, **el
+# silencio del 8000 sí es un dato**. Falta la otra mitad —que uvicorn se ate a
+# `127.0.0.1`— y esa sí espera a `T-062`.
+# ⚠️ **Dos trampas del formulario cazadas ANTES del clic, y ninguna estaba en la
+# lista de las 7 puertas:** el punto 5 del guion decía *"reservar y asociar"* la
+# Elastic IP —escrito cuando no existía— y seguirlo habría alquilado una **segunda
+# dirección, que es justo la que cobra**; y el desplegable de AMI ofrecía
+# **Ubuntu Pro**, que se factura por hora y habría hecho `A-018` ilegible al
+# mezclar dos fuentes de gasto. → `L-028` y `D-043` en TEAPP.
+# 🚨 **Y desde hoy la cuenta tiene DOS fuentes de gasto**, no una: la IP elástica y
+# la máquina encendida. **`A-018` sigue vivo pero ya no se puede atribuir el
+# importe a la IP sola.** El experimento perdió su aritmética limpia el día que
+# cumplió su objetivo.
+# ⏳ **Próxima sesión: entrar por SSH con `teapp-key` y correr `install.sh`** — el
+# guion que corrió en un contenedor pero **nunca ha pisado una máquina de verdad**
+# (`L-024`: la prueba muere en `systemctl`, así que el servicio se estrena mañana).
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -514,6 +543,128 @@ plantilla que solo se puede rellenar bien no comprueba nada.**
 Este es al revés: **el material ya existe** — sale de sus proyectos reales, de
 años, no del curso. No espera a aprender nada. Espera a **contar los pasos que
 faltan** y a sentarse.
+
+---
+
+## 🚀 SESIÓN 55 — la máquina existe, y lo que no se pudo ver se midió desde fuera
+
+**Sesión de supervisión con la otra terminal a los mandos.** Él ejecutó todos los
+clics allá; aquí se revisó el guion **antes** de cada paso y se midió **después**.
+`T-059` ✅ **cerrada del todo**: `t3.micro`, Ubuntu Server 24.04 LTS, Elastic IP
+asociada, DuckDNS resolviendo. Commits `5075762` y `aff4350`, subidos.
+
+### 🔎 Las tres revisiones de esta terminal, y las tres cambiaron el día
+
+**1. El guion describía un mundo que ya no existía.** `console_steps.md` §Paso 3
+punto 5 decía *"Elastic IP: reservarla y asociarla"* — escrito en la sesión 41,
+cuando no había ninguna. Al partirse `T-059` en la 46 se ejecutó solo *reservar*,
+**y el punto se quedó igual**. Seguirlo al pie de la letra alquilaba una segunda
+dirección, y **en AWS la que cobra es la ociosa**. → `L-028` en TEAPP:
+*partir una tarea en dos deja el guion operativo describiendo la mitad vieja, y
+eso ningún `grep` lo encuentra — porque el texto no cambió, cambió el mundo que
+describía.*
+
+**2. El aviso del cortafuegos vivía solo en el chat.** El asistente de lanzamiento
+preselecciona un `launch-wizard-1` con el 22 abierto al mundo, y deja sin usar el
+grupo de `T-060a`. Buscado en `console_steps.md`: **el Paso 3 no mencionaba el
+cortafuegos ni una vez.** Es `LM.13` en vivo — *un freno que solo vive en la
+conversación se muere al cerrar la sesión*, que es exactamente cómo falló el sello
+`D-041` el día anterior. Quedó escrito **antes** de tocar la consola.
+
+**3. Ubuntu Pro, una puerta que no estaba en ninguna lista.** El desplegable
+ofrecía cuatro opciones que **no eran cuatro versiones, sino dos versiones × dos
+productos**. Pro se factura por hora aparte de la instancia. 🔑 **Es el patrón de
+"Actualizar plan"** (`LM.22`): no está escondida en un menú al que nadie entra,
+está **en la lista que hay que usar**, a una palabra del nombre bueno, con tráfico
+garantizado. No entró en las 7 puertas porque es de otra familia —no cambia el
+plan de la cuenta— **pero muerde el mismo experimento**: con Pro, `A-018` deja de
+ser legible. El testigo se dejó en pantalla (`Free tier eligible`), no en mi
+memoria. → `D-043`.
+
+📌 **Y sobre `install.sh`: el argumento escrito era el flojo.** La otra terminal
+defendió la 24.04 diciendo *"los paquetes cambian de nombre entre versiones"*.
+Se leyó el guion: **no fija ni una versión** — ni `24.04`, ni `noble`, ni
+`python3.12`. Eso no salva el argumento, **lo invierte**: un guion que no fija
+nada se come lo que el sistema le dé. No es portátil, es **obediente**.
+
+### ✅ La cadena de AWS, medida desde fuera (lo que la otra terminal no pudo ver)
+
+```
+teapp.duckdns.org  ->  32.199.xx.xx   (TTL 60)  <- ya NO es la IP de su casa
+PTR de esa IP      ->  ec2-32-199-xx-xx.compute-1.amazonaws.com
+```
+
+**Cuatro eslabones en una sola medida, y ninguno es un reporte:** DuckDNS
+repuntado, la instancia existe, la IP está asociada a ella, y `compute-1` es el
+nombre interno de AWS para **`us-east-1`** — la región confirmada por AWS, no por
+el selector.
+
+⚠️ **`session-closer` hizo lo correcto marcándolo *"reportado, no visto"*** — su
+instrumento es `git diff` y con eso no se ve una nube. Lo que no fue correcto fue
+la frase siguiente: *"si algún eslabón no fuera como lo describimos, saldría
+mañana al conectar por SSH"*. **Aplaza a mañana algo que hoy tardó doce segundos.**
+Es la sesión 42 por segunda vez: la pregunta no es *"¿es mío este artefacto?"*
+sino **"¿qué podría mirar alguien de fuera?"**
+
+### 🔬 `T-060b` no estaba bloqueada, y le faltaba el control
+
+`aff4350` la dejó bloqueada por `T-062` razonando: *"nada escucha en el 8000
+todavía, un escaneo saldría cerrado igual sin decir nada"*. **Es `L-020` bien
+aplicada** —un instrumento ciego da silencio, no un dato falso— pero tenía cura,
+y es la del curso desde la sesión 8: **poner un control al lado.**
+
+```
+80   : RECHAZADO   (llego a la maquina, nada escucha)   <- CONTROL
+443  : RECHAZADO   (llego a la maquina, nada escucha)   <- CONTROL
+8000 : TIMEOUT     (el paquete se descarto - cortafuegos)
+22   : ABIERTO
+```
+
+🔑 **"Cerrado" y "cerrado" no son la misma palabra.** Un puerto **permitido** sin
+nada detrás devuelve `RST` inmediato: *rechazado*. Un puerto **descartado** por el
+grupo de seguridad no devuelve nada: *timeout*. El 80 y el 443 demuestran que la
+máquina sí contesta a lo permitido, y **contra ese control el silencio del 8000 sí
+dice algo**. La primera mitad de `T-060b` está medida con la máquina en blanco.
+
+⚠️ **Lo que sigue sin medirse, y esa mitad sí espera a `T-062`:** que uvicorn se
+ate a `127.0.0.1`. Son **dos frenos distintos** — el cortafuegos y el `bind`— y
+hoy solo se pudo ver morder uno.
+
+⚠️ **El 22 sale ABIERTO y es lo esperado: se escaneó desde su misma casa**, con la
+IP autorizada. Buena noticia doble (la regla lleva la dirección correcta; mañana
+el SSH entra), **pero no se apunta como "el 22 está bien cerrado"**: desde este
+mirador no se puede ver si el mundo llega al 22. Es `L-019` — el sabotaje
+disfrazado de aquello que quiere atacar.
+
+### 🚨 Lo que cambió para siempre hoy
+
+**La cuenta pasó de UNA fuente de gasto a DOS**: la IP elástica y la máquina
+encendida. `A-018` sigue vivo, pero **el importe ya no se puede atribuir a la IP
+sola**. La aritmética limpia de la sesión 51 (`23 h × $0,005 ≈ $0,12`, que ayer
+sirvió además de inventario para descartar una segunda IP) **ya no vuelve**.
+El experimento perdió su instrumento el día en que cumplió su objetivo.
+
+### Saldo de la sesión 55
+
+**Primera máquina encendida del curso.** Décima sesión sin tocar código de la app.
+Dos trampas cazadas antes del clic, ninguna de ellas en la lista de las 7 puertas,
+y las dos **escritas en `console_steps.md` antes de tocar la consola, no después**.
+
+⭐ **Lo de más valor no fue la máquina: fue que las dos trampas se encontraron
+leyendo lo que estaba puesto, no pensando en lo que debía estar puesto.** Y que la
+tercera —`T-060b`— se encontró preguntando *qué control le falta a esta medida*.
+
+### ⏳ Pendiente para la próxima sesión
+
+1. 🔓 **SSH con `teapp-key` y correr `install.sh`.** Es la primera vez que ese
+   guion pisa una máquina de verdad. `L-024` dice hasta dónde llega la prueba del
+   contenedor: **muere en `systemctl`**, así que el servicio y el arranque se
+   estrenan mañana enteros.
+2. 🔬 **Cerrar `T-060b`** con la app viva: falta la mitad del `bind` a `127.0.0.1`.
+3. 📖 **Releer las 7 puertas otra vez** si hay clics en consola (`L-026`: es
+   disciplina, y la disciplina se degrada).
+4. 🔬 **`A-018` con la lectura nueva**: ahora hay dos fuentes; anotar la hora de
+   encendido de la EC2 para poder separarlas.
 
 ---
 
