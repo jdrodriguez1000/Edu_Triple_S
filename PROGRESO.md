@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-07 (sesión 53)
+**Última actualización:** 2026-08-08 (sesión 54)
 
 ---
 
@@ -108,9 +108,27 @@
 # (**son 348**, corridos aquí) y llamó *"segunda lectura"* a un día en que ya había
 # hecho la **tercera** (`1c3118d`, 11:13) — la que encontró el **cuarto reloj**,
 # que era justo el argumento a favor de esperar.
-# ⏳ **Mañana 2026-08-08: UN campo** (`Importe utilizado`), la hora `h1` anotada,
-# **y después el lanzamiento.** Hoy queda libre `T-055` (mitad de Caddy), medible
-# en el contenedor sin EC2.
+# 🟢 **La 54 leyó el experimento y APARECIÓ EL PRIMER CARGO** — pero no donde se
+# le esperaba: widget `Resumen de Costos` → `Costo Acumulado Mensual` = **0,12 US$**,
+# con `Importe utilizado` **todavía en 0,00**. **Mata la causa (b)**: hay dinero
+# visible, nada lo absorbe. Y la predicción de la 51 (`23 h × $0,005 ≈ $0,12`),
+# escrita antes de medir, **acertó**.
+# 🚨 **Y el sello `D-041` FALLÓ en su primera prueba: el 08 cerró SIN lanzar
+# `T-059`.** No falló como se temía —nadie dijo *"esperemos un día más"*— sino de
+# una forma que el sello no cubría: **las dos sesiones del día se acabaron antes de
+# llegar al clic.** Un sello protege de un argumento; **no protege de que se agote
+# la sesión.** → candidata a `LM.24`, que se escribe en TEAPP, no aquí.
+# 🐛 **El documento de la otra terminal es BUENO y su RESUMEN es peor que él.**
+# `A-018` marcó sola lo que había que marcar (que `h1` no ha ocurrido, que la hora
+# de aparición se perdió, la aritmética como *de lista*, bruto/neto sin verificar y
+# por qué no importa, y que esto **ejecuta** `D-040` en vez de violarlo). Pero el
+# resumen que llegó al estudiante **borró el motivo (2) de `D-041`** —*la alarma no
+# ha mordido*, en negrita y con sirena en el documento— y **reabrió una espera sin
+# fecha de caducidad** (*"hasta que deje de ser 0,00"*), que es justo lo que
+# `D-041` prohibió. → **`LM.20` por TERCERA vez en cuatro sesiones**, con una vuelta
+# nueva: la razón no solo estaba escrita, **estaba escrita por quien informó.**
+# ⏳ **Próxima sesión: lanzar `T-059` es lo PRIMERO, antes de leer nada.** El orden
+# se invierte a propósito — ver el cierre de la 54.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -496,6 +514,161 @@ plantilla que solo se puede rellenar bien no comprueba nada.**
 Este es al revés: **el material ya existe** — sale de sus proyectos reales, de
 años, no del curso. No espera a aprender nada. Espera a **contar los pasos que
 faltan** y a sentarse.
+
+---
+
+## 🟢 SESIÓN 54 — apareció el primer cargo, y el sello falló por donde nadie miraba
+
+**Sesión de supervisión y lectura. Cero código, $0,00.** Novena seguida sin
+encender una máquina. La lectura del experimento **por fin dio un número distinto
+de cero** — y el día cerró **sin ejecutar el sello que lo mandaba**.
+
+### 🟢 El dato: 0,12 US$, y en una pantalla que no estaba en ninguna tabla
+
+Lectura del estudiante, **2026-08-08 ~05:50 hora Colombia = ~10:50 UTC**
+(~43,4 h desde `t=0`, que fue 2026-08-06 15:29 UTC):
+
+| pantalla | campo | valor |
+|---|---|---|
+| Presupuesto (el instrumento **sellado**) | `Importe utilizado` | **0,00 US$** |
+| Inicio de *Facturación y costos*, widget `Resumen de Costos` | `Costo Acumulado Mensual` | 🟢 **0,12 US$** |
+
+🔑 **Esto mata la causa (b) de la enmienda de `D-040`.** Había dos explicaciones
+vivas para un `0,00`: **(a)** el dato no ha aterrizado, **(b)** algo absorbe el
+cargo. **Hay 0,12 US$ visibles: nada los absorbe.** La (b) muere por observación,
+no por argumento.
+
+🎁 **Y la predicción acertó.** En la sesión 51 quedó escrito, antes de medir nada:
+*"la IP ociosa cobra ~23 h × $0,005 ≈ $0,12"*. La pantalla dice **0,12**. Una
+cuenta escrita por adelantado y confirmada después — es lo contrario del
+`~$0.02` de la sesión 43.
+
+⚠️ **Y él vio el dato porque miró DE MÁS.** El protocolo decía *"UN campo:
+`Importe utilizado`"* — y ese campo es **el único que no se movió**. Obedecida la
+instrucción al pie de la letra, hoy se escribiría *"sigue en 0,00"* sin saber por
+qué. 🔑 **Un protocolo que estrecha la mirada protege del ruido y ciega para lo
+que no estaba previsto.**
+
+📌 Corrección menor al registro de la otra terminal: anotó `11:10 UTC (~43,7 h)`;
+la lectura del estudiante fue *"más o menos las 5:50"* = **~10:50 UTC, ~43,4 h**.
+Veinte minutos, no cambia ninguna conclusión — pero `43,7` tiene un decimal que
+la observación no tiene. **`LM.23` en pequeño: precisión mayor que la fuente.**
+
+### 🚨 EL HALLAZGO DEL DÍA — el sello `D-041` falló, y no como se temía
+
+Ayer se selló: *"la lectura del 2026-08-08 es el límite; diga lo que diga,
+después se lanza `T-059`"*. **El 08 cerró sin lanzar.** Dos sesiones, ninguna
+llegó al clic: la de TEAPP se cerró después de la lectura (`76493e7`, y lo anota
+con honestidad), y esta se cerró después de la explicación.
+
+🔑 **Y lo importante es CÓMO falló.** El sello se diseñó contra una frase concreta
+—*"esperemos un día más"*, que con el número delante siempre parece razonable— y
+**contra eso funcionó: nadie la dijo.** Falló por otro lado: **se acabó la sesión
+antes de llegar.**
+
+> ⚠️ **Un sello protege de un argumento. No protege de que se agote el tiempo.**
+> Lo que no tiene defensa no es la tentación de esperar: es que la tarea esté
+> **al final de la lista** dos días seguidos.
+
+📌 **Es pariente de la sesión 33** (*el cierre se cumplió entero y dejó el trabajo
+sin salvar*): un control que se cumple en su letra y no consigue lo que quería.
+→ **Candidata a `LM.24`, y se escribe en TEAPP** (`lessons.md`), no aquí — la
+numeración `LM.*` es de allá. Esta terminal **no toca ese repo**.
+
+✅ **La defensa, y es de una línea: mañana `T-059` va PRIMERO**, antes de leer
+ningún campo. La lectura ya no la bloquea —el cargo apareció— y ponerla delante
+es lo que la dejó sin ejecutar dos veces.
+
+### 🐛 El documento es bueno y el resumen es peor que el documento
+
+Se leyó `A-018` entera en el repo, no el informe. **Es de las mejores entradas
+del proyecto**, y marcó sola, sin que nadie se lo pidiera:
+
+- que **`h1` no ha ocurrido** y que `A-018` **no se cierra**;
+- que la hora en que apareció el 0,12 **se perdió y no se recupera**
+  (*"un instrumento que no se conoce no se puede haber mirado"*);
+- la cuenta de las ~24 h marcada como **aritmética de lista, no corrida**;
+- que **no verificó si el widget mide bruto o neto**, y **por qué la conclusión no
+  depende de ello** — cualquier valor > 0 basta;
+- que esto **no viola `D-040`**, con el argumento correcto: la tabla *encargaba*
+  distinguir (a) de (b), y esto **la ejecuta**;
+- que el widget vive en la página de la **octava puerta**, y que este hallazgo
+  **aumenta el tráfico** por ella (`LM.22`).
+
+🚨 **Pero el resumen que llegó al estudiante perdió dos cosas del documento:**
+
+| el documento dice | el resumen dijo |
+|---|---|
+| *motivo (2) de `D-041`:* 🚨 **SIGUE VIVO. La alarma no ha mordido ni una vez** | *"lo primero que toca es lanzar la t3.micro"* — **el motivo (2) no aparece** |
+| la espera tenía **fecha de caducidad** (`D-041`) | *"seguir mirando **hasta que** deje de ser 0,00"* — **espera sin final** |
+
+→ **`LM.20` por TERCERA vez en cuatro sesiones**, y con una vuelta nueva: antes la
+razón estaba escrita **por otro**; hoy **estaba escrita por quien informó, ese
+mismo día, en el mismo commit.** No es que no se leyera el archivo: es que **el
+resumen no hereda las salvedades de lo que resume.**
+
+### ⚖️ La recomendación de esta terminal — lanzar, y con argumento de ellos
+
+El motivo (2) (`L-013`: *no enciendas el fuego antes de probar el detector*) queda
+respondido por una frase del **propio documento** de la otra terminal, que el
+resumen tampoco trasladó:
+
+> *Los 0,12 US$ ya están bancados y superan el umbral por 12x, atribuibles solo a
+> la Elastic IP. El próximo refresco del presupuesto cruza el umbral por ese
+> cargo, encienda o no la EC2. Lo que la EC2 emborrona es la **cuantía**, no el
+> **cruce**.*
+
+🔑 **El detector ya está cargado.** La prueba de la alarma está en marcha y el
+lanzamiento no la cancela. Y hay una red que ayer no existía: **el widget va ~20 h
+por delante del presupuesto** — ventana de aviso temprano para los seis meses.
+
+⚠️ **El riesgo que queda, sin adornar:** si el presupuesto no se refresca *nunca*
+—roto, no lento— se descubriría con una EC2 encendida. Lo acota que una `t3.micro`
+no quema $200 en un día, y ahora se ve el gasto un día antes.
+
+### 📖 Se explicó el clic antes de darlo, a petición suya
+
+Leído `deploy/console_steps.md` §Paso 3 y §Paso 4. Lo que se le explicó: que
+`T-059` son **tres** cosas (instancia, asociar la IP, apuntar DuckDNS); que **la
+app NO queda arriba** —la máquina queda en blanco—; las cuatro trampas ya cazadas
+(**la región**, que abre en Ohio y no da error; **la VPC**, el mismo animal un
+piso abajo; **el `.pem`**, única forma de entrar; **las tildes** en las
+descripciones); y que las **8 puertas se releen antes**, porque `L-026` dice que
+esa lista **no es un freno sino disciplina, y la disciplina se degrada**.
+
+### Verificado por MÍ en esta terminal, corriéndolo
+
+```
+git -C TEAPP log      : 76493e7  <- el commit existe
+git -C TEAPP status -sb : ## main...origin/main  <- subido, sin "ahead"
+git show --stat 76493e7 : solo _persistence/ (3 archivos)  <- ni app/ ni tests/
+git status (Edu_TripleS): solo PROGRESO.md  <- ni .env ni claves
+```
+
+### Saldo de la sesión 54
+
+**Cero código. Novena sesión seguida sin encender una máquina. $0,00.**
+El experimento dio su primer número, la causa (b) murió, y `A-018` sigue abierta
+porque **`h1` no ha ocurrido**: el presupuesto sigue en 0,00 y la guardia de las
+≥12 h ni ha arrancado.
+
+⭐ **Lo de más valor no fue el 0,12: fue ver cómo falla un sello que se cumplió en
+su letra.** Y que el mejor documento del proyecto llegara resumido sin sus dos
+salvedades más importantes.
+
+### ⏳ Pendiente para la próxima sesión — en este orden, y el orden cambió
+
+1. 🔓 **`T-059` PRIMERO, antes de leer nada.** Instancia `t3.micro` + asociar la
+   Elastic IP + apuntar DuckDNS. **Va delante porque ir detrás lo dejó sin hacer
+   dos días.**
+   - Antes del primer clic: releer las **8 puertas** (`T-068`).
+   - Comprobar **región = Norte de Virginia (`us-east-1`)** y la **VPC**.
+   - Usar el grupo de seguridad **que ya existe** (`T-060a`), no crear otro.
+2. 🔬 **Después**, la lectura: `Importe utilizado` **y** el widget. Si el
+   presupuesto pasa de 0,00 → **eso sí es `h1`**, y arranca la cuenta de `h2`.
+3. `T-060b` con la máquina viva: el **8000 escaneado desde fuera**.
+4. Para la otra terminal: escribir **`LM.24`** (el sello que se cumple y no
+   consigue) y corregir `~43,7 h` → **~43,4 h, aproximada**.
 
 ---
 
