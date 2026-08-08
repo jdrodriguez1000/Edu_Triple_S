@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-08 (sesión 55)
+**Última actualización:** 2026-08-08 (sesión 56)
 
 ---
 
@@ -155,9 +155,53 @@
 # la máquina encendida. **`A-018` sigue vivo pero ya no se puede atribuir el
 # importe a la IP sola.** El experimento perdió su aritmética limpia el día que
 # cumplió su objetivo.
-# ⏳ **Próxima sesión: entrar por SSH con `teapp-key` y correr `install.sh`** — el
-# guion que corrió en un contenedor pero **nunca ha pisado una máquina de verdad**
-# (`L-024`: la prueba muere en `systemctl`, así que el servicio se estrena mañana).
+# 🚀 **La 56 (mismo día) PUSO TEAPP EN PRODUCCIÓN.** `install.sh` corrió por primera
+# vez en una máquina de verdad. Verificado **desde esta terminal, no reportado**:
+# `https://teapp.duckdns.org` → **200 en 5 de 5**, certificado Let's Encrypt válido
+# (`Aug 8 16:55 → Nov 6 16:55 UTC`), el 80 redirige con **308**, `/me` sin cookie
+# → **401**, y las cabeceras dicen `Server: uvicorn` + `Via: 1.1 Caddy` — **el
+# aparejo existe de verdad**, que es justo el error que cometí en la 52.
+# `T-061`, `T-062`, `T-060b`, `T-064` y `T-065` cerradas.
+# 🔬 **`T-060b`: tenían razón ellos y yo estaba equivocado.** Sostuve que el escaneo
+# ya estaba hecho por la mañana. Su respuesta es mejor: con **nada** escuchando en
+# el 8000, "cerrado" sale igual con el cortafuegos abierto o cerrado. Ahora hay un
+# proceso real detrás y sigue sin alcanzarse desde fuera → **el control se vio
+# morder**. (Matiz que sí queda: el contraste `RST` vs `TIMEOUT` de la mañana no era
+# `L-020` puro, distinguía "descarta" de "no hay nadie" — pero era inferencia sobre
+# el grupo de seguridad, no la cadena entera. La medida de hoy la subsume.)
+# 🌐 **El parpadeo de DuckDNS me pasó A MÍ, sin buscarlo y sin saber que ellos lo
+# habían visto:** `curl: (6) Could not resolve host` mientras el puerto 80 respondía
+# `308` en el mismo instante. **Dos observadores independientes, dos redes, mismo
+# fenómeno.** `A-017` deja de ser un riesgo leído y pasa a tener dos testigos.
+# 🐛 **Y ME EQUIVOQUÉ EN EL DIAGNÓSTICO DEL CIERRE, que es lo que hay que recordar
+# de hoy.** Cacé bien el síntoma —`decisions.md` modificado y sin commitear, con
+# `D-044` dentro (la máquina se queda encendida, **con caducidad de una noche**)— y
+# lo diagnostiqué como *"el control se cumplió entero y no comprobó lo que creías"*,
+# o sea la sesión 33 otra vez. **Falso.** Los `mtime` lo desmienten:
+# `progress.md` 13:16:52 → commit **13:17:05** → `decisions.md` **13:37:41**.
+# **A la hora del cierre el árbol estaba limpio.** `D-044` nació veinte minutos
+# después. 🔑 **Deduje una cronología teniendo la báscula a un comando de
+# distancia** — es la sesión 42 (*"no hay nada que verificar"*, y era `nslookup`)
+# conmigo de protagonista, y el mismo día en que yo les corregí las 15:08 por
+# heredar un número sin ir a la fuente.
+# ✅ **El reencuadre bueno lo pusieron ellos, y es nuevo: `L-029` — lo que nace
+# DESPUÉS del cierre no tiene dueño.** El `session-closer` corre una vez y el commit
+# del día ya está hecho. No es un accidente raro: en este proyecto **las decisiones
+# buenas salen conversando después** de que el trabajo técnico acabó.
+# ⚖️ **Lo único que sí les discutí y gané:** querían aplazar `L-029` a mañana *"por
+# no ensuciar el árbol recién limpio"*. Es el hallazgo aplicándose a sí mismo — una
+# lección sobre trabajo huérfano, dejada huérfana. Se escribió en el momento
+# (`0dfdbba`). 📌 **El árbol limpio no es el objetivo del protocolo, es su efecto
+# secundario.**
+# ✅ **Y no hubo fuga:** la contraseña de `jorge` se generó en la máquina, no por el
+# chat. Rastreado el repo entero: ni la clave ni un hash entraron. `create_account.py`
+# la toma por **variable de entorno**, y hay un test que **rechaza** pasarla como
+# argumento (que quedaría en el historial del shell y en la lista de procesos).
+# ⏳ **Próxima sesión, en orden:** (1) 🔴 **`D-044` caducó — si no vas a tocar la
+# máquina, APÁGALA**; (2) lo que solo puede hacer él: la cookie en el **navegador**
+# (`T-051`) y la **sexta lectura de `A-018`**, la primera con las dos fuentes de
+# gasto corriendo; (3) el **redespliegue** que le queda vivo a `A-005` (y con él
+# `T-050`, que midió el *reinicio* pero la tarea pide *redespliegue*).
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -10405,6 +10449,15 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   un `.env`, que es justo por lo que casi pasa. → **En DNS la IP es efímera; en
   Git es para siempre.** La regla de "mira qué entra" no es solo para
   credenciales.
+- **El síntoma bueno con la causa inventada** (sesión 56, mío): vi `decisions.md`
+  sin commitear y lo llamé *"el control se cumplió entero y no comprobó lo que
+  creías"* (sesión 33). Los `mtime` decían otra cosa: el archivo se escribió
+  **veinte minutos después** del commit, y a la hora del cierre el árbol estaba
+  limpio. → **Acertar el síntoma no vuelve buena la causa.** Y la causa se medía
+  con `ls -l --time-style`, que no llegué a correr. Es la sesión 42 con el
+  agravante de haber corregido ese mismo error ajeno esa misma mañana.
+  📌 **Corolario que casi cuesta caro:** una lección sacada de un no-evento
+  ensucia el archivo **más** que no escribir nada.
 - **`Juan` y `juan`: una persona en Windows, dos en Linux** (sesión 33, análisis
   previo del paso 4). Si un nombre escrito por el usuario se vuelve un nombre de
   archivo sin normalizar, el marcador se parte en dos al desplegar — **sin ningún
