@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-08 (sesión 56)
+**Última actualización:** 2026-08-09 (sesión 57)
 
 ---
 
@@ -197,11 +197,114 @@
 # chat. Rastreado el repo entero: ni la clave ni un hash entraron. `create_account.py`
 # la toma por **variable de entorno**, y hay un test que **rechaza** pasarla como
 # argumento (que quedaría en el historial del shell y en la lista de procesos).
-# ⏳ **Próxima sesión, en orden:** (1) 🔴 **`D-044` caducó — si no vas a tocar la
-# máquina, APÁGALA**; (2) lo que solo puede hacer él: la cookie en el **navegador**
-# (`T-051`) y la **sexta lectura de `A-018`**, la primera con las dos fuentes de
-# gasto corriendo; (3) el **redespliegue** que le queda vivo a `A-005` (y con él
-# `T-050`, que midió el *reinicio* pero la tarea pide *redespliegue*).
+# 🚀 **La 57 (día siguiente) CERRÓ LAS DOS TAREAS QUE LLEVABAN BLOQUEADAS DESDE EL
+# 4 DE AGOSTO**, y las dos con medida real, no con `curl`: `T-051` (la cookie
+# `Secure` guardada **y devuelta** por un navegador de verdad) y `T-050` (el
+# redespliegue sobre la máquina viva, con la sesión de jorge sobreviviendo).
+# Mueren tres suposiciones: `A-005`, `A-008` y `A-009` → `L-031` y `L-032`.
+# ✅ **Verificado desde esta terminal antes de opinar de nada:** `351 passed`
+# (su número era correcto), árbol limpio y sincronizado, `200` con `Server: uvicorn`
+# + `Via: 1.1 Caddy`, certificado `Aug 8 → Nov 6`, el 80 en `308` y **el 8000 en
+# TIMEOUT** desde fuera. Todo lo que afirmaron, cierto.
+# 🌙 **`D-045` NUEVA — la máquina deja de vivir de noche:** ventana 07:00–18:00
+# Colombia (12:00–23:00 UTC), **apagado automático desde dentro, encendido manual**.
+# 🔑 El reparto es asimétrico a propósito: **el olvido tiene que caer del lado que
+# no cobra.** Es `PERMISOS.get(nombre, "prohibir")` del nivel 4 aplicado a una
+# factura. Reabre `D-029`, que había descartado esa pieza apoyándose en la holgura
+# **nunca corrida** de `A-015`.
+# 🚨 **Y de ahí salió el hallazgo caro del día, que era una trampa invisible:** en
+# EC2 existe un ajuste —*comportamiento de apagado iniciado por la instancia*— con
+# los mismos dos valores del menú, `stop` o `terminate`. El aviso de la 55 era
+# *"Detener, nunca Terminar"* **con un humano leyendo la pantalla**. Una pieza
+# automática ejecuta ese ajuste todas las noches **sin que nadie lea nada**: si
+# estuviera en `terminate`, **destruye instancia y disco la primera noche que
+# funcione, por funcionar bien.** Se exigió leerlo antes de escribir la pieza →
+# **`Detener`, leído en pantalla.** 📌 Y la ruta del menú resultó no ser la
+# esperada: la consola en español lo llama *"Cambiar comportamiento de CIERRE"*.
+# 🐛 **ME CORRIGIERON UN COMANDO Y TENÍAN RAZÓN.** Yo dicté `shutdown -h 23:00`;
+# ellos pusieron **`-P`** citando a AWS: `halt` no dispara el comportamiento, deja
+# *"la CPU en HLT mientras la instancia sigue corriendo"* → **máquina muerta por
+# dentro y viva para la factura, con fallo MUDO.** (Matiz: en systemd `-h` ya
+# equivale a `poweroff`, así que seguramente escapábamos — pero *"seguramente"* es
+# justo lo que ellos se negaron a aceptar dos párrafos antes con el ajuste
+# `stop`/`terminate`. **Aplicaron su propio criterio a mi comando.**)
+# 🔴 **Un choque en MIS PROPIAS LÍNEAS, cazado por ellos**, y es la lección del día
+# sobre mí: escribí que la ventana no debía arrancar hasta que sonara la alarma
+# *"porque apagar rompe la cuenta dinero ÷ horas de `A-018`"*. **Falso.** Lo que
+# `A-018` tiene vivo son **relojes** (`h1`, `h2 − h1`), y esos no se enteran de que
+# la máquina duerme: los 0,37 US$ ya están bancados y la IP cobra igual de noche.
+# El daño era de **`T-067`**. 🔑 **La cautela era buena y le puse el dueño
+# equivocado** — tercera vez en tres días del mismo bicho, hoy mío. Y el arreglo
+# correcto no fue matizar la línea sino **borrarla y decir por qué era falsa**:
+# *una regla con asterisco debajo se lee como regla; nadie baja al asterisco.*
+# ✅ **Y él hizo lo correcto con el choque: lo trajo como choque.** Traía además el
+# matiz que lo resolvía y **no lo metió por su cuenta.** Por eso se corrigió la
+# regla en vez de parchearse.
+# ➕ **El argumento que dio la vuelta a la decisión no era el mío:** `T-067` mide
+# *gasto diario × 180*. Con máquina de 24 h se proyectaría **un régimen que no va a
+# existir**. La ventana no le quita nada a `T-067`: **se lo da.**
+# 🎁 **Y la ventana le REGALA algo a `A-018`:** las 12:00 y las 23:00 UTC pasan a
+# ser **dos lecturas ancladas** del presupuesto. 🔑 **El correo se fecha solo; `h1`
+# no.** Hasta hoy `h1` dependía de que a alguien le diera por mirar — y ya se
+# perdió una hora así. El ritual de la ventana le pone horario al experimento.
+# 🔬 **Sexta lectura de `A-018`: `Importe utilizado` sigue en 0,00 (cuarta seguida),
+# `Costo Acumulado Mensual` sube a 0,37 US$.** Su cuenta —`0,37 ÷ 0,005 = 74 h`
+# facturadas contra **71,3 h** que lleva viva la IP— es correcta, comprobada aquí, y
+# está **bien construida**: aguanta **sin usar el precio de la `t3.micro`**, que no
+# está medido. Primera vez que la EC2 se ve en pantalla.
+# 📉 **Pero de esa misma cuenta salieron dos cosas que su nota no decía.** (1) **La
+# «pantalla va ~20 h por detrás» acaba de morir**: el desfase pasó de **−19,7 h**
+# (lectura 4) a **+2,7 h** (lectura 6), y un instrumento no se adelanta a sí mismo
+# — nunca fue una propiedad del instrumento, era el relleno de una cuenta recién
+# abierta. Si sobrevive a `T-067`, corrige un retraso que ya no existe. (2) **Los
+# 0,37 US$ no son «lo gastado»**: de 22,8 h de EC2 solo asoman **$0,0137**. Quien
+# divida ese total por los días transcurridos **proyecta muy por debajo.**
+# ⚠️ **Y la guardia de `A-018` no tiene fecha de caducidad, que es el hueco de
+# verdad:** *"alarma rota exige ≥12 h de silencio DESPUÉS de que el importe sea
+# visible"*. Si el instrumento roto es el presupuesto, el importe **nunca** es
+# visible, la guardia **nunca arranca** y la alarma **nunca se puede declarar
+# rota**. 🔑 **El criterio es infalsable justo en el modo de fallo más probable.**
+# Es una espera sin caducidad —lo que `D-041` se inventó para prohibir— pero
+# metida **dentro del criterio** en vez de en la conversación. Pide un reloj de
+# fuera. Y hay una medición gratis sin hacer: **mirar `Importe previsto`** — si hoy
+# trae un número, el presupuesto SÍ traga datos y el problema es solo del campo
+# `utilizado`, que es un diagnóstico mucho más estrecho.
+# ➕ **Su hallazgo del volumen EBS es bueno y llega más lejos de lo que lo usaron:**
+# lo escribieron para decir que apagar no lleva el gasto a cero, y lo que implica es
+# que **son TRES fuentes de gasto desde el 08, no dos** como decía la quinta
+# lectura. Corregido el mismo día, y `T-067` se reescribe para separar tres tarifas.
+# 🐛 **El resumen hablado volvió a ser peor que el documento, dos veces**, y esta
+# vez con consecuencia medible:
+#   - **El testigo del primer apagado se cayó.** `T-074` dice literal *"con alguien
+#     mirando la consola, no a las 23:00 con todo el mundo dormido"*; el resumen
+#     decía *"se apaga sola"* y pasaba a mañana. Sin ese minuto, si el `-P` no
+#     dispara, **la máquina cobra toda la noche y el fallo es mudo.**
+#   - **«Entra por la IP» perdió la palabra SSH.** El documento dice *"entrar por
+#     SSH usando la IP fija"*; el resumen dijo *"entra por la IP, no por el
+#     nombre"*. **Medido aquí:** `https://32.199.55.191` → `000`, **y también con
+#     `-k`**: no es un aviso de certificado que se pueda aceptar, **el handshake no
+#     ocurre** (Caddy solo sirve el nombre que tiene certificado). Y `T-074` pide
+#     mañana *"200 sin tocar nada"* y *"certificado sin reemitir"*: **las dos exigen
+#     el nombre.** Seguir el atajo habría dado un **ROJO FALSO en la primera
+#     medición de la regla nueva.** Reparto correcto: **SSH por IP, navegador y
+#     `curl` por nombre**, y `curl --resolve` si el DNS falla — que es lo que
+#     `A-017` ya prescribía.
+# 🌐 **Episodio 6 de `A-017`, medido aquí sin buscarlo:** 1 de cada 3 intentos dio
+# `Could not resolve host` y los otros dos `200`, en la misma ráfaga. Refuerza su
+# conclusión del día —**es el cliente, no DuckDNS**— y aporta lo que no tenían:
+# pasa también en esta máquina.
+# ✏️ **Corrección mía, pequeña, por su `L-030`** (*`uptime -s` no es un registro, se
+# reinicia*): el «EC2 viva 22,84 h» que di salía de ese número **anotado**. La
+# conclusión no dependía de él —las 74 h contra 71,3 usan el `t=0` de la IP, que
+# viene de la consola— pero la línea era menos firme de lo que parecía.
+# ⏳ **Próxima sesión, en orden:** (1) 🔴 **encender la máquina A MANO** desde la
+# consola — no se enciende sola, es el diseño; (2) **leer el presupuesto al
+# encender** (12:00 UTC), que es una de las dos lecturas ancladas, y mirar de paso
+# `Importe previsto`; (3) **`T-074`** — cerrar la medición del primer `stop`/`start`
+# (marcador vivo, `200` **por el nombre** sin tocar nada, certificado sin reemitir);
+# (4) **`T-073`**, la pieza de apagado permanente, que ya se puede escribir porque
+# la condición dura (`Detener`) está leída; (5) **`T-066`**, dos dispositivos a la
+# vez, que es la tarea natural siguiente.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -10458,6 +10561,56 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   agravante de haber corregido ese mismo error ajeno esa misma mañana.
   📌 **Corolario que casi cuesta caro:** una lección sacada de un no-evento
   ensucia el archivo **más** que no escribir nada.
+- **La cautela buena con el dueño equivocado** (sesión 57, mío): escribí que la
+  ventana nocturna no debía arrancar *"porque apagar rompe la cuenta dinero ÷ horas
+  de `A-018`"*. El daño era real pero de **`T-067`**: lo que `A-018` tiene vivo son
+  relojes (`h1`, `h2 − h1`), y esos no dependen de que la máquina esté encendida.
+  → Es el hermano del error de la 56 (*síntoma bueno, causa inventada*): aquí el
+  **riesgo** era bueno y el **experimento** al que se lo cobré, falso. Antes de
+  frenar algo, pregunta **de quién es el daño**, no solo si el daño existe.
+  📌 **Y el arreglo no fue matizar la línea:** se borró y se escribió por qué era
+  falsa. *Una regla con un asterisco debajo se lee como regla; nadie baja al
+  asterisco.*
+- **Dos reglas mías que se contradecían, y las cazó él** (sesión 57): una decía
+  *"la ventana arranca cuando suene la alarma"* y otra *"hoy se apaga a las 23:00"*.
+  No se pueden cumplir las dos. → Lo importante no es el fallo, es **cómo lo trajo**:
+  como choque, y **con el matiz que lo resolvía en la mano, sin meterlo por su
+  cuenta**. Por eso se corrigió la regla en vez de parchearse. Es el mismo gesto de
+  *"escríbeme un ejemplo primero"*: traer el problema entero, no media solución.
+- **El aviso que valía para un humano y no para una máquina** (sesión 57). El
+  freno de la 55 era *"Detener, nunca Terminar"* — escrito para alguien **leyendo
+  un menú**. Al automatizar el apagado aparece el mismo par como **ajuste** de la
+  instancia (`stop` / `terminate`), y ahí **no hay nadie leyendo nada**: en
+  `terminate`, la pieza destruye máquina y disco **la primera noche que funcione,
+  por funcionar bien**. → **Un control escrito para un humano no protege a un
+  programa.** Al automatizar un gesto, vuelve a preguntar qué lo hacía seguro.
+- **La bandera equivocada en un comando que yo dicté** (sesión 57, mío): di
+  `shutdown -h`; AWS documenta que `halt` **no** dispara el comportamiento de
+  apagado y deja la instancia *"corriendo"* para la factura — muerta por dentro,
+  viva para el cobro, y **sin ningún síntoma visible desde fuera**. La otra terminal
+  puso `-P`. → **Un comando dictado también es material sin verificar.** Y el modo
+  de fallo es el peor: silencioso y caro.
+- **El resumen que se come el testigo** (sesión 57, tercera vez en cuatro sesiones).
+  `T-074` exigía mirar la consola durante el primer apagado; el resumen hablado dijo
+  *"se apaga sola"* y siguió. Y *"entrar por SSH usando la IP fija"* llegó como
+  *"entra por la IP"* — **sin la palabra SSH**, que era la que lo hacía cierto.
+  Medido: por HTTPS la IP da `000` **incluso saltándose el certificado**, porque el
+  handshake no llega a ocurrir. Seguir el atajo habría dado un **rojo falso** en la
+  medición de mañana. → **El documento y el resumen no son el mismo artefacto, y el
+  que se lee es el resumen.**
+- **Un desfase que nunca fue del instrumento** (sesión 57). De la lectura 4 se
+  concluyó *"la pantalla va ~20 h por detrás"*. La lectura 6 lo desmiente: el
+  desfase pasó de **−19,7 h a +2,7 h**, y **un instrumento no se adelanta a sí
+  mismo**. Era el relleno inicial de una cuenta recién abierta, no una propiedad.
+  → **Una constante medida una sola vez no es una constante.** Estaba marcado como
+  *aritmética de lista*, y por eso murió limpio en vez de contaminar `T-067`.
+- **El criterio infalsable justo donde importa** (sesión 57). La guardia decía
+  *"alarma rota exige ≥12 h de silencio DESPUÉS de que el importe sea visible"*.
+  Si lo que está roto es el propio presupuesto, el importe **nunca** es visible y la
+  guardia **nunca arranca**: la alarma no se puede declarar rota **en el modo de
+  fallo más probable**. → **Toda espera necesita un reloj de fuera.** Es `D-041`
+  (la espera con fecha de caducidad) que hay que aplicar también **dentro** del
+  criterio, no solo a la conversación.
 - **`Juan` y `juan`: una persona en Windows, dos en Linux** (sesión 33, análisis
   previo del paso 4). Si un nombre escrito por el usuario se vuelve un nombre de
   archivo sin normalizar, el marcador se parte en dos al desplegar — **sin ningún
