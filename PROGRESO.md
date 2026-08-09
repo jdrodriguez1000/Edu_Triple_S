@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-09 (sesión 57)
+**Última actualización:** 2026-08-09 (sesión 58, segunda del día)
 
 ---
 
@@ -297,14 +297,107 @@
 # reinicia*): el «EC2 viva 22,84 h» que di salía de ese número **anotado**. La
 # conclusión no dependía de él —las 74 h contra 71,3 usan el `t=0` de la IP, que
 # viene de la consola— pero la línea era menos firme de lo que parecía.
-# ⏳ **Próxima sesión, en orden:** (1) 🔴 **encender la máquina A MANO** desde la
-# consola — no se enciende sola, es el diseño; (2) **leer el presupuesto al
-# encender** (12:00 UTC), que es una de las dos lecturas ancladas, y mirar de paso
-# `Importe previsto`; (3) **`T-074`** — cerrar la medición del primer `stop`/`start`
-# (marcador vivo, `200` **por el nombre** sin tocar nada, certificado sin reemitir);
-# (4) **`T-073`**, la pieza de apagado permanente, que ya se puede escribir porque
-# la condición dura (`Detener`) está leída; (5) **`T-066`**, dos dispositivos a la
-# vez, que es la tarea natural siguiente.
+# 🌙 **La 58 (SEGUNDA del mismo día) CERRÓ `T-073`: la máquina se apaga sola.**
+# Ya no es un `shutdown -P 23:00` de un solo uso —un despertador que se borra al
+# reiniciar— sino dos unidades de systemd (`teapp-shutdown.service` = el *qué*,
+# `.timer` = el *cuándo*), instaladas por `install.sh` y **armadas de verdad**:
+# `NEXT: Sun 2026-08-09 23:00:00 UTC`, `LAST` y `PASSED` vacíos, y el despertador
+# viejo desarmado con medida antes y después. De 351 a **362 tests**.
+# `D-046`, `L-033`, `L-034`, `A-022` y el paso 5b de `console_steps.md`.
+# 🎁 **Un testigo que salió gratis de una resta:** yo calculaba 5 h 13 min hasta el
+# disparo desde esta máquina y la EC2 decía 5 h 13 min. **Los dos relojes coinciden
+# al minuto**, así que la máquina está de verdad en UTC — que es la suposición sobre
+# la que descansa `D-046` entero y que nadie había comprobado.
+# 🔴 **EL HALLAZGO DEL DÍA ES ESTRUCTURAL Y ES DE ESTE REPARTO, NO DE TEAPP: la
+# colisión `L-013` contra `LM.13`.** `D-041` citaba `[L-013]` para decir *"un
+# control que nadie ha visto funcionar no es un control"*. `L-013` **no dice eso**
+# —dice *"cerrar un hueco no cierra los demás"*, desde `499879a` y sin una edición—;
+# la frase existe, es correcta, y es **`LM.13`**, de ESTE archivo. Una letra de
+# diferencia entre dos espacios de nombres:
+# `LM.nn` = lecciones de método (Edu_TripleS) · `L-nnn` = lecciones de TEAPP.
+# **Auditado: 16 citas malas** (13 pasadas a `LM.13`, 1 que era la regla 6, 2 sin
+# dueño en ningún repo → se les quitó el corchete). Prefijo escrito en el
+# `CLAUDE.md` de TEAPP. 🔑 **Es un defecto del reparto que decidimos en la 43**
+# —*aquí el porqué, allá lo que el programa hace*—: las lecciones de método se
+# quedaron de este lado y **las citas cruzan la frontera sin pasaporte**. Por eso
+# consta aquí y no solo allá.
+# 📌 **Y la convención YA EXISTÍA de hecho**: `LM.13`, `LM.15` y `LM.19` se usaban
+# bien en 19 sitios. Existía y no protegió de nada **porque no estaba escrita.**
+# 🔑 Suya, y es la mejor línea del día: *un acuerdo que depende de que nadie se
+# despiste no es un acuerdo, es una racha.* Es `Persistent=false` escrito a la
+# fuerza aunque ya sea el valor por defecto — que lo escribió él **una hora antes**,
+# en otro archivo, y no reconoció la misma idea al cambiar de material.
+# 🚨 **CUATRO controles en un día midiendo algo distinto de lo que prometían**, y
+# el cuarto es nuevo de verdad:
+#   1. `is-active` en `install.sh`: su comentario declaraba que el fallo del
+#      temporizador era *el más mudo de los tres*, y `is-active` **no distingue**
+#      "activo y habilitado" de "activo y NO habilitado" — el fallo de mañana.
+#      Verde esta noche, `T-074` verde, y el martes la factura corre. → `is-enabled`
+#      **al lado**, no en su lugar: son dos preguntas.
+#   2. El guardián que buscaba un texto literal que `install.sh` **nunca escribiría**
+#      (usa una variable). Lo cazó él solo.
+#   3. El recuento de citas: 9 → 13 → 15 → **16**. 🔑 *El bueno salió de `git diff`;
+#      los tres malos salieron de la cabeza.* Y el matiz que vale: **el nueve no era
+#      falso, era parcial y no se anunció como parcial.**
+#   4. ⭐ **El control que acabó dictando cómo se escribe el archivo que vigila.**
+#      Contaba apariciones de `[LM.13]` en `progress.md`; el `session-closer`
+#      mencionó la colisión en prosa, el contador se fue a 4 y se puso rojo. **El
+#      closer reescribió su texto evitando nombrar los identificadores para dejarlo
+#      en verde** → una entrada sobre una colisión de identificadores **que no puede
+#      nombrarlos**. Peor que un rojo falso: no da un dato malo, **deforma el
+#      artefacto**. Arreglado: busca las dos frases concretas.
+# ✅ **`L-034` es la lección madre de las cuatro**, y su antepasado no fue el que yo
+# mandé buscar sino uno mejor y suyo: **`L-017`, del día 05, MISMO ARCHIVO y MISMO
+# BLOQUE de `install.sh`.** Cuatro días después reintrodujo allí el atajo exacto que
+# `L-017` había arreglado. 🔑 **Arreglar un bloque no lo inmuniza: lo deja más
+# peligroso, porque lleva encima la cicatriz de haber sido auditado y esa cicatriz
+# avala las líneas que se añaden después.** Es *nadie audita un verde* (`LM.15`) con
+# el mecanismo explicado por fin: **un control sin estrenar da miedo y se revisa;
+# uno en verde tranquiliza y ya no lo mira nadie.**
+# ⚠️ **`A-022` — y la cara peligrosa la puso él, no yo.** Yo planteé que systemd
+# rechazara la zona de `OnCalendar=... UTC`; eso está cubierto (el guion se para en
+# rojo). Lo que no vi: **si la IGNORA en vez de rechazarla, la ventana de `D-045` se
+# mueve 5 horas sin un solo error.** Se mide dos veces: hoy y en `T-069`, que es
+# donde de verdad mordería porque la máquina es nueva. **Decisión conjunta: NO
+# construir hoy el guardián de la hora** — no hay con qué verlo ponerse rojo, y
+# estrenar un control sin verlo morder en la sesión que escribió `L-034` sería
+# cómico.
+# 🐛 **TRES ERRORES MÍOS, los tres medidos:**
+#   - **Resté una hora local de una hora UTC** y dije *"vence en 1 h 40"* cuando
+#     faltaban **5 h 30**. Tomé el `17:2x` de una línea y el `18:00` de otra, y las
+#     dos eran ciertas **en zonas distintas**. 🔑 Es `D-046` —el motivo por el que
+#     eligió systemd sobre cron— cometido a mano en la conversación que lo escribía.
+#     Él **no lo supuso: lo dijo y no lo dio por bueno.**
+#   - **Pedí comprobar `is-enabled` cuando `install.sh` ya hacía `enable --now`**
+#     (línea 248). Estaba en el código; no lo había leído.
+#   - **Mandé el antepasado al repo equivocado.** Dije *"la lección de la sesión 48"*
+#     sin decir en qué archivo: `LM.15` vive AQUÍ, no en TEAPP. Lo buscó allá y no
+#     estaba. → **Un puntero sin repo es medio puntero**, que es la misma familia de
+#     lo que estuvimos arreglando todo el día.
+# ✅ **Y una decisión suya que hay que respaldar: cruzó una frontera a sabiendas.**
+# Dos de las 16 citas vivían en `progress.md`, que escribe el `session-closer`. Lo
+# tocó igual —solo punteros— porque dejar citas falsas en el archivo que el
+# `session-starter` lee primero es garantizar que mañana se propaguen. Correcto. El
+# riesgo que abrió (**un arreglo que otro proceso puede deshacer sin ningún error**)
+# quedó anotado dentro de `L-034` con su control al lado, y **comprobado por mí tras
+# el cierre: `[LM.13]` = 2, `[L-013]` = 0.**
+#
+# 🔴 **LO ÚNICO VIVO Y CON FECHA DE CADUCIDAD: `T-074`, HOY A LAS 23:00 UTC
+# (18:00 Colombia).** Consola de AWS abierta, ver la instancia pasar a `stopped`,
+# **apuntar la hora exacta**. Si a las 18:02 sigue en `running`: apagarla a mano, y
+# **eso es un hallazgo, no un contratiempo** — querría decir que el `-P` no dispara
+# y que `T-073` no está cerrada, descubierto con alguien mirando en vez de dentro de
+# tres semanas en la factura. **Es el estreno despierto, y por eso se hizo hoy.**
+# ⏳ **Después, en orden:** (1) **encender la máquina A MANO** al día siguiente —no
+# se enciende sola, es el diseño— y cerrar la otra mitad de `T-074`: marcador vivo,
+# **`200` POR EL NOMBRE** (nunca por la IP: medido el 2026-08-09, `https://<IP>` da
+# `000` **incluso con `-k`** — Caddy solo sirve el nombre que tiene certificado, así
+# que el handshake ni ocurre; **SSH por IP, navegador y `curl` por nombre**, y
+# `curl --resolve` si el DNS parpadea) y certificado sin reemitir; (2) **leer el
+# presupuesto** en las dos lecturas ancladas (12:00 y 23:00 UTC) y mirar de una vez
+# **`Importe previsto`**, la medición gratis que decide si la alarma está rota o solo
+# ciega en un campo; (3) **`T-066`**, dos dispositivos a la vez; (4) **`T-067`**, el
+# coste proyectado, ya con **tres** tarifas separadas y bajo el régimen de la ventana.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -10611,6 +10704,51 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   fallo más probable**. → **Toda espera necesita un reloj de fuera.** Es `D-041`
   (la espera con fecha de caducidad) que hay que aplicar también **dentro** del
   criterio, no solo a la conversación.
+- **Resté una hora local de una hora UTC** (sesión 58, mío). Dije *"el testigo vence
+  en 1 h 40"* y faltaban **5 h 30**: tomé el `17:2x` de una línea y el `18:00` de
+  otra, y las dos eran ciertas **en zonas distintas**. Lo cazó él —*"sus propias
+  horas dan otra cosa"*— y no lo dio por bueno en ninguna dirección. → Es `D-046`
+  (la zona horaria escrita **dentro** de la pieza, para que no dependa de un ajuste
+  que vive fuera) cometido a mano en la misma conversación que lo redactaba.
+  📌 **Una hora sin zona no es una hora.** Y el daño real no era la resta: era que
+  metía prisa a un despliegue que tenía holgura de sobra.
+- **Una cita que se propaga por parecer verificada** (sesión 58). `[L-013]` estaba
+  mal citada en **16 sitios** de TEAPP con **tres significados distintos**, y
+  ninguno era el suyo. La frase que se quería citar existe y es correcta: es
+  **`LM.13`**, de este repo. Una letra entre dos espacios de nombres —`LM.nn` para
+  las lecciones de método, `L-nnn` para las de TEAPP— y ninguna regla escrita que
+  los separara. 🔑 **La convención ya existía de hecho** (19 usos correctos) y no
+  protegió de nada **porque no estaba escrita**: *un acuerdo que depende de que
+  nadie se despiste no es un acuerdo, es una racha.* → Es el bicho de la sesión 33
+  (la misma cosa escrita en dos sitios diciendo cosas contrarias) mudado **a las
+  citas**. Y una cita que ya aparece en muchos sitios tranquiliza igual que un
+  verde: deja de auditarse.
+- **Un puntero sin repo es medio puntero** (sesión 58, mío). Le dije *"eso ya salió
+  en la sesión 48"* sin decir **en qué archivo**. `LM.15` vive aquí, no en TEAPP; lo
+  buscó en el suyo y no estaba. → El mismo defecto que estábamos arreglando ese día,
+  cometido al señalarlo.
+- **El control que dicta cómo se escribe el archivo que vigila** (sesión 58, y es
+  nuevo). Para proteger dos punteros corregidos en `progress.md` se escribió un
+  control que **contaba apariciones** de `[LM.13]`. El `session-closer` mencionó la
+  colisión en prosa, el contador subió a 4 y el control se puso rojo — legítimamente,
+  pero por el motivo equivocado: no distinguía *"alguien revirtió los punteros"* de
+  *"alguien escribió sobre ellos"*. **El closer reescribió su propio texto evitando
+  nombrar los identificadores para dejarlo en verde**, y el resultado fue una entrada
+  sobre una colisión de identificadores **que no puede nombrarlos**. 🔑 **Es peor que
+  un rojo falso: un rojo falso da un dato malo; esto deforma el artefacto medido.**
+  → Un control se escribe contra **la condición** que quiere proteger (las dos frases
+  concretas), no contra un síntoma contable que el texto humano puede mover.
+- **Arreglar un bloque no lo inmuniza: lo vuelve más peligroso** (sesión 58, suya y
+  es la lección madre del día). El bloque final de `install.sh` ya había sido
+  auditado el día 05 (`L-017`) por titularse *"terminado = visto funcionando"* y
+  mirar solo `is-active`. Cuatro días después se le añadió una comprobación nueva
+  **y se reintrodujo el atajo exacto**, bajo un comentario todavía más enfático.
+  🔑 **La cicatriz de haber sido auditado avala también las líneas que se añadan
+  después.** → Es *nadie audita un verde* (`LM.15`, sesión 48) con el mecanismo por
+  fin explicado: **un control sin estrenar da miedo y se revisa; uno en verde
+  tranquiliza y ya no lo mira nadie.** La pregunta que queda: leer el comentario y
+  preguntarle a la comprobación *"¿te pondrías roja en el caso que este comentario
+  acaba de describir?"*.
 - **`Juan` y `juan`: una persona en Windows, dos en Linux** (sesión 33, análisis
   previo del paso 4). Si un nombre escrito por el usuario se vuelve un nombre de
   archivo sin normalizar, el marcador se parte en dos al desplegar — **sin ningún
