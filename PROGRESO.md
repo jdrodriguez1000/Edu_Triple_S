@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-10 (sesión 60)
+**Última actualización:** 2026-08-10 (sesión 61)
 
 ---
 
@@ -535,17 +535,90 @@
 # anterior"* — la categoría de cosas que nadie mira. `h1` **no se provoca, se lee**,
 # y solo existe mientras alguien mire.
 #
-# 📍 **DÓNDE SE ARRANCA MAÑANA (paso 8, `T-056`):** poner `TEAPP_REGISTRATION_OPEN`
-# explícito en la nube y comprobar que `create_account.py` corre allí. Dos minutos.
-# 🌙 **PRIMERO HAY QUE ENCENDER LA MÁQUINA A MANO, en la consola de AWS.** Se apaga
-# sola a las 23:00 UTC y **no se enciende sola a propósito**, para que el olvido
-# caiga del lado que no cobra (`D-045`). `T-056` necesita SSH: sin encenderla, no
-# hay nada que hacer. ⚠️ Es justo la frase que el cierre de hoy había puesto al
-# revés — ver arriba.
+#
+# 🔎 **La 61 (TERCERA del mismo día) fue de SUPERVISIÓN PURA: no se tocó una línea
+# de código, ni aquí ni allá.** El encargo fue *"antes de salir revisa el estado del
+# punto 8 en la terminal donde se lleva a cabo"* — leer sus repos, que es lo que
+# `LM.25` dejó dentro del reparto.
+# ✅ **El paso 8 ARRANCÓ, y arrancó bien.** La otra terminal tuvo sesión esta mañana
+# (commits `cfe62d4` y `b62c67b`, 12:04, árbol limpio y sincronizado con `origin`).
+# `T-075` cerrada (la API key de Anthropic en el `.env` **local**, verificada sin
+# imprimirla: `sk-ant-`, 108 caracteres, `.gitignore:3`) y `T-056` cerrada por SSH
+# real contra la EC2. **Primer gasto real del proyecto que no es la nube.**
+# 🔬 **Y lo comprobé en vez de creerlo:** `git diff --stat 00b2365..HEAD` dice que
+# los cuatro archivos del día son de `_persistence/`. **Ni `app/`, ni `tests/`, ni
+# `deploy/`.** Leído `app/tools.py:128`: `judge_grammar` sigue devolviendo
+# `FAKE_VERDICT`. 📌 **El plan de `T-076` es planeación honesta, no trabajo a
+# medias** — cuando un informe dice *"plan hecho, sin ejecutar"*, eso se mira.
+# 🔑 **`D-049` es buena y la respaldo:** arrancar con `claude-opus-5` a
+# `effort: "low"` —**el modelo más caro, no el más barato**— para no mezclar dos
+# sospechosos (modelo y rúbrica) el día que se estrena el veredicto real. Es el
+# control al lado de la sesión 8 aplicado a una decisión de dinero.
+#
+# 🔴 **TRES HALLAZGOS SOBRE `T-076`, Y EL PRIMERO PUEDE ROMPERLA EN SU PRIMERA
+# CORRIDA.** Salieron de ir a la fuente (`/claude-api`), no de la memoria:
+#   1. 🚨 **En `claude-opus-5` el pensamiento viene ENCENDIDO por defecto** —cambia
+#      respecto a los modelos anteriores— **y `max_tokens` no limita la respuesta:
+#      limita pensamiento + respuesta JUNTOS.** `judge_grammar` devuelve una frase
+#      corta, así que la tentación al escribirla es `max_tokens=200`. Con eso el
+#      pensamiento se come el presupuesto y **el veredicto llega cortado o vacío**,
+#      con `stop_reason: "max_tokens"`. 🔑 **No explota: devuelve basura en
+#      silencio.** Es `LM.15` —*un instrumento ciego no da un dato falso, da
+#      silencio*— metido en la primera línea del paso 8.
+#   2. 🚨 **`stop_reason` puede venir `"refusal"` y entonces `content` está VACÍO.**
+#      Un `response.content[0].text` sin mirar antes `stop_reason` revienta con
+#      `IndexError`. Para un tutor de inglés es improbable — y *improbable* es la
+#      palabra que este proyecto lleva cuarenta sesiones negándose a aceptar.
+#   3. 🎁 **Una a favor de ellos:** en `claude-opus-5` el mínimo para que el caché de
+#      prompt muerda bajó a **512 tokens** (era 1024). La rúbrica es idéntica en cada
+#      llamada: si pesa más de 512, las lecturas cuestan **una décima parte** y
+#      `D-049` sale aún más barata de lo que calcularon.
+# 💰 **El precio, escrito para que `T-079` lo tenga delante:** `claude-opus-5`
+# **$5/$25** por millón de tokens (entrada/salida); `claude-sonnet-5` $3/$15
+# (**$2/$10 promocional hasta el 31 de agosto**); `claude-haiku-4-5` **$1/$5**.
+# Opus es **5× Haiku**. Con una llamada típica (~300 entrada, ~100 salida) son
+# **~$0,004 por práctica** contra ~$0,0008: a 20 prácticas/día (`A-010`),
+# **$0,08/día contra $0,016/día por persona**. Con un usuario no decide nada — el
+# descenso a Sonnet/Haiku como trabajo **medido** del paso 9 está bien colocado.
+# 📌 **Y un detalle que nadie había puesto junto:** el pensamiento **se cobra como
+# salida, a $25**. El `effort: "low"` de `D-049` no es solo calidad — **es la
+# palanca de costo del día.** Bien elegido, aunque no por ese motivo.
+#
+# 🌙 **LA MÁQUINA ESTABA ENCENDIDA AL ABRIR, Y NO SE SUPO POR QUÉ.** Medido aquí a
+# las 16:31 UTC: `200` por el nombre, `Server: uvicorn` + `Via: 1.1 Caddy`, `/me`
+# → `401`, DNS a `32.199.55.191`. Se preguntó si la había encendido él y **la
+# pregunta no se contestó** — la sesión siguió por el paso 8. ⚠️ **Queda abierta y
+# no es cosmética:** o la encendió él (todo bien), **o el apagado automático de
+# `D-046` no disparó anoche y lleva horas cobrando en silencio**. Es justo el modo
+# de fallo que `L-034` describió: el control en verde que ya no mira nadie.
+# 📌 **Se resuelve en un comando, no adivinando:** `systemctl list-timers` o el
+# journal en la máquina, o el historial de la instancia en la consola de AWS.
+# 🌐 **`A-017` episodio 8:** de 3 intentos, uno dio `000` y dos `200` en la misma
+# ráfaga. Sigue vivo desde esta máquina.
+#
+# 🔴 **LA SÉPTIMA LECTURA DE `A-018` NO SE TOMÓ. TERCERA SESIÓN SEGUIDA.** La
+# última sigue siendo la sexta (**09, ~14:45 UTC**). La 60 la recomendó dos veces y
+# las dos veces la tapó otra cosa; hoy la tapó el paso 8. 🔑 **Ya no es un descuido,
+# es un patrón** — y el patrón es exactamente lo que la 60 predijo al cruzar de
+# paso: `T-067` pasó a ser *"un pendiente del paso anterior"*, la categoría de
+# cosas que nadie mira. **`h1` no se provoca, se lee, y solo existe mientras alguien
+# mire.** Son dos números de la consola: `Importe utilizado` y `Costo Acumulado
+# Mensual`.
+#
+# 📍 **DÓNDE SE ARRANCA MAÑANA (paso 8, `T-076`):** sustituir el cuerpo de
+# `judge_grammar` (`app/tools.py:128`) por la llamada real a Claude, con rúbrica.
+# La firma ya es la definitiva; el paso 8 **solo cambia el cuerpo**. El plan de
+# archivos está escrito y sin ejecutar (`tasks.md`, `T-076`).
+# 🚨 **Llevarle los tres hallazgos de arriba ANTES de que escriba el cuerpo**, no
+# después: dos de ellos son fallos mudos, y un fallo mudo no se encuentra probando.
+# ⚠️ **`tests/no_network.py` bloquea la red en TODA la suite (`C-001`)** — los tests
+# nuevos tienen que inyectar un cliente falso, no llamar a Claude de verdad. Lo
+# cazaron ellos solos y está bien cazado.
+# 🌙 **Comprobar si la máquina sigue encendida y POR QUÉ** (ver arriba). Si nadie la
+# encendió, eso es lo primero del día y no `T-076`.
 # 🔴 **PENDIENTE DEL PASO 7 QUE SIGUE TENIENDO RELOJ: la séptima lectura de
-# `A-018`.** La última es la sexta (**09, ~14:45 UTC**); hoy no se tomó. Son dos
-# números de la consola —`Importe utilizado` y `Costo Acumulado Mensual`— y es lo
-# único que puede desbloquear `T-067`.
+# `A-018`.** Tres sesiones seguidas sin tomarse. Es lo único que puede desbloquear
+# `T-067`.
 # 🔴 **`T-067`** (coste proyectado, con las **tres** tarifas separadas y bajo el
 # régimen de la ventana) **cuelga de `h1`**: que `Importe utilizado` deje de marcar
 # `0,00`. **Eso no se provoca, se espera y se lee** — el experimento del umbral
