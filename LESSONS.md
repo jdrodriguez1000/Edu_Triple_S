@@ -3798,3 +3798,77 @@ y lo cierto:
 📌 Y no todo hueco hay que taparlo: aquí se decidió **no** arreglarlo —el
 contenedor es desechable y la llave entra en el paso 8—. La disciplina no era
 registrarlo, era **no llamarlo registrado**.
+
+---
+
+### LM.24 — En un archivo que crece por enmiendas, lo más viejo se queda arriba
+
+**Sesión 59.** La otra terminal propuso arrancar el día por `T-060b`. Estaba
+**cerrada desde hacía dos días**. No fue un despiste: la tabla *"lo que sigue vivo
+en esta entrada"* de `[A-014]`, en `assumptions.md:1207`, seguía nombrándola.
+
+Esa tabla se escribió el **07**. `T-060b` se cerró el **08**. Y la entrada de
+`[A-014]` **ha encogido tres veces** — cada encogimiento escrito, correctamente,
+como un bloque nuevo **debajo**. La respuesta buena estaba treinta líneas más
+abajo, en la misma entrada, diciendo con toda claridad cuál era la pata que
+quedaba.
+
+🔑 **El archivo crece hacia abajo y el ojo entra por arriba.** Un historial que
+solo añade deja lo más rancio en el sitio de más autoridad: la primera pantalla.
+
+⚠️ **Y esto NO es `LM.20`.** Conviene no confundirlas, porque el arreglo es
+distinto:
+
+| lección | qué pasa con lo cierto | por qué falla |
+|---|---|---|
+| `LM.20` | está escrito y **nadie llega** | el archivo es tan largo que la corrección se pierde |
+| **`LM.24`** | está escrito, **y se llega antes a lo falso** | lo viejo ocupa el sitio que se lee primero |
+
+En `LM.20` el remedio es que alguien alcance el texto bueno. Aquí no sirve:
+**se leyó el archivo correcto, la entrada correcta, y aun así salió el dato
+malo.** El remedio es otro — **cuando una entrada encoja, encoge la cabecera**,
+no solo añadas el bloque nuevo. Si la tabla de arriba dice qué falta, es ella la
+que hay que tachar.
+
+📌 Y el olfato que lo caza es barato: **una tabla de "lo que falta" con fecha más
+vieja que la última enmienda es sospechosa por construcción.**
+
+🔗 Es el bicho de la sesión 33 —la misma cosa escrita en dos sitios diciendo
+cosas contrarias— cuando los dos sitios **son el mismo archivo**. Y de la 54 y la
+57 —*el resumen es peor que el documento*— cuando el "resumen" es simplemente lo
+que está más arriba.
+
+---
+
+### LM.25 — «Lo abrí, luego lo sé» es una calma más difícil de romper que «no lo abrí»
+
+**Sesión 59, y es mía.** Ayer la lección fue *no prescribas sobre un archivo que
+no has leído* — había pedido comprobar algo que el código ya hacía. Hoy abrí el
+archivo. Y me equivoqué igual.
+
+Dije que un usuario inventado cuenta como intento fallido **por `api.py:482`**.
+Había leído esa línea y su comentario, que lo dice con todas las letras. Lo que
+no miré fue **qué rama toma un nombre bien formado**: no pasa por ahí. Llega a
+`accounts.verify`, que **devuelve `False`** para quien no existe
+(`accounts.py:280`), y el fallo se registra **doce líneas más abajo**.
+
+La conclusión era correcta —cuenta igual, la cuenta de nadie corría riesgo— y
+**la causa estaba una rama al lado**.
+
+🔑 **Leer no es lo mismo que leer el camino que va a tomar tu caso.** Me paré en
+la primera rama que confirmaba lo que ya creía, que es exactamente donde uno deja
+de leer.
+
+⚠️ **Y lo peligroso es la segunda calma.** Formulado por la terminal que
+construye, y es mejor que mi versión:
+
+> *«No lo abrí» se rompe fácil: basta con abrirlo. «Lo abrí, luego lo sé» ya
+> viene con su propia prueba de diligencia encima, y esa no se cuestiona.*
+
+🔗 Es el mecanismo de `LM.15` (*nadie audita un verde*) aplicado al acto de leer,
+y el pariente exacto de `L-034` en TEAPP: **la cicatriz de haber auditado un
+bloque avala también las líneas que se añaden después.** Haber leído un archivo
+avala también las ramas que no leíste de él.
+
+📌 El remedio no es leer más: es **preguntarle al archivo por tu caso concreto**
+—*¿por dónde pasa `noexiste7`?*— en vez de por el mecanismo en general.

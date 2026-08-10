@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-09 (sesión 58, segunda del día)
+**Última actualización:** 2026-08-10 (sesión 59)
 
 ---
 
@@ -382,22 +382,98 @@
 # quedó anotado dentro de `L-034` con su control al lado, y **comprobado por mí tras
 # el cierre: `[LM.13]` = 2, `[L-013]` = 0.**
 #
-# 🔴 **LO ÚNICO VIVO Y CON FECHA DE CADUCIDAD: `T-074`, HOY A LAS 23:00 UTC
-# (18:00 Colombia).** Consola de AWS abierta, ver la instancia pasar a `stopped`,
-# **apuntar la hora exacta**. Si a las 18:02 sigue en `running`: apagarla a mano, y
-# **eso es un hallazgo, no un contratiempo** — querría decir que el `-P` no dispara
-# y que `T-073` no está cerrada, descubierto con alguien mirando en vez de dentro de
-# tres semanas en la factura. **Es el estreno despierto, y por eso se hizo hoy.**
-# ⏳ **Después, en orden:** (1) **encender la máquina A MANO** al día siguiente —no
-# se enciende sola, es el diseño— y cerrar la otra mitad de `T-074`: marcador vivo,
-# **`200` POR EL NOMBRE** (nunca por la IP: medido el 2026-08-09, `https://<IP>` da
-# `000` **incluso con `-k`** — Caddy solo sirve el nombre que tiene certificado, así
-# que el handshake ni ocurre; **SSH por IP, navegador y `curl` por nombre**, y
-# `curl --resolve` si el DNS parpadea) y certificado sin reemitir; (2) **leer el
-# presupuesto** en las dos lecturas ancladas (12:00 y 23:00 UTC) y mirar de una vez
-# **`Importe previsto`**, la medición gratis que decide si la alarma está rota o solo
-# ciega en un campo; (3) **`T-066`**, dos dispositivos a la vez; (4) **`T-067`**, el
-# coste proyectado, ya con **tres** tarifas separadas y bajo el régimen de la ventana.
+# 🟢 **La 59 (día siguiente) CERRÓ `A-014` ENTERA — la última suposición del paso 7
+# que necesitaba la máquina.** Por la mañana `T-074` completa: **200 POR EL NOMBRE,
+# 10 de 10**, certificado `Aug 8 16:55 → Nov 6 16:55` **SIN reemitir**, `Server:
+# uvicorn` + `Via: 1.1 Caddy`, el 8000 en TIMEOUT y **el marcador de jorge vivo tras
+# el apagado**. Que el certificado no se reemita no es cosmético: Let's Encrypt tiene
+# tope semanal, y una máquina que se apaga cada noche pidiendo certificado nuevo cada
+# mañana se quedaría sin cuota **el jueves, sin que nadie sepa por qué**.
+# 🔑 **EL HALLAZGO DE ESTA TERMINAL FUE PARTIR `A-014` EN DOS MITADES.** Medir que
+# *llega la dirección real* **no es** medir que *se descarta la falsa*, y la segunda
+# es la que aguanta un ataque: si la cabecera forjada colara, quien ataca pone una
+# dirección distinta en cada intento y **el freno no muerde nunca**. Estaba solo
+# **inferida** —`Caddyfile.template:75` no declara `trusted_proxies`—, que es
+# *tenerlo escrito*: `LM.13` con las mismas palabras que ellos usaron al partir
+# `T-060`. Las dos, medidas hoy en el servidor real:
+#   1. Dos aparatos honestos (PC por wifi, celular **con el wifi apagado**) → el log
+#      escribe `181.58.xx.xx` (su casa) y `191.153.xx.xx` (la operadora móvil),
+#      **cada una igual a su `ipify`** y distintas entre sí. ✂️ **Enmascaradas a
+#      propósito: este repo es público y son datos personales** — ver la sesión 42.
+#   2. Cuatro peticiones forjando la cabecera → **ni un solo `9.9.9.9`**. Y las dos
+#      variantes de más —la cadena `9.9.9.9, 8.8.8.8` y `X-Real-IP`— **las añadieron
+#      ellos sin que nadie las pidiera**: descartar solo la forma simple habría
+#      dejado la puerta de al lado sin mirar.
+# 🔑 **Su prueba estaba mejor construida de lo que la contaron, y el matiz lo puso
+# esta terminal:** el cubo agotado no es "un control", es **lo que vuelve visible un
+# fallo mudo**. Si la forja hubiera colado, el origen habría sido un cubo NUEVO y la
+# respuesta **401, sin renglón en el log**. 📌 **El discriminador no era lo que dice
+# el log: era 429 contra 401.**
+# 🎁 **Y el log traía un reloj que nadie estaba usando.** `faltan N s` sale de
+# `login_guard.py:191`, así que despejando se reconstruye **cuándo empezó cada
+# ráfaga**: 899 s a las 15:01:03 → primer fallo **15:01:01**, que cuadra **al
+# segundo** con su narración sin depender de ella. Y por la tarde los dos relojes
+# **convergieron en el mismo instante** (`15:16:01`) por caminos separados hora y
+# cuarto, probando que el cubo era el mismo. → su `L-036`: *antes de citar la
+# narración de quien midió, mira si el instrumento trae su propio reloj.*
+# ⭐ **Lo más fuerte de su informe venía archivado como "apoyo":** el celular gastó
+# **sus propios 5 intentos** cuando el cubo del PC ya estaba agotado. Si la app viera
+# solo a Caddy, el primer toque del celular habría dado 429 en el acto. **Es la misma
+# conclusión por un camino que no pasa por el log** — dos testigos que no comparten
+# instrumento. Subido a hallazgo por decisión suya.
+# 🔬 **`Importe previsto` = `-`, y la medición que llamamos "gratis y decisiva" NO
+# decide nada.** Verificado en la fuente: *"If AWS doesn't have enough data to
+# forecast an 80% prediction interval, Cost Explorer doesn't provide a forecast.
+# **This is common for accounts that have less than one full billing cycle.**"* La
+# cuenta se abrió el 06: la raya es el comportamiento documentado, salga la alarma
+# sana o rota. 🔑 **Es `LM.15` DENTRO de la prueba que diseñamos para escapar de un
+# criterio infalsable.** ✅ Lo que sí aporta es una **fecha**: al cerrar el primer
+# ciclo (~1 de septiembre) esa mitad deja de estar ciega. Antes no sabíamos cuándo.
+# 🐛 **TRES ERRORES MÍOS, los tres cazados por ellos:**
+#   - ⭐ **Propuse un experimento que llevaba CUATRO DÍAS corriendo.** Recomendé
+#     bajar el umbral del presupuesto "para ver el freno morder": ya estaba en
+#     **0,01 US$** desde el día 6, contra 0,37 gastados —**37× cubierto**— y sin un
+#     solo correo. Mi rama *"si no salta en 24 h"* era el presente. Habría destruido
+#     la línea base a cambio de nada. 🔑 Y su aritmética cierra la puerta: **contra
+#     `0,00` no hay umbral positivo posible.** Es `LM.20` otra vez, y mío.
+#   - **Crucé la numeración:** dije *"`T-073` reportada vs vista"* cuando la tarea de
+#     mirar el disparo es **`T-074`**.
+#   - **Leí el archivo y me paré en la rama que me daba la razón** (`api.py:482`).
+#     Un usuario inventado **bien formado** no pasa por `InvalidUserError`: llega a
+#     `accounts.verify`, que **devuelve `False`** (`accounts.py:280`), y cuenta como
+#     fallo en la **494**. La conclusión era buena —cuenta igual, `jorge` no corría
+#     riesgo— **y la causa estaba una rama al lado**: sesión 56 en pequeño.
+# ✅ **Y una que sí cacé yo, antes de aceptar el arranque que proponían:** pidieron
+# empezar por `T-060b`, **cerrada desde el 08** (`tasks.md:72`). No fue despiste: la
+# tabla de `[A-014]` en `assumptions.md:1207` **seguía nombrándola** como lo que
+# faltaba. Esa tabla es del **07** y nunca se encogió. → `LM.24`.
+# 🔴 **`L-035`, de ellos, y nació de una predicción MÍA que falló:** dije que
+# `list-timers` traería `LAST` y `PASSED` llenos. `Persistent=false` —puesto a
+# propósito, con doce líneas de comentario— hace que systemd **no escriba la marca de
+# disparo**, que es justo el archivo que `list-timers` lee. **La pregunta no sale mal
+# contestada: no hay dónde contestarla.** El testigo bueno estaba en el journal, y
+# ahí apareció la cadena entera con `[D-045]` dentro.
+# 📐 **CORRECCIÓN SUYA SOBRE EL PAPEL DE ESTA TERMINAL, y es del reparto:** *"esta
+# terminal no prueba ni ejecuta; asesora a la otra sobre lo que se debe hacer"*.
+# Llegó cuando escribí *"yo lanzo los seis intentos de mi lado"* — eso era trabajo de
+# la otra terminal, no supervisión. ⚠️ **Queda una pregunta abierta que hice y no se
+# contestó:** si medir **desde fuera** sin tocar el servidor (`curl`, `nslookup`,
+# `openssl`) entra en supervisar o también sobra. Importa porque es lo que cazó cosas
+# en las sesiones 42, 55, 57 y hoy mismo el certificado. **Preguntarlo al abrir.**
+# 📌 **Y una lección de trato, no de método:** a mitad de sesión dijo *"no entiendo
+# nada de lo que estás buscando"*. Tenía razón — le había dado el procedimiento sin
+# contarle **qué se quería averiguar y por qué**. El curso dice *concepto antes que
+# código*, y llevaba tres mensajes al revés.
+#
+# 🔴 **LO ÚNICO VIVO, y NO depende de nosotros: `T-067`** (coste proyectado, con las
+# **tres** tarifas separadas y bajo el régimen de la ventana). Cuelga de **`h1`**:
+# que `Importe utilizado` deje de marcar `0,00`. **Eso no se provoca, se espera y se
+# lee** — el experimento del umbral quedó descartado por medición, no por pereza.
+# ⏳ **Las dos lecturas ancladas siguen siendo el ritual:** 12:00 y 23:00 UTC.
+# 🌙 La máquina se apaga sola a las 23:00 UTC y **se enciende A MANO**: no se enciende
+# sola a propósito, para que el olvido caiga del lado que no cobra (`D-045`).
+# 📅 **Fecha que ya está puesta: ~1 de septiembre**, cuando cierre el primer ciclo de
+# facturación y `Importe previsto` deje de ser estructuralmente ciego.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -10749,6 +10825,36 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   tranquiliza y ya no lo mira nadie.** La pregunta que queda: leer el comentario y
   preguntarle a la comprobación *"¿te pondrías roja en el caso que este comentario
   acaba de describir?"*.
+- **Propuse encender un experimento que llevaba cuatro días corriendo** (sesión 59,
+  mío). Recomendé bajar el umbral del presupuesto *"para ver el freno morder"*:
+  llevaba en **0,01 US$ desde el día 6**, contra 0,37 gastados y sin un solo correo.
+  Mi rama *"si no salta en 24 h, el campo está clavado en 0"* **era el presente**.
+  → Es `LM.20` (la respuesta ya estaba escrita y nadie la alcanzó) con un agravante:
+  el coste no era solo perder el tiempo, era **destruir la línea base** y añadir una
+  tarea con caducidad. 🔑 Y lo que lo mataba era aritmética, no configuración:
+  **contra `0,00` no hay umbral positivo que dispare.**
+- **Abrí el archivo, leí una rama y la llamé el mecanismo** (sesión 59, mío). Dije
+  que un usuario inventado cuenta como fallo *por `api.py:482`*. Un nombre **bien
+  formado** no pasa por ahí: `accounts.verify` **devuelve `False`** para quien no
+  existe (`accounts.py:280`) y el fallo se registra en la **494**. La conclusión era
+  correcta y la causa estaba **una rama al lado** — sesión 56 en pequeño.
+  📌 **Y es de segundo orden respecto a ayer:** ayer la lección fue *no prescribas
+  sobre un archivo que no abriste*. Hoy resulta que abrirlo no basta. Suyo, y es la
+  mejor formulación: *«no lo abrí» se rompe fácil; «lo abrí, luego lo sé» no.*
+- **Una tabla que nunca se encogió mandó a hacer una tarea cerrada** (sesión 59).
+  Propusieron arrancar por `T-060b`, **cerrada el 08**; la tabla de `[A-014]` en
+  `assumptions.md:1207` seguía nombrándola como lo que faltaba. Esa tabla es del
+  **07**: la entrada encogió tres veces y **cada encogimiento se escribió como un
+  bloque nuevo DEBAJO**. → **En un archivo que crece por enmiendas, el texto más
+  viejo se queda arriba, que es donde cae el ojo primero.** No es `LM.20` (allí lo
+  cierto está escrito y nadie lo alcanza): aquí **sí se alcanza, primero, y es
+  falso**. → `LM.24`
+- **Predije la salida de un instrumento que la pieza tenía apagado** (sesión 59,
+  mío). Dije que `list-timers` traería `LAST` y `PASSED` llenos; con
+  `Persistent=false` systemd **no escribe la marca de disparo**, que es el archivo
+  que `list-timers` lee. → Suyo, `L-035`: **un ajuste que apaga la memoria de una
+  pieza apaga también los instrumentos que la leen, y eso no aparece en el
+  comentario que justifica el ajuste.**
 - **`Juan` y `juan`: una persona en Windows, dos en Linux** (sesión 33, análisis
   previo del paso 4). Si un nombre escrito por el usuario se vuelve un nombre de
   archivo sin normalizar, el marcador se parte en dos al desplegar — **sin ningún
