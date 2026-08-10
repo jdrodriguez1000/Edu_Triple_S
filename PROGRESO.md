@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-10 (sesión 59)
+**Última actualización:** 2026-08-10 (sesión 60)
 
 ---
 
@@ -465,15 +465,96 @@
 # contarle **qué se quería averiguar y por qué**. El curso dice *concepto antes que
 # código*, y llevaba tres mensajes al revés.
 #
-# 🔴 **LO ÚNICO VIVO, y NO depende de nosotros: `T-067`** (coste proyectado, con las
-# **tres** tarifas separadas y bajo el régimen de la ventana). Cuelga de **`h1`**:
-# que `Importe utilizado` deje de marcar `0,00`. **Eso no se provoca, se espera y se
-# lee** — el experimento del umbral quedó descartado por medición, no por pereza.
+# 🚦 **La 60 (segunda del mismo día) CRUZÓ AL PASO 8, y la objeción que lo movió
+# fue SUYA, no de una revisión:** *"sentimos que invertimos mucho tiempo y no
+# hemos podido avanzar"*. 📊 **Se contó en vez de recordarse** (regla 6, sobre el
+# índice de `progress.md`): pasos **0–6 = 12 sesiones / 3 días**; **paso 7 solo =
+# 22 sesiones / 6 días**. Un paso costó casi el doble que los otros siete juntos.
+# La sensación estaba **bien calibrada** y llevaba veintidós sesiones sin
+# instrumento — ningún control del proyecto miraba el conjunto, todos miraban
+# hacia dentro de la sesión. → su `L-037`: **el andamio se volvió el trabajo.**
+# 🔑 **El argumento que decide apunta al revés de lo que parecía:** hay HTTPS,
+# identidad verificada, cuota por persona y apagado automático montados **encima
+# de un tutor que sigue siendo el maniquí del paso 1**. Cada día de pulido del
+# paso 7 compra robustez para algo que todavía no hace aquello para lo que existe.
+# ✅ **Y se cruzó bien:** `D-048` deja `T-046`, `T-067`, `T-069` y `T-070` abiertas
+# **una a una con su motivo y su dueño** —`T-069` con fecha tope ≈ 2026-09-01 y su
+# precio escrito aparte en `A-023`—, y corrige un error de su propia sesión
+# (`T-069` **no** bloqueaba el paso 8; lo único que bloqueaba era `T-056`, de dos
+# minutos). 📌 **`D-047` trae un hallazgo de verdad:** reutilizar
+# `teapp.duckdns.org` en la máquina del ensayo **no es mala idea, es imposible** —
+# Let's Encrypt iría a validar el nombre y llamaría a la máquina vieja, y el guion
+# se para en `install.sh:378`.
+# 🔴 **PERO EL CIERRE METIÓ UNA AFIRMACIÓN FALSA EN EL ARCHIVO, y es el hallazgo
+# de método del día.** El resumen decía *"no hace falta encenderla a mano, el
+# apagado y encendido ya son automáticos (`[D-045]`/`[D-046]`)"* — y `D-045` dice
+# **lo contrario y a propósito**: encendido MANUAL, *para que el olvido caiga del
+# lado que no cobra*. Contradicho también por `console_steps.md:416` (*"no se
+# enciende sola"*). ⚙️ **Y no hace falta abrir ningún archivo para verlo: nada
+# dentro de la máquina puede encenderla, porque apagada no hay nada dentro
+# corriendo.** El daño era de mañana y medible: `T-056` exige SSH a la máquina
+# viva, y el campo que se lee primero decía que no había que encenderla.
+# ✂️ **Corregido y verificado desde esta terminal** (`37d92cf`, en `origin/main`,
+# con `00b2365` intacto debajo): estaba en **tres sitios**, no en uno — se había
+# replicado dentro del propio texto del closer. Barrido propio: la única mención
+# viva es la correcta; las otras dos viven citadas dentro de `L-038` como lo que
+# estuvo mal. Y el campo quedó **con el porqué dentro**, no solo con el aviso — sin
+# la asimetría escrita, dentro de dos semanas alguien lo lee, le parece un
+# descuido y **construye la pieza que lo automatiza**.
+# 🔑 **`LM.26`, y el filo lo puso la otra terminal: la DIRECCIÓN del error es el
+# diagnóstico.** Lo inventado fue **la versión cómoda** —*"no hace falta hacer
+# nada"*—, nunca la incómoda. **Una frase que no le pide nada al lector no ofrece
+# resistencia mientras se escribe.** Es la cuarta vez en siete sesiones (54, 57,
+# 58, 60) que el resumen sale peor que el documento, y la primera que **entra al
+# archivo** en vez de quedarse en la voz — con dos corchetes al lado que no venían
+# de ninguna parte: **se le pegaron después, como armadura.**
+# 📐 **Causa estructural, suya y buena:** el `session-closer` arranca en frío y
+# reconstruye del `git diff`. Pero **un `diff` no puede decir si una máquina está
+# encendida.** Regla que queda: el closer describe lo que el diff respalda y manda
+# al Paso 5b; **no afirma estado del mundo.**
+# ⚠️ **Dos cosas que añadí y conviene no perder.** (1) **Yo no lo cacé leyendo su
+# documento**: chocaba con `D-045`, que tenía en la cabeza porque el protocolo de
+# inicio me lo puso delante tres horas antes. **Si abro el día por otro lado, la
+# frase pasa** — eso no es un control, es una coincidencia que salió bien.
+# (2) **`L-038` no tiene control y su propia `L-026` dice que la disciplina se
+# degrada con la repetición** — pero el control obvio (buscar frases como *"no
+# hace falta"*) sería **peor**: enseñaría a esquivar las palabras, no la
+# afirmación, que es el bicho de la sesión 58. Se queda como disciplina **y se
+# anota como desprotegida**.
+# ✅ **Y se contestó la pregunta que quedó abierta ayer sobre el reparto:**
+# **medir desde fuera SÍ es supervisar.** `curl`, `nslookup`, `openssl` y leer sus
+# repos entran; **probar y ejecutar, no.** Con eso, lo medido hoy aquí: 200 por el
+# nombre (4 de 5), `Server: uvicorn` + `Via: 1.1 Caddy`, `/me` → 401, el 8000 en
+# TIMEOUT, certificado `Aug 8 → Nov 6` **todavía sin reemitir** tras la primera
+# noche de apagado, y `A-017` **episodio 7** (un `000` y cuatro `200` en la misma
+# ráfaga, desde esta máquina).
+# 🔴 **LO QUE SE CAYÓ POR EL BORDE HOY, y hay que recogerlo mañana: la SÉPTIMA
+# lectura de `A-018` no se tomó.** La última es la sexta, del **09 ~14:45 UTC**.
+# Se recomendó dos veces y las dos veces la tapó otra cosa. ⚠️ **Y ahora tiene un
+# enemigo nuevo:** al cruzar al paso 8, `T-067` pasa a ser *"un pendiente del paso
+# anterior"* — la categoría de cosas que nadie mira. `h1` **no se provoca, se lee**,
+# y solo existe mientras alguien mire.
+#
+# 📍 **DÓNDE SE ARRANCA MAÑANA (paso 8, `T-056`):** poner `TEAPP_REGISTRATION_OPEN`
+# explícito en la nube y comprobar que `create_account.py` corre allí. Dos minutos.
+# 🌙 **PRIMERO HAY QUE ENCENDER LA MÁQUINA A MANO, en la consola de AWS.** Se apaga
+# sola a las 23:00 UTC y **no se enciende sola a propósito**, para que el olvido
+# caiga del lado que no cobra (`D-045`). `T-056` necesita SSH: sin encenderla, no
+# hay nada que hacer. ⚠️ Es justo la frase que el cierre de hoy había puesto al
+# revés — ver arriba.
+# 🔴 **PENDIENTE DEL PASO 7 QUE SIGUE TENIENDO RELOJ: la séptima lectura de
+# `A-018`.** La última es la sexta (**09, ~14:45 UTC**); hoy no se tomó. Son dos
+# números de la consola —`Importe utilizado` y `Costo Acumulado Mensual`— y es lo
+# único que puede desbloquear `T-067`.
+# 🔴 **`T-067`** (coste proyectado, con las **tres** tarifas separadas y bajo el
+# régimen de la ventana) **cuelga de `h1`**: que `Importe utilizado` deje de marcar
+# `0,00`. **Eso no se provoca, se espera y se lee** — el experimento del umbral
+# quedó descartado por medición, no por pereza.
 # ⏳ **Las dos lecturas ancladas siguen siendo el ritual:** 12:00 y 23:00 UTC.
-# 🌙 La máquina se apaga sola a las 23:00 UTC y **se enciende A MANO**: no se enciende
-# sola a propósito, para que el olvido caiga del lado que no cobra (`D-045`).
-# 📅 **Fecha que ya está puesta: ~1 de septiembre**, cuando cierre el primer ciclo de
-# facturación y `Importe previsto` deje de ser estructuralmente ciego.
+# 📅 **Dos fechas ya puestas:** **~1 de septiembre**, cuando cierre el primer ciclo
+# de facturación y `Importe previsto` deje de ser estructuralmente ciego; y
+# **≈2026-09-01 como tope de `T-069`**, el ensayo de reconstrucción aplazado hoy
+# con dueño de calendario (`D-048`, `A-023`).
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -10855,6 +10936,18 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   que `list-timers` lee. → Suyo, `L-035`: **un ajuste que apaga la memoria de una
   pieza apaga también los instrumentos que la leen, y eso no aparece en el
   comentario que justifica el ajuste.**
+- **Una afirmación que no venía de ninguna parte, con corchetes puestos después**
+  (sesión 60). El cierre escribió en `progress.md` —campo `siguiente acción`, el
+  primero que se lee al abrir— que *"no hace falta encenderla a mano, el apagado y
+  encendido ya son automáticos `[D-045]`/`[D-046]`"*. **`D-045` dice lo contrario
+  y a propósito.** No fue una cita mal numerada como la de la sesión 58: **la
+  frase se fabricó al comprimir**, y los identificadores se le pegaron encima como
+  armadura. Estaba en **tres sitios**, replicada dentro del propio texto del closer.
+  🔑 **La dirección del error es el diagnóstico:** lo inventado fue *la versión
+  cómoda* —"no hace falta hacer nada"—, nunca la incómoda. **Una frase que no le
+  pide nada al lector no ofrece resistencia mientras se escribe.** → `LM.26`.
+  📌 Y no hacía falta abrir ningún archivo para verlo: **nada dentro de la máquina
+  puede encenderla, porque apagada no hay nada dentro corriendo.**
 - **`Juan` y `juan`: una persona en Windows, dos en Linux** (sesión 33, análisis
   previo del paso 4). Si un nombre escrito por el usuario se vuelve un nombre de
   archivo sin normalizar, el marcador se parte en dos al desplegar — **sin ningún

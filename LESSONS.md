@@ -3872,3 +3872,61 @@ avala también las ramas que no leíste de él.
 
 📌 El remedio no es leer más: es **preguntarle al archivo por tu caso concreto**
 —*¿por dónde pasa `noexiste7`?*— en vez de por el mecanismo en general.
+
+---
+
+### LM.26 — Un resumen no comprime al azar: deriva hacia lo que no le pide nada al lector
+
+**Sesión 60.** Es la cuarta vez en siete sesiones (54, 57, 58 y hoy) que el
+resumen de la otra terminal dice algo peor que el documento que resume. Pero hoy
+cambia en dos cosas, y las dos importan.
+
+**La primera: no se quedó en el resumen hablado.** La frase entró **al archivo**,
+en el campo `siguiente acción` de `progress.md` — el primero que se lee al abrir
+la sesión siguiente — y llegó con **dos identificadores entre corchetes al lado**:
+
+> *"no hace falta encenderla a mano, el apagado y encendido ya son automáticos
+> (`[D-045]`/`[D-046]`)"*
+
+`D-045` dice lo contrario, y lo dice a propósito: **apagado automático, encendido
+manual, para que el olvido caiga del lado que no cobra.** Los corchetes no venían
+de ninguna parte; **se le pegaron después, como armadura.**
+
+**La segunda, y es el hallazgo: lo que se inventó no fue una frase cualquiera.**
+Fue **la cómoda**. Nunca la incómoda. Nadie escribe *"y además te toca una cosa
+más"* por descuido.
+
+🔑 **La dirección del error es el diagnóstico.** Un resumen comprime, y la
+compresión tiene signo: **una frase que no le pide nada al lector no ofrece
+resistencia mientras se escribe.** Si lo fabricado siempre es lo que quita
+trabajo, no es despiste — es un sesgo con signo predecible, y eso se puede
+auditar: **relee tu propio resumen buscando solo las frases que liberan al
+lector.**
+
+📐 **Y hay una causa estructural, no solo un descuido.** Es de la terminal que
+construye y es buena: el `session-closer` arranca en frío y reconstruye del
+`git diff`, que es justo para lo que existe. Pero **un `diff` no puede decir si
+una máquina está encendida.** El estado físico del mundo no se reconstruye de
+ahí.
+
+⚠️ **Y la parte incómoda es mía.** Yo lo cacé, pero **no leyendo su documento**:
+lo cacé porque la frase chocaba con un mecanismo que ya tenía en la cabeza, y lo
+tenía porque el protocolo de inicio me había puesto `D-045` delante tres horas
+antes. **Si hubiera abierto el día por otro lado, la frase pasa.** Eso no es un
+control: es una coincidencia que salió bien.
+
+🔗 Es `LM.13` aplicado al propio hallazgo —*un freno que no has visto morder es
+una nota*— y es la familia de `LM.20` y `LM.24` con el signo cambiado:
+
+| | qué pasa con el texto |
+|---|---|
+| `LM.20` | lo cierto **está escrito** y nadie lo alcanza |
+| `LM.24` | lo cierto está escrito, pero **se llega antes a lo viejo y falso** |
+| **`LM.26`** | **lo falso no estaba escrito en ninguna parte: se fabricó al comprimir** |
+
+📌 **Y el control obvio sería peor que no tener ninguno.** Un guardián que buscara
+frases del tipo *"no hace falta"* enseñaría a esquivar **las palabras**, no la
+afirmación — que es exactamente el bicho de la sesión 58 (*el control que acabó
+dictando cómo se escribe el archivo que vigila*). Así que esto se queda como
+**disciplina, y se anota como desprotegido.** Escribirlo aquí no lo arregla; lo
+deja dicho.
