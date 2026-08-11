@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-10 (sesión 61)
+**Última actualización:** 2026-08-10 (sesión 62)
 
 ---
 
@@ -628,6 +628,127 @@
 # de facturación y `Importe previsto` deje de ser estructuralmente ciego; y
 # **≈2026-09-01 como tope de `T-069`**, el ensayo de reconstrucción aplazado hoy
 # con dueño de calendario (`D-048`, `A-023`).
+#
+#
+# 🔬 **La 62 (CUARTA del mismo día) fue de SUPERVISIÓN a cuatro tiempos: se
+# auditó la otra terminal cuatro veces seguidas, y de cada auditoría salió código
+# suyo el mismo día.** Aquí no se escribió una línea de programa. TEAPP pasó de
+# **362 a 381 tests** en cuatro commits (`671e703`, `9d7e076`, `8d335fd`,
+# `d699bf5`), y `T-076` cierra el día honestamente en 🔄, no en ✅.
+# 🟢 **LA SÉPTIMA LECTURA DE `A-018` SE TOMÓ POR FIN**, después de tres sesiones
+# tapándose: `Importe utilizado` **0,00** (quinta seguida), `Importe previsto`
+# **—**, `Costo Acumulado Mensual` **0,74 US$**.
+# 🔴 **Y con ella muere la coartada del retraso.** El `0,00` viene del día 6: son
+# cuatro días y ~doce refrescos del presupuesto sin moverse un céntimo, mientras
+# el otro widget subía. Un retraso se mide en horas. ⚠️ **Ojo con la conclusión:**
+# esto **no** prueba que la alarma esté rota — prueba que el presupuesto evalúa
+# algo que no es el gasto real. Si evalúa su propio `0,00`, la alarma funciona
+# perfectamente sobre un dato falso, que es peor. El umbral lleva en **0,01 US$**
+# desde el día 6: va **74 veces cubierto** y no ha sonado.
+# 🔑 **EL HALLAZGO DEL DÍA ES QUE `T-067` NUNCA NECESITÓ `h1`.** Llevaba días
+# bloqueada esperando que `Importe utilizado` dejara de ser `0,00` — colgando del
+# instrumento roto **teniendo el bueno al lado**. Dos lecturas fechadas del
+# `Costo Acumulado Mensual` son un ritmo: `0,74 − 0,37 = 0,37 US$` en 28,2 h →
+# `0,0131 US$/h` → **≈ $57 de los $200 en seis meses**, y menos aún bajo la
+# ventana de `D-045`. 📌 **Lo mejor de esa cuenta es lo que NO lleva dentro:** ni
+# el precio de la `t3.micro`, ni el del disco, ni el de la IP. **No usa ninguna
+# lista de precios**, así que no puede equivocarse por heredar un número de mi
+# memoria. Solo dos números leídos en pantalla y un reloj. **Los seis meses caben,
+# y sobra.**
+# ✅ **`D-046` disparó anoche (segunda noche) y la máquina la encendió él.** La
+# duda que dejé abierta ayer queda cerrada con dato, no con "seguramente".
+#
+# 🚨 **LOS TRES HALLAZGOS DE `claude-opus-5` LLEGARON ANTES DE QUE ESCRIBIERAN EL
+# CUERPO**, que era el punto: dos eran fallos mudos, y un fallo mudo no se
+# encuentra probando. (1) El pensamiento viene **encendido por defecto** y
+# `max_tokens` limita pensamiento + respuesta **juntos** → pusieron 1000, no 200.
+# (2) `stop_reason: "refusal"` deja `content` vacío. (3) ✏️ **El tercero resultó
+# NO aplicar, y lo corregí yo:** el caché muerde desde 512 tokens, pero la rúbrica
+# pesa 678 caracteres ≈ **170 tokens**. Por debajo del mínimo el caché **no avisa,
+# simplemente no cachea**. Mi nota les habría hecho añadir un `cache_control`
+# inútil.
+# 🔴 **AUDITORÍA 1 — el reloj que faltaba, y el aviso lo habían escrito ellos.**
+# El cliente se construía sin `timeout`, y el del SDK de Python son **DIEZ
+# MINUTOS**. `api.py:130`, escrito el **4 de agosto**, decía literal: *"en el paso
+# 8 la llamada al modelo necesita SU PROPIO timeout... este 504 devuelve el
+# control a quien pregunta y deja el hilo secuestrado igual"*. Y el comentario de
+# `MAX_RETRIES = 0` razonaba **tres veces** sobre los 10 s de `A-011` — quitaron
+# los reintentos para caber en un presupuesto de tiempo **que nunca se puso**.
+# → `timeout=8.0` (`D-054`). Es `LM.20` por quinta vez, con la vuelta más dura:
+# la razón estaba escrita, por ellos, en el archivo de al lado, con sirena.
+# ✏️ **AUDITORÍA 2 — su arreglo fue MEJOR que el mío, y el mío tenía un defecto.**
+# Yo propuse `request_sent = (stop_reason != "refusal")`. Eso **regala cuota**: un
+# rechazo a *mitad* sí factura lo generado. Ellos añadieron `and not content` y
+# escribieron los **dos** tests —mismo `stop_reason`, decisión contraria—. Es la
+# partición de `A-014` aplicada a un booleano: *"un rechazo"* no era una cosa.
+# 🔬 **AUDITORÍA 3 — pero `content` seguía siendo un PROXY, y tenía agujero real.**
+# El dato está en la respuesta: `usage.input_tokens` / `usage.output_tokens`. Y sin
+# streaming —que es como llama `judge_grammar`— un rechazo a mitad **omite el
+# parcial**: llega con `content` vacío, calcado por fuera al rechazo gratis, con
+# los tokens pagados. Se devolvía cuota justo donde `D-051` manda cobrar.
+# → `D-055`, verificado en rojo por sabotaje. 🔑 **Un proxy no puede separar dos
+# casos que tienen la misma forma.** 🎁 Y lo mejor del día es de ellos: `FakeUsage`
+# **viene facturado por defecto**, así que una respuesta gratis tiene que escribir
+# los ceros a propósito — la regla 3 metida en el valor por defecto.
+#
+# 🐛 **EL EPISODIO DE LA CITA, Y ES DE LOS DOS.** Yo escribí *"es su propia
+# `L-036`: antes de inferirlo, mira si el instrumento trae su propio contador"*.
+# **El puntero era correcto** —la regla vive en `lessons.md:334-335`, dentro de
+# `L-036`—; **lo que derivó fue mi paráfrasis**: la suya habla de *la narración* y
+# de *un reloj*, la mía de *inferir* y de *un contador*. Misma familia, regla
+# distinta, y la presenté como frase suya.
+# 🔴 **Ellos fueron a comprobarlo, leyeron 13 líneas de 119, vieron que el título
+# hablaba de otra cosa y escribieron en `lessons.md` que la cita era falsa.** La
+# regla estaba 90 líneas más abajo, en la misma entrada. Su frase suya: *el gesto
+# de abrir el archivo se sintió igual que haber comprobado* — y bastó para retirar
+# una cita buena y poner una afirmación falsa **dentro del párrafo escrito para
+# denunciar exactamente eso**. Corregido el mismo día (`d699bf5`).
+# 🔑 **Lo estructural, que vale más que las dos correcciones: `L-036` lleva CUATRO
+# hallazgos bajo un solo título.** El corchete no dice a cuál se refiere, así que
+# no se puede verificar sin leer los cuatro. Es medio puntero — lo mismo que ellos
+# me dijeron en la 58 cuando mandé un antepasado al repo equivocado. Las citas a
+# entradas largas tienen que nombrar el hallazgo: `[L-036, el reloj del log]`.
+# ⚠️ **Y el control nuevo de `L-040` no habría cazado el error de hoy.** Dice *"se
+# busca la frase"* — pero yo no cité, **parafraseé**: buscar mis palabras en
+# `L-036` daba cero resultados y la conclusión habría sido la misma. **Cuarta cara
+# del bicho de la 58: un control que mide algo distinto de lo que promete.**
+#
+# 🚨 **CASI SE CIERRA SIN COMMIT, y lo cacé mirando el árbol.** Su informe daba la
+# sesión por cerrada con `D-055`, `L-040`, `tokens_billed` y `FakeUsage`
+# "registrados" — y `git status` traía **cinco archivos modificados y ningún
+# commit**. `git show HEAD:app/tools.py` seguía teniendo el proxy. ⚠️ **Y no es
+# cosmético: su `session-starter` arranca en frío y reconstruye del `git diff`**,
+# así que un trabajo sin commit **no existe para su protocolo de mañana**.
+# 📐 **`L-029` por tercera vez esta semana, y la causa es MÍA.** Tres hallazgos
+# buenos llegaron con su sesión ya cerrada de hecho. Llevo el día auditando
+# *después* de su commit, así que el hallazgo nace huérfano porque yo lo entrego
+# cuando ya no hay sesión donde meterlo. **El arreglo no es documental, es de
+# horario: auditar con su sesión abierta.** Eso me toca a mí.
+# 💰 **CUATRO BOLSILLOS, y hoy se separaron para que nadie los vuelva a sumar:**
+# (1) AWS —IP + EC2 + disco—, con alarma; (2) **la llave de la API de Anthropic
+# (`T-075`), SIN TOPE CONOCIDO**; (3) la **suscripción de Claude Code**, que avisó
+# de límite mensual y es **el taller, no la obra** —no entra en `A-018` ni en
+# `T-067`—; y el presupuesto de AWS como instrumento aparte. → `A-024` y **`T-080`
+# bloqueante de `T-079`**: mirar si la llave admite tope **antes** de que `T-079`
+# empiece a llamar en bucle. Es `LM.13` con nombre nuevo: un freno que no existe no
+# es un freno flojo, es que no está. 📌 **Su versión es mejor que la mía:** yo dije
+# *"mira si admite tope"*; ellos escribieron la rama del **no** —contador de
+# llamadas y corte duro dentro del guion—, así que hay freno pase lo que pase.
+#
+# 📍 **DÓNDE SE ARRANCA MAÑANA (paso 8):** `app/api.py` es lo único que le falta a
+# `T-076` — cazar `TutorUnavailableError`, mirar `request_sent` y llamar a
+# `quota.refund()`. **La excepción ya viaja con el dato correcto y está probada;
+# hoy nadie la atrapa, así que la cuota no se devuelve nunca.** Después `T-077`,
+# `T-078`, `T-079`.
+# 🚨 **`T-080` va ANTES que `T-079`**, y `T-079` es la que empieza a gastar de
+# verdad con la llave.
+# 📐 **Y lo mío: auditar mientras su sesión está ABIERTA.** Tres días seguidos
+# entregando hallazgos huérfanos es un patrón, no mala suerte.
+# 🔴 **`T-067` YA SE PUEDE CERRAR** con la aritmética de arriba: no necesita `h1`,
+# necesita dos lecturas fechadas del `Costo Acumulado Mensual`, y ya las hay.
+# ⏳ **El ritual sigue:** lecturas ancladas a las 12:00 y 23:00 UTC.
+# 📅 **Las dos fechas siguen puestas:** ~1 de septiembre (cierra el primer ciclo y
+# `Importe previsto` deja de estar ciego) y ≈2026-09-01 como tope de `T-069`.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
