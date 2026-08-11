@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-10 (sesión 62)
+**Última actualización:** 2026-08-11 (sesión 63)
 
 ---
 
@@ -749,6 +749,140 @@
 # ⏳ **El ritual sigue:** lecturas ancladas a las 12:00 y 23:00 UTC.
 # 📅 **Las dos fechas siguen puestas:** ~1 de septiembre (cierra el primer ciclo y
 # `Importe previsto` deja de estar ciego) y ≈2026-09-01 como tope de `T-069`.
+#
+#
+# 🔬 **La 63 fue de SUPERVISIÓN PURA, y el rol quedó dicho por él al abrir:**
+# *"esta terminal audita, supervisa, recomienda y analiza; en ningún caso ejecuta
+# el proyecto"*. Aquí no se escribió una línea de programa. TEAPP pasó de **381 a
+# 387 tests** en **cinco commits** (`1365ed1`, `ae2e981`, `e6fa6c4`, `dadbe75`,
+# `5187a1c`), y el paso 8 cerró **`T-080`, `T-076`, `T-077` y `T-079`**. Las dos
+# suposiciones más viejas del paso 4 se resolvieron el mismo día: **`A-010`
+# muerta** (`D-058`) y **`A-011` encogida** tras haberse retirado mal.
+# 🔴 **AUDITORÍA DE APERTURA — el arranque que proponían venía con un dato falso.**
+# Decían *"`T-080` es lo primero, y bloquea todo lo demás"*. Su propio
+# `tasks.md:92` dice **«Bloqueante de `T-079`»**, y solo de esa. El resumen hablado
+# lo ensanchó. **Quinta vez en ocho sesiones** que el resumen sale peor que el
+# documento (54, 57, 58, 60, hoy).
+# 🚨 **Y lo que el resumen NO decía era el agujero:** `app/api.py` no importaba
+# `TutorUnavailableError`, así que caía en el `except Exception` genérico → **500
+# mudo y la práctica cobrada igual.** 🔑 El daño no era el 500: `request_sent`,
+# `D-051`, `D-055`, `FakeUsage`, `tokens_billed` y siete tests —el trabajo de tres
+# auditorías del día anterior— estaban **enchufados a nada**. Es `LM.13` en su
+# forma más cruda: **no un freno sin ver morder, un freno desconectado del cable.**
+# ✅ **Cerrado el mismo día** (`api.py:715`, 503 + `refund` si `not request_sent`),
+# y el `except` quedó **antes** del genérico de la 765 — que es la regla del hijo
+# primero de la sesión 12 aplicándose sola.
+#
+# 🌙 **MEDIDO DESDE FUERA lo que ellos dejaron honradamente sin afirmar.** Su
+# cierre dijo *"nadie sabe si la máquina está encendida; amanece apagada mientras
+# no conste lo contrario"* — correcto y sin inventar, que es `L-038` funcionando.
+# Aquí se midió: **5 de 5 sin respuesta, `curl (28) Connection timed out`**, DNS
+# resolviendo a `32.199.55.191`. 🔑 **Y es TIMEOUT, no `RST`:** su propio
+# instrumento de la sesión 55 separa las dos cosas, y el timeout dice que **no hay
+# máquina detrás**, no que Caddy se cayera. La suposición dejó de serlo.
+#
+# 🔴 **HALLAZGO 1 → su `L-042`: el hermano de al lado sigue decidiendo dinero con
+# un proxy.** El bloque nuevo cita en su comentario el camino del 504 como buen
+# precedente — y ese camino decide la devolución con `never_started =
+# attempt.cancel()` (`api.py:673`), que contesta *"¿llegó a arrancar?"*, no
+# *"¿se facturaron tokens?"*. Un tutor que arrancó y falló con 401/429/red —**cero
+# tokens**— cobra igual. Alcanzable por la cola, que ellos **midieron** (23
+# peticiones a la vez, 3 pagaron por nada). 🔑 **Lo importante es la fecha:**
+# `D-023` decidió eso cuando no había forma de saberlo. Hoy sí la hay, y nadie
+# volvió a mirar la premisa.
+# 🔴 **HALLAZGO 2 → su `C-008`: medir y servir comparten los $6,55.** Tras `T-078`
+# la llave vive también en el servidor; el día que una medición agote el saldo, la
+# app real devuelve 503 por el camino nuevo —que no deja marca en el marcador— y
+# **nada grita**. 🔑 Va contra `D-045`: *el olvido tiene que caer del lado que no
+# cobra*, y aquí cae sobre el servicio vivo.
+#
+# ⭐ **HALLAZGO 3, EL FUERTE: `A-011` se retiró midiendo un reloj que no es el
+# suyo.** Tres archivos, todos de ellos: `api.py:649-652` (el tope de 10 s cuenta
+# **cola + `respond()` entero**), `english_tutor.py:79-83` (`respond` =
+# `count_words` + `judge_grammar` + `add_point`, que escribe en disco) y
+# `measure_tutor.py:122-133` (**solo `judge_grammar`, sin cola**). Los 4,72 s son
+# **uno de tres trozos**; restar `10 − 4,72` calcula margen sobre un presupuesto
+# que paga cosas que la báscula ni tocó.
+# 🔑 **Y el rótulo lo delataba: la tabla decía «tiempo por práctica».** Es `L-041`
+# —el nombre describe la pista, no el hecho— en su **tercera generación**, y esta
+# vez en la cabecera de la medida que retiraba una suposición.
+# 🔬 **EL REENCUADRE, que es lo que más valor tuvo del día:** el timeout del
+# cliente (8,0 s) mide un **subconjunto** del de la ruta (10 s) y además es menor,
+# así que **en una llamada sin cola el de la ruta no puede disparar NUNCA** — el
+# cliente corta siempre antes. ⇒ **Los 10 s jamás protegieron de un modelo lento;
+# lo único que pueden frenar es la cola.** Su `L-043` decía *"el reloj que va justo
+# no es el que vigilábamos"*; lo cierto es más duro: **el reloj que vigilábamos no
+# vigila lo que dice su nombre.** ✅ Y eso **respalda** su decisión de no tocar el
+# 8,0: ese sí es un freno vivo.
+# ✏️ **Corregido el mismo día (`5187a1c`):** `A-011` vuelve a `assumptions.md`
+# **encogida**, igual que `A-010`; el rótulo pasa a *tiempo de `judge_grammar`*;
+# los números se escriben como **«la peor de diez»** (n=10, dispersión 2,7×); y el
+# aviso se metió **en `measure_tutor.py`**, donde alguien lo leerá antes de repetir
+# el error, no solo en la bitácora.
+#
+# 🧭 **`LM.27` — LA LECCIÓN DE MÉTODO DEL DÍA, y la formulación final es SUYA:**
+# **una salvedad en el párrafo no arregla un titular falso. El párrafo no se
+# relee; la tabla sí.** La salvedad *"no dice nada de la cola llena"* ya estaba
+# escrita en `L-043` cuando esa misma entrada tituló *"`A-011` muere"* y tachó la
+# fila. 🔑 **Escribir la limitación tranquiliza a quien la escribe** —siente que ya
+# lo ha dicho— **y no toca el índice, que es donde vive la conclusión.** Si la
+# salvedad contradice al titular, manda la salvedad y el titular **se reescribe,
+# no se acompaña.** Es `LM.16` con el mecanismo por fin explicado.
+#
+# ➕ **DOS VECES EN QUE ELLOS ESTUVIERON POR ENCIMA DE MÍ, y conviene no perderlo.**
+#   1. **Mi instrumento era el frágil.** Recomendé cerrar `A-010` con
+#      `6,55 − saldo actual`, y les metí prisa *"antes de `T-078`"* porque esa resta
+#      se contamina con la siguiente llamada. Ellos leyeron el **consumo fechado**
+#      de la consola, que no caduca. La urgencia que les puse sobraba, y sobraba
+#      **porque mi método era peor**.
+#   2. **Escribieron ellos la objeción que yo traía preparada** (`decisions.md:88`):
+#      *"la consola redondea, así que dividir $0,02 entre 10 arrastra hasta un 25%
+#      de error — sirve para confirmar, no para proyectar"*. Es `LM.27` aplicada
+#      **el mismo día que la aprendieron**, y aplicada al número que sostiene su
+#      propia conclusión, que es donde cuesta.
+#
+# 🔴 **`LM.28` — EL INFORME SE SALTÓ UN COMMIT ENTERO, Y LA DIRECCIÓN ES EL
+# DIAGNÓSTICO.** `dadbe75` cierra `A-010`, crea `D-058` y trae el número que decide
+# si `T-078` es seguro. **No apareció en el informe.** Ayer `LM.26` dijo que lo
+# inventado era la versión cómoda; hoy no se inventó nada, **se omitió** — y lo
+# omitido fue el resultado, mientras la enmienda del propio error sobrevivía entera
+# y con tabla. 🔑 **Un informe escrito justo después de una corrección se organiza
+# alrededor de la corrección: la contrición ocupa el sitio del hallazgo.** Precio
+# medible: el dato que no llegó era `$6,55 = 140 días para UNA persona a tope`.
+# ✅ **`D-058` es correcta — rehecha la aritmética aquí, no leída:** `2472÷1e6×$5 =
+# $0,01236`; `443÷1e6×$25 = $0,011075`; total **$0,023435** (su $0,0234); por
+# práctica **$0,00234**; 20/día **$0,0469**; 180 días **$8,44**; y
+# `$6,55 ÷ $0,0469 = 139,7` → sus **140 días**. Los seis números salen.
+# 🚨 **Y ESO ABRE UN SEGUNDO RELOJ QUE NADIE HA PUESTO EN EL CALENDARIO.** Hasta hoy
+# el proyecto tenía uno: los créditos de AWS, que vencen el **2027-02-06**. El saldo
+# de Anthropic se agota **antes** —hacia finales de diciembre bajo el supuesto de
+# tope— y esos 140 días-persona son el techo **compartido entre servir y medir**,
+# con el paso 9 entero por delante, que es todo medición de modelos.
+#
+# ⚠️ **LO QUE NO VERIFIQUÉ, y queda como pregunta de reparto:** **los 387 tests no
+# se corrieron aquí.** La corrección suya de la 59 dice que esta terminal no prueba
+# ni ejecuta; la 60 acotó que medir *desde fuera* sí entra, y correr su `pytest` cae
+# del otro lado. Lo que sí se hizo es leer el `git show --stat`. 📌 **Importa
+# decidirlo:** en la sesión 51 correr la suite aquí cazó un número falso (decían
+# 342, eran 348). **Pregunta abierta, planteada y sin contestar.**
+# ✅ **Y lo mío de ayer se cumplió: se auditó con su sesión ABIERTA.** Cuatro
+# entregas, y las cuatro entraron en commits del mismo día (`ae2e981` recogió
+# `C-008` y `L-042`; `5187a1c`, la reapertura de `A-011`). **Cero hallazgos
+# huérfanos** — primera sesión sin `L-029` en cuatro días.
+#
+# 📍 **DÓNDE SE ARRANCA MAÑANA (paso 8):** **`T-078`** — que la llave llegue al
+# servidor por `install.sh`, con permisos cerrados y sin pasar por el repo.
+# 🚨 **Y no se hace sin que `C-008` esté escrita en `tasks.md` con el número
+# delante:** el día que la llave viva en el servidor, **el saldo deja de tener un
+# solo consumidor.** 140 días-persona a tope, menos lo que se lleve cada báscula.
+# 🔴 **`L-042` sigue abierta:** el camino del 504 decide dinero con `cancel()`, un
+# proxy, teniendo `request_sent` al lado. Es `D-023` con la premisa ya comprobable.
+# 🔴 **`A-011` encogida, y lo que falta es la COLA** — el escenario que el timeout
+# de la ruta sí gobierna. Sin concurrencia medida, el 10 sigue sin corrida detrás.
+# ⏳ **El ritual de AWS sigue:** lecturas ancladas a las 12:00 y 23:00 UTC.
+# 📅 **Las fechas puestas:** ~1 de septiembre (cierra el primer ciclo de AWS y
+# `Importe previsto` deja de estar ciego), ≈2026-09-01 como tope de `T-069`, y
+# **el nuevo: el saldo de Anthropic hacia finales de diciembre.**
 
 ```
 Nombre: TEAPP  (Teaching English Application)
