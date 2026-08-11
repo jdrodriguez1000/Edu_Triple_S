@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-11 (sesión 63)
+**Última actualización:** 2026-08-11 (sesión 64)
 
 ---
 
@@ -883,6 +883,120 @@
 # 📅 **Las fechas puestas:** ~1 de septiembre (cierra el primer ciclo de AWS y
 # `Importe previsto` deja de estar ciego), ≈2026-09-01 como tope de `T-069`, y
 # **el nuevo: el saldo de Anthropic hacia finales de diciembre.**
+#
+#
+# 🔬 **La 64 fue de SUPERVISIÓN, y el trabajo del día salió de preguntar de dónde
+# salía un número.** Aquí no se escribió una línea de programa. TEAPP pasó de
+# **387 a 395 tests** en un commit (`89d00fd`, verificado en `origin`, árbol
+# limpio), y cerró `T-082` y `T-083`.
+#
+# 🐛 **PRIMERO UN ERROR MÍO, Y ESTABA ESCRITO EN SU REPO EL DÍA ANTERIOR.**
+# Invoqué la skill `claude-api` para consultar documentación. Su `D-056`, del
+# **10 de agosto**, lo prohíbe con la medición dentro: esa skill llevó una sesión
+# **de 55 K a ~340 K tokens** porque vuelca treinta documentos cuando TEAPP hace
+# **una** llamada. La escalera que dejaron escrita es (1) `ctx7`, (2) la página
+# suelta, (3) la skill entera y solo diciéndolo en voz alta. 🔑 **`LM.20` conmigo
+# de protagonista por segunda vez en seis sesiones** — y esta vez la razón no
+# estaba en un archivo lateral: estaba en `decisions.md`, fechada el día antes,
+# en el repo que vengo a auditar. Guardado ya en memoria permanente, no solo aquí.
+#
+# 📌 **Y una lección de trato que repite la de la 59, casi con las mismas
+# palabras.** Le entregué el procedimiento para la consola —qué mirar, dónde
+# hacer clic— y contestó *"pero no entiendo qué estamos buscando con esto"*.
+# Tenía razón: le había dado el **cómo** sin el **qué se quiere averiguar**. Se
+# rehízo con la analogía de la tarjeta de débito única (el negocio y el
+# laboratorio pagando del mismo plástico) y entonces sí. 🔑 **Segunda vez en seis
+# sesiones que el mismo fallo aparece en el mismo sitio: cuando la tarea es una
+# comprobación en pantalla, se me va el concepto y arranco por el procedimiento.**
+#
+# 🟢 **`T-082` CERRADA CON `D-059`, y la documentación decidió en contra de lo
+# que yo esperaba.** Fui a buscar si la consola de Anthropic permitía **dos
+# bolsillos** —uno para medir, otro para servir—. La respuesta es **no**: los
+# espacios de trabajo admiten tope de gasto propio, pero *"You can set workspace
+# limits lower than (but not higher than) your organization's limits"* y
+# *"Organization-wide limits always apply"*. 🔑 **Es un reparto del mismo techo,
+# no un bolsillo aparte** — el saldo de $6,55 es de la organización y sigue
+# siendo uno solo. Por eso la partición tuvo que bajar al código.
+#
+# 🔴 **MI HALLAZGO 1 — el titular decía «desbloquea `T-078`» y el freno no
+# existía.** `D-059` decidía dos capas, y la única que protege el saldo —el corte
+# duro en `measure_tutor.py`— **no estaba escrita**. Ellos lo decían honradamente
+# en el cuerpo (*"`C-008` está decidida, no arreglada"*), pero el índice de
+# `decisions.md` —lo que el `session-starter` lee en frío— decía «desbloquea».
+# 🔑 **Una decisión no frena un bucle.** Es `LM.27` **un día después de que él la
+# formulara**: *la salvedad en el párrafo no arregla un titular falso; el párrafo
+# no se relee, la tabla sí.* Corregido el mismo día.
+# 🔴 **MI HALLAZGO 2 — `D-059` creaba una segunda llave y no decía cuál viaja.**
+# `T-078` dice *"que la llave llegue al servidor"*, una frase escrita cuando solo
+# había una. Quedó escrita la asignación, y con ella el porqué de dejar servir en
+# el espacio por defecto **como decisión y no como accidente**.
+#
+# ⭐ **EL HALLAZGO DEL DÍA ES DE ELLOS Y SALIÓ DE MI EMPUJÓN, y es el mejor de la
+# semana: un número que parecía medido y salía de un `len()`.** Ellos propusieron
+# poner el tope en **10**, *"que ya lo tienes medido de `T-079`"*. Le discutí que
+# diez era **el tamaño de una corrida, no lo que se puede gastar** — dos preguntas
+# distintas— y que el tope tenía que salir del saldo. Al ir a cambiarlo
+# encontraron que `MAX_CALLS = 10` **ya existía** en `measure_tutor.py:49`, y que
+# lo hacía cumplir un `SENTENCES[:MAX_CALLS]`. 🔑 **`SENTENCES` tiene exactamente
+# diez frases: el recorte no recortaba nada. Freno decorativo.** Y el diez de la
+# medición tampoco venía de medir — la tanda hizo diez llamadas **porque había
+# diez frases**. → su `L-044`, con los tres disfraces del número (constante, tope
+# comentado citando tres entradas, y argumento hablado — este último marcado como
+# suyo). **La regla que deja: un número que decide dinero se escribe como la
+# operación que lo produce, no como su resultado.**
+# ✅ **Y así quedó, verificado por mí en el código y no en el informe:**
+# `BUDGET_PER_RUN_USD = 0.25` (decisión de dinero, suya) `÷ COST_PER_CALL_USD =
+# 0.00234` (medido, `D-058`) `= MAX_CALLS_PER_RUN = 106`, con un test que
+# comprueba que sigue siendo la división. `CallBudget.spend()` cobra **antes** de
+# llamar y vive dentro de `RecordingClient`, el paso obligado. Tres sabotajes
+# vistos en rojo, y el que justifica el archivo es el segundo: `main()` construye
+# un `RecordingClient` por vuelta, así que un contador dentro del cliente **se
+# reinicia en cada frase y el guion seguiría midiendo bien**.
+#
+# 📉 **Mi tercera aportación fue poner número a un hueco que estaba escrito en
+# prosa.** El alcance del freno lo escribieron bien (*"no protege de correr el
+# guion 40 veces a mano"*), pero **$6,55 ÷ $0,25 = 26 corridas**. 🔑 *"No protege
+# de correrlo muchas veces"* se lee como *"habría que ser tonto"*; **`26` se lee
+# como lo que es** — y el paso 9 es comparar modelos, o sea correr el guion una
+# vez por modelo. Puesto en tres sitios: índice, cuerpo y docstring del código.
+#
+# 🧭 **`LM.29` — LA LECCIÓN DE MÉTODO DEL DÍA, y es sobre la lista de tareas.**
+# `T-082` pedía **decidir**, así que una decisión la cerraba — y con eso `T-078`
+# quedaba «desbloqueada» sin que existiera ni un freno. Nadie mintió: la tarea
+# decía *decidir* y se decidió. 🔑 **Una lista de pendientes escribe igual «lo que
+# hay que resolver» y «lo que hay que construir», y solo lo segundo protege de
+# algo. Cuando un desbloqueo cuelga de una decisión en vez de una pieza, el hueco
+# se abre sin que nada se ponga rojo.** Es `LM.19` con el mecanismo explicado
+# (*la lista dice qué falta por construir, nunca dijo qué falta por saber* — aquí,
+# al revés: dijo lo que faltaba por saber y se leyó como construido). El arreglo
+# quedó en `tasks.md`: `T-078` cuelga ahora de *"la capa 1 existe y se le ha visto
+# morder"*, no de *"la partición está decidida"*.
+#
+# ✅ **Y lo mío se cumplió por segundo día: se auditó con su sesión ABIERTA.** Los
+# tres hallazgos llegaron con dos archivos modificados y sin commit, y los tres
+# entraron en `89d00fd`. **Cero hallazgos huérfanos.**
+#
+# 📍 **DÓNDE SE ARRANCA MAÑANA (paso 8): `T-084`, y es ACCIÓN SUYA en el
+# navegador** — crear el espacio de trabajo para medir, con su llave propia y su
+# límite de **velocidad** (no de gasto). 🚨 **Bloquea `T-078`, y no por el saldo
+# sino por el reparto de llaves:** hoy solo existe una llave, así que si `T-078`
+# corriera antes, al servidor viajaría la misma que usa `measure_tutor.py` y se
+# perderían las dos cosas que la capa 2 compra —revocarla sola y la contabilidad
+# por `workspace_id`—. Después, `T-078`.
+# 🔴 **`C-008` quedó cerrada A MEDIAS a propósito**, con las dos mitades separadas
+# en su propia fila: tapado el fallo mudo, abierta la partición.
+# 🔴 **Sigue abierto del paso 8:** `T-079` a medias (falta cronometrar `/practice`
+# entera **con concurrencia**, que es el escenario que el timeout de la ruta sí
+# gobierna), `L-042` (el 504 decide dinero con `cancel()`, un proxy, teniendo
+# `request_sent` al lado) y `T-081` (renombrar `request_sent`).
+# ⏳ **`A-025` sin comprobar y no bloquea nada:** si el tope por espacio de trabajo
+# es blando en primera parte. La frase está leída en la página de AWS, no en la de
+# primera parte, y por eso la escribieron como **suposición y no como razón** —
+# que es la mejor pieza de disciplina del día.
+# ⏳ **El ritual de AWS sigue sin tomarse hoy:** lecturas ancladas 12:00 y 23:00
+# UTC. La última es la séptima, del 11 (`Costo Acumulado Mensual` 0,74 US$).
+# 📅 **Tres fechas puestas:** ~1 de septiembre (cierra el primer ciclo de AWS),
+# ≈2026-09-01 tope de `T-069`, y el saldo de Anthropic hacia finales de diciembre.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
