@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-11 (sesión 64)
+**Última actualización:** 2026-08-12 (sesión 65)
 
 ---
 
@@ -995,6 +995,158 @@
 # que es la mejor pieza de disciplina del día.
 # ⏳ **El ritual de AWS sigue sin tomarse hoy:** lecturas ancladas 12:00 y 23:00
 # UTC. La última es la séptima, del 11 (`Costo Acumulado Mensual` 0,74 US$).
+# 📅 **Tres fechas puestas:** ~1 de septiembre (cierra el primer ciclo de AWS),
+# ≈2026-09-01 tope de `T-069`, y el saldo de Anthropic hacia finales de diciembre.
+#
+#
+# 🔎 **La 65 fue de SUPERVISIÓN, y el saldo del día es un experimento que NO se
+# corrió.** Aquí no se escribió una línea de programa. TEAPP hizo **cinco commits**
+# (`e233fc6`, `b257c7b`, `3626c95`, `a1c015c`, `196e3eb`, todos en `origin`),
+# cerró `T-084` y abrió `T-085` y `T-086`. La suite no se movió de **395**: el
+# día entero fue decidir, medir y no gastar.
+#
+# 🔴 **EL HALLAZGO DEL DÍA: el `23` de `T-079` era un FÓSIL, y la corrida habría
+# salido VERDE midiendo cero.** Su plan era lanzar 23 peticiones a la vez para
+# forzar cola y ver disparar `TUTOR_TIMEOUT_SECONDS = 10.0`. El 23 no era
+# inventado —está medido, en `[L-013]` y en `api.py:689`: *"23 peticiones, 20
+# llegaron al tutor, 3 pagaron por nada"*—. 🔑 **Pero se midió contra un pool de
+# 20**, que era lo que `ThreadPoolExecutor()` sacaba de las CPUs de aquella
+# máquina, y **ellos mismos lo arreglaron**: hoy `TUTOR_POOL_SIZE = 40`
+# (`api.py:184`), puesto a mano justo por eso. Con 40 sitios, 23 peticiones entran
+# todas y **nadie hace cola**. El cronómetro habría medido una espera de cero, el
+# timeout no habría disparado, y la conclusión —*"los 10 s aguantan"*— habría
+# salido en verde **sobre un escenario que no ocurrió**, gastando saldo real para
+# producirla. 📌 **Hermano de `L-044` con UN DÍA de diferencia y la forma
+# invertida:** ayer el número nunca midió nada (era un `len()`); hoy midió bien y
+# **caducó**. La pregunta que caza las dos es la misma — *¿qué pregunta contestó
+# el día que se escribió, y es la misma que le hago hoy?*
+# 🔬 **Y debajo había algo peor, que es lo que reformula la tarea: la cola quizá
+# no pueda formarse NUNCA.** El invariante de `api.py:172` —escrito por ellos—
+# dice que el pool iguala las 40 fichas de `anyio`, así que la petición 41 espera
+# **antes de que arranque la ruta**, o sea antes del `submit` y antes de que el
+# reloj empiece a contar. ✅ **No es inferencia mía: hay un test que compara los
+# dos números** y se pone rojo si dejan de coincidir; y `api.py:573` confirma que
+# `practice` es una ruta **síncrona**, que es lo que sostiene la cadena.
+# ➕ Aporte propio que aprieta más: `/practice` **no es la única ruta síncrona**
+# —`/me`, el login— así que caben **menos** de 40 prácticas a la vez, no 40.
+# 🔑 **Junto con lo de la 63 (el cliente corta a 8,0 s, la ruta a 10), los 10 s no
+# pueden disparar ni por cola ni por modelo lento.** Lo único que les queda es que
+# `respond()` **fuera del modelo** se coma más de 2 s. → **`T-079` reformulada: la
+# mitad que falta ya no es cronometrar, es DECIDIR qué hacer con un freno que no
+# gobierna nada.** Se lee y se decide; no se mide.
+# ⭐ **EL QUINTO PUNTO LO PUSIERON ELLOS Y ES LA MEJOR LÍNEA DEL DÍA:** el
+# experimento **ya estaba hecho y era gratis**. `tests/test_api.py:1043` deja el
+# pool en **1** *"para que el segundo tenga que hacer cola"*. 🔑 **Para provocar
+# contención se quita sitio, no se añade carga** — cerrar cajas, no traer
+# clientes. Lo primero es un test con tutor de mentira y cuesta cero; lo segundo
+# son llamadas reales contra un saldo de $6,55.
+# ✏️ **Corrección mía sobre su propio hallazgo, y evitó cerrar `T-079` de más:**
+# ese test **cambia el timeout a 0,2 s**, así que prueba el MECANISMO (quien se
+# queda en la cola no paga) y **no dice nada del número 10**. Son dos preguntas y
+# solo estaba contestada la primera. Sin esa fila separada, el titular *"el
+# experimento ya estaba hecho"* habría tapado la mitad viva. `LM.27` otra vez.
+#
+# 🐛 **UN DATO FALSO EN SU RESUMEN, Y ESTABA ESCRITO EN SU PROPIO ARCHIVO.**
+# Dijeron *"`claude-opus-5` **respondiendo en vivo**"* dentro del párrafo de
+# producción. **En el servidor la llave está VACÍA** (`install.sh:188`), y su
+# `tasks.md:87` lo dice con todas las letras. El tutor responde **en local**.
+# **Sexta vez en nueve sesiones que el resumen sale peor que el documento**, y
+# otra vez en la dirección de `LM.26`: se coló la versión cómoda.
+#
+# 💰 **`T-084` CERRADA, y `D-061` es de las mejores entradas del proyecto.**
+# Espacio `teapp-measure` con llave propia y freno de velocidad para Opus 5 en
+# `50 / 20.000 / 5.000`, **con la derivación dentro**: `measure_tutor.py:208` es un
+# `for` secuencial (verificado), la más rápida de `[A-011]` son **1,72 s** ⇒ techo
+# físico `60 ÷ 1,72 = 35/min`, y con los `247 + 44` tokens de `[D-058]` salen
+# ~8.650 y ~1.540 por minuto. **Elegir el MÍNIMO fue lo correcto**: para un techo
+# de velocidad el caso peor es el más rápido — al revés que para un timeout.
+# 🚨 **La regla 6 mordió en directo:** la documentación decía que `Default` hereda
+# `2.000.000/400.000`; la consola de ESTA cuenta dijo `1.000/500.000/80.000`.
+# **Gana la consola** — el instrumento de la cuenta, no una lista general.
+# ✅ **Y la llave se confirmó POR CABECERAS, no por fe:** `requests-limit: 50`,
+# `requests-remaining: 49`. **Catorce tokens para no suponer**, después de
+# descartar tres instrumentos gratis que no distinguían una llave de otra.
+# ➕ **Y fueron más lejos que mi aviso:** yo dije *"cuidado con el `effort`, que el
+# paso 9 es quien mueve esa palanca"*; ellos escribieron **"cada modelo nuevo
+# necesita su fila con su propia medida antes de la primera tanda"**, con Haiku
+# nombrado. Mejor formulado que el mío.
+# ✏️ **Corrección menor mía:** decían *"holgura de ~1,5×"* y las tres filas llevan
+# **1,43× / 2,31× / 3,25×**. Los números están bien; **la etiqueta no describía su
+# propia tabla.** `LM.27` en pequeño — se arregla la frase, no los números.
+#
+# 🌩️ **`L-046` — nueve `529 Overloaded` seguidos en ~50 s, y es la primera vez que
+# se VE lo que `D-051` decidió sobre el papel.** En producción un 529 llega con
+# `request_sent=True` (`tools.py:320`): **se cobra la cuota y no se devuelve**, y
+# con `MAX_RETRIES = 0` una racha así le come prácticas de sus 20 **sin darle un
+# solo veredicto**. Hoy no le pasa a nadie porque en el servidor no hay llave.
+# 📌 Y matan una vía de diagnóstico: los 529 **no traen cabeceras
+# `anthropic-ratelimit-*`** — comprobado, no supuesto.
+#
+# 🚦 **MI RECOMENDACIÓN DEL CIERRE, y la aceptaron: NO hacer `T-078` hoy.** El
+# argumento estaba escrito en lo que acababan de commitear — `D-061` dejaba
+# abierto *"tope de gasto por espacio de trabajo... el freno real es el saldo de
+# $6,55 y un tope mensual bajo sí mordería antes"*. 🔑 **`T-078` es el momento en
+# que el saldo pasa a tener DOS consumidores**, y el lado que sirve no tiene freno
+# propio: `CallBudget` solo vive en `measure_tutor.py` (verificado: nada de `app/`
+# lo importa). Esa decisión **cuesta cero antes y deja de ser gratis después**.
+# → `T-085` nueva, **delante de `T-078`**.
+# 📐 **Y un detalle de `LM.29` que conviene no perder:** `T-078` colgaba de *"la
+# capa 1 existe y se le ha visto morder"* — cierto, **pero la capa 1 protege al
+# laboratorio y `T-078` es una tarea del lado que sirve**. La puerta y la cerradura
+# no eran de la misma habitación. (Exposición real modesta: con un usuario a 20/día
+# el techo son $0,047 diarios. El orden importa, no el susto.)
+# 🎁 **Y el cierre suyo encontró algo que yo no tenía: `[A-025]` dice que el tope
+# de gasto por espacio es BLANDO y tarda ~2 h en aplicarse.** Eso cambia el terreno
+# de `T-085` — un freno con dos horas de retraso protege menos de lo que parece.
+# Se decide mañana con ese dato delante, que es exactamente para lo que sirvió
+# aplazarlo.
+#
+# 🚨 **CASI SE CIERRA SIN `push`, y lo cacé mirando el árbol.** Dijeron *"árbol
+# limpio, cuatro commits hoy"* — y `git status -sb` decía **`ahead 4`**. Árbol
+# limpio **no es** trabajo respaldado. Corregido en el cierre: `196e3eb` y los
+# cuatro anteriores están en `origin`. 📌 **Tercera vez que el estado del árbol se
+# reporta como si fuera el estado del respaldo.**
+#
+# 🔴 **EL HALLAZGO DE REPARTO DEL DÍA, Y ES DE ESTE ARCHIVO: las lecturas de AWS
+# viven en el repo que NO es dueño de la suposición.** El cierre suyo lo dijo
+# claro: las lecturas del 11 (`0,74`) y del 12 (`1,12`) **no están en
+# `assumptions.md` ni en `[A-018]`** — llegaron por conversación y ahí se quedaron.
+# ⚠️ **Pero no se perdieron: están AQUÍ**, en este archivo (líneas 640 y 997), que
+# es de Edu_TripleS. 🔑 **`A-018` es una suposición de TEAPP y su historial de
+# lecturas vive en el repo del método.** Es la misma frontera que reventó en la 58
+# con `L-013` contra `LM.13`: **el reparto de la sesión 43 —aquí el porqué, allá lo
+# que el programa hace— no dijo dónde van los DATOS que él trae del navegador.**
+# El dato entra por esta terminal y su dueño está en la otra. → `T-086`.
+#
+# 💵 **La lectura de hoy: `Costo Acumulado Mensual` = 1,12 US$** (la séptima fue
+# `0,74` el 11). **Ninguna de las dos lleva hora**, así que el ritmo sale con una
+# banda en vez de un número: entre `0,011` y `0,032` US$/h según hayan pasado 36 h
+# o 12 h. ✅ **Y lo bueno es que la conclusión de `T-067` sobrevive a la banda
+# ENTERA:** entre **$46 y $137** de los $200 en 180 días. **Los seis meses caben en
+# las tres ramas**, y sin usar ninguna lista de precios. No hace falta afinar el
+# número para decidir — hace falta la hora para poder cerrarlo.
+# 🔴 **`Importe utilizado` sigue en `0,00`: SEXTA seguida.** Con 1,12 US$ gastados
+# contra un umbral de `0,01`, el presupuesto va **112 veces cubierto y mudo**. Ya
+# no es sospecha: **ese instrumento no está mirando el gasto real.**
+# (`Importe previsto` en `—` es lo documentado hasta que cierre el ciclo, ~1 sep.)
+#
+# 🌐 **`A-017` episodio 9, medido aquí sin buscarlo:** dos `000` y tres `200` en la
+# misma ráfaga. Y la máquina viva: `Server: uvicorn` + `Via: 1.1 Caddy`, `/me` →
+# `401`. La encendió él.
+#
+# 📍 **DÓNDE SE ARRANCA MAÑANA (paso 8):** **`T-085`** — decidir el tope de gasto
+# de `teapp-measure` contra el saldo real de **$6,55**, no contra los $500
+# mensuales, **y con `[A-025]` delante** (es blando y tarda ~2 h). Después
+# **`T-078`** (la llave de `Default` al servidor), y luego `T-079` reformulada.
+# 🔴 **`T-086`:** anotar la **hora UTC** de la lectura de AWS, y meter las dos
+# lecturas huérfanas (11 y 12) en `[A-018]`, que es su sitio.
+# 🔴 **Sigue abierto:** `L-042` (el 504 decide dinero con `cancel()`, un proxy,
+# teniendo `request_sent` al lado), `T-081` (renombrar `request_sent`) y `C-008`
+# cerrada a medias a propósito.
+# ✅ **Lo mío se cumplió por tercer día: se auditó con su sesión ABIERTA.** Los
+# hallazgos entraron en commits del mismo día. **Cero hallazgos huérfanos.**
+# ⏳ **El ritual sigue:** lecturas ancladas a las 12:00 y 23:00 UTC, **con la hora
+# escrita**.
 # 📅 **Tres fechas puestas:** ~1 de septiembre (cierra el primer ciclo de AWS),
 # ≈2026-09-01 tope de `T-069`, y el saldo de Anthropic hacia finales de diciembre.
 
