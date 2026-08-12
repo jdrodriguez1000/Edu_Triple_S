@@ -1149,6 +1149,136 @@
 # escrita**.
 # 📅 **Tres fechas puestas:** ~1 de septiembre (cierra el primer ciclo de AWS),
 # ≈2026-09-01 tope de `T-069`, y el saldo de Anthropic hacia finales de diciembre.
+#
+# 🔎 **La 66 fue de SUPERVISIÓN, y es la primera en que un diseño se construyó
+# CONVERSANDO entre las dos terminales, turno a turno.** Aquí no se escribió una
+# línea de programa. TEAPP hizo **cuatro commits** (`c071530`, `d4c40eb`,
+# `be30bd4`, `32f3314`, todos en `origin`), cerró `T-085` y dejó `T-078`
+# **abierta a propósito**. Suite reportada en **410** (venía de 395) —
+# **reportada, no verificada aquí**: ver `D-064` abajo, que nace justo de esto.
+#
+# 🔴 **HALLAZGO 1 — el tope de $2 decía morder un flanco, y el número que lo
+# desmiente estaba entre paréntesis en su misma frase.** `[D-062]` cerró `T-085`
+# con un tope de gasto de `$2,00/mes` para `teapp-measure`, bien razonado: no es
+# corte, es **reserva**, porque `Default` no admite tope y el único suelo para
+# producción es indirecto. Pero afirmaba que lo único que sí mordía era el flanco
+# de las 26 corridas de `[D-060]` — y al lado escribía `26 × 106 × 1,72 s ≈ 79
+# min`. 🔑 **79 está DENTRO de la ventana ciega de 120** (`[A-025]`). Por su
+# propia regla —*lo que no se puede comprobar no cuenta como freno*— ese flanco
+# tampoco queda cortado. **Lo que el tope muerde no son «las 26 corridas»: es el
+# gasto LENTO**, el repartido en más de dos horas. Lo mismo le pasaba al titular
+# `$4,48 ≈ 95 días`, cierto contra gasto lento y falso contra una corrida
+# desbocada. 📌 **`LM.16` otra vez** (`[L-043]`): el matiz en el párrafo, el
+# titular sin él — y el párrafo no se relee, la tabla sí. Corregido el mismo día
+# **en cuerpo e índice**, verificado aquí. El flanco sin dueño quedó como
+# `[A-026]`, declarado sin dueño en vez de tapado.
+#
+# 🔴 **HALLAZGO 2 — y este es de método: el número con el que se identifica una
+# llave no puede ser un número que no controlas.** Yo propuse que `install.sh`
+# exigiera `requests-limit: 1000` (la firma de `Default`) antes de mandar la
+# llave al servidor. **Ellos le dieron la vuelta y tenían razón:** el 1.000 lo
+# pone Anthropic y `[D-061]` lo vio desmentirse en un día. Colgar el freno del
+# despliegue de ahí fabrica un **rojo falso con fecha desconocida**, *y un freno
+# que muerde en falso se acaba quitando con red y todo*. La regla buena es
+# **abortar si vale `50`** —la firma del laboratorio, número suyo, escrito por
+# ellos ayer—: **denegar lo conocido-malo en vez de exigir lo conocido-bueno.**
+# ⚠️ **Lo que se paga, y quedó escrito:** exigir el 1.000 falla en **rojo falso**
+# (ruidoso, alguien mira); abortar con el 50 falla en **verde falso** (mudo: el
+# `429` de dentro de tres semanas). Se acepta porque el riesgo real es
+# **exactamente uno** — mandar la del laboratorio porque en el `.env` local las
+# dos llaves **se llaman igual**.
+# 🚨 **Y el disparador de ese verde falso ya estaba predicho por escrito** en
+# `[D-061]` (*"cada modelo nuevo necesita su fila"*, con Haiku nombrado): **ese
+# 50 se va a mover en el paso 9.** De ahí la condición no opcional: el 50 pasa a
+# vivir en dos sitios, que es el bicho de la sesión 33.
+# ⭐ **Y el remate lo pusieron ellos, y es la mejor línea del día:** *un
+# acoplamiento se anota **donde va a estar mirando quien lo rompa**, no donde lo
+# entendió quien lo creó.* El día que suban el freno a 80 para medir Haiku no van
+# a abrir `[D-063]` —no están desplegando— van a abrir `[D-061]`, que es donde
+# vive el número. Por eso el aviso tenía que estar en las **dos** entradas.
+# Escrita como `L-047` **porque se la reclamé en el momento**: estaba solo en el
+# chat, y ahí es donde `L-029` mata las cosas buenas.
+#
+# 🔴 **HALLAZGO 3 — el sabotaje que salió VERDE, y es lo mejor del día aunque no
+# sea mío.** De los tres sabotajes a `check_api_key.py`, el tercero —mover la
+# comprobación detrás de la escritura— **pasó en verde**. El test buscaba la
+# primera línea que nombrara el archivo, y la primera era **un comentario doce
+# líneas antes de la llamada**: se cumplía solo, pasara lo que pasara. Un test
+# con **nombre correcto, aserción correcta y verde**, que habría entrado en la
+# suite como un guardián más. 🔑 **El sabotaje no auditó la capa: auditó al
+# vigilante.** Es `LM.15` en su forma más pura —*nadie audita un verde*— y lo
+# cazó **sabotear**, no leer. Quedó como `[L-048]`.
+#
+# ✏️ **ME EQUIVOQUÉ YO, y conviene que quede escrito.** Dije que `install.sh`
+# dejaba una ventana entre escribir el `.env` y hacerle `chmod`, apoyándome en un
+# comentario de la línea 163 y en el `chmod` de la 211. **Falso, y lo comprobé
+# leyendo el archivo:** la línea 168 hace `install -m 600 … /dev/null`, el
+# archivo **nace vacío y ya cerrado**, y el `cat >` no toca permisos; el `chmod`
+# de la 211 cierra el **otro** camino. 🔑 **Pero el fallo tiene forma, y es la que
+# yo mismo audité un mensaje antes:** ese comentario dedica **cuatro líneas al
+# peligro y una a la solución**, y la del peligro va primero. Leí el titular y
+# reconstruí un problema que el código tenía resuelto. **`LM.16` cometido por mí
+# a la vuelta de haberlo señalado.** 📌 Regla que sale: en un comentario, **la
+# primera línea dice el ESTADO; el riesgo baja a explicación.**
+#
+# 🔑 **`D-064` — SE CERRÓ LA PREGUNTA DE REPARTO QUE LLEVABA ABIERTA DESDE LA
+# 63.** Hasta hoy esta terminal no corría su `pytest` (la 59 dijo *no prueba ni
+# ejecuta*, la 60 acotó *medir desde fuera sí*), y quedó **planteada y sin
+# contestar** en las líneas 862–867 de este archivo. **Ahora sí: puedo correr
+# `pytest -q`.** El argumento que lo cierra es suyo y es mejor que el mío: *una
+# terminal que audita y no puede medir solo sabe releer; releer caza un
+# razonamiento torcido, pero un número solo lo caza una corrida* — y la sesión 51
+# lo probó (decían 342, eran **348**). **Es la regla 6 aplicada al auditor.**
+# ⚖️ **El disparador es el suyo, no el mío, y por qué:** yo propuse *"correr
+# cuando el número sostenga una decisión"* — exige **predecir el futuro**, y ese
+# hueco se resuelve siempre para el lado cómodo. El suyo — **"correr siempre que
+# vayas a escribir o citar un número de la suite"** — se comprueba **mirando el
+# presente**: ¿estoy tecleando un número? sí o no. 📌 **Transferible: un
+# disparador que se comprueba observando lo que haces vale más que uno que se
+# comprueba estimando lo que importará.** Misma familia que `[D-060]` (cobrar
+# antes de llamar) y que el `install -m 600`: el momento lo fija la mecánica, no
+# el criterio de alguien.
+# ➕ **Dos remates míos que entraron:** (1) la regla abre un escape —*no escribir
+# el número*—, así que solo hay **dos formas legales** de nombrar la suite:
+# **medido aquí** con su número, o **reportado, no verificado**, con esas
+# palabras; nunca una afirmación sin etiqueta. (2) **Un número solo se compara
+# contra el mismo commit**: si mi corrida discrepa, la primera hipótesis no es
+# que mientan, es que corrí otro árbol — así que se registra el commit sobre el
+# que se corrió.
+#
+# 🐛 **UNA TAREA MUERTA VIAJÓ EN EL TRASPASO, y la cazó su cerrador.** El reporte
+# de inicio traía `T-074` (comprobar el apagado automático) como pendiente.
+# **Está cerrada desde el 2026-08-10**, con testigo directo en el journal de
+# systemd. La arrastraron del reporte sin abrir la línea — `[L-034]` en pequeño:
+# *una tarea que aparece dos veces en una lista deja de auditarse, y la lista se
+# lee más rápido que el archivo*. ⚠️ **Y me pasó por delante sin que la
+# preguntara.** No la repetí, pero tampoco la audité: entró por esta terminal y
+# salió intacta. **Séptima vez en diez sesiones que el resumen sale peor que el
+# documento** — y la primera en que el que lo corrige es el propio cerrador,
+# mandando la evidencia del archivo en vez de la del traspaso.
+#
+# ✅ **Y esta vez el árbol se cuidó, después de que lo señalara dos veces:** a
+# mitad de sesión el trabajo estaba **escrito y sin commitear**, y más tarde el
+# código nuevo estaba en **`??`** —sin rastrear, invisible a un `diff`, y un
+# `git clean` se lo lleva—. Se corrigió en el momento. 📌 **Quinta y sexta vez
+# que el estado del árbol se reporta como el estado del respaldo**, hoy en dos
+# formas distintas el mismo día.
+#
+# 📍 **DÓNDE SE ARRANCA MAÑANA (paso 8):** **`T-078`, y es lo NO hecho:** correr
+# `check_api_key.py` contra la red real **dos veces** — **puerta 3** con la llave
+# del laboratorio y **puerta 0** con la de `Default`. 🔑 **Una sola corrida no
+# vale**: con la del laboratorio la única salida posible es la 3, así que ese 3
+# no distingue *"la identificó"* de *"acierta por casualidad"*. **Hace falta el
+# control al lado** — es `T-060b` de la 56 otra vez (*sin nada escuchando en el
+# 8000, «cerrado» salía igual con el cortafuegos abierto que cerrado*). **410
+# verdes y una corrida no cierran `T-078`**, y la condición está escrita **en
+# tabla dentro de `[D-063]`**, no en una nota suelta.
+# 🔴 **Siguen abiertos:** `T-079` (a medias: ya no es cronometrar, es **decidir**
+# qué hacer con un freno que no gobierna nada), `T-086` (la hora UTC de las
+# lecturas de AWS + las dos huérfanas del 11 y el 12), `[A-026]` (las corridas
+# repetidas, sin dueño), `L-042`, `T-081` y `C-008` cerrada a medias.
+# ✅ **Lo mío se cumplió por cuarto día: se auditó con su sesión ABIERTA.** Los
+# tres hallazgos entraron en commits del mismo día. **Cero hallazgos huérfanos.**
 
 ```
 Nombre: TEAPP  (Teaching English Application)
