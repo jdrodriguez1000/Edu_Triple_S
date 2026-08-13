@@ -2866,7 +2866,18 @@ la documentación oficial antes de corregir — no de memoria otra vez.
 > HTML clicable, **desechable y puede que sin una línea de código**— y de ahí
 > salió `LM.12`, la que más le sirve a este proyecto.
 >
-> 📌 El nivel 7 todavía no tiene bloque, y es correcto: **no ha cerrado.**
+> 🔬 **De `LM.13` en adelante cambia de origen, y conviene saberlo al leerlas.**
+> Ya no salen de conversaciones sobre el oficio, sino de **las sesiones de
+> supervisión del nivel 7**: esta terminal audita lo que la otra construye, y cada
+> lección es un error real —de ellos o **mío**— con la corrida que lo demostró
+> detrás. Por eso muchas se citan entre sí: **son el mismo puñado de bichos
+> saliendo por sitios distintos**, y la tabla comparativa que llevan varias es
+> justo para no confundirlos.
+>
+> 📌 El nivel 7 todavía no tiene bloque, y es correcto: **no ha cerrado.** Estas
+> `LM.x` **ascienden sobre la marcha** desde `PROGRESO.md`, sin esperar al cierre
+> del nivel — se decidió así porque una lección que solo vive en el archivo largo
+> es una lección que `LM.24` predice que nadie va a alcanzar.
 
 ### LM.1 — Producir se abarató. Decidir, limitar y demostrar cuestan lo mismo
 
@@ -3930,3 +3941,181 @@ afirmación — que es exactamente el bicho de la sesión 58 (*el control que ac
 dictando cómo se escribe el archivo que vigila*). Así que esto se queda como
 **disciplina, y se anota como desprotegido.** Escribirlo aquí no lo arregla; lo
 deja dicho.
+
+---
+
+### LM.27 — El párrafo no se relee; la tabla sí
+
+**Sesión 63, y el título es la formulación suya.** Es `LM.16` —*una salvedad
+correcta no arregla un titular falso*— con el mecanismo por fin explicado, y por
+eso lleva un título distinto: **lo que se aprendió aquí no es el hecho, es el
+porqué.**
+
+Una entrada tituló **«`A-011` muere»** y tachó su fila. Dos párrafos más abajo, la
+misma entrada tenía escrita la limitación que lo desmentía: la medición *"no dice
+nada de la cola llena"*. Las dos cosas, en el mismo documento, escritas por la
+misma mano el mismo día.
+
+Nadie mintió. Y ahí está el problema.
+
+🔑 **Escribir la limitación tranquiliza a quien la escribe.** Se siente que ya se
+ha dicho — y con eso se acaba el impulso de volver atrás. Pero decirlo **no toca
+el índice**, y el índice es donde vive la conclusión que alguien va a leer dentro
+de tres semanas.
+
+| | qué se lee | quién lo lee |
+|---|---|---|
+| el titular / la fila tachada | *"`A-011` está muerta"* | **todo el mundo, siempre** |
+| la salvedad en el párrafo | *"salvo la cola llena"* | quien ya sospecha |
+
+**Si la salvedad contradice al titular, manda la salvedad, y el titular se
+reescribe — no se acompaña.**
+
+✏️ **Así se arregló, el mismo día:** la suposición volvió a su archivo
+**encogida** en vez de tachada, el rótulo pasó a nombrar lo que de verdad se
+midió, los números se escribieron como *«la peor de diez»* en vez de como un
+número limpio, y el aviso se metió **dentro del código que hace la medición** —
+donde alguien lo leerá antes de repetir el error, no solo en la bitácora.
+
+🔗 Y es pariente de `LM.24`: en los dos casos el texto verdadero existe, y
+**pierde por dónde está colocado**.
+
+---
+
+### LM.28 — Un informe escrito justo después de una corrección se organiza alrededor de la corrección
+
+**Sesión 63.** Un commit cerró una suposición, creó una decisión nueva y trajo
+**el número que decidía si la tarea siguiente era segura**. No apareció en el
+informe. Ni una línea.
+
+Lo que sí apareció entero, con su tabla y su detalle: **la enmienda del error
+cometido esa misma mañana.**
+
+🔑 **La contrición ocupa el sitio del hallazgo.** No hay que inventar nada para
+que pase: quien acaba de corregirse tiene la corrección delante, viva y con
+forma de noticia, mientras el resultado —que no duele— se queda quieto en el
+`git log`.
+
+⚠️ **Y conviene ver la diferencia con `LM.26`, porque el remedio no es el mismo:**
+
+| | qué le pasó al texto |
+|---|---|
+| `LM.26` | se **inventó** una frase, y la inventada fue **la cómoda** |
+| **`LM.28`** | **no se inventó nada: se omitió** — y lo omitido fue **el resultado** |
+
+Contra lo inventado sirve releer buscando frases que liberan al lector. Contra lo
+omitido eso no sirve de nada: **lo que falta no se relee.** El único control que
+funciona es de fuera — comparar el informe **contra el `git log` del día**, que
+es lo que lo cazó.
+
+📌 **Y el precio era medible, que es lo que lo vuelve una lección y no una
+queja.** El dato que no llegó decía que el saldo daba para **140 días de una sola
+persona a tope**, y con él llegaba **un segundo reloj que nadie tenía en el
+calendario**: hasta ese día el proyecto solo vigilaba el vencimiento de los
+créditos de la nube. El saldo del modelo se agota **antes**. Un informe puede
+perder un número y con él una fecha límite entera.
+
+---
+
+### LM.29 — Una lista de pendientes escribe igual «lo que hay que resolver» y «lo que hay que construir»
+
+**Sesión 64.** Una tarea pedía **decidir** cómo repartir las llaves. Se decidió,
+se cerró, y con eso la tarea siguiente quedó marcada como **desbloqueada** — sin
+que existiera ni una línea del freno que la decisión describía.
+
+Nadie mintió, y esto importa: **la tarea decía *decidir*, y se decidió.** El
+sistema funcionó exactamente como estaba escrito.
+
+🔑 **Solo lo construido protege de algo.** Una decisión es una intención con
+fecha; una pieza es algo que se puede ver morder. Cuando un desbloqueo cuelga de
+una decisión en vez de una pieza, **el hueco se abre sin que nada se ponga
+rojo** — porque no hay nada que pudiera ponerse rojo.
+
+✏️ **El arreglo fue de una línea, y es el patrón que hay que copiar:** la
+dependencia dejó de ser *"la partición está decidida"* y pasó a ser **"la capa 1
+existe y se le ha visto morder"**.
+
+🔗 Es `LM.19` (*la lista dice qué falta por construir, nunca dijo qué falta por
+saber*) con el mecanismo explicado, y aquí sale **del revés**: la lista dijo lo
+que faltaba por saber, y se leyó como construido. Y es `LM.13` metido en el
+formato de la lista de tareas: *un freno que no has visto morder es una nota*, así
+que **una tarea no puede cerrarse contra una nota.**
+
+📌 La pregunta barata, al escribir cualquier pendiente: **¿qué se puede mirar el
+día que esto esté hecho?** Si la respuesta es *"un párrafo"*, el pendiente está
+mal cortado.
+
+---
+
+### LM.30 — La urgencia no se audita: se obedece
+
+**Sesión 67, y es la más cara de las cinco.**
+
+Una tarea llevaba **dos traspasos viajando como pendiente** estando cerrada
+—cerrada de verdad, con su testigo en los registros de la máquina—. El segundo
+día no llegó como un duplicado cualquiera: llegó **de prioridad número uno**, y
+con una consecuencia pegada: *"la máquina encendida se está comiendo el plan
+gratuito"*.
+
+Ese daño no salía de ninguna corrida. Medirlo costó **dos comandos y catorce
+segundos**: los dos puertos, mudos; y con la máquina apagada quien cobra son la
+dirección fija y el disco, **no las horas de instancia**.
+
+🔑 **Y aquí está la vuelta que le faltaba a esta familia de lecciones.**
+
+| | qué se fabricó |
+|---|---|
+| `LM.20` | nada: **está escrito y nadie llega** |
+| `LM.24` | nada: está escrito, pero **se llega antes a lo viejo** |
+| `LM.26` | una frase, y fue **la cómoda** |
+| **`LM.30`** | una frase, y fue **la alarmante** |
+
+**Y la alarmante es peor.** *"No hace falta hacer nada"* invita a comprobar —
+suena a demasiado bueno—. *"Llevas cuatro días perdiendo dinero"* **invita a
+correr**, y correr es exactamente lo contrario de auditar. Una urgencia se salta
+la fila entera: se convierte en la agenda del día antes de que a nadie se le
+ocurra preguntarle de dónde sale.
+
+📌 **El antídoto es barato y ya está probado:** antes de obedecer una urgencia,
+**preguntar de qué corrida sale**. No *"¿es verdad?"* — eso invita a razonar y se
+razona a favor de lo que asusta — sino *"¿qué comando lo midió y cuándo?"*.
+
+⚠️ **Y el mecanismo de cómo revivió la tarea muerta es la mitad práctica de la
+lección:** se había cazado el día anterior, pero **la caza vivió solo en el
+chat**. El puntero viejo se quedó en el disco, y el arranque siguiente lo volvió
+a servir intacto. Es `L-029` de TEAPP: **un hallazgo que no entra en un archivo
+no ocurrió** — y aquí no solo se perdió, sino que **el error volvió con más
+autoridad que la primera vez.**
+
+---
+
+### LM.31 — Cuando una medición diga «no aparece», comprueba primero que la medición ocurrió
+
+**Sesión 69, y es mía — estuve a un paso de escribir el hallazgo falso.**
+
+Medí un despliegue para comprobar que la página traía cierto marcador. No estaba.
+Ya tenía la frase medio escrita: *"esto contradice tu afirmación 7"*.
+
+No era verdad. La petición **había fallado al resolver el nombre** y había
+devuelto **cuerpo vacío**; mi búsqueda leyó ese vacío como *"el marcador no
+está"*. La corrida siguiente, en el mismo instante, respondió `200` con todo en
+su sitio.
+
+🔑 **El fallo intermitente de resolución no cuesta una petición: FABRICA
+EVIDENCIA.** Y fabrica la peor clase — silenciosa, con forma de hallazgo, y
+apuntando a un despliegue que está bien.
+
+⚠️ **Lo que lo hace posible es el modo silencioso del propio instrumento.** Pedir
+que no muestre el progreso también hace que no muestre el fracaso, y lo que sale
+por el otro lado —**nada**— entra en el filtro siguiente **como si fuera una
+respuesta**. El filtro no tiene manera de distinguir *"pregunté y no aparece"* de
+*"no llegué a preguntar"*: los dos casos le llegan idénticos.
+
+🔗 Es `LM.15` (*nadie audita un verde*) con **el vacío en el papel del verde**, y
+es el hermano de `L-051` de TEAPP un anillo más afuera: allí la pantalla mentía
+sobre un despliegue correcto; **aquí mentía mi propio instrumento de medida.**
+
+📌 **La regla que sale, y sirve para cualquier medición:** cuando el resultado de
+una medición sea **«no aparece»**, comprobar primero que **la medición ocurrió**.
+Un negativo tiene que traer su propia prueba de vida — el código de respuesta, el
+tamaño de lo recibido, algo. Un cero y un vacío se parecen demasiado.

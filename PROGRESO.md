@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-13 (sesión 67)
+**Última actualización:** 2026-08-13 (sesión 70, cuarta del día)
 
 ---
 
@@ -1394,13 +1394,10 @@
 # —el arrastre, la llave compartida y el `529` que no era la llave nueva— salieron
 # todos de **no creerse el primer resultado**.
 #
-# 🧹 **DEUDA DE ESTE REPO, detectada hoy y sin tocar:** `LM.27`, `LM.28` y `LM.29`
-# viven en este `PROGRESO.md` y **`LESSONS.md` se quedó en `LM.26`**. El contrato
-# dice que las lecciones ascienden al terminar el nivel, pero `LM.24`–`LM.26` ya
-# subieron — así que la práctica real es *ascender sobre la marcha* y estas tres
-# se quedaron atrás. **Tres lecciones que solo viven en el archivo largo son tres
-# lecciones que `LM.24` predice que nadie va a alcanzar.** Es lo primero que hay
-# que hacer mañana aquí, y `LM.30` entra con ellas.
+# 🧹 ~~**DEUDA DE ESTE REPO, detectada hoy y sin tocar:** `LM.27`, `LM.28` y
+# `LM.29` viven en este `PROGRESO.md` y **`LESSONS.md` se quedó en `LM.26`**.~~
+# → **PAGADA EN LA SESIÓN 70**, y para entonces eran **cinco** (`LM.27`–`LM.31`):
+# la deuda creció mientras nadie la tocaba, que es justo lo que `LM.24` predice.
 #
 # 🚀 **La 68 (SEGUNDA del 2026-08-13) — TEAPP CORRIGE INGLÉS DE VERDAD, EN
 # PRODUCCIÓN.** `T-087` y `T-078` cerradas: la llave llegó al servidor comprobada
@@ -1525,6 +1522,31 @@
 # medición ocurrió.**
 # ⚠️ **Los tres hallazgos llegaron con su sesión YA CERRADA** (`f4b73b7` hecho):
 # nacen huérfanos salvo que les den commit. `[L-029]` y `[L-049]` a la vez.
+#
+# 🧹 **La 70 (CUARTA del 2026-08-13) NO TOCÓ LA NUBE NI TEAPP: pagó la deuda de
+# este repo.**
+# `LESSONS.md` llevaba desde la sesión 60 clavado en `LM.26` mientras
+# `PROGRESO.md` acumulaba lecciones nuevas. **Subieron las cinco que faltaban:**
+# `LM.27` (*el párrafo no se relee; la tabla sí*), `LM.28` (*la contrición ocupa
+# el sitio del hallazgo*), `LM.29` (*una lista escribe igual lo que hay que
+# resolver y lo que hay que construir*), `LM.30` (*la urgencia no se audita, se
+# obedece*) y `LM.31` (*cuando una medición diga «no aparece», comprueba primero
+# que la medición ocurrió*). **De 26 a 31, sin huecos ni repetidas.**
+# 📌 **La deuda se detectó en la 67 diciendo «son tres»; al pagarla eran cinco.**
+# Creció **el mismo día**, en dos sesiones. Es `LM.24` cumpliéndose sobre la lista
+# de lecciones que contiene a `LM.24`.
+# ✏️ **Y del propio índice salió una corrección que no estaba prevista:** dos de
+# los cinco títulos nacían casi calcados de lecciones ya existentes —`LM.27` de
+# `LM.16` y `LM.31` de `LM.15`— porque cada una es *el mecanismo* de la anterior.
+# Vistos en la lista, **dos titulares iguales se leen como una repetición y el
+# lector se salta el segundo.** Se retitularon por lo que aportan de nuevo, no por
+# el hecho que comparten. Es `LM.27` aplicada a `LM.27` el día que se escribió.
+# 📐 **La cabecera del bloque de Método también estaba desactualizada:** describía
+# el origen hasta la sesión 45 y las 19 lecciones siguientes vienen de otro sitio
+# —las sesiones de supervisión del nivel 7—. Ahora lo dice, y deja escrito que
+# **estas `LM.x` ascienden sobre la marcha, no al cerrar el nivel**, que era una
+# práctica real sin regla escrita. `LM.13` de TEAPP: *un acuerdo que depende de
+# que nadie se despiste no es un acuerdo, es una racha.*
 
 ```
 Nombre: TEAPP  (Teaching English Application)
