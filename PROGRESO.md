@@ -1401,6 +1401,62 @@
 # se quedaron atrás. **Tres lecciones que solo viven en el archivo largo son tres
 # lecciones que `LM.24` predice que nadie va a alcanzar.** Es lo primero que hay
 # que hacer mañana aquí, y `LM.30` entra con ellas.
+#
+# 🚀 **La 68 (SEGUNDA del 2026-08-13) — TEAPP CORRIGE INGLÉS DE VERDAD, EN
+# PRODUCCIÓN.** `T-087` y `T-078` cerradas: la llave llegó al servidor comprobada
+# antes de escribirse y con permisos `600`, y hubo primera práctica real —
+# *"I cooking in these morning"* → corregido, Score 9. **El día empezó con una
+# tarea muerta disfrazada de urgencia y acabó con la aplicación funcionando.**
+# ✅ **MEDIDO AQUÍ, no reportado** (`811d436`, árbol limpio y en `origin`):
+# `200` con `Server: uvicorn` + `Via: 1.1 Caddy` —el aparejo real—, `/me` sin
+# cookie → `401`, el **8000 en TIMEOUT** desde fuera con un proceso de verdad
+# detrás, y el certificado `Aug 8 16:55 → Nov 6 16:55` de Let's Encrypt **SIN
+# reemitir** pese a los apagados de cada noche, que era el riesgo de cuota de la
+# 59. **Suite: 410, corrida aquí sobre `811d436`.** Sigue en 410 y eso es lo
+# correcto: los commits del día son `_persistence/` y `deploy/` — **no es que
+# nada se rompiera, es que el código de la app no se movió.**
+#
+# 🔒 **LA PREDICCIÓN SELLADA AGUANTÓ:** dije antes del clic que `teapp-server`,
+# naciendo dentro de `Default`, leería **1000** y no 50. Leyó `requests-limit=1000`
+# y salió por la puerta 0. ⚠️ **Pero acertar era la mitad mala de la apuesta**, y
+# conviene que quede escrito el mismo día: el hueco que nombré ayer **ya no es
+# hipotético, está vivo en producción.** El curso y el servidor devuelven **el
+# mismo 1000**, así que `check_api_key.py` **no puede distinguirlos**: mandar por
+# error la llave del curso al servidor pasa por la puerta 0 tan campante. Sigue
+# sin haber que taparlo con código —colgar el freno del 1.000 es el rojo falso que
+# `L-047` descartó con razón— pero el portero nació para un riesgo y hoy convive
+# con otro que no ve. **`L-013`: cerrar un hueco no cierra los demás.**
+#
+# 💵 **Y el dinero cambió de categoría hoy, que es lo que hay que llevarse.**
+# `Default` no admite tope (`[D-062]`), así que el único freno del servidor es el
+# saldo de **$6,55**, y sobre ese saldo hay ahora **tres bebedores**: el curso (21
+# scripts), la báscula y **producción**. 🔑 **`[A-026]` sube de categoría sin que
+# nadie la tocara:** ayer 26 corridas seguidas de la báscula estropeaban una
+# medición; **desde hoy dejan sin tutor a una persona que está practicando.** La
+# suposición no cambió — cambió lo que cuelga de ella. 📌 Es el mismo movimiento
+# que `[A-018]` el día que se encendió la EC2: *el experimento perdió su
+# aritmética limpia el día que cumplió su objetivo.*
+#
+# 🌐 **`A-017`, y esta medición es MEJOR que las anteriores por lo que le falta:**
+# 5 intentos en la misma ráfaga → **2 × `000` y 3 × `200`**. Esta mañana también
+# hubo `000`, pero la máquina estaba apagada y eso **confundía la medida**; ahora
+# la máquina está demostrablemente viva —los 200 salen de la misma ráfaga— así que
+# los fallos **solo pueden ser resolución de nombre**. Muestra pequeña: 5
+# intentos no dan una tasa, dan una existencia. ⚠️ **Lo que sí quiero dejar
+# dicho:** *"es el cliente, no DuckDNS"* es un diagnóstico **cierto y una
+# conclusión insuficiente**, y hoy dejó de ser gratis — **la persona que practica
+# inglés también tiene un cliente.** Un fallo que solo le pasa al que mide es una
+# curiosidad; el mismo fallo, el día que hay usuarios, es el producto.
+#
+# ✅ **Su apunte del día es correcto y me lo quedo:** *lo escrito ayer te defendió
+# hoy* — `[L-033]` les ahorró diagnosticar un SSH que fallaba por nombre y
+# `[L-046]` ya tenía escrito que la puerta 4 no es un veredicto, así que diez
+# `529` no se convirtieron en una acusación contra una llave recién creada.
+# 📌 Mi matiz, que es el reparto de la 43 en pequeño: **los tres hallazgos del día
+# no salieron de auditar el programa, salieron de auditar lo que se DICE del
+# programa** — un reporte (`T-074`), un plan (preguntarle la identidad al guion
+# que se audita) y una suposición (`[A-027]`). Ninguno era código. Y eso es
+# justo lo que esta terminal puede hacer y la otra no: **no lo escribió.**
 
 ```
 Nombre: TEAPP  (Teaching English Application)
