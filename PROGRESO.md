@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-12 (sesión 65)
+**Última actualización:** 2026-08-13 (sesión 67)
 
 ---
 
@@ -1279,6 +1279,128 @@
 # repetidas, sin dueño), `L-042`, `T-081` y `C-008` cerrada a medias.
 # ✅ **Lo mío se cumplió por cuarto día: se auditó con su sesión ABIERTA.** Los
 # tres hallazgos entraron en commits del mismo día. **Cero hallazgos huérfanos.**
+#
+# 🔎 **La 67 (2026-08-13) fue de SUPERVISIÓN, y arrancó desmontando el propio
+# reporte de inicio.** TEAPP cerró con `699f2b2` en `origin`. `T-078` sigue
+# **abierta**, ahora por dos motivos distintos —uno del proyecto (`[D-065]`: la
+# llave buena es otra) y uno ajeno (Anthropic saturado)—, y eso está bien
+# separado. Suite **410, MEDIDA AQUÍ** sobre `32f3314` con la `.venv` de TEAPP:
+# coincide con la suya. **Primer uso de `[D-064]`**, y la regla funcionó sola —
+# corrí porque iba a escribir el número, no porque el número decidiera nada.
+#
+# 🧟 **HALLAZGO 1 — `T-074` volvió por SEGUNDA vez, y esta vez traía factura.**
+# Ayer viajó en el traspaso como duplicado inofensivo y la cazó su propio
+# cerrador. Hoy volvió **de prioridad número 1**, con una consecuencia encima:
+# *"cuatro días de retraso, y esa máquina encendida se come el plan gratuito"*.
+# Está **cerrada desde el 2026-08-10** (`tasks.md:81`, ✅, con el journal de
+# systemd dentro) y la frase **no venía de ninguna corrida**. Medido aquí antes de
+# opinar: `443` por nombre y por IP → `000` con TIMEOUT de 12 s y 10 s, `22` sin
+# respuesta. **Dos puertos independientes, los dos mudos:** nada sostiene *"la
+# máquina encendida"*. Y falla por el otro lado también — con la EC2 apagada lo
+# que sigue cobrando son **la IP elástica y el volumen EBS**, no las horas de
+# instancia: **acusaba a la pieza equivocada.** → `LM.30`.
+# 🔑 **El mecanismo, y es lo que hay que guardar:** la caza de ayer **vivió solo
+# en el chat**. El puntero viejo siguió en el disco en DOS sitios —línea 12 de
+# `progress.md`, campo `siguiente acción`, y la cola de `[S-044]`— y el arranque
+# de hoy lo volvió a servir. **`L-029` con las tres cosas a la vez:** lo huérfano
+# no fue una decisión buena, fue **la caza de un error**; y lo huérfano no se
+# queda quieto, **vuelve más fuerte**.
+# ⭐ **Y la formulación final es suya:** *una corrección que no toca el disco es
+# una corrección que mañana no existe.* Yo le añadí el anillo de fuera —estaba
+# escrita y **sin commitear**, o sea a un `git checkout` de distancia— y ahí sí
+# tuvieron razón ellos al no adelantar el commit: **el protocolo cierra dentro de
+# la sesión, y adelantarlo habría sido fabricar urgencia el mismo día en que
+# escribimos que la urgencia no se audita.**
+#
+# 🔴 **HALLAZGO 2 — el círculo vicioso del identificador, y es la aportación de
+# método del día.** Iban a averiguar de quién era cada llave **preguntándoselo al
+# guion**, y lo que se estaba auditando era que el guion sabe de quién es cada
+# llave. **Eso sale verde pase lo que pase**: la respuesta queda definida por el
+# instrumento que se juzga. 🔑 **Es `T-060b` con la forma exacta** —allí *"cerrado"*
+# salía igual con el cortafuegos abierto que cerrado— y el arreglo es el mismo:
+# **un control de fuera**, aquí la consola de Anthropic, leída **antes** de correr.
+# Lo tomaron entero y la tabla del cierre lleva la columna *"identidad — de la
+# consola, antes de correr"*.
+# 🐛 **Y una trampa mecánica que se cazó leyendo el archivo, no suponiéndolo:**
+# `check_api_key.py` **NO carga ningún `.env`** —importa `json`, `os`, `sys`,
+# `urllib` y termina en `sys.exit(main(os.environ))`; las cinco apariciones de
+# `.env` están en prosa—. Editar el `.env` y correrlo habría dado la **puerta 1**
+# (*falta la llave*) o, peor, un valor exportado viejo. **Un rojo con la causa
+# equivocada**, en la primera corrida real de la pieza.
+# 📌 También quedó dicho lo que la puerta 0 significa —*"no es la del
+# laboratorio"*, nunca *"es la de `Default`"*— y que la **puerta 4 no es un
+# resultado**: con `claude-opus-5` un `529` cae ahí y significa *"no pude mirar"*.
+# Se cobró el mismo día: **diez `529` entre las 13:36 y las 13:46 UTC** dejaron
+# `teapp-server` sin comprobar, y **no se confundió con una llave mala.**
+#
+# 🥇 **HALLAZGO 3 — el que más valió, y salió de un `grep` de esta terminal.**
+# `[A-027]` decía *"esa llave la está usando algo más y no sabemos qué"*. Medido
+# aquí: **21 archivos `.py` en 8 niveles** (`00-setup` … `06b-memoria-skills`)
+# leen `ANTHROPIC_API_KEY` del `.env` de ESTE repo. **El "algo más" era el curso.**
+# 🔑 No es *"alguien podría revocarla"*: es que **producción iba a compartir
+# credencial con un repositorio donde se corren ejercicios a diario**, y el día
+# que se rote por un motivo del curso el síntoma le llega a alguien practicando
+# inglés **con la causa en otro repositorio**.
+# ⚖️ **Y el orden dejó de ser opinión: lo impuso `install.sh:89-95`** —*una llave
+# ya escrita no se pisa NUNCA*—, así que mandar hoy la provisional convertía el
+# arreglo de mañana en **edición a mano por SSH sobre la máquina viva**, por un
+# camino sin tests. Crear la llave cuesta $0; encender la EC2, no. **Lo barato
+# primero**, y por mecánica, no por preferencia.
+# 🔒 **Predicción sellada antes del clic** (sesión 46): *`teapp-server` dentro de
+# `Default` va a leer `1000`, no `50`.* **Sin resolver** — la saturación se la
+# llevó por delante. Queda como `T-087`.
+#
+# ⚠️ **DOS HUECOS QUE NOMBRÉ Y QUE LA LLAVE NUEVA NO CIERRA**, para que el
+# registro no diga *"`[A-027]` resuelta"* a secas: (1) dos llaves del mismo
+# espacio **comparten cubo y saldo**, y `Default` **no admite tope de gasto**
+# (`[D-062]`) — el curso y producción beben del mismo $6,55 sin suelo, que es
+# `[A-026]` con las apuestas subidas: **vaciar el saldo pasa de estropear una
+# medición a dejar sin tutor a personas reales**. (2) el portero **es ciego al
+# caso nuevo**: curso y servidor devuelven el mismo `1000`, así que mandar la
+# llave del curso pasa por la puerta 0 tan campante. **No hay que taparlo con
+# código** —colgar el freno del 1.000 es el rojo falso que se descartó ayer con
+# razón (`L-047`)— pero sí escribirlo. **`L-013`: cerrar un hueco no cierra los
+# demás.**
+#
+# ✅ **Una desviación que reportaron ELLOS sin que nadie preguntara:** `[D-063]`
+# prohibía imprimir *"ni un prefijo"* de la llave y imprimieron los 4 últimos
+# caracteres. Mi reparo no fue el acto —4 de 108 no reconstruye nada— sino
+# **dónde quedó**: la regla diciendo que no y la desviación dos párrafos abajo
+# diciendo que sí, o sea **la regla con asterisco de la sesión 57, que nadie baja
+# a leer**. Lo enmendaron a norma: *"los cuatro finales, solo en la terminal,
+# jamás en el repositorio"*. **Ahora la norma y la práctica dicen lo mismo.**
+#
+# ✏️ **Una discrepancia mía que NO tomaron, y queda anotada como suya.** El cierre
+# dice *"`[A-027]` era falsa"*. **No lo era:** decía *"la usa algo más y no
+# sabemos qué"* y **las dos mitades eran ciertas** — lo que le faltaba no era
+# verdad, era **resolución**, y se la dio un `grep`. 🔑 Importa por lo que enseña
+# dentro de un año: *"era falsa"* enseña **desconfía de tus corazonadas**; *"era
+# cierta y le faltaba un `grep`"* enseña **una suposición vaga se cobra midiendo,
+# no descartándola**. Lo planteé una vez, mantuvieron su redacción, y es su
+# archivo. Que una suposición naciera y muriera en dos horas dejando
+# `assumptions.md` intacto **está bien**, y en eso sí coincidimos.
+#
+# 🧭 **`LM.30` — LA LECCIÓN DE MÉTODO DEL DÍA:** **una tarea muerta que reaparece
+# con una FACTURA pegada deja de ser un duplicado y se convierte en la agenda del
+# día. La urgencia no se audita: se obedece.** Es la familia de `LM.20` (*está
+# escrito y nadie llega*), `LM.24` (*se llega antes a lo viejo*) y `LM.26` (*se
+# fabricó al comprimir*), con la vuelta que faltaba: aquí lo inventado **no fue
+# la versión cómoda sino la alarmante**, y por eso es peor — *"no hace falta hacer
+# nada"* invita a comprobar, *"llevas cuatro días perdiendo dinero"* invita a
+# correr. 📌 Y el antídoto es barato y ya está probado tres veces este mes:
+# **antes de obedecer una urgencia, preguntar de qué corrida sale.** Hoy salieron
+# dos comandos y catorce segundos.
+# 📌 **Suyo, y es el mejor apunte del cierre:** los tres hallazgos del día
+# —el arrastre, la llave compartida y el `529` que no era la llave nueva— salieron
+# todos de **no creerse el primer resultado**.
+#
+# 🧹 **DEUDA DE ESTE REPO, detectada hoy y sin tocar:** `LM.27`, `LM.28` y `LM.29`
+# viven en este `PROGRESO.md` y **`LESSONS.md` se quedó en `LM.26`**. El contrato
+# dice que las lecciones ascienden al terminar el nivel, pero `LM.24`–`LM.26` ya
+# subieron — así que la práctica real es *ascender sobre la marcha* y estas tres
+# se quedaron atrás. **Tres lecciones que solo viven en el archivo largo son tres
+# lecciones que `LM.24` predice que nadie va a alcanzar.** Es lo primero que hay
+# que hacer mañana aquí, y `LM.30` entra con ellas.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -11672,6 +11794,25 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   pide nada al lector no ofrece resistencia mientras se escribe.** → `LM.26`.
   📌 Y no hacía falta abrir ningún archivo para verlo: **nada dentro de la máquina
   puede encenderla, porque apagada no hay nada dentro corriendo.**
+- **Una tarea muerta volvió con una factura pegada** (sesión 67). `T-074` llevaba
+  **dos traspasos** viajando como pendiente estando cerrada desde el 2026-08-10
+  con testigo en el journal. El segundo día llegó **de prioridad nº 1** y con una
+  consecuencia inventada —*"la máquina encendida se come el plan gratuito"*— que
+  no salía de ninguna corrida: medido, `443` y `22` **mudos los dos**, y con la
+  EC2 apagada quien cobra son la IP elástica y el EBS, **no las horas de
+  instancia**. → **`LM.30`: la urgencia no se audita, se obedece.** Y el
+  mecanismo: la caza del día anterior **vivió solo en el chat**, el puntero viejo
+  se quedó en el disco, y el arranque siguiente lo volvió a servir.
+- **El instrumento que certifica una identidad que solo él define** (sesión 67).
+  Iban a averiguar de quién era cada llave preguntándoselo al guion **que estaban
+  auditando**. Eso sale verde pase lo que pase. → **La identidad tiene que venir
+  de fuera** (la consola, leída antes de correr). Es `T-060b` otra vez: *sin nada
+  escuchando en el 8000, "cerrado" salía igual con el cortafuegos abierto*.
+- **Un `.env` que nadie lee** (sesión 67). `check_api_key.py` no carga ningún
+  `.env`: termina en `sys.exit(main(os.environ))`. Editar el archivo y correrlo
+  habría dado *falta la llave* — **un rojo con la causa equivocada** en la primera
+  corrida real de la pieza. → Antes de preparar una prueba, mira **de dónde lee**
+  el programa, no de dónde crees que lee.
 - **`Juan` y `juan`: una persona en Windows, dos en Linux** (sesión 33, análisis
   previo del paso 4). Si un nombre escrito por el usuario se vuelve un nombre de
   archivo sin normalizar, el marcador se parte en dos al desplegar — **sin ningún
