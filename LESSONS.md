@@ -4119,3 +4119,77 @@ sobre un despliegue correcto; **aquí mentía mi propio instrumento de medida.**
 una medición sea **«no aparece»**, comprobar primero que **la medición ocurrió**.
 Un negativo tiene que traer su propia prueba de vida — el código de respuesta, el
 tamaño de lo recibido, algo. Un cero y un vacío se parecen demasiado.
+
+---
+
+### LM.32 — El sitio con más probabilidad de esconder el error siguiente es la corrección que acabas de hacer
+
+**Sesión 71**, y sale de cuatro rondas de auditoría sobre **una sola decisión**,
+en un día. La cadena, en orden:
+
+| ronda | qué se encontró |
+|---|---|
+| 1ª | un **techo que no existía** — se cayó una decisión entera |
+| 2ª | el arreglo del techo metió una **regresión viva**, cobrando, dos horas en producción |
+| 3ª | el arreglo de la regresión traía una **justificación que caducaba** |
+| 4ª | la justificación buena se quedó **sin guardián** |
+
+🔑 **Ninguna de las cuatro se habría visto sin la anterior.** Cada hallazgo vivía
+dentro del remedio del hallazgo previo. Eso no es mala suerte ni gente
+despistada: es dónde estaba mirando todo el mundo.
+
+**Por qué pasa, que es lo que hay que llevarse.** Una corrección se escribe en
+las peores condiciones posibles para escribir algo con cuidado:
+
+- **con prisa**, porque acaba de aparecer un error y molesta;
+- **con alivio**, porque se está arreglando — y el alivio no audita;
+- **con el foco puesto en el defecto viejo**, no en lo que se está introduciendo;
+- y **con una cicatriz que la avala**: *"esto lo acabamos de revisar"*.
+
+📌 **La cuarta es la peor y ya tenía nombre.** Es `LM.15` (*nadie audita un
+verde*) y `L-034` de TEAPP (*la cicatriz de haber sido auditado avala también las
+líneas que se añaden después*). Aquí sale su forma más pura: **el código recién
+corregido es el único del repositorio que nadie va a volver a mirar**, porque
+todos acaban de mirarlo.
+
+⚠️ **Y no es un argumento para revisar más.** Revisar más es lo que ya se estaba
+haciendo. Es un argumento sobre **dónde apuntar**: cuando alguien arregle algo
+que tú señalaste, **el arreglo entra en la cola de auditoría, no sale de ella.**
+Un error corregido no baja la probabilidad de error en esas líneas: la sube.
+
+🔗 Emparenta con `LM.28` (*la contrición ocupa el sitio del hallazgo*) — allí el
+informe se organizaba alrededor de la corrección, aquí es el **código**.
+
+---
+
+### LM.33 — Un dato raro que se comprueba y no se manda es trabajo, no silencio
+
+**Sesión 71, y esta la acreditó la otra terminal, que es lo que la hace valer.**
+
+Auditando su repo vi que la suite tardaba **39 s** donde por la mañana tardaba
+**17**. Tenía todo el aspecto de una regresión de rendimiento y de un hallazgo
+número seis. La corrí dos veces más: **39 / 36 / 27**. Era ruido de mi máquina.
+No lo mandé — o mejor dicho, mandé una línea diciendo que lo había comprobado y
+que no lo mandaba.
+
+Ellos lo devolvieron así: *"nos habría puesto a buscar una regresión inexistente
+medio día"*.
+
+🔑 **La cuenta es asimétrica y por eso importa.** Comprobarlo me costó dos
+minutos. Mandarlo sin comprobar les habría costado medio día — **a ellos**, y
+además con la mejor voluntad, porque un aviso de quien audita se atiende.
+
+⚠️ **Y ahí está el enganche con `LM.30`:** *la urgencia no se audita, se
+obedece.* Si eso es cierto —y está medido—, entonces **quien emite la alarma es
+el único filtro que existe**. El destinatario no va a hacer de segundo control:
+va a correr. Un falso positivo enviado no es «una pista más para que decidan
+ellos»; es una orden.
+
+📌 **Por eso el filtro es parte del trabajo de auditar, no un paso previo a
+auditar.** La mitad del oficio es lo que se manda; la otra mitad es lo que se
+descarta después de mirarlo. Y la segunda mitad **no deja rastro**, así que no se
+acredita nunca — salvo que alguien, como pasó hoy, se moleste en decirlo.
+
+🔗 Es `LM.31` con el signo cambiado. Allí: *cuando la medición diga «no aparece»,
+comprueba que ocurrió.* Aquí: **cuando la medición diga «algo cambió», compruébalo
+antes de que lo cambie otro.**

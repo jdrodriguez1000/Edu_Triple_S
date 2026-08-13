@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-13 (sesión 70, cuarta del día)
+**Última actualización:** 2026-08-13 (sesión 71, quinta del día)
 
 ---
 
@@ -1547,6 +1547,104 @@
 # **estas `LM.x` ascienden sobre la marcha, no al cerrar el nivel**, que era una
 # práctica real sin regla escrita. `LM.13` de TEAPP: *un acuerdo que depende de
 # que nadie se despiste no es un acuerdo, es una racha.*
+#
+# 🔬 **La 71 (QUINTA del 2026-08-13) fueron CUATRO RONDAS DE AUDITORÍA sobre UNA
+# SOLA DECISIÓN**, de `0395c1b` a `a0ccb1f`. Sin tocar la nube y sin gastar un
+# centavo. TEAPP cerró cuatro veces el mismo día para atenderlas, y las cuatro
+# rondas encontraron algo. **La cadena importa más que los hallazgos sueltos:**
+#
+# | ronda | qué se encontró |
+# |---|---|
+# | 1ª (`0395c1b`) | 5 hallazgos. El grande: **un techo que no existía** |
+# | 2ª (`3463f2c`) | el arreglo metió una **regresión viva**, cobrando, 2 h en producción |
+# | 3ª (`c89ae1d`) | el arreglo de eso traía una **justificación que caducaba** |
+# | 4ª (`a0ccb1f`) | la justificación buena se quedó **sin guardián** |
+#
+# 🔑 **EL HALLAZGO 1, y es el que sostenía todo.** `[D-070]` afirmaba que el
+# cliente de Anthropic *"corta a los 8,0 s pase lo que pase"*. Falso: `httpx`
+# reparte un `timeout=8.0` escalar a **cuatro fases con cronómetro
+# independiente** — `connect`, `read`, `write`, `pool` — que **suman 32 s**.
+# Medido aquí construyendo el cliente igual que la app, no recordado. Con eso se
+# caían las tres afirmaciones que colgaban: el tope de 8,06 s por práctica, el
+# *"el reloj de la ruta no puede morder por nada de dentro"* y los 1.944 ms de
+# margen. 📌 **La premisa no nacía en el commit auditado:** venía de `[L-045]` y
+# `[L-043]`, de días antes, y se heredó sin volver a comprobarla.
+# 🔑 **HALLAZGO 2 — dos argumentos que no podían ser ciertos a la vez.** La misma
+# decisión usaba *"el reembolso vive dentro del `except`"* y *"la cola no se
+# forma, por construcción"*. Si no hay cola, `cancel()` devuelve siempre `False`
+# y el reembolso **es código muerto**. Se resolvió con una corrida suya: un `504`
+# suelta la ficha de `anyio` **pero no el sitio del pool**, porque Python no sabe
+# matar un hilo. La falsa era *"no hay cola"*, y estaba escrita **seis líneas por
+# encima** del comentario que decía lo contrario, en el mismo archivo.
+# 🔴 **LA RONDA 2 ES LA QUE ENSEÑA, Y VA CONTRA MÍ.** Al repartir los 8 s entre
+# las cuatro fases le tocaron **4,0 s al `read`** — y `read` gobierna la espera
+# de cabeceras, o sea **la generación entera**. Su propia medida decía `4,72 s`
+# como peor de diez. **El arreglo de una afirmación falsa metió un corte real**,
+# por debajo de un valor ya medido, con el modo de fallo **cobrando la práctica**
+# y el log culpando a Anthropic. Estuvo dos horas vivo en producción.
+# 📌 **Y mi one-liner del primer informe tampoco arreglaba nada:**
+# `httpx.Timeout(8.0, connect=2.0)` deja 26 s. Escribí *"o mejor, fase por fase"*
+# en segunda posición, y **la línea que alguien copia es la primera que lee.**
+# 🧭 **SU MEJOR APORTACIÓN, y es una objeción a mí:** al correr su báscula por
+# sexta vez el peor caso subió otra vez — `44,9 → 45,9 → 49,2 → 50,6 → 56,3 →
+# 62,4 ms`. De ahí: **«el peor de N no es un techo: es un suelo que crece con
+# N»** — y me lo cobraron donde dolía, porque yo había colocado `read = 6,5`
+# justificándolo como *"38% por encima de los 4,72"*, **el mismo estadístico
+# inestable**. Tenían razón. 🔑 **La respuesta que salió de ahí es lo mejor del
+# día: `read` no debe estimarse, debe ser el MÁXIMO QUE CABE** — porque el coste
+# no es simétrico (pasarse cuesta cero, el reloj de la ruta es el backstop real;
+# quedarse corto cobra una práctica). Se calcula **por resta del presupuesto**,
+# no por medición. **El número no cambió; cambió el porqué** — y el porqué era lo
+# único que iba a engañar al siguiente que lo tocara.
+# 📌 **Y una diferencia que va en su contra y no a favor:** la distribución del
+# tiempo de generación **no está quieta** — la produce un sistema que no
+# controlan y que cambia sin avisar. Medirla hoy dice cómo era hoy. Es el
+# argumento definitivo contra afinar un timeout a una cola medida.
+#
+# 🧭 **`LM.32` — LA LECCIÓN DE MÉTODO DEL DÍA:** **el sitio con más probabilidad
+# de esconder el error siguiente es la corrección que acabas de hacer.** Las
+# cuatro rondas salieron todas del remedio de la anterior. Una corrección se
+# escribe con prisa, con alivio, con el foco en el defecto viejo y **con una
+# cicatriz que la avala**. Es `LM.15` y `L-034` en su forma más pura: el código
+# recién corregido es el único que nadie va a volver a mirar, **porque todos
+# acaban de mirarlo**. No es un argumento para revisar más — es sobre dónde
+# apuntar: **cuando alguien arregle algo que señalaste, el arreglo ENTRA en la
+# cola de auditoría, no sale de ella.**
+#
+# 🧭 **`LM.33` — y esta la acreditaron ELLOS, que es lo que la hace valer.** La
+# suite tardó `39 s` donde por la mañana tardaba `17`. Tenía forma de hallazgo
+# número seis. La corrí dos veces más — `39 / 36 / 27` — era **ruido de mi
+# máquina**, y no lo mandé. Ellos lo devolvieron: *"nos habría puesto a buscar
+# una regresión inexistente medio día"*. 🔑 **Dos minutos comprobarlo contra
+# medio día de ellos**, y engancha con `LM.30`: si la urgencia no se audita sino
+# que se obedece, **quien emite la alarma es el único filtro que existe.** El
+# filtro no es un paso previo a auditar: **es la mitad del trabajo**, y es la
+# mitad que no deja rastro.
+#
+# ✅ **Lo que ellos hicieron bien y conviene no perder:** enmendaron `[D-070]` en
+# vez de borrarla (con los punteros muertos tabulados), lo que permitió que la
+# segunda vuelta se hiciera en una hora; vieron morder cada test antes de darlo
+# por bueno; usaron **mi propio one-liner malo como sabotaje** para comprobar que
+# el test nuevo se ponía rojo; y estrenaron el formato de encargo —*"audita, no
+# me creas"*, con lista de afirmaciones y comandos— que es **lo que produjo los
+# hallazgos**: los tres primeros de la ronda 1 estaban DEBAJO de lo que un
+# resumen contaba.
+# ✏️ **Y me retracté de algo que dije la víspera.** Les había dicho *"pedid la
+# auditoría ANTES de cerrar"* (`[L-029]`). Su solución es mejor: **la ronda de
+# respuesta lleva commit propio**, y así no acoplan su ritmo al de esta terminal.
+# La condición real no es el orden commit/auditoría, es que **la auditoría llegue
+# mientras la decisión siga siendo reversible**. Hoy `[D-070]` se enmendó en 4 h.
+# 🛑 **Y la cuarta ronda se cerró diciendo que había que PARAR.** Hallazgos
+# decrecientes: techo falso → regresión → justificación caduca → un `assert` que
+# falta. Una quinta vuelta encontraría comas. **Una terminal que audita hasta
+# encontrar algo acaba fabricando hallazgos para justificar la ronda** — el
+# riesgo era mío, y por eso lo dije yo.
+# 🔲 **Queda vivo en su lado, y no se resuelve auditando:** un `assert` que ate
+# la resta de `[D-073]` (hoy `TIMEOUT_SECONDS = 9,9` pasa los dos tests en verde
+# y se come el margen entero), y **`T-093` — ~$0,09**, que contesta la única
+# pregunta viva: *¿son 10 s el presupuesto correcto de la ruta?* Con el percentil
+# y la tasa de corte **decididos antes de medir**, porque `max(40)` tampoco es un
+# techo. `[A-011]` cierra con eso, y esta vez sin techos inventados.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
