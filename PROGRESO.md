@@ -1457,6 +1457,74 @@
 # programa** — un reporte (`T-074`), un plan (preguntarle la identidad al guion
 # que se audita) y una suposición (`[A-027]`). Ninguno era código. Y eso es
 # justo lo que esta terminal puede hacer y la otra no: **no lo escribió.**
+#
+# 🔬 **La 69 (TERCERA del 2026-08-13) fue una AUDITORÍA PEDIDA, con el traspaso
+# escrito por ellos "para que audite, no para que me crea".** Es la primera vez
+# que llega una lista de comprobaciones concretas en vez de un resumen, y el
+# formato funciona: **tres hallazgos, y ninguno habría salido de leer el resumen.**
+# ✅ **Confirmado aquí:** árbol limpio con `76e9bee` y `f4b73b7` en `origin`,
+# **425 passed corridos sobre `f4b73b7`** (su número, correcto), `add_point` y
+# `read_score` **sin una sola llamada ni definición viva**, `[A-001]`/`[A-028]`
+# solo como comentarios de defunción, y `https://teapp.duckdns.org/` → `200` con
+# la página sirviendo `id="practice"`. Las dos citas que existen aguantan:
+# `[L-051]`→`[L-007]` es buena **y bien defendida** (*"hermana por el fondo, no
+# por el tema"*: allí `diff -r` gritaba «viejo» con el repo correcto, aquí el
+# navegador con el despliegue correcto), y `[D-066]`→`[D-050]` también.
+#
+# 🔴 **HALLAZGO 1 — dos de las citas que me mandaron verificar NO EXISTEN.** El
+# traspaso decía que `[D-066]` y `[D-069]` citan `[L-017]`, `[D-050]` y `[A-002]`;
+# buscadas en índice y cuerpo, **solo está `[D-050]`**. 📌 **Falla del lado
+# seguro** —mandaron a comprobar de más, no de menos— y eso es mérito. Pero es la
+# mecánica de siempre: **el traspaso describe el documento en vez de citarlo.**
+#
+# 🔴 **HALLAZGO 2 — `[A-001]` estaba BIEN clasificada, y lo comprobé porque creí
+# que no.** Mi objeción parecía sólida: una frase mala que sube el marcador
+# **confirma** *"cuenta practicadas, no correctas"*, no la desmiente — o sea el
+# mismo error que les señalé ayer con `[A-027]`. Fui al historial antes de
+# decirlo, y `[A-001]` traía **su propio criterio de falsación escrito**: *"si
+# sube y eso es lo que se quería → cierta; **si sube y chirría → falsa**"*. Por su
+# propia regla, *falsa* es correcto. 🔑 **La entrada estaba mejor construida que
+# mi objeción**, y no había nada que corregir. Es la lección de la 59 —*abrirlo no
+# basta, y no abrirlo tampoco*— resuelta del lado bueno por una vez: **la sospecha
+# se cobró en la fuente y murió ahí, sin llegar a ser un hallazgo falso.**
+# ⚠️ **Pero la misma frase mandaba a otro sitio y esa mitad NO se cumplió:** *"era
+# falsa → entra en `lessons.md`"*, y se fue a `decisions.md` (`[D-066]`), que es el
+# destino de la otra rama. **No se escribió ninguna lección, y hay una servida:**
+# `[A-001]` avisó el 2026-08-02 de que *"hoy no se nota porque el juez es falso y
+# aprueba todo"* y de que *"el coste crece: en el paso 8 sería rediseñar la
+# herramienta el mismo día que se enchufa el modelo"*. **Ocurrió hoy, al pie de la
+# letra, once días después.** 🔑 **Un maniquí no solo tapa un fallo: tapa una
+# DECISIÓN DE DISEÑO, y la devuelve el día en que es cara.** Es el activo más
+# valioso del día y no vive en ningún archivo.
+#
+# 🔴 **HALLAZGO 3 — `[D-069]` es más flojo de lo que ellos mismos avisaron, y no
+# por lo que avisaron.** Marcaron como punto débil *"no hay archivo de salida
+# guardado"*. El problema real es otro: **tres versiones del mismo dato y ninguna
+# coincide.** `[D-069]` dice `{"score": 1, "practice": 3}`; el traspaso dice cinco
+# llamadas y `practice: 2`; en disco, `data/users/jorge.json` dice `practice: 2`.
+# El `3` venía de una *"cuenta desechable"* que **desapareció con ella**. 🔑 **Si
+# la evidencia es "lo escrito en la entrada", dos escrituras que se contradicen la
+# anulan** — y quien mañana siga la instrucción de mirar el disco encontrará otro
+# número **sin manera de saber que es otra corrida**. Arreglo barato y sin gastar:
+# decir de qué cuenta era y que se borró.
+#
+# 🌐 **Y UN CASI-ERROR MÍO, que es el mejor dato del día.** Mi primera medición
+# del despliegue **no encontró `id="practice"`** y estuve a un paso de escribir
+# *"contradice tu afirmación 7"*. No lo era: `curl -s` había fallado al resolver
+# el nombre y devolvió **cuerpo vacío**, y mi `grep` leyó ese vacío como *"el
+# marcador no está"*. La corrida siguiente, en el mismo instante, dio `200` con
+# los tres contadores. 🔑 **`[A-017]` no cuesta una petición: FABRICA EVIDENCIA.**
+# Un fallo de resolución con `-s` es **silencioso y con forma de hallazgo**, y el
+# hallazgo que fabrica es *"el despliegue está roto"* sobre un despliegue bueno.
+# 📌 **Es `[L-051]` un anillo más afuera y conmigo de víctima:** allí la pantalla
+# mentía sobre un despliegue correcto; aquí mentía mi instrumento. → `LM.31`:
+# **un instrumento que falla devolviendo VACÍO no da un error, da el silencio —
+# y el silencio entra en un `grep` como si fuera una respuesta.** Es `LM.15`
+# (*nadie audita un verde*) con el vacío en el papel del verde. **Regla que sale:
+# cuando el resultado de una medición sea "no aparece", comprobar primero que la
+# medición ocurrió.**
+# ⚠️ **Los tres hallazgos llegaron con su sesión YA CERRADA** (`f4b73b7` hecho):
+# nacen huérfanos salvo que les den commit. `[L-029]` y `[L-049]` a la vez.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
