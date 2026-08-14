@@ -4272,3 +4272,90 @@ corroboración: es el mismo dato con otro sombrero.
 🔗 Es el remate de `LM.32`. El defecto vivía dentro de la corrección del día
 anterior, y **la corroboración inventada es justo el mecanismo** por el que una
 corrección se blinda contra la siguiente mirada.
+
+---
+
+### LM.36 — Identificar el término dominante y luego tratarlo como constante
+
+**Sesión 73.** `[L-043]` de TEAPP escribió, con razón, que la entrada de cada
+llamada al tutor apenas se movía (245–250 tokens) **porque la rúbrica pesa casi
+todo y la frase del alumno casi nada**. Y de ahí sacó la conclusión: *"o sea el
+coste por práctica es casi fijo"*.
+
+Tres días después alguien le añadió siete líneas a la rúbrica —el bloque `OK`/`FIX`
+que hacía falta para contar aciertos— y el coste por llamada subió un **30%**. La
+constante de precio siguió donde estaba.
+
+🔑 **El razonamiento acertó la mitad y se equivocó justo en el paso siguiente.** El
+término dominante estaba bien identificado. Lo que no se siguió es que **dominar y
+ser estable son cosas distintas**:
+
+> Que la rúbrica domine el coste es exactamente lo que vuelve el coste **sensible**
+> a editar la rúbrica.
+
+Si el sumando grande fuera el que no puedes tocar, la conclusión sería correcta.
+Aquí el sumando grande era **el único que se edita a mano**, y encima sin pensar en
+el precio: se tocó para arreglar otra cosa.
+
+📌 **La pregunta que faltaba, y es de una línea:** *¿quién puede mover el término
+que manda, y con qué frecuencia?* Un término dominante que nadie controla estabiliza
+el resultado. Un término dominante que se edita en cada iteración lo vuelve volátil,
+y peor: lo vuelve volátil **por motivos que no tienen nada que ver con el número**.
+
+⚠️ **Y el daño no fue el 30%.** Fue que la siguiente tarea llevaba escrita una
+conclusión pre-comprometida —*"si no cuadra, revisa `[A-010]`"*— que apuntaba al
+archivo equivocado. Una constante caducada no falla sola: **arrastra el diagnóstico
+del siguiente que la use.**
+
+🔗 Emparenta con `LM.23` (*medido no es lo mismo que anotado*): aquí el número
+estaba medido y anotado, y aun así era falso, porque **lo que se midió dejó de
+existir** y nadie lo notó.
+
+---
+
+### LM.37 — La cercanía no protege: estar al lado no obliga a nadie a hacer la resta
+
+**Sesión 73, y la formulación es suya.** El precio caducado de `LM.36` no se cazó
+cruzando dos archivos. Estaba **dentro de una sola entrada de `decisions.md`**:
+
+```
+línea 110 → "~361 y ~49 tokens por llamada"      (la corrida nueva)
+línea 161 → "comparar contra 60 × $0,00234"      (precio medido con 247)
+```
+
+Mismo autor. Mismo minuto de escritura. Cincuenta líneas de distancia. Y la entrada
+se contradecía a sí misma sin que nadie lo viera — incluido quien la escribió, e
+incluido el auditor, que llegó a lo mismo por el camino largo.
+
+🔑 **Esto desmonta un supuesto que llevábamos usando sin examinar.** Escribimos las
+decisiones juntas, en una entrada, **para que quien lea una lea la otra**. Ese es el
+antídoto que veníamos aplicando contra el bicho de la sesión 33 (la misma cosa en
+dos sitios diciendo cosas contrarias). Pues no basta:
+
+> **La cercanía pone los datos al alcance. No fuerza la operación entre ellos.**
+
+Leer dos números en la misma página no es compararlos. Hace falta que alguien
+decida dividir uno por el otro, y **nada en el formato lo pedía**.
+
+📌 **Lo único que habría mordido aquí es aritmético, no de proximidad.** El `$0,1404`
+era **un producto ya resuelto**. Un número calculado a mano y pegado en la prosa no
+se recalcula al releerlo — se lee como un hecho. Una **expresión visible** delata sus
+insumos:
+
+```
+mal:   "comparar contra $0,1404"
+bien:  "comparar contra 60 × COST_PER_CALL_USD"
+```
+
+La segunda forma no puede envejecer en silencio: quien la lea ve de qué depende, y
+si la dependencia cambió, el texto ya no dice lo mismo.
+
+⚖️ **Y la ironía que la hace memorable:** `measure_tutor.py` **ya sabía hacer esto**.
+`MAX_CALLS_PER_RUN` es una división, no un `106` escrito a mano. `TARGET_SAMPLES` es
+una división, no un `60`. El archivo llevaba dos sesiones defendiendo ese método —
+con el comentario explicando por qué un literal se queda quieto cuando cambia su
+insumo. **La prosa de `decisions.md` no lo heredó.**
+
+🔗 Es `LM.24` desde el otro lado. Allí el problema era que lo viejo se queda arriba y
+se alcanza primero. Aquí lo viejo y lo nuevo están **a la misma altura**, los dos
+visibles, y el defecto sobrevive igual. → `[L-059]` en TEAPP.

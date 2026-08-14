@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-14 (sesión 72)
+**Última actualización:** 2026-08-14 (sesión 73)
 
 ---
 
@@ -1742,6 +1742,116 @@
 # cerró **`T-079` por inferencia**, no por evidencia directa del día, y lo declaró
 # como decisión propia. **Es la segunda vez que a esa misma tarea le pasa** (ya se
 # desmarcó tras la auditoría del 13). Un ✅ que se puede volver a quitar.
+#
+# 💵 **La 73 (2026-08-14, misma fecha) AUDITÓ `[D-077]` Y CAZÓ UN PRECIO
+# CADUCADO QUE IBA A MANDAR LA SIGUIENTE TAREA AL ARCHIVO EQUIVOCADO.**
+# Supervisión: no ejecuté TEAPP, no llamé a la API, no gasté un centavo. Corrí
+# `pytest` y unos `git show`. Suite **439 → 440, MEDIDA AQUÍ** sobre `46cce85`;
+# su número era correcto las dos veces.
+# 🔴 **H-1, el que bloqueaba:** `[D-077]` mandaba comparar el cargo real contra
+# `60 × $0,00234 = $0,1404`. Ese `$0,00234` es de `[D-058]`, medido el **11 de
+# agosto** sobre llamadas de **247 tokens de entrada**. La corrida de `T-093`
+# gastó **361**. 🔑 **La causa la medí, no la supuse:** `[D-066]`/`[D-067]` le
+# añadieron el bloque `OK`/`FIX` a `GRAMMAR_RUBRIC` el día 13 — **678 → 1.016
+# caracteres, +49,9%**, contra **+46,2%** de tokens de entrada. Las dos cifras se
+# persiguen.
+# ⚠️ **Y lo grave no era el número, era la conclusión pre-escrita:** *"si no
+# cuadra, lo que hay que revisar es `[A-010]`"* — el tope de 20 prácticas al día,
+# que no tiene nada que ver. La tercera explicación **estaba impresa en la salida
+# de la propia corrida** y nadie la miró. Pre-comprometer una conclusión única fue
+# el error; pre-comprometer la **lista de ramas** no lo es.
+# 🧭 **`LM.36` — la lección madre del día, y sale de su propia `[L-043]`:** aquella
+# escribió *"la entrada apenas se mueve, la rúbrica pesa casi todo, o sea el coste
+# por práctica es casi fijo"*. **Identificó bien el término dominante y acto
+# seguido lo trató como constante.** Es al revés: **que la rúbrica domine el coste
+# es exactamente lo que vuelve el coste sensible a editar la rúbrica.**
+# 🥇 **Y ELLOS LO ENCONTRARON MEJOR QUE YO.** Yo lo cacé cruzando dos documentos
+# (la corrida contra `[D-058]`). Ellos lo encontraron **dentro de uno solo**:
+# `decisions.md:110` dice *"~361 y ~49 por llamada"* y `decisions.md:161` razona
+# con el precio de 247 — **la misma entrada, mismo autor, mismo minuto, a cincuenta
+# líneas**. 🔑 **`LM.37`: la cercanía no protege.** Escribíamos las decisiones
+# juntas para que quien lea una lea la otra; estar al lado **no obliga a nadie a
+# hacer la resta**. Lo único que habría mordido es aritmético — que el `$0,1404`
+# fuera una **división visible** y no un producto ya resuelto. `measure_tutor.py`
+# ya escribía sus constantes como divisiones; la prosa no lo heredó. → `[L-059]`.
+# ⚖️ **La decisión del día era suya y la pregunta estaba mal planteada.**
+# Preguntaron *"¿dejo el `0,00234` marcado como caducado, o subo al `0,00304`
+# derivado?"*, o sea medido-contra-derivado. **Esa opción no existía:** `0,00234`
+# tampoco es hoy un número medido — es la medición de una rúbrica que ellos mismos
+# borraron. **Las dos opciones metían en el código un número sin medir, y una era
+# conservadora.** Ahí se acabó. Subieron a `0,00304` con etiqueta de tres partes.
+# 🔑 **Tres apoyos, en orden de peso:** (1) esa constante **no afirma nada, divide**
+# —es la calibración de un freno, no una afirmación sobre el mundo, y la regla 6
+# protege afirmaciones; (2) la dirección del error **ya la habían decidido ellos**
+# (*"errar del lado seguro: el tope se queda corto, nunca largo"*) y hoy estaba
+# **invertida**; (3) un `caducado` en un comentario es `LM.13` — **una nota, no un
+# freno**. 📌 **Y localicé el acantilado, que es lo que abarató la decisión:**
+# `int(0,25 / x) ≥ 60` → hasta **$0,00416** el freno sigue permitiendo la tanda de
+# 60. Con `0,00304` caben **82**. Gratis de un lado, dinero del otro.
+# ✅ **El mejor artefacto del día es suyo: un test que cruza `MAX_CALLS_PER_RUN` con
+# `TARGET_SAMPLES`.** Uno sale del dinero y el otro de la regla de tres, y **nadie
+# los cruzaba nunca**: si el coste sube de `$0,00416`, el monedero corta antes de
+# las 60 muestras y `verdict_for` devuelve `SIN VEREDICTO` **después de haber
+# gastado** — se paga y no se concluye. El margen pasó de comentario a morder.
+# 🔒 **`T-095` NO SE CERRÓ, y eso fue deliberado.** Antes de abrir la consola se
+# selló `[D-079]`: **banda `$0,156–$0,205`** —barre *todos* los repartos
+# entrada/salida, no es un ±10% a ojo—, el espacio a leer (`teapp-measure`, no el
+# total de la organización), la línea base de `[D-062]`, y **cuatro ramas A/B/C/D
+# escritas antes de mirar**. Es la sesión 46 aplicada a una lectura en vez de a un
+# clic: cuesta $0 y es lo único que después distingue una explicación de una
+# racionalización.
+# 📊 **LA LECTURA, del 2026-08-14 a las 15:08 UTC** (10:08 Colombia, UTC−5; la zona
+# va dentro del dato, `[D-046]`). **El día 14 está limpio AL TOKEN:** consola
+# `21.668 / 2.959`, `T-093` medido `21.668 / 2.959` — **idénticos**. No hubo ni una
+# llamada ajena; no hay sondas que descontar. Y **la consola confirmó la derivación
+# al centavo**: semana `$0,2004` calculado contra **`$0,20` leído**, sobre un mix de
+# tokens distinto al que originó las tarifas. El día 14 sale en **≈$0,183, dentro
+# de la banda** → apunta a la rama A. 🚨 **Pero `T-095` sigue abierta a propósito:
+# ese `$0,183` lo derivé yo y el `$0,20` leído es de "últimos 7 días", no del 14.**
+# Falta leer la barra del día en *Costo diario de tokens*. **Predicción sellada
+# antes de esa lectura: `$0,18–$0,19`.**
+# 🐛 **Dos vistas de la MISMA consola no cuentan lo mismo, y lo declaran ellas
+# solas:** `Uso` dice *"incluye la API **y la Consola**"*, `Costo` dice *"**solo**
+# uso de API"*. Hoy no muerde —el día 14 coincide exacto— **pero el día que un
+# número de `Uso` y uno de `Costo` no cuadren, la causa es esta, no un error de
+# cálculo.** Es el cuarto reloj de la 53 en otro instrumento.
+# 🧟 **Cabo suelto medido, no resuelto:** la semana (ago 10–16) trae **1.834
+# entrada / 338 salida** más que el día 14 — **~5 llamadas ≈ $0,018** que **no**
+# cuadran con las dos sondas anotadas. Algo más llamó con la llave del laboratorio,
+# en un día que no es el 14. **No bloquea y son centavos**, pero va anotado *con el
+# número dentro*: es la forma en que `LM.30` empieza.
+# ⏱️ **Y un dato que nadie pidió: el cargo apareció el MISMO día de la corrida.**
+# En AWS tardaba ~24 h y esa espera costó las sesiones 46–54. ⚠️ Es **una**
+# observación de **un** día, y lo que no se sabe también queda escrito: no se midió
+# el retardo, solo que a las 15:08 UTC ya estaba — está entre 0 y ~15 horas.
+# ✏️ **ME EQUIVOQUÉ EN `T-086`, y del peor modo posible.** Mandé saldarla con esta
+# lectura. `T-086` dice literalmente *"la próxima lectura de **AWS**"*, y `[A-024]`
+# lleva sellado desde el día 10 que son **cuatro bolsillos y no se mezclan**. 🔑 Lo
+# leí en **el resumen de la tarea**, no en su texto — *el resumen sale peor que el
+# documento*, que es lo que llevo tres sesiones señalándoles a ellos, cometido por
+# mí **al escribir un encargo cuyo tema era leer con cuidado**. Lo cazaron ellos.
+# Se salvó lo transferible: **ninguna lectura de costo se anota sin su hora UTC,
+# venga del bolsillo que venga.** `T-086` sigue abierta.
+# ✏️ **Y un segundo error mío que ellos devolvieron MEJOR.** Propuse buscar caché
+# de prompt en el objeto `usage` de las 60 llamadas: **el dato no existía** —
+# `measure_tutor.py` no escribe a disco y `client.usages` murió con el proceso.
+# Su sustituto es superior y también gratis: la caché es **opt-in**, exige
+# `cache_control`, y **no hay ni una coincidencia** en el código del proyecto.
+# ✅ **Verificado en la documentación, y salió un segundo cerrojo que no esperaba:**
+# el prefijo mínimo cacheable de `claude-opus-5` son **512 tokens** y la llamada
+# mide **361** — no habría cacheado ni con la marca puesta, **y en silencio**.
+# 🔑 **Dos cerrojos independientes le dan la vuelta a la rama:** si la consola
+# muestra caché, eso no es la explicación cómoda de un número bajo, **es la
+# sorpresa que hay que perseguir**. 📌 Para el paso 9: ese mínimo **no es monótono**
+# —`claude-opus-4-6` y `claude-haiku-4-5` piden **4096**—, así que un prompt que
+# cachea en un modelo puede dejar de cachear en otro **sin que nada avise**.
+# 🗣️ **Corrección suya sobre CÓMO respondo, y era justa:** preguntó *"¿cerramos la
+# sesión en la otra terminal?"* y yo ya lo había contestado — **al final de un
+# mensaje largo**, o sea enterrado. Tuvo que volver a preguntar temiendo estar
+# dando vueltas. **La respuesta a una pregunta directa va primero, no de remate.**
+# ✅ **Tercera sesión seguida en que un encargo mío vuelve mejorado** (`LM.37` es
+# suya, el test del cruce es suyo, el reencuadre de la caché es suyo). Y por cuarto
+# día se auditó con su sesión **abierta**: cero hallazgos huérfanos (`L-029`).
 
 ```
 Nombre: TEAPP  (Teaching English Application)
