@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-14 (sesión 73)
+**Última actualización:** 2026-08-14 (sesión 74)
 
 ---
 
@@ -1852,6 +1852,106 @@
 # ✅ **Tercera sesión seguida en que un encargo mío vuelve mejorado** (`LM.37` es
 # suya, el test del cruce es suyo, el reencuadre de la caché es suyo). Y por cuarto
 # día se auditó con su sesión **abierta**: cero hallazgos huérfanos (`L-029`).
+#
+# 🔐 **La 74 (2026-08-14, CUARTA del mismo día) CONVIRTIÓ UNA SOSPECHA MÍA EN UN
+# HECHO MEDIDO POR ELLOS, Y CERRÓ `T-089` COMO CLASE DE SEGURIDAD.** Supervisión:
+# no ejecuté TEAPP, no llamé a la API, no gasté un centavo. Leí su repo y corrí
+# `git`/`grep`. Commits del día allá: `8b9b37f` (`T-089` + `T-097` + `[L-061]`) y
+# `6c7b5a7` (`[D-080]`).
+# 📊 **`T-095` cerrada: la barra del día 14 dio `$0,18`** — dentro de mi banda
+# sellada `$0,18–$0,19`. **Pero la lectura vale menos de lo que parece, y lo cazaron
+# ellos** (`[L-060]`): la consola redondea al céntimo, así que `$0,18` solo dice que
+# el número vive en **`[0,175 – 0,185)`**. Las dos predicciones —mi banda y su
+# derivación de `$0,183`— **caben dentro del mismo redondeo**. El instrumento no
+# tiene la finura que pedía el método.
+# ✏️ **El matiz que le añadí, y lo mantengo:** de ahí NO se sigue que la lectura no
+# midiera nada. Excluyó las ramas B/C/D **y mató el 60% superior de mi propia
+# banda** (`0,185–0,19` habría salido como `$0,19`). 📌 **Un resultado nulo *para
+# discriminar dos hipótesis* no es un resultado nulo.** Importa decirlo porque *"el
+# instrumento no tenía finura"* se desliza solo hacia *"no aprendimos nada"*.
+# 🧭 **`LM.38` — y el error es MÍO, que es lo que hay que guardar de hoy.** El coste
+# **no es una medida, es una cuenta**: `tokens × tarifa`, y encima redondeada para
+# mostrarla. Los tokens sí eran medida cruda, **y ya estaban leídos y ya habían
+# salido exactos** (consola `21.668/2.959` = `T-093` `21.668/2.959`). Tenía en la
+# mano un instrumento sin pérdida, aguas arriba, y sellé la predicción sobre el que
+# está aguas abajo y redondeado. 🔑 **No es `LM.15`** (allí el instrumento era ciego
+# y devolvía silencio): aquí **no es ciego, es de baja resolución y derivado de otro
+# que no lo es.** → **Sella la predicción sobre la medida más cruda que tengas, no
+# sobre la que la consola enseña más bonita.**
+# 🐛 **Su resumen de inicio decía *"la barra de costo del día 14 en AWS"*, y era
+# ANTHROPIC** (`teapp-measure`). `[A-024]`: cuatro bolsillos y no se mezclan. **Su
+# propia lista se contradecía sola** — `T-086` seguía listada como pendiente, y si
+# `T-095` hubiera sido AWS, `T-086` estaría cerrada por ella. ⚠️ **Es mi error de la
+# 73 en espejo** (yo mandé saldar `T-086` con esta lectura por leer el resumen de la
+# tarea y no su texto): **cuarta vez en cuatro sesiones que el resumen sale peor que
+# el documento, y esta vez cayeron los dos autores en la misma línea.**
+# 🔬 **`T-090` — voté NO, y con un dato, no con una opinión.** Leyendo su
+# `install.sh` encontré que su propia forma documentada era
+# `sudo TEAPP_DOMAIN=... ANTHROPIC_API_KEY=... bash install.sh`. 🔑 **Una variable de
+# entorno normalmente NO se ve en `ps`** —el entorno vive en `/proc/PID/environ`,
+# que solo lee su dueño, y por eso `create_account.py` tomando la contraseña por
+# `environ` fue **correcto** en la 56—. **Pero con `sudo` delante, `VAR=valor` deja
+# de ser entorno y pasa a ser un ARGUMENTO de `sudo`**, y las líneas de comandos son
+# públicas. 📌 **El precedente de la 56 aplica y falla a la vez: una palabra
+# (`sudo`) lo invierte.** No es `LM.20` (*la corrección ya estaba escrita*): es peor
+# —**un precedente que no transfiere parece verificado.**
+# ⚠️ **Lo entregué marcado como INFERENCIA, no medición**, que es justo lo que llevo
+# tres sesiones señalándoles. **Lo midieron ellos en doce segundos**: `sudo
+# FOO=secreto123 sleep 30 &` + `ps aux` **desde la cuenta `ubuntu`**, el
+# 2026-08-14 a las **18:54 UTC** → dos procesos de `root` con el valor entero a la
+# vista. Sospecha → hecho. `T-089` cerrada, y `T-097` (retirar la forma de los tres
+# sitios restantes) abierta y cerrada el mismo día.
+# 🚨 **`bash -n` NO CRUZABA EL DIFF, y ese fue mi mejor aviso del día.** Reportaron
+# *"arreglado y comprobado, `bash -n` → sintaxis OK"*, y los dos cambios eran
+# **comentarios y cadenas dentro de un `echo`**: pasar era casi seguro y no tocaba
+# lo único que había cambiado de verdad —**si la instrucción nueva funciona**.
+# → **`LM.39`: un verde que no cruza el diff no es evidencia sobre el diff.**
+# 📌 **Tercera cara del mismo bicho en UN día**: la barra redondeada no distinguía
+# dos predicciones, y `bash -n` no distingue una instrucción buena de una que no
+# arranca. **Instrumentos reales, que pasan, y ortogonales a lo que se afirma.**
+# ✏️ **Y aquí ME EQUIVOQUÉ EN LA DIRECCIÓN DEL RIESGO, aunque la alarma era buena.**
+# Predije que `sudo -E` podía no entregar la variable: Ubuntu trae `Defaults
+# env_reset` y ni `ANTHROPIC_API_KEY` ni `TEAPP_DOMAIN` están en el `env_keep`.
+# **Medido en la EC2: `llego: hola` — sí sobrevive.** La preocupación era legítima y
+# el desenlace fue el benigno. **Queda anotado como error de dirección, no como
+# acierto** — lo que se salvó es que la instrucción dejó de estar sin verificar.
+# 🔗 **Y esa medición decidía DOS preguntas, no una:** si `sudo -E` no hubiera
+# sobrevivido, `TEAPP_DOMAIN` tampoco llegaría, y los tres sitios que ellos habían
+# dejado (`README.md:45`, `console_steps.md:562`, `install.sh:59`) **no eran "el
+# mismo patrón sin secreto dentro": eran el mismo mecanismo.** Una medición, dos
+# criterios. 🔑 Y el de más tráfico era el que menos lo parecía: **`install.sh:59`
+# es un mensaje de error** — un README se hojea, **un mensaje de error se copia**, y
+# se lee justo cuando alguien improvisa una línea de comandos con algo roto delante.
+# 🧹 **Ofrecieron quitar el `-s` del `read` "para que quedara igual a lo que se
+# corrió el 13", y la oferta iba al revés.** Lo que se corrió el 13 **era un
+# instrumento, no un modelo a copiar**; alinear la recomendación con la corrida de
+# medición es dejar que la báscula herede a producción. **Es `T-072` de la sesión 50
+# otra vez** (`measure_body.py` escribiendo en el `data/` de verdad). El `-s` se
+# quedó, y además no necesita medirse: suprimir el eco es definicional.
+# ✅ **No hubo que rotar la llave:** `grep -c "sk-ant"` sobre `~/.bash_history` y
+# `/root/.bash_history` → **`0` y `0`**. El despliegue real del 13 ya había usado la
+# forma segura.
+# 🐛 **Cierre: su resumen dijo "dos mediciones" y fueron TRES.** La tercera es
+# justamente el `0 / 0` de los historiales, **la que mató la pregunta de rotar** —
+# el resultado de más peso del día, ausente del resumen. **Quinta vez del mismo
+# bicho, pero invertido: hoy el resumen SUBVENDIÓ trabajo real en vez de
+# deformarlo.** Lo detecté porque fui al repo en vez de creerle al parte.
+# 📍 **CÓMO QUEDA EL PASO 8:** `T-089` y `T-097` cerradas hoy. `[D-080]` anotada —el
+# paso 8 **no cierra**, y con el porqué real (*"una de las cuatro cambió de
+# categoría en cuanto se tocó"*, no *"quedan cuatro tareas"*) y con su límite escrito
+# para que no sirva de excusa. Abiertas: **`T-088`** (cosmética de verdad, y encima
+# depende de bajar a Haiku en el paso 9) y **`T-079`**.
+# 📍 **DÓNDE SE ARRANCA MAÑANA: `T-079` de primera, con `[D-077]` abierto y el día
+# entero por delante.** La pregunta es si su ✅ se sostiene o se cae por estar
+# **cerrada por inferencia** (tercera vez que a esa tarea le pasa). Se aplazó a
+# propósito: era la cuarta sesión del día y necesita evidencia propia — **`D-041`
+# falló en la 54 no por un mal argumento, sino porque la sesión se acabó antes de
+# llegar al clic.**
+# ⏳ **`T-086` sigue esperando su lectura de AWS**, con la hora UTC anotada **antes**
+# del número — el hábito que salió de `[D-079]`.
+# ✅ **Cuarta sesión seguida en que un encargo mío vuelve mejorado** (`[L-060]` es
+# suya, el `-s` es suyo, las tres mediciones son suyas). Y por **quinto día** se
+# auditó con su sesión **abierta**: cero hallazgos huérfanos (`L-029`).
 
 ```
 Nombre: TEAPP  (Teaching English Application)
