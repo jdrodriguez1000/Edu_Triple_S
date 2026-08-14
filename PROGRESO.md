@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-14 (sesión 74)
+**Última actualización:** 2026-08-15 (sesión 75)
 
 ---
 
@@ -1952,6 +1952,121 @@
 # ✅ **Cuarta sesión seguida en que un encargo mío vuelve mejorado** (`[L-060]` es
 # suya, el `-s` es suyo, las tres mediciones son suyas). Y por **quinto día** se
 # auditó con su sesión **abierta**: cero hallazgos huérfanos (`L-029`).
+# 🧭 **La 75 (2026-08-15) FUERON CUATRO RONDAS DE AUDITORÍA SOBRE UNA MISMA
+# SESIÓN SUYA, Y EN LAS CUATRO EL ARRANQUE QUE PROPONÍAN VENÍA CON UN DATO
+# MUERTO.** Supervisión pura: no ejecuté TEAPP, no llamé a la API, **$0,00**. Leí
+# su repo y corrí `git`/`grep`. Commits del día allá: `0e5fe25`, `d3384ff`,
+# `5d278a6`. Suite en **440**, y ninguna línea de lógica tocada en todo el día.
+# 🐛 **RONDA 1 — proponían empezar por `T-090`, *"la decisión nunca llegó a
+# `decisions.md`"*. Falso, y comprobado en doce segundos:** `[D-080]` existía
+# entera, 44 líneas, `decisions.md:95`, commit `6c7b5a7`, y su primera frase es
+# *"La pregunta era `T-090`"*. 🔑 **Y el porqué es lo que vale:** `progress.md` se
+# selló en `8b9b37f` y `[D-080]` se commiteó **después**, en `6c7b5a7`, tocando
+# solo `decisions.md`. El archivo de estado quedó congelado con la frase vieja.
+# → **`L-029` con vuelta nueva: aquí el trabajo huérfano SÍ se hizo y SÍ se
+# commiteó; lo huérfano fue la ACTUALIZACIÓN DEL ESTADO.** Un `progress.md`
+# sellado antes que el último commit **miente en la dirección más cara**: dice que
+# falta trabajo que ya está hecho, y se paga gastando el arranque siguiente en
+# repetirlo. Ellos lo escribieron como `[L-062]`.
+# 🐛 **Y el segundo aviso también era falso: `[A-024]` no está "sin comprobar",
+# está RETIRADA desde el 2026-08-11** y era falsa **al revés de como la contaban**
+# — sí hay tope, y de dos clases (`T-080`, medido en consola: saldo **6,55 US$**,
+# recarga automática **DESACTIVADA**, límite mensual 500 US$ inerte). Lo único
+# vivo de ahí es el disparador de `[D-057]` —el día que se recargue saldo, el 500
+# pasa a ser el único freno y se baja **antes** de volver a llamar— y que **los
+# 6,55 son del día 11**, con `T-093` y `T-095` corridas después.
+# ⚖️ **RONDA 2 — ME EQUIVOQUÉ, Y SU CORRECCIÓN ES MEJOR QUE MI OBJECIÓN.** Yo
+# pedí quitarle el ✅ a `T-079` *"por estar cerrada por inferencia"*, y eso era
+# falso: la medición existe, son 60 llamadas reales. **Lo que estaba mal era el
+# símbolo, no la medida** — `[D-077]` deja viva una condición que no depende de
+# nosotros (*"vale mientras Anthropic responda como el 2026-08-14"*), y eso **no
+# se cierra midiendo**: repetir la tanda daría otro verde igual de condicionado
+# por otros $0,18. → **`T-079` a 🟡 con el disparador arriba del todo, coste
+# $0,00.** Síntoma bien cazado, causa equivocada.
+# 🚨 **Pero su argumento traía una frase que contradecía su PROPIO código, y en la
+# dirección cara.** Escribieron *"cuatro relojes en paralelo, y la suma cabe en
+# los 9,0 por construcción"*; `app/tools.py:239` dice *"los 10 s de `api.py` **NO
+# sobran**: son la única garantía de reloj de pared que existe. Aquí abajo no hay
+# ninguna que lo sea"*. Dos errores en una frase: **son fases secuenciales** (si
+# fueran paralelas el techo sería `max(6,5)`, no la suma `9,0` — su propia
+# aritmética los desmiente), y **el `9,0` es una constante nuestra sumada a mano,
+# que el SDK no impone**; lo único que corta por reloj de pared es
+# `attempt.result(timeout=10,0)` en `api.py:730`. 🔑 **El daño no es semántico:**
+# con esa lectura, un día alguien concluye que el `10,0` sobra y retira la única
+# garantía que hay. Su código ya preveía ese día; su resumen lo borraba.
+# 📌 **Y el eco que no me callé: los DOS cierres anteriores de `[A-011]` murieron
+# por colgarse de un techo inexistente** (`[D-070]`, `[L-054]`). El argumento de
+# hoy no falla, pero es la **tercera vez** que ese cierre se apoya en un techo.
+# ✅ **El reparo de `[A-030]` sí se deshace, y por un camino mejor que el suyo:**
+# `connect=1,5` tiene presupuesto propio y **no se come el `read`**, y por encima
+# está el `10,0` de pared, que corta **se ejerciten las fases que se ejerciten**.
+# No hace falta discutir el reparto.
+# 🧠 **Su `[L-063]` es de las buenas del proyecto, y la marcaron ellos:** no
+# guarda *"me equivoqué en las fases"*, guarda **la comparación entre los dos
+# párrafos del mismo mensaje** — el que citó `tools.py:245` pegado a la afirmación
+# salió correcto; el que razonó sin citar nada salió **falso en sus dos mitades**.
+# Mismo archivo abierto, mismo minuto. 🔑 **La cita no es cortesía para quien lee:
+# es lo que te obliga a mirar antes de afirmar.**
+# 🐛 **RONDA 3 — arreglaron la prosa de `T-090` y dejaron la COLUMNA en 🔲.** El
+# texto de la fila decía *"✅ CERRADA con `[D-080]`"* y el campo de estado —**el
+# que se lee a máquina**— seguía diciendo abierta. Es `[L-062]` **un día después y
+# en el archivo que acababan de arreglar**, y el desenlace era predecible: el
+# próximo arranque volvería a ofrecer `T-090` como trabajo por hacer. Tercera vez.
+# 🚨 **Y `T-088` no estaba aplazada: estaba ARMADA.** Su comentario decía *"da
+# igual cuál sea el modelo"* y **el paso 9 es, literalmente, bajar a Haiku** — un
+# comentario falso puesto justo delante de quien va a cambiar `MODEL`, el día que
+# lo cambie. **Al mirarla resultó peor que su ficha, y lo midieron ellos:** el
+# límite es **por modelo**, así que la firma del laboratorio no es el número 50
+# sino **el par (espacio, modelo)**; con Haiku `requests_limit == 50` sale falso,
+# `main()` imprime *"no es la del laboratorio"* y devuelve `EXIT_OK`. **El portero
+# acepta justo la llave que existía para rechazar, sin dar error.** Denegar por
+# defecto convertido en aceptar por accidente. Desarmada con **dos comentarios y
+# cero lógica**.
+# 🧭 **`LM.40` — y es la regla que le faltaba a `[D-080]`** (ellos la guardaron
+# como `[L-064]`): **una tarea aplazada espera; una tarea armada tiene
+# disparador.** Aplazar la primera es gestión; aplazar la segunda es dejar el
+# disparador sin dueño. `T-081` está aplazada —su daño ya está escrito en la ficha
+# y nada del paso 9 la activa—; `T-088` estaba armada. ⭐ **Su añadido es mejor que
+# mi enunciado:** una lista de pendientes **las iguala a todas por su aspecto**
+# —tres renglones, tres 🔲— y **el formato borra la distinción que importa.** Es la
+# misma enfermedad que la columna de `T-090` esa misma mañana.
+# 🔑 **DOS DE DOS, Y DE LA MISMA FORMA — esto es lo que hay que guardar del día.**
+# `T-089` estaba escrita como cosmética y era clase de seguridad; `T-088` estaba
+# escrita como *"corregir un comentario"* y era denegar-por-defecto roto. **En los
+# dos casos el archivo llevaba un aviso CORRECTO sobre una puerta a pocas líneas
+# de una línea que negaba la otra** (`install.sh` y `check_api_key.py`, distinto
+# archivo, mismo defecto). `[D-080]` eligió la opción (b) con **un** dato y lo dijo
+# honradamente; ahora tiene **dos**. → **`LM.41`: donde un archivo se molesta en
+# avisar de una puerta, hay que preguntar si existe una segunda que ese aviso no
+# cubre. Un aviso presente baja la guardia sobre el hueco de al lado.**
+# ⏱️ **RONDA 4 — el orden del cierre, y el criterio es nuevo: se ordena por
+# PERECIBILIDAD, no por importancia.** Preguntaron si escribir el cierre del paso
+# 8 o arreglar antes el guion de arranque. El guion es **lo más importante de los
+# dos**; el cierre es **lo único que se pudre**: descansa en cuatro juicios hechos
+# hoy que solo existen en la conversación, mientras el bug del guion es estable y
+# estará igual dentro de veinte minutos. Y el arreglo del guion es de los que se
+# ensanchan solos (protocolo de arranque, quizá `CLAUDE.md`, quizá un test):
+# empezar por ahí es **exactamente** cómo la sesión 54 se quedó sin llegar al clic
+# (`[D-041]`). → Cierre primero, guion después el mismo día, **y número a la tarea
+# del guion ANTES de las dos cosas**, que es `LM.40` aplicándose a sí misma.
+# ✏️ **Un falso positivo MÍO, y conviene que quede:** mi barrido de `tasks.md`
+# marcó `T-079` como fila en desacuerdo, y al abrir el diff la prosa estaba
+# reescrita a *"🟡 CERRADA CON CONDICIÓN VIVA"*. **Su verificación era buena y la
+# mía tenía ruido.** Un barrido automático que no distingue 🟡 de 🔲 comete la
+# misma falta que `LM.40` señala en la lista de pendientes.
+# ⏳ **Lo que queda vivo y NO bloquea:** el arreglo del guion de arranque (lee la
+# prosa en vez del campo de estado y **no se salta lo tachado** — `A-010`, `A-011`
+# y `A-014` esperan turno); el **saldo de `[D-057]`** antes del próximo bucle de
+# llamadas sea cual sea; y **`T-086`**, con la hora UTC anotada **antes** del
+# número.
+# 📍 **CÓMO QUEDA EL PASO 8:** las cuatro miradas una por una, como pedía
+# `[D-080]` — `T-089` cerrada midiendo, `T-079` resuelta como condición viva,
+# `T-081` aplazada con motivo, `T-088` desarmada. **Falta escribir el cierre como
+# decisión.**
+# ✅ **Quinta sesión seguida en que un encargo mío vuelve mejorado** (`[L-063]` es
+# suya, `[L-064]` mejorada por ellos, el hallazgo del par (espacio, modelo) es
+# suyo y medido). Y por **sexto día** se auditó con su sesión **abierta**: cero
+# hallazgos huérfanos (`L-029`).
 
 ```
 Nombre: TEAPP  (Teaching English Application)
