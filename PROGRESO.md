@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-13 (sesión 71, quinta del día)
+**Última actualización:** 2026-08-14 (sesión 72)
 
 ---
 
@@ -1645,6 +1645,103 @@
 # pregunta viva: *¿son 10 s el presupuesto correcto de la ruta?* Con el percentil
 # y la tasa de corte **decididos antes de medir**, porque `max(40)` tampoco es un
 # techo. `[A-011]` cierra con eso, y esta vez sin techos inventados.
+# ✏️ **Corregido en la 72: el `~$0,09` de arriba era MÍO y estaba viejo** — era
+# con 40 muestras. Al subir la N a 60 son **$0,14**. El dato desactualizado no lo
+# traía el informe de ellos: lo traía este archivo.
+#
+# 🔬 **La 72 (2026-08-14) AUDITÓ UN CRITERIO ANTES DE QUE SE GASTARA EL DINERO, y
+# esa es toda la sesión.** Supervisión pura: esta terminal no ejecutó TEAPP ni
+# gastó un centavo. Ellos llegaron con `T-093` lista para correr (~$0,14 contra
+# `claude-opus-5`) y la pregunta fue *"¿la lanzo?"*. La respuesta fue **todavía
+# no**, y salieron **tres defectos reales** del criterio, todos confirmados por
+# ellos corriéndolos.
+# 🔑 **POR QUÉ ERA AHORA O NUNCA, y es la idea que sostiene el día entero:** el
+# criterio de `T-093` estaba escrito **a ciegas la víspera** para que la medición
+# no pudiera acomodarse al resultado. Un criterio así solo se puede auditar
+# **antes**. Después de ver los números, arreglarlo y moverlo son indistinguibles
+# — no para quien lo hace, sino **para cualquiera que lo lea después**.
+# 🚩 **H-1, el grave: un umbral por encima del techo de lo que puede pasar.**
+# `ROUTE_THRESHOLD_SECONDS = 9,5` mientras el presupuesto entero del cliente son
+# `9,0` (`1,5 + 0,5 + 6,5 + 0,5`). Una llamada de 9,2 s salía **ÁMBAR**, y la
+# receta de ÁMBAR es *"quítale a connect/write/pool y dáselo a read"* — **receta
+# imposible**: aunque las otras tres fases quedaran en cero, `read` no pasa de
+# 9,0. El criterio mandaba a hacer algo irrealizable en vez de decir que el
+# presupuesto de la ruta estaba mal.
+# 🚩 **H-2 y H-3: dos frases que afirmaban cosas falsas**, y las dos a un comando
+# de distancia. `verdict_for(1,0,60)` imprimía *"1.7%, por encima del 5%
+# acordado"*; `verdict_for(0,0,45)` imprimía *"por debajo de 6.7%, que es el 5%
+# acordado"*. `ACCEPTED_CUT_RATE` no aparecía en **ninguna** comparación: se
+# interpolaba en textos y nada más. ⚠️ **Los umbrales no estaban mal** —exigir
+# cero cortes para VERDE es correcto, la regla de tres solo deja afirmar ≤5% con
+# cero observados—: lo falso era **lo que la frase decía de sí misma**.
+# 🔴 **H-5, y es el hallazgo del día aunque no cambió ningún número.** Al arreglar
+# H-1 justificaron el `9,0` con *"dos restas independientes que dan lo mismo"*.
+# Ninguna de las dos era lo que decía: la del cliente es una **tautología** (el
+# máximo si le das todo a `read` **es** el presupuesto del cliente), y la de la
+# ruta solo aterriza en 9,0 tomando el `1,0` como `ruta − cliente`, que era la
+# conclusión. Con los componentes de su propia tabla —`0,07` de trabajo local +
+# `0,50` de margen— da **9,43**, no 9,0. → **`LM.35`**, y la escribieron ellos
+# sobre sí mismos: *una corroboración inventada es peor que ninguna, porque
+# desactiva la revisión.*
+# 🧭 **`LM.34`, también suya:** *una función que nadie prueba es un párrafo con
+# paréntesis.* Escribir el criterio como función y no como párrafo fue **la
+# decisión que hizo posible auditarlo** con tres comandos y $0 — pero no tenía ni
+# un test, y por eso los dos defectos llevaban un día ahí. La forma ejecutable
+# promete comprobación y no la entrega.
+# ⬆️ **H-4 (la deuda que yo había dejado viva en la 71) CAMBIÓ DE CATEGORÍA por
+# culpa del arreglo de ellos.** Al derivar el umbral de `TIMEOUT_SECONDS`, el
+# hueco cliente→ruta pasó a ser carga estructural del criterio. Dejó de ser deuda
+# independiente. 📌 **Un arreglo correcto puede subir de prioridad una deuda
+# ajena** — lo anotaron ellos en `[D-076]`.
+# ⚠️ **H-6, tercera ronda seguida con la misma forma: número correcto, razón
+# equivocada.** Justificaron usar `0,07` con *"errar del lado seguro"*. La primera
+# mitad es cierta (subestimar produce falsos negativos), la segunda invierte la
+# asimetría: para un `read` pasarse cuesta cero, pero **para un guardián el error
+# permisivo es el peligroso**, porque produce un verde que no significa nada. La
+# razón buena la tenían al lado sin usarla: el margen de rendición (500 ms)
+# **domina siete veces** al sumando dudoso (70 ms).
+# 🟢 **Y la tanda salió VERDE: 0 de 60.** Mediana `2,88 s`, peor de 60 `3,91 s`,
+# contra un corte de `6,5 s`. `[A-011]` **muerta al tercer intento**, ascendida a
+# `[D-077]`. Techo del instrumento 30 s vs peor caso 3,91 s → **no hubo censura de
+# la cola**: ninguna muestra se perdió chocando contra la báscula.
+# 🔑 **LO QUE HACE QUE ESE VERDE VALGA ES EL ORDEN, no el color.** Los tres
+# arreglos **endurecieron** el criterio (ROJO bajó de 9,5 a 9,0, ÁMBAR dejó de
+# mentir, la tanda corta ya ni emite veredicto). **Salió verde con el criterio más
+# estricto, no con el más laxo** — y eso es lo único que lo distingue de un umbral
+# movido hasta que encajara.
+# 🧭 **H-7 — la condición, y sin ella la suposición no muere.** Las 60 llamadas
+# fueron **secuenciales, en ~3 minutos, un solo día**, contra un sistema que no
+# controlan. No son 60 observaciones independientes de *cómo le va a alguien
+# practicando*: son 60 llamadas pegadas bajo condiciones que duraron tres minutos.
+# Y hay prueba viva de que la condición varía: **`T-087` fue "Anthropic dejó de
+# saturar"**. 🔑 **El fallo que previene es peor que los dos anteriores: el cuarto
+# intento llegaría disfrazado de asunto zanjado** — alguien vería cortes en seis
+# meses, no encontraría el porqué, y leería un `[A-011]` cerrado diciéndole que eso
+# ya se resolvió.
+# ✅ **Y ELLOS MEJORARON MI PROPIA RECOMENDACIÓN.** Yo dije *"que la condición
+# quede adentro de la decisión"* y me quedé en `_persistence/`. La pusieron
+# **también junto al número en `app/api.py`**. 📌 **Un archivo de decisiones lo
+# consulta el que ya sospecha; el comentario al lado de la constante lo lee el que
+# no sospecha nada** — y ese es el que hay que interceptar.
+# ✅ **Tampoco se cobraron el "dato gratis".** Les ofrecí comparar el cargo real
+# contra `60 × $0,00234 = $0,1404`; lo anotaron como pendiente en vez de escribir
+# un número que no habían leído. **Regla 6 contra sí mismos en el momento más
+# tentador**, porque se lo habían ofrecido con la etiqueta que más invita a
+# tomarlo sin verificar. Quedó como `T-095`, con el aviso de `LM.31`: si la
+# consola no muestra el cargo, **eso no es un cero**.
+# 🛑 **Me apliqué mi propia regla de parada de la 71.** H-6 se entregó marcado
+# **"NO BLOQUEA"** y H-7 igual: una terminal que audita hasta encontrar algo acaba
+# fabricando hallazgos para justificar la ronda. Y por `LM.32`, **`[D-077]` entra
+# en la cola de auditoría, no sale de ella**: es la corrección más reciente y no
+# la he leído. Quedó como `T-094`, primero de mañana, antes que `T-090`.
+# 🗣️ **Corrección suya sobre el idioma, y era real:** esta terminal venía
+# escribiendo **español peninsular** en los encargos (*"vuestra"*, *"lanzad"*,
+# *"tenéis"*). Pidió **español colombiano** y tiene razón: es su curso y su
+# empresa. De la 72 en adelante, *ustedes / su / corran / arreglen*.
+# 🔲 **Queda anotado para mañana, y lo levantaron ELLOS solos:** el `session-closer`
+# cerró **`T-079` por inferencia**, no por evidencia directa del día, y lo declaró
+# como decisión propia. **Es la segunda vez que a esa misma tarea le pasa** (ya se
+# desmarcó tras la auditoría del 13). Un ✅ que se puede volver a quitar.
 
 ```
 Nombre: TEAPP  (Teaching English Application)

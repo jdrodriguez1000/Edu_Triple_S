@@ -4193,3 +4193,82 @@ acredita nunca — salvo que alguien, como pasó hoy, se moleste en decirlo.
 🔗 Es `LM.31` con el signo cambiado. Allí: *cuando la medición diga «no aparece»,
 comprueba que ocurrió.* Aquí: **cuando la medición diga «algo cambió», compruébalo
 antes de que lo cambie otro.**
+
+---
+
+### LM.34 — Una función que nadie prueba es un párrafo con paréntesis
+
+**Sesión 72, y la frase es de la otra terminal.**
+
+El criterio de aceptación de `T-093` se escribió como **función** (`verdict_for`)
+y no como párrafo en `decisions.md`. La razón que dieron era buena: *un criterio
+que hay que ir a buscar a un documento se reinterpreta; uno que imprime el guion,
+no.*
+
+✅ **Y funcionó**: esa decisión es lo que permitió auditarlo desde fuera con tres
+comandos de una línea y **cero dólares**, antes de gastar nada.
+
+```
+python -c "import measure_tutor as m; print(m.verdict_for(1,0,60))"
+  → "1.7%, por encima del 5% acordado"      ← afirma algo falso
+python -c "import measure_tutor as m; print(m.verdict_for(0,0,45))"
+  → "por debajo de 6.7%, que es el 5% acordado"  ← se contradice sola
+```
+
+🔑 **Pero la función no tenía ni un test.** Los dos defectos de arriba llevaban un
+día ahí. Estaban a un comando de distancia de cualquiera y **nadie había dado ese
+comando**, porque escribir algo como código se siente como haberlo verificado.
+
+⚠️ **Ese es el engaño exacto:** la forma ejecutable promete comprobación y no la
+entrega. Un párrafo al menos se lee como lo que es —una afirmación de alguien—.
+Una función parece que ya pasó por algún control, y **la sintaxis no es un
+control**: lo único que garantiza es que el intérprete no protestó.
+
+📌 **La corrección no es «volver al párrafo», es cerrar el circuito.** Añadieron
+12 tests, y **tres de ellos son exactamente los tres defectos**. La ventaja de
+escribirlo como función solo se cobra cuando alguien la llama.
+
+🔗 Es `LM.13` de TEAPP (*un freno que no has visto morder es una nota, no un
+freno*) aplicado al criterio en vez de al freno. Y engancha con `LM.15`: la
+función en verde no daba un dato falso, **daba silencio**.
+
+---
+
+### LM.35 — Una corroboración inventada es peor que ninguna, porque desactiva la revisión
+
+**Sesión 72, y esta también la escribió la otra terminal — sobre sí misma**, que
+es lo que la hace valer.
+
+Al corregir un umbral, justificaron el número con **dos caminos que supuestamente
+no se hablaban entre sí**: *«mirando el cliente da 9,0; mirando la ruta,
+10,0 − 1,0 = 9,0. Cuando dos caminos independientes dan lo mismo, no queda
+decisión que tomar.»*
+
+Ninguno de los dos era lo que decía ser:
+
+| camino | lo que parecía | lo que era |
+|---|---|---|
+| cliente | una resta | **una tautología** — «el máximo si le doy todo a `read`» *es* el presupuesto del cliente |
+| ruta | una resta independiente | solo daba 9,0 tomando el `1,0` como `ruta − cliente`, **que era la conclusión** |
+
+🔑 **Y el segundo ni siquiera aterrizaba ahí.** Hecho con los componentes que su
+propia tabla declaraba —`0,07` de trabajo local + `0,50` de margen— daba
+`10,0 − 0,57 = 9,43`, no 9,0. El `0,43` que faltaba no era una reserva: era la
+holgura que sobró de una elección anterior.
+
+⚠️ **El número era correcto.** Lo único falso era el argumento *de más*. Y por eso
+es peor que no haber puesto ninguno:
+
+📌 **Un argumento falso de más no suma un error: resta un revisor.** El que llega
+después ve dos caminos coincidiendo, concluye que eso ya está triangulado, y
+**deja de mirar**. Una afirmación sola invita a comprobarla; dos que se confirman
+entre sí invitan a seguir de largo.
+
+⚖️ **La forma de detectarlo, y es barata:** cuando dos derivaciones den el mismo
+número, comprobar que **ninguna usa como insumo lo que la otra produce**. Si el
+segundo camino resta una cantidad que se calculó restando el resultado, no es
+corroboración: es el mismo dato con otro sombrero.
+
+🔗 Es el remate de `LM.32`. El defecto vivía dentro de la corrección del día
+anterior, y **la corroboración inventada es justo el mecanismo** por el que una
+corrección se blinda contra la siguiente mirada.
