@@ -2110,10 +2110,16 @@
 # `PROGRESO.md` —con la corrida detrás—, así que subirlas fue reescribir, no
 # reconstruir. **El coste de la deuda no era el trabajo: era el riesgo de que se
 # perdieran**, y ese riesgo duró dos sesiones.
-# ⏳ **Y una quinta que se queda sin número a propósito:** de la ronda 4 de la 75
-# salió *"el cierre se ordena por PERECIBILIDAD, no por importancia"*, y nunca se le
-# asignó `LM.x`. **Está sin ascender y sin reservar** — si vale, se numera; si no,
-# se dice que no. Dejarla a medias es cómo nacieron estas cuatro.
+# ✅ **Y la quinta también subió, decidida por él: `LM.45`** — *al final de una
+# sesión no se ordena por importancia, se ordena por perecibilidad*. Venía de la
+# ronda 4 de la 75 (cierre del paso 8 vs. bug del guion de arranque) y llevaba dos
+# sesiones sin número. 🔑 **Su núcleo:** lo que se pudre no es la tarea, es el
+# estado mental que la sostiene — un bug es materia, cuatro juicios de esta mañana
+# son memoria de trabajo. Ante dos pendientes al final, la pregunta no es cuál
+# importa más sino **cuál de las dos existe fuera de tu cabeza**.
+# 📌 **`LESSONS.md` cierra la sesión en `LM.45`, sin huecos y sin candidatas
+# sueltas.** El bloque Método pasó de 37 a 45 lecciones en un día, y **ocho de las
+# ocho ya estaban razonadas**: ninguna se inventó hoy.
 # 📌 **Lo que NO se hizo a propósito:** no se tocó el `CLAUDE.md` de TEAPP. Las dos
 # reglas duras quedan en `GUIDE.md` §11.i como texto listo para copiar allá cuando
 # se abra esa terminal.

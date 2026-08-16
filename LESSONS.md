@@ -4568,3 +4568,45 @@ tocó tests, no fue un refactor: fue `LM.43` con otro nombre.
 es refactor** — es un ciclo nuevo, y empieza otra vez en rojo. Es la misma
 disciplina de `GUIDE.md` §11.f, punto 3: **una sola cosa por vuelta**, porque si
 cambias dos, lo que se movió no dice por qué.
+
+### LM.45 — Al final de una sesión no se ordena por importancia: se ordena por perecibilidad
+
+**Sesión 75, ronda 4.** Quedaban dos cosas y no cabían las dos con holgura:
+escribir el cierre del paso 8, o arreglar el guion de arranque que llevaba tres
+sesiones sirviendo datos muertos.
+
+**El guion era lo más importante de los dos. Y aun así iba segundo.**
+
+| | El cierre del paso 8 | El bug del guion |
+|---|---|---|
+| Importancia | menor | **mayor** |
+| De qué está hecho | **cuatro juicios de hoy que solo viven en la conversación** | una línea de código, estable |
+| Dentro de veinte minutos | **se ha perdido** | está igual |
+| Si se aplaza | hay que rehacer el razonamiento | se retoma donde quedó |
+
+> **Lo importante espera. Lo perecedero, no.** Y al final de una sesión lo
+> perecedero es siempre lo mismo: **lo que todavía no está escrito en ninguna
+> parte.**
+
+🔑 **Lo que se pudre no es la tarea: es el estado mental que la sostiene.** Un bug
+en un archivo es materia; cuatro juicios tomados esta mañana son memoria de
+trabajo, y esa se apaga con la sesión. Es `L-029` en el eje del tiempo — un
+hallazgo entregado tarde nace huérfano — y `LM.23` en el del registro: **medido no
+es lo mismo que anotado.**
+
+⚠️ **Y hay un segundo motivo, que es el que convierte el criterio en regla:** el
+arreglo del guion era de los que **se ensanchan solos** — protocolo de arranque,
+quizá `CLAUDE.md`, quizá un test. Empezar por ahí con poco tiempo por delante es
+**exactamente** cómo la sesión 54 se quedó sin llegar al clic (`[D-041]`): las dos
+sesiones del día se acabaron antes del paso que importaba. Una tarea de contorno
+incierto, puesta al final, **se come lo que quede**.
+
+⭐ **El desenlace tiene la parte que más vale, y es de forma:** cierre primero,
+guion después el mismo día, **y número a la tarea del guion ANTES de hacer
+ninguna de las dos.** Sin el número, el guion depende de que alguien se acuerde —
+que es `LM.40` aplicándose a sí misma: una tarea con disparador y sin ficha es un
+disparador sin dueño.
+
+📌 **Cómo se aplica sin pensarlo mucho:** ante dos pendientes al final de una
+sesión, no preguntes cuál importa más. Pregunta **cuál de las dos existe fuera de
+tu cabeza**. Esa es la que puede esperar.
