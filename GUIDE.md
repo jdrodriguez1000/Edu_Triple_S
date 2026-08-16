@@ -1700,6 +1700,47 @@ Es exactamente lo que pasó en la sesión 19: tres rondas de prompt, tres arregl
 **y cada uno destapó un defecto nuevo**, porque cada ronda se juzgó con una sola
 muestra.
 
+### 11.i 🚨 Cuando el que teclea es un agente
+
+Todo lo de arriba se escribió suponiendo que el ciclo A lo corre **una persona**.
+Desde el nivel 7 no es así: el código lo escribe una sesión de Claude, y esa misma
+sesión escribe y corre los tests. **El ciclo no cambia; cambia quién puede ser
+testigo de qué** (`LM.4`). El porqué está en `LM.42`–`LM.44`.
+
+**El reparto, y es la sección entera:**
+
+| Paso | Quién | Qué se exige VER |
+|---|---|---|
+| **1. El criterio** | **tú**, en prosa, **antes** | la frase escrita, con sus casos de borde (§8.l) |
+| **2. Rojo → verde** | la sesión que construye | **el rojo**, con su salida cruda. Sin rojo previo no hubo prueba |
+| **3. Refactor** | la sesión que construye | el diff toca código y **no** toca tests |
+| **4. Verificar** | **otra terminal**, desde fuera | lo medido contra lo dicho, no el reporte (`LM.5`) |
+
+⚠️ **El paso 1 no es opcional y es el que sostiene los otros tres.** Si el criterio
+lo inventa la misma sesión que escribe el código, el paso 2 se vuelve teatro —un
+test que él definió, que él hace fallar, que él hace pasar— y el paso 4 audita
+contra un criterio que escribió el auditado. Es §11.b para la capa determinista:
+*una rúbrica escrita después de ver las respuestas es la que el agente ya aprueba.*
+
+**Las dos reglas duras que van en el `CLAUDE.md` del proyecto:**
+
+1. **Ante un test rojo se arregla el código.** Modificar o borrar un test exige
+   autorización explícita del humano, **con la razón escrita**. Sin esto, la salida
+   barata siempre gana (`LM.43`).
+2. **Pide el refactor de forma explícita, cada ciclo.** El agente se detiene en
+   verde porque "los tests pasan" es la última condición comprobable que le diste
+   (`LM.44`).
+
+**Y lo que se mira, que es barato y local:**
+
+- 🔍 **El diff de los tests, aparte del diff del código.** Un test ablandado no se
+  anuncia: solo se ve ahí.
+- 🔍 **Que el rojo existiera.** Un test que nunca falló no probó nada, y no se
+  distingue de uno vacío mirando el verde.
+
+📌 El sabotaje (§8.l) sigue siendo obligatorio, pero **no cubre esto**: demuestra
+que el test vigila esa línea, nunca que la línea sea la correcta (`LM.42`).
+
 ### Nunca le pidas que cuente: dáselo contado
 
 La primera versión decía *"cualquier otra fecha, **cuéntala** desde esta"*. Y

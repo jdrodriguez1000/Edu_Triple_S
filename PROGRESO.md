@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-15 (sesión 75)
+**Última actualización:** 2026-08-16 (sesión 76)
 
 ---
 
@@ -2067,6 +2067,49 @@
 # suya, `[L-064]` mejorada por ellos, el hallazgo del par (espacio, modelo) es
 # suyo y medido). Y por **sexto día** se auditó con su sesión **abierta**: cero
 # hallazgos huérfanos (`L-029`).
+# 🧭 **La 76 (2026-08-16) NO TOCÓ CÓDIGO NI LA NUBE: $0,00, sin API, sin abrir
+# TEAPP.** Salió de una pregunta suya: *"en la otra terminal el mismo Claude
+# escribe el código y también escribe y corre los tests, ¿eso no está mal?"*.
+# Sí lo está, pero no por donde parece — y **la mitad de la respuesta ya estaba
+# escrita en este repo**, cosa que se vio al abrir los archivos, no al razonar.
+# 📚 **Lo que ya existía y no había que volver a escribir:** el sabotaje entero con
+# su tabla (`GUIDE.md` §8.l), las tres familias de casos con los bordes como la que
+# todo el mundo se salta (§8.l), el ciclo `ROJO → CONSTRUIR → VERDE → REFACTOR`
+# (§11.f), `LM.4` (quien construye no puede ser su propio testigo) y `LM.5` (la
+# supervisora vale por lo que no sabe). **Se re-explicó de viva voz material ya
+# escrito antes de mirar** — barato hoy porque no costó nada, pero es la forma de
+# `LM.20`: la respuesta estaba en el archivo y no se alcanzó.
+# 🔑 **El hueco real eran tres cosas, y ninguna estaba:** `LM.4` mira hacia AFUERA
+# (por eso hay dos terminales) y **no cubre lo de adentro** — que un test escrito
+# después del código hereda el malentendido del código y sale verde confirmándolo;
+# que ante un rojo hay una salida barata (ablandar el test) que **borra la decisión
+# escrita** y solo se ve en el diff; y que el refactor se cae **por estructura**,
+# porque "los tests pasan" es comprobable y "quedó limpio" no lo dice ningún
+# comando. → **`LM.42`, `LM.43`, `LM.44`**, escritas en `LESSONS.md`.
+# ✅ **Y `GUIDE.md` §11.i, nueva:** *"Cuando el que teclea es un agente"*. Es la
+# tabla de cuatro filas (quién define el criterio, quién teclea, qué se exige VER,
+# quién verifica), las dos reglas duras para el `CLAUDE.md` de TEAPP, y las dos
+# cosas que se miran gratis en el diff. Corta y en tabla a propósito: `LM.27`.
+# 📌 **`§11.f` se escribió suponiendo una persona corriendo el ciclo, y desde el
+# nivel 7 eso dejó de ser cierto.** No estaba mal: estaba escrita para otro mundo.
+# 🐛 **UNA COLISIÓN DE NUMERACIÓN, CAZADA JUSTO ANTES DEL COMMIT.** Las lecciones
+# nuevas se escribieron primero como `LM.38`–`LM.40` porque `LESSONS.md` termina en
+# `LM.37`. **Falso: `LM.38`, `LM.39`, `LM.40` y `LM.41` ya están nombradas en ESTE
+# archivo** por las sesiones 74 y 75 (el `LM.40` de ellas es *"una tarea aplazada
+# espera; una tarea armada tiene disparador"*). Renumeradas a `LM.42`–`LM.44` antes
+# de commitear. 🔑 **El mecanismo, que es lo que vale:** el número de una lección se
+# reserva en `PROGRESO.md` el día que se piensa y se gasta en `LESSONS.md` el día
+# que asciende — **son dos archivos distintos, y entre uno y otro el contador no
+# existe en ninguna parte.** Mirar el final de `LESSONS.md` es mirar el registro
+# equivocado.
+# ⚠️ **DEUDA ABIERTA, y es la que deja esta sesión:** `LM.38`, `LM.39`, `LM.40` y
+# `LM.41` **siguen sin ascender** a `LESSONS.md` — están solo en la narrativa de
+# este archivo, que es exactamente lo que `LM.24` dice que nadie alcanza. Cuatro
+# lecciones a medio nacer. **Siguiente paso concreto: subirlas**, y de paso mirar
+# si el hueco `38–41` en `LESSONS.md` necesita una nota que explique por qué está.
+# 📌 **Lo que NO se hizo a propósito:** no se tocó el `CLAUDE.md` de TEAPP. Las dos
+# reglas duras quedan en `GUIDE.md` §11.i como texto listo para copiar allá cuando
+# se abra esa terminal.
 
 ```
 Nombre: TEAPP  (Teaching English Application)

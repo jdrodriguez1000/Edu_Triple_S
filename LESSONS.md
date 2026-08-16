@@ -4359,3 +4359,108 @@ insumo. **La prosa de `decisions.md` no lo heredó.**
 🔗 Es `LM.24` desde el otro lado. Allí el problema era que lo viejo se queda arriba y
 se alcanza primero. Aquí lo viejo y lo nuevo están **a la misma altura**, los dos
 visibles, y el defecto sobrevive igual. → `[L-059]` en TEAPP.
+
+### LM.42 — Un test escrito después del código no lo examina: lo retrata
+
+Salió de una conversación de la sesión 76, sin código: *"en la otra terminal el
+mismo Claude escribe el código y escribe los tests, ¿eso está bien?"*
+
+`LM.4` dice que quien construye no puede ser su propio testigo, y de ahí salieron
+las dos terminales. Esto es la misma bestia **un piso más abajo**, dentro de la
+sesión que construye:
+
+> Un test escrito después del código se escribe **mirando el código**. No
+> comprueba lo que el programa debía hacer: comprueba lo que el programa hace.
+
+Si el código entendió mal el requisito, el test hereda el mismo malentendido y
+**sale verde confirmando el error**. Los dos artefactos están de acuerdo, y estar
+de acuerdo consigo mismo es justo lo que `LM.4` dice que no vale.
+
+⚠️ **Y el sabotaje (`GUIDE.md` §8.l) no caza esto.** Rompes la línea, el test se
+pone rojo, todo parece sano. Pero el sabotaje demuestra que el test *vigila esa
+línea* — nunca que esa línea sea la correcta. Es `L6b.9` otra vez: un verde dice
+una de dos cosas y no sabes cuál.
+
+**El discriminador, y cabe en una pregunta:**
+
+| ¿El test se podía escribir **sin haber visto** el código? | |
+|---|---|
+| Sí | es una prueba |
+| No | es un espejo |
+
+Por eso el orden importa más que la autoría. **No es un problema que el agente
+escriba el test: es un problema que lo escriba segundo.** El rojo primero no es
+ceremonia de TDD — es lo único que garantiza que el test no nació copiando la
+respuesta.
+
+📌 Y de ahí el paso previo: el criterio en prosa lo escribe el humano **antes**, y
+el test se deriva de esa frase. Es lo mismo que `GUIDE.md` §11.b ya exige para la
+rúbrica —*una rúbrica escrita después de ver las respuestas es la que el agente ya
+aprueba*— aplicado a la capa determinista, que era donde faltaba.
+
+### LM.43 — Ante un test rojo hay dos salidas, y la barata borra la prueba
+
+Un test se pone rojo. Hay dos formas de volver al verde: arreglar el código, o
+ablandar el test. **La segunda es más corta, más rápida y siempre funciona.**
+
+Y un agente al que se le dijo *"haz que los tests pasen"* no está eligiendo mal:
+está cumpliendo exactamente lo que se le pidió. El defecto está en la orden.
+
+> 🚨 **Pedir "que pase" pone el objetivo en el instrumento. El objetivo era el
+> comportamiento.**
+
+Es la misma forma de `L5b.23`/`L6b.19` —*cuando una buena respuesta reprueba, el
+sospechoso es el examen*— pero **invertida y peligrosa**: allí sospechar del
+examen era correcto, porque el examen lo escribió alguien con criterio y podía
+estar mal. Aquí el examen y el examinado los escribió el mismo. Sospechar del test
+es la salida cómoda, y `LM.26` ya dijo hacia dónde deriva un texto que nadie
+frena: hacia la versión que no le pide nada a nadie.
+
+**Lo que hace esto grave y no solo feo:** el test es el **único registro escrito
+del criterio**. Un comentario se ignora, una decisión conversada se pierde — el
+caso rojo es lo que pregunta *"¿seguro?"* (`GUIDE.md` §8.l, regla 6). Ablandar el
+test no debilita una comprobación: **borra la decisión**, y no deja rastro en
+ninguna parte salvo en el diff.
+
+**Las dos consecuencias operativas:**
+
+1. La regla se escribe en el `CLAUDE.md` del proyecto: *ante un rojo se arregla el
+   código; modificar o borrar un test exige autorización explícita, con la razón
+   escrita.*
+2. **El diff de los tests se mira aparte del diff del código.** Es barato, es
+   local, y es lo único que hace visible el cambio que nadie iba a anunciar.
+
+### LM.44 — El verde es donde el agente se detiene, y el refactor vive un paso después
+
+`GUIDE.md` §11.f ya escribe el ciclo entero —`ROJO → CONSTRUIR → VERDE →
+REFACTOR`—, pero lo escribió pensando en una persona corriéndolo. Con un agente
+tecleando, el cuarto paso se cae, y se cae **por una razón estructural, no por
+descuido**:
+
+| Paso | ¿Tiene condición de parada verificable? |
+|---|---|
+| rojo | sí — el test falla |
+| verde | sí — el test pasa |
+| **refactor** | **no** — "está limpio" no lo dice ningún comando |
+
+> **Un agente se detiene en la última condición que puede comprobar. "Los tests
+> pasan" es comprobable; "el código quedó bien" no.**
+
+Y el código se queda con la forma del primer intento, que por definición era el
+mínimo para pasar. Diez ciclos así y tienes una aplicación con todos los tests en
+verde que nadie puede leer — sin un solo momento en que algo se viera mal.
+
+⭐ **La salida es darle al refactor una salida observable**, que es lo que le
+faltaba. En un refactor de verdad:
+
+- el diff **toca código** y **no toca tests**;
+- los tests siguen verdes **sin haber sido modificados**;
+- por fuera el programa hace exactamente lo mismo.
+
+Las tres se miran en el diff, gratis y sin correr nada. Si el paso de refactor
+tocó tests, no fue un refactor: fue `LM.43` con otro nombre.
+
+📌 Y el borde que hay que saber decir: si aparece comportamiento nuevo, eso **no
+es refactor** — es un ciclo nuevo, y empieza otra vez en rojo. Es la misma
+disciplina de `GUIDE.md` §11.f, punto 3: **una sola cosa por vuelta**, porque si
+cambias dos, lo que se movió no dice por qué.
