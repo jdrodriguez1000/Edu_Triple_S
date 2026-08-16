@@ -2117,9 +2117,29 @@
 # estado mental que la sostiene — un bug es materia, cuatro juicios de esta mañana
 # son memoria de trabajo. Ante dos pendientes al final, la pregunta no es cuál
 # importa más sino **cuál de las dos existe fuera de tu cabeza**.
-# 📌 **`LESSONS.md` cierra la sesión en `LM.45`, sin huecos y sin candidatas
-# sueltas.** El bloque Método pasó de 37 a 45 lecciones en un día, y **ocho de las
-# ocho ya estaban razonadas**: ninguna se inventó hoy.
+# 🧭 **Y la conversación siguió hacia CUÁNDO SE CREA UN AGENTE, de una práctica
+# suya: montaba TDD con TRES subagentes —rojo, verde y refactor.** El corte estaba
+# en el sitio equivocado y **amplificaba `LM.43`**: el agente del verde tiene como
+# única métrica que el test pase, que es exactamente la orden mal formulada, ahora
+# convertida en puesto de trabajo y en manos de quien no escribió el test. 🔑 **El
+# error de fondo es copiar el organigrama:** los roles humanos resuelven un problema
+# de cuerpos —una persona no puede estar en dos sitios— y un agente no lo tiene.
+# **Lo que un agente no puede es ser testigo de sí mismo, y ese es el único corte
+# que compra algo.** → **`LM.46`**, con la pregunta que decide: *¿este agente
+# necesita saber MENOS que yo, o MÁS?*
+# ✅ **Segunda pregunta suya, y la respuesta fue que sí: un subagente verificador
+# DENTRO de la sesión que construye, antes de la auditora.** Pasa el test de
+# `LM.46` —necesita saber menos— si recibe el criterio y el diff **y no la
+# narrativa**, y sin permiso de escribir. Caza lo mecánico (¿existió el rojo?, ¿el
+# refactor tocó tests?, ¿se ablandó alguno?) y **no** puede juzgar si el criterio
+# estaba bien: eso sigue siendo de la terminal auditora. 🚨 **El peligro es `LM.41`
+# con otro traje: un veredicto verde se vuelve coartada** y la auditora baja la
+# guardia sin decidirlo. → **`LM.47`: evidencia con salida cruda, nunca veredicto; y
+# lista cerrada, donde lo no mirado se declara NO MIRADO.**
+# 📌 **`LESSONS.md` cierra la sesión en `LM.47`, sin huecos y sin candidatas
+# sueltas.** El bloque Método pasó de **37 a 47** lecciones en un día. Ocho de las
+# diez ya estaban razonadas y medidas de sesiones anteriores; **las dos nuevas
+# (`LM.46`, `LM.47`) salen de conversación, sin corrida detrás, y lo dicen dentro.**
 # 📌 **Lo que NO se hizo a propósito:** no se tocó el `CLAUDE.md` de TEAPP. Las dos
 # reglas duras quedan en `GUIDE.md` §11.i como texto listo para copiar allá cuando
 # se abra esa terminal.

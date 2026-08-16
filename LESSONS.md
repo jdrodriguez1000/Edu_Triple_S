@@ -4610,3 +4610,109 @@ disparador sin dueño.
 📌 **Cómo se aplica sin pensarlo mucho:** ante dos pendientes al final de una
 sesión, no preguntes cuál importa más. Pregunta **cuál de las dos existe fuera de
 tu cabeza**. Esa es la que puede esperar.
+
+### LM.46 — Un agente no se corta por fases del trabajo: se corta por quién puede ser testigo de qué
+
+**Sesión 76, sin código.** Contó cómo montaba TDD antes: **tres agentes, uno para
+el rojo, uno para el verde y uno para el refactor.** Es un diseño que se le ocurre
+a cualquiera y falla por tres sitios.
+
+**1. El corte no separa nada.** Los tres trabajan sobre el mismo código, en el
+mismo problema, uno detrás de otro. El del verde **lee el test que escribió el del
+rojo** — igual que si lo hubiera escrito él. `LM.4` pide un testigo que no comparta
+la construcción; aquí comparten todo menos el turno. **La ceremonia de la
+independencia, sin la independencia.**
+
+**2. Tira contexto y no compra nada con él.** Cada agente arranca frío. El del
+refactor no sabe por qué el código quedó así, qué se intentó ni qué se descartó: o
+refactoriza a ciegas, o pide todo el contexto de vuelta — y entonces no era un
+agente separado, era un traspaso caro.
+
+**3. 🚨 Y la peor: le da un cargo al defecto.** El agente del verde tiene **una
+sola métrica de éxito: que el test pase**. Es literalmente la orden que `LM.43`
+señala como mal formulada, ahora convertida en puesto de trabajo — y encima en
+manos de alguien que no escribió el test y no tiene ningún apego a él. **El reparto
+no frena el defecto: lo institucionaliza.**
+
+🔑 **El error de fondo es copiar el organigrama.** En una empresa los roles existen
+por una razón física: **una persona no puede estar en dos sitios, y dos personas no
+comparten cerebro.** El organigrama resuelve un problema de cuerpos, y un agente no
+tiene ese problema.
+
+> **Un agente sí puede hacer dos cosas seguidas. Lo que no puede es ser testigo de
+> sí mismo.** Ese es su único límite real — y por tanto el único corte que compra
+> algo.
+
+Y en TDD la continuidad **es** el producto: ves el rojo, y esa experiencia es la
+que te dice cómo escribir el código. Partirlo en tres tira lo único que el ciclo
+fabrica.
+
+**Las tres razones que sí justifican un agente nuevo:**
+
+| Razón | Qué compra | Señal |
+|---|---|---|
+| **Independencia de criterio** | un testigo que **no vio** construir | si le pasas tu contexto, es un eco (`LM.5`) |
+| **Aislamiento de ruido** | que 500 archivos o 40 MB de log **no entren** en tu contexto | solo te importa la conclusión |
+| **Paralelismo real** | tiempo | las tareas de verdad no se necesitan entre sí |
+
+⭐ **Y la pregunta que decide, que cabe en una línea:**
+
+> **¿Este agente necesita saber MENOS que yo, o MÁS?**
+>
+> **Menos, y su valor está en no saber** → es un agente.
+> **Más, o todo lo mío** → es un traspaso, y los traspasos pierden. Hazlo tú.
+
+Los tres agentes de TDD caían del lado equivocado: el del verde necesitaba todo lo
+del rojo, y el del refactor todo lo de los dos.
+
+📌 **El matiz, para no aplicarlo de más:** esto no dice que los subagentes sobren.
+Dice que **repartir por fases del trabajo es casi siempre el corte equivocado**, y
+repartir por quién puede atestiguar qué es casi siempre el correcto.
+
+### LM.47 — Un verificador entrega evidencia; en cuanto entrega veredicto se vuelve coartada
+
+**Sesión 76**, de una pregunta suya: ¿cabe un subagente que verifique **dentro** de
+la sesión que construye, antes de pasar el trabajo a la terminal auditora?
+
+**Cabe, y pasa el test de `LM.46`:** necesita saber **menos** que quien construyó, y
+su valor está ahí. Pero solo si el reparto es este:
+
+| Recibe | **No** recibe |
+|---|---|
+| el criterio escrito por el humano | el relato de cómo se llegó al código |
+| el diff y los artefactos | qué se intentó y se descartó |
+| poder correr comandos | **permiso de escribir** (`LM.5`) |
+
+**Lo que caza bien** es lo mecánico y comprobable desde los artefactos: si el rojo
+existió, si el diff del refactor tocó tests (`LM.44`), si algún test se modificó y
+con qué autorización (`LM.43`), si cada criterio tiene un test que le corresponda.
+Trabajo de volumen, tedioso, y **con incentivo estructural a no mirarlo** por parte
+de quien construyó. Ese es el perfil que justifica un agente.
+
+**Lo que no puede cazar**, y no es cuestión de esforzarse: si el criterio estaba
+bien, si algo se recortó en silencio, si el conjunto sirve. Eso pide estar **fuera
+del marco**, no en otro proceso dentro de él. No sustituye a la terminal auditora:
+**le quita de encima el trabajo mecánico.**
+
+> 🚨 **Y aquí está el peligro, que es `LM.41` con otro traje: un verificador que
+> devuelve un veredicto verde se convierte en una coartada.** La auditora abre el
+> informe, lee *"verificado"*, y esa zona baja de prioridad sin que nadie lo haya
+> decidido. La señal de diligencia sustituye a la diligencia.
+
+Y hay un segundo empuje en la misma dirección: a un agente al que se le pide
+*"revisa esto"* sin lista cerrada, **la versión cómoda no le ofrece resistencia
+mientras la escribe** (`LM.26`) — y este nace dentro de la sesión que construyó.
+
+**Las dos reglas de diseño que lo neutralizan:**
+
+1. **Evidencia, no veredicto.** No dice *"todo bien"*: dice *"corrí esto, salió
+   esto"*, con la salida cruda pegada. **Un veredicto desplaza la auditoría; una
+   evidencia la alimenta.**
+2. **Lista de comprobaciones cerrada, no "busca problemas".** Preguntas concretas
+   con su evidencia al lado. Es denegar por defecto aplicado a la revisión: **lo
+   que no está en la lista no se declara limpio, se declara NO MIRADO.**
+
+📌 **Y el eco que obliga a la regla 1:** *el resumen sale peor que el documento* ha
+salido **cuatro veces en cuatro sesiones** de este proyecto, con autores distintos
+cada vez. Un verificador que resume es la quinta oportunidad para el mismo bicho.
+**Salida cruda, no resumen.**
