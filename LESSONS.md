@@ -4360,6 +4360,110 @@ insumo. **La prosa de `decisions.md` no lo heredó.**
 se alcanza primero. Aquí lo viejo y lo nuevo están **a la misma altura**, los dos
 visibles, y el defecto sobrevive igual. → `[L-059]` en TEAPP.
 
+### LM.38 — Sella la predicción sobre la medida más cruda que tengas
+
+**Sesión 74, y el error fue de esta terminal.** Se selló una banda de coste
+(`$0,18–$0,19`) contra la barra de la consola. Salió `$0,18`, dentro de la banda —
+y **la lectura valía menos de lo que parecía**, cosa que cazaron ellos:
+
+> El coste **no es una medida: es una cuenta.** `tokens × tarifa`, y encima
+> redondeada al céntimo para mostrarla.
+
+`$0,18` no dice `$0,18`: dice que el número vive en **`[0,175 – 0,185)`**. Las dos
+predicciones del día —la banda de aquí y su derivación de `$0,183`— **cabían dentro
+del mismo redondeo**. El instrumento no tenía la finura que el método pedía.
+
+🔑 **Y lo que lo vuelve un error y no mala suerte:** los tokens **ya estaban
+leídos** y ya habían salido exactos (`21.668/2.959`, consola y `T-093`, idénticos).
+Había un instrumento **sin pérdida, aguas arriba**, en la mano — y la predicción se
+selló sobre el derivado y redondeado que está aguas abajo.
+
+| | `LM.15` | `LM.38` |
+|---|---|---|
+| El instrumento | **ciego**: devuelve silencio | **de baja resolución**, y derivado de otro que no lo es |
+| Cómo engaña | el silencio se lee como confirmación | el número se lee con más cifras de las que tiene |
+
+📌 **Y el matiz que hay que decir para no pasarse de frenada:** de ahí **no** se
+sigue que la lectura no midiera nada. Excluyó las ramas B/C/D y mató el 60%
+superior de la propia banda (`0,185–0,19` habría salido `$0,19`). **Un resultado
+nulo *para discriminar dos hipótesis* no es un resultado nulo.** Importa decirlo
+porque *"el instrumento no tenía finura"* se desliza solo hacia *"no aprendimos
+nada"*.
+
+### LM.39 — Un verde que no cruza el diff no es evidencia sobre el diff
+
+**Sesión 74.** Reportaron *"arreglado y comprobado: `bash -n` → sintaxis OK"*. Los
+dos cambios eran **comentarios y cadenas dentro de un `echo`**. Pasar era casi
+seguro, y no tocaba lo único que de verdad había cambiado: **si la instrucción
+nueva funciona.**
+
+> El instrumento era real, corrió de verdad y salió verde. **Y era ortogonal a lo
+> que se estaba afirmando.**
+
+**La pregunta que lo caza, y es una sola:** ¿este comando *podía* haber salido rojo
+por culpa de este cambio? Si la respuesta es no, el verde no es evidencia — es
+ruido con aspecto de prueba.
+
+🔗 **Tercera cara del mismo bicho en un solo día:** la barra redondeada no
+distinguía dos predicciones (`LM.38`), y `bash -n` no distingue una instrucción
+buena de una que no arranca. **Instrumentos reales, que pasan, y ajenos a la
+afirmación.** Es la familia de `LM.15` y `LM.31`: comprobar que la medición *ocurrió*
+no es comprobar que midiera *esto*.
+
+📌 En la capa de código esto tiene nombre y ya estaba escrito: es `GUIDE.md` §8.l
+—*una prueba que pasa sin el arreglo no prueba el arreglo*— visto desde el otro
+lado. Aquí la prueba pasa **con** el arreglo y tampoco prueba nada.
+
+### LM.40 — Una tarea aplazada espera; una tarea armada tiene disparador
+
+**Sesión 75, y el enunciado bueno es suyo.** `T-088` estaba escrita como *"corregir
+un comentario"* y aplazada al paso 9. Al mirarla, el comentario decía *"da igual
+cuál sea el modelo"* — **y el paso 9 es, literalmente, bajar a Haiku.**
+
+Peor de lo que decía su ficha: el límite de la API es **por modelo**, así que la
+firma del laboratorio no era el número 50 sino **el par (espacio, modelo)**. Con
+Haiku, `requests_limit == 50` sale falso, `main()` imprime *"no es la del
+laboratorio"* y devuelve `EXIT_OK`. **El portero acepta justo la llave que existía
+para rechazar, y sin dar error.** Denegar por defecto (`GUIDE.md` §4.c) convertido
+en aceptar por accidente.
+
+> **Aplazar una tarea que espera es gestión. Aplazar una tarea armada es dejar un
+> disparador sin dueño.**
+
+| | `T-081` | `T-088` |
+|---|---|---|
+| Estado | **aplazada** | **armada** |
+| Por qué | su daño ya está escrito en la ficha, y nada del paso 9 la activa | el paso 9 **era** su disparador |
+
+⭐ **Y el añadido de ellos es mejor que el enunciado:** una lista de pendientes
+**las iguala a todas por su aspecto** —tres renglones, tres 🔲— y **el formato borra
+la distinción que importa.** Es `LM.19` con otra cara: la lista dice qué falta por
+construir, nunca dijo cuál de esas cosas tiene una mecha encendida. Se desarmó con
+**dos comentarios y cero lógica**.
+
+### LM.41 — Donde un archivo avisa de una puerta, pregunta por la de al lado
+
+**Sesión 75. Dos de dos en el mismo día, y de la misma forma.** `T-089` estaba
+escrita como cosmética y era clase de seguridad; `T-088` estaba escrita como
+*"corregir un comentario"* y era denegar-por-defecto roto (`LM.40`).
+
+En los dos casos, **el archivo llevaba un aviso CORRECTO sobre una puerta a pocas
+líneas de una línea que negaba la otra** — `install.sh` y `check_api_key.py`,
+distinto archivo, mismo defecto.
+
+> **Un aviso presente baja la guardia sobre el hueco de al lado.** Donde alguien se
+> molestó en advertir de una puerta, pregunta si existe una segunda que ese aviso
+> no cubre.
+
+🔑 **El mecanismo es de lectura, no de código:** un aviso escrito señala que **ahí
+hubo alguien pensando**, y eso se lee —sin decidirlo— como *"esta zona ya está
+revisada"*. Es la misma familia de `LM.37` (la cercanía no protege) y de `LM.25`
+(*«lo abrí, luego lo sé»*): la señal de diligencia sustituye a la diligencia.
+
+📌 Y el efecto sobre una decisión: `[D-080]` había elegido su opción con **un**
+dato y lo dijo honradamente. Con el segundo caso, la misma decisión tiene **dos**,
+y eso sí se puede escribir.
+
 ### LM.42 — Un test escrito después del código no lo examina: lo retrata
 
 Salió de una conversación de la sesión 76, sin código: *"en la otra terminal el

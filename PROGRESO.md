@@ -2102,11 +2102,18 @@
 # que asciende — **son dos archivos distintos, y entre uno y otro el contador no
 # existe en ninguna parte.** Mirar el final de `LESSONS.md` es mirar el registro
 # equivocado.
-# ⚠️ **DEUDA ABIERTA, y es la que deja esta sesión:** `LM.38`, `LM.39`, `LM.40` y
-# `LM.41` **siguen sin ascender** a `LESSONS.md` — están solo en la narrativa de
-# este archivo, que es exactamente lo que `LM.24` dice que nadie alcanza. Cuatro
-# lecciones a medio nacer. **Siguiente paso concreto: subirlas**, y de paso mirar
-# si el hueco `38–41` en `LESSONS.md` necesita una nota que explique por qué está.
+# ✅ **DEUDA SALDADA EL MISMO DÍA (segundo commit de la sesión):** `LM.38`, `LM.39`,
+# `LM.40` y `LM.41` **ascendieron a `LESSONS.md`**, redactadas desde la narrativa de
+# este archivo. Vivían solo aquí, que es exactamente lo que `LM.24` dice que nadie
+# alcanza. Ya no hay hueco en la numeración: `LM.36 → LM.44` seguidas.
+# 📌 **Lo que se vio al redactarlas:** las cuatro estaban **razonadas y medidas** en
+# `PROGRESO.md` —con la corrida detrás—, así que subirlas fue reescribir, no
+# reconstruir. **El coste de la deuda no era el trabajo: era el riesgo de que se
+# perdieran**, y ese riesgo duró dos sesiones.
+# ⏳ **Y una quinta que se queda sin número a propósito:** de la ronda 4 de la 75
+# salió *"el cierre se ordena por PERECIBILIDAD, no por importancia"*, y nunca se le
+# asignó `LM.x`. **Está sin ascender y sin reservar** — si vale, se numera; si no,
+# se dice que no. Dejarla a medias es cómo nacieron estas cuatro.
 # 📌 **Lo que NO se hizo a propósito:** no se tocó el `CLAUDE.md` de TEAPP. Las dos
 # reglas duras quedan en `GUIDE.md` §11.i como texto listo para copiar allá cuando
 # se abra esa terminal.
