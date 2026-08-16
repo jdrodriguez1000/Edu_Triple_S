@@ -4716,3 +4716,54 @@ mientras la escribe** (`LM.26`) — y este nace dentro de la sesión que constru
 salido **cuatro veces en cuatro sesiones** de este proyecto, con autores distintos
 cada vez. Un verificador que resume es la quinta oportunidad para el mismo bicho.
 **Salida cruda, no resumen.**
+
+---
+
+### LM.48 — Las tres preguntas del agente en producción llegan tarde por diseño, y por eso se declaran cuando todavía no hay nada que medir
+
+**Sesión 77**, y la trajo él: *"para futuros proyectos, que no se nos olvide
+ninguna de las tres"*. Las tres son **evaluación, observabilidad y seguridad**.
+
+**Cada una responde una pregunta distinta, y en un momento distinto:**
+
+| | Pregunta | Cuándo |
+|---|---|---|
+| **Evaluación** | ¿funciona? | **antes** de soltarlo |
+| **Observabilidad** | ¿qué está haciendo ahora? | **mientras** corre |
+| **Seguridad** | ¿qué puede hacer, y qué le pueden hacer? | **porque** está expuesto |
+
+**El defecto no es que se olviden: es que ninguna duele el primer día.** Un agente
+en tu máquina, sin usuarios, funciona sin evals, corre sin registro y no lo ataca
+nadie. Las tres se cobran solas cuando ya hay algo que perder — y entonces se
+construyen a la carrera, encima de un diseño que no las esperaba.
+
+En este curso pasó exactamente así, y salió barato porque era un curso: evals
+llegó cuando no se sabía si el agente servía; seguridad llegó cuando una consulta
+devolvió **1000 filas en vez de 1** (`L5b.9`). En un proyecto de la empresa, quien
+paga ese aprendizaje es el cliente.
+
+> 🔑 **Por eso se declaran el día 1, cuando no hay nada que medir.** No se
+> *construyen* el día 1 — eso es imposible y no se pide. Se les da **dueño y
+> sitio**: dónde vivirán los tests, dónde se escribirá el registro, y cuál es la
+> lista de herramientas del agente.
+
+**Y una casilla marcada con una intención no es un freno, es una nota** (`LM.13`).
+Cada una se marca con un **artefacto que existe**:
+
+- **Evaluación** → hay archivo de tests **y salió en rojo al menos una vez**. Un
+  test que nunca falló no probó nada (`LM.42`).
+- **Observabilidad** → hay un registro escribiéndose, **y ya se abrió** para
+  responder una pregunta. Un registro que nadie leyó es disco ocupado.
+- **Seguridad** → está escrita **la lista de herramientas del agente y sus
+  permisos**. Esa lista *es* la superficie de ataque: sin ella no hay conversación
+  de seguridad posible, solo miedo.
+
+📌 **Y el orden entre ellas no es de importancia, es de dependencia:**
+observabilidad antes que seguridad, porque **sin registro no puedes ver morder un
+freno de seguridad** — ni demostrar que un ataque ocurrió. `LM.13` en su forma más
+literal.
+
+🚨 **Lo que esta lección NO puede hacer sola:** vive en `LESSONS.md`, que se lee
+cuando alguien viene a buscarlo. Por eso el mismo día bajó a `GUIDE.md` §6 como
+tres casillas ejecutables, y a `CLAUDE.md` como puntero de una línea. **Escribir
+algo cierto donde nadie lo alcanza es `LM.20`**, y en este repo ya pasó tres veces.

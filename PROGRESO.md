@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-16 (sesión 76)
+**Última actualización:** 2026-08-16 (sesión 77)
 
 ---
 
@@ -2165,6 +2165,69 @@
 # 📌 **Lo que NO se hizo a propósito:** no se tocó el `CLAUDE.md` de TEAPP. Las dos
 # reglas duras quedan en `GUIDE.md` §11.i como texto listo para copiar allá cuando
 # se abra esa terminal.
+#
+# ---
+#
+# 🧩 **SESIÓN 77 — la trajo él, y es de plan, no de código: LAS TRES PREGUNTAS.**
+# Arrancó preguntando *cuándo se trabaja seguridad —guardrails, inyección— porque le
+# causan dolor de cabeza*, y terminó en algo más grande: **que las tres no se le
+# olviden en los proyectos futuros que construya con lo aprendido aquí.**
+# 🔎 **El diagnóstico fue que las tres NO estaban en el mismo estado**, y meterlas en
+# la misma frase era justo lo que confundía:
+#   - **Evaluación → hecha** (nivel 5 + 5b). Hoy no es estudio: son los 348 tests de
+#     TEAPP. Lo que queda es mantenerla.
+#   - **Observabilidad → declarada, no construida.** Pieza propia del nivel 7 desde
+#     la sesión 6; el `registro.jsonl` del nivel 4 es su primer ladrillo.
+#   - **Seguridad → NI declarada.** Único hueco real: existía en pedazos bien
+#     aprendidos (`L5b.9`, `LM.13`, `LM.22`, los guardrails del nivel 4) **y sin
+#     ningún sitio que los juntara**. Aparecía solo cuando algo se rompía.
+# 🔑 **Lo que las une:** las tres solo tienen respuesta medible **cuando hay alguien
+# afuera usando la cosa** — por eso las tres aterrizan en el nivel 7, y no es
+# desorden del plan. Evaluación pregunta *¿funciona?* **antes**; observabilidad
+# *¿qué está pasando?* **mientras**; seguridad *¿qué puede hacer y qué le pueden
+# hacer?* **porque está expuesto**.
+# 🚨 **Y el riesgo de escribirlo mal ya lo tenía medido este repo:** dejarlo solo en
+# `LESSONS.md` es dejarlo **cierto y fuera de alcance** — `LM.20`, que en este repo
+# ya pasó tres veces (`T-068`, el freno de `T-059`, la tabla de `A-014`).
+# `LESSONS.md` y `GUIDE.md` se leen **cuando alguien va a buscarlos**; `CLAUDE.md` se
+# lee **siempre, sin buscarlo**. De ahí el reparto de hoy, uno por archivo:
+#   - **`CLAUDE.md`** → sección nueva *Las tres preguntas*: en CUALQUIER proyecto
+#     nuevo se **declaran** antes de la primera línea del producto. Corto, un
+#     puntero. Es el contrato, no el manual.
+#   - **`GUIDE.md` §6.b** → las tres como casillas ejecutables dentro de la checklist
+#     de proyecto nuevo. **§6.c nueva**: guardrail ≠ inyección, la regla del modelo
+#     que no es la barrera, y las tres consecuencias.
+#   - **`LESSONS.md` → `LM.48`** → el porqué. El bloque Método pasa de 47 a **48**.
+#   - **`README.md`** → seguridad entra al mapa como pieza nombrada del nivel 7, y
+#     **el tercero de "los tres temas que se preguntan siempre" cambia**: el proyecto
+#     integrador dejó de ser una pregunta el día que lo construyó, y su sitio lo
+#     ocupa seguridad. Su descripción queda intacta más abajo.
+# 🔑 **Las dos ideas que hacen el trabajo, y las dos son eco de lecciones suyas:**
+#   1. **`LM.13` aplicado a las casillas** — una casilla marcada con una intención no
+#      es un freno, es una nota. Cada una se marca con un **artefacto que existe**:
+#      tests **con un rojo real** (`LM.42`), un registro **ya abierto** para
+#      responder algo, y **la lista de herramientas del agente con sus permisos** —
+#      que *es* la superficie de ataque.
+#   2. **Se declaran, no se construyen, el día 1.** Al día 1 no hay observabilidad de
+#      producción y no se pide: lo que sí puede haber es **dueño y sitio**.
+# 📌 **Y el orden entre ellas es por DEPENDENCIA, no por importancia:**
+# observabilidad antes que seguridad, porque **sin registro no puedes ver morder un
+# freno de seguridad** ni demostrar que un ataque ocurrió.
+# 🩹 **El dolor de cabeza tenía causa concreta, y quedó escrita:** son dos cosas
+# distintas con el mismo miedo. Un **guardrail** es un freno tuyo contra accidentes;
+# una **inyección** es un ataque. Se intenta frenar el segundo con el primero —con
+# instrucciones al modelo— y por eso no funciona y no se ve por qué. **El modelo
+# nunca es la barrera: la barrera vive en el código, fuera del modelo.** Ya lo había
+# aplicado sin ponerle nombre en `T-071` (arreglado en el origen, `app/tools.py`).
+# ➡️ **SIGUIENTE PASO CONCRETO — sin cambios, sigue siendo el de la 76 y es en la
+# OTRA terminal:** copiar a la `CLAUDE.md` de TEAPP las dos reglas duras de tests de
+# `GUIDE.md` §11.i. **Hoy no se tocó TEAPP** — esta sesión fue de plan.
+# ⏳ **Lo que queda pendiente de ESTA sesión, y es chico:** `07-produccion/README.md`
+# (el puente) todavía **no nombra la pieza de seguridad** que el mapa ya le asigna.
+# No se escribió a propósito: ese archivo guarda análisis medido, y la pieza se
+# redacta cuando se trabaje, no antes.
+# ⏳ **Y sigue vivo del nivel 7, intacto desde la 76:** el guion de arranque de TEAPP
+# (`A-010`, `A-011`, `A-014`), el saldo de `[D-057]` y `T-086`.
 
 ```
 Nombre: TEAPP  (Teaching English Application)

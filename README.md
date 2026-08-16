@@ -47,7 +47,7 @@ Cada nivel es una carpeta. Se hacen en orden.
 | 5b | `05b-proyecto/` | **Proyecto integrador: agente de divisas y TRM**, desde un archivo vacío | Construir sin plantilla: harness + 5 herramientas + evals |
 | 6b | `06b-memoria-skills/` | Que tu agente **recuerde** y **sepa cosas** | Memoria persistente, **Skills** (habilidades cargadas a demanda) |
 | 6c | `06c-typescript/` | Portar **tu** agente a TypeScript | El mismo modelo mental en otro lenguaje |
-| 7 | `07-produccion/` 🌉 | API web + frontend con el agente adentro — **el código vive en otro repo**; aquí está el puente | **Observabilidad**, auth, costos por usuario, despliegue en **AWS** |
+| 7 | `07-produccion/` 🌉 | API web + frontend con el agente adentro — **el código vive en otro repo**; aquí está el puente | **Observabilidad**, **seguridad del agente**, auth, costos por usuario, despliegue en **AWS** |
 | 8 | `08-avanzado/` | Multi-agente: orquestador y workers | Orquestación, agentes programados, memoria y skills **compartidas** |
 | 📌 | `METODO.md` (raíz) | **Al terminar los 8:** el método destilado, para llevárselo a proyectos de verdad | — |
 
@@ -131,6 +131,13 @@ momento en que tiene una razón de ser: el nivel 7, donde hay navegador.
 Estos tres aparecen apenas alguien construye un agente de verdad. Están en el
 plan, cada uno en su sitio, y ninguno se puede adelantar sin que salga humo.
 
+> 🔄 **Cambiados en la sesión 77, a petición del estudiante.** El tercero era *el
+> proyecto integrador* (nivel 5b) — y dejó de ser una pregunta el día que lo
+> construyó. Su sitio lo ocupa **seguridad**, que era el único de los tres que no
+> tenía lugar en el mapa. Las tres se declaran ahora en cualquier proyecto nuevo
+> antes de la primera línea: ver `CLAUDE.md`, `GUIDE.md` §6.b y `LESSONS.md` →
+> `LM.48`. La descripción del proyecto integrador **sigue abajo**, intacta.
+
 ### Evaluación y rúbricas (nivel 5)
 
 Son dos cosas distintas y por eso se nombran aparte:
@@ -161,6 +168,29 @@ con usuarios reales encima.
 
 El `registro.jsonl` del nivel 4 es el primer ladrillo. El nivel 7 lo convierte en
 trazas, métricas, costo por usuario y alertas.
+
+### Seguridad del agente (nivel 7)
+
+Añadido en la **sesión 77**, a petición del estudiante. Era el hueco real del
+plan: llevaba todo el curso apareciendo **en pedazos, y siempre cuando algo se
+rompía** — los cinco guardrails del nivel 4, la inyección demostrada en vivo del
+5b (`L5b.9`), el grupo de seguridad de AWS del nivel 7 (`LM.22`). Nunca tuvo un
+sitio que los juntara.
+
+**Son dos cosas distintas con el mismo miedo, y confundirlas es el dolor de cabeza
+típico:**
+
+- Un **guardrail** es un **freno** que pones tú, contra accidentes: gasto, bucles,
+  respuestas gigantes. No hay enemigo.
+- Una **inyección** es un **ataque**: alguien escribe texto a propósito para que
+  tu agente haga lo que tú no querías.
+
+Intentar frenar lo segundo con instrucciones al modelo no funciona. La regla es:
+**el modelo nunca es la barrera; la barrera vive en tu código, fuera del modelo.**
+
+Aterriza en el nivel 7 porque es el primer sitio donde el agente recibe texto de
+desconocidos, con una tarjeta pagando los tokens. **Va después de observabilidad,
+por dependencia:** sin registro no puedes ver morder un freno de seguridad.
 
 ### El proyecto integrador (nivel 5b)
 

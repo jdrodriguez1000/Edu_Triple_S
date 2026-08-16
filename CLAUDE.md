@@ -73,6 +73,24 @@ Nunca borres lecciones viejas.
 
 ---
 
+## Las tres preguntas — en CUALQUIER proyecto nuevo, dentro o fuera del curso
+
+Antes de la primera línea del producto, estas tres quedan **declaradas** — con
+dueño y sitio, no construidas:
+
+1. **Evaluación** — ¿funciona? → dónde viven los tests
+2. **Observabilidad** — ¿qué está haciendo ahora? → dónde se escribe el registro
+3. **Seguridad** — ¿qué puede hacer y qué le pueden hacer? → la lista de
+   herramientas del agente y sus permisos
+
+Las tres se cobran solas cuando ya hay algo que perder, y entonces se construyen a
+la carrera. **Ninguna se marca prometiendo tenerla en cuenta: se marca con un
+artefacto que existe.**
+
+📌 El cómo está en `GUIDE.md` §6.b y §6.c. El porqué, en `LESSONS.md` → `LM.48`.
+
+---
+
 ## Cómo enseñar aquí
 
 - **Concepto antes que código.** Analogía del mundo real → luego el término técnico.

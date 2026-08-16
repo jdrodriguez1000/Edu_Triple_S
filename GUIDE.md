@@ -838,6 +838,68 @@ Cuando montes algo tuyo, fuera del curso, este es el orden:
 - [ ] Un script de verificación que falle temprano y claro (ver §7)
 - [ ] Correrlo y ver que pasa **antes** de escribir la primera línea del producto
 
+### 6.b Las tres preguntas — se **declaran** antes de la primera línea del producto
+
+No se construyen el día 1: se les da **dueño y sitio**. El porqué está en
+`LESSONS.md` → `LM.48`. Aquí está el cómo.
+
+- [ ] **Evaluación** — ¿dónde viven los tests? Crea el archivo aunque tenga un
+      solo caso. **Y ese caso tiene que salir en ROJO una vez**, antes de
+      arreglarlo. Un test que nunca falló no probó nada (`LM.42`). → §8
+- [ ] **Observabilidad** — ¿dónde se escribe el registro? Un `.jsonl` con
+      `timestamp`, qué se pidió, qué herramienta se llamó, `usage` y
+      `stop_reason` ya sirve. **Ábrelo una vez** y responde una pregunta con él;
+      un registro que nadie leyó es disco ocupado. → §4.c
+- [ ] **Seguridad** — escribe **la lista de herramientas del agente y qué permisos
+      tiene cada una**. Esa lista *es* la superficie de ataque. → §6.c
+
+> ⚠️ **Ninguna de las tres se marca prometiendo tenerla en cuenta.** Se marca con
+> un artefacto que existe: un archivo, una corrida en rojo, un registro abierto.
+> Un freno que no viste morder es una nota (`LM.13`).
+
+**El orden es por dependencia, no por importancia:** observabilidad antes que
+seguridad. Sin registro no puedes ver morder un freno de seguridad ni demostrar
+que un ataque ocurrió.
+
+### 6.c Seguridad: guardrail e inyección no son lo mismo
+
+Se confunden porque dan el mismo miedo, y por eso se intenta arreglar el segundo
+con el primero — que no funciona y no se ve por qué.
+
+| | Qué es | Contra qué |
+|---|---|---|
+| **Guardrail** | un **freno** que pones tú | accidentes: gasto, bucles, respuestas de 40.000 tokens |
+| **Inyección** | un **ataque** de alguien del otro lado | texto escrito a propósito para que tu agente haga lo que tú no querías |
+
+De los diez frenos de §4.c, la mayoría son guardrails. Ninguno es una defensa
+contra inyección.
+
+**La regla que resuelve el 80%:**
+
+> 🔑 **El modelo nunca es la barrera. La barrera vive en tu código, fuera del
+> modelo.**
+
+Una frase en el system prompt (*"nunca borres archivos"*) es una **sugerencia**: se
+pierde en el contexto, se ignora, y un texto hábil la voltea. Que la función
+`borrar_archivo()` **no exista** en la lista de herramientas — o que valide la ruta
+contra una carpeta permitida — es una barrera **física**. Ninguna frase la mueve.
+
+Tres consecuencias, y con eso tienes casi todo:
+
+1. **Todo texto que no escribiste tú es dato, no orden.** Lo que devuelve una API,
+   un PDF, una página web: entra al contexto como *contenido a leer*, nunca como
+   *instrucción a obedecer*.
+2. **Lo que hace daño es la herramienta, no la frase.** Un agente sin herramientas
+   peligrosas puede ser engañado todo el día: el daño máximo es que diga una
+   tontería. La pregunta real no es *"¿qué le pueden decir?"* sino **"¿qué puede
+   hacer, y con permisos de quién?"**
+3. **Un dato de afuera dentro de una consulta es una inyección** (`L5b.9`, medido
+   en el nivel 5b: una consulta pasó de 1 a **1000 filas**, ≈31.000 tokens). Vale
+   igual para SQL, para una ruta de archivo y para un comando.
+
+**Y el riesgo se mide por el tráfico, no por lo peligrosa que parece la puerta**
+(`LM.22`).
+
 ---
 
 ## 7. Patrón: script de verificación (*preflight*)
