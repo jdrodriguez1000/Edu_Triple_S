@@ -1741,6 +1741,68 @@ contra un criterio que escribió el auditado. Es §11.b para la capa determinist
 📌 El sabotaje (§8.l) sigue siendo obligatorio, pero **no cubre esto**: demuestra
 que el test vigila esa línea, nunca que la línea sea la correcta (`LM.42`).
 
+**Y una tentación que hay que nombrar para no caer en ella: repartir el ciclo
+entre varios agentes.** Uno para el rojo, otro para el verde, otro para el
+refactor. **No.** El del verde lee el test del rojo, así que no hay testigo
+independiente; y su única métrica de éxito pasa a ser *"que pase"*, que es la orden
+mal formulada de arriba **convertida en puesto de trabajo**. El ciclo lo corre **un
+solo agente, seguido**: la continuidad es lo que el ciclo fabrica. El porqué, en
+`LM.46`.
+
+### 11.i.2 Cuándo crear un subagente (y cuándo no)
+
+Vale para cualquier proyecto, no solo para TDD. **Un agente puede hacer dos cosas
+seguidas; lo que no puede es ser testigo de sí mismo** — ese es el único corte que
+compra algo (`LM.4`, `LM.46`).
+
+> ⭐ **LA PREGUNTA QUE DECIDE:**
+> **¿Este agente necesita saber MENOS que yo, o MÁS?**
+>
+> **Menos, y su valor está en no saber** → es un agente.
+> **Más, o todo lo mío** → es un traspaso, y los traspasos pierden. Hazlo tú.
+
+| Razón para crearlo | Qué compra | Señal de que NO es el caso |
+|---|---|---|
+| **Independencia de criterio** | un testigo que no vio construir | tienes que pasarle tu contexto → es un eco (`LM.5`) |
+| **Aislamiento de ruido** | que 500 archivos o un log enorme no entren en tu contexto | te importa el detalle, no la conclusión |
+| **Paralelismo real** | tiempo | la segunda tarea espera el resultado de la primera |
+
+❌ **El corte equivocado, y es el que se le ocurre a todo el mundo: por fases del
+trabajo** (analizar → escribir → probar → revisar). Copia el organigrama de una
+empresa, donde los roles existen porque **una persona no puede estar en dos sitios
+y dos personas no comparten cerebro**. Un agente no tiene ese problema.
+
+### 11.i.3 El subagente verificador — evidencia, nunca veredicto
+
+**Sí cabe uno** que revise dentro de la sesión que construye, antes de pasar el
+trabajo a la terminal auditora. Pasa la pregunta de arriba: necesita saber **menos**.
+
+| Recibe | **No** recibe |
+|---|---|
+| el criterio escrito por el humano | el relato de cómo se llegó al código |
+| el diff y los artefactos | qué se intentó y se descartó |
+| poder correr comandos | **permiso de escribir** (`LM.5`) |
+
+**Su lista, cerrada:** ¿existió el rojo? · ¿el diff del refactor tocó tests? · ¿se
+modificó o borró algún test, y con qué autorización? · ¿los tests corren de verdad,
+y cuál es la salida cruda? · ¿cada criterio tiene un test que le corresponda?
+
+> 🚨 **Y las dos reglas que impiden que se vuelva una coartada** (`LM.47`):
+>
+> 1. **Entrega evidencia, no veredicto.** No dice *"todo bien"*: dice *"corrí esto,
+>    salió esto"*, con la salida cruda pegada. **Un veredicto desplaza la
+>    auditoría; una evidencia la alimenta.**
+> 2. **Lista cerrada, no "busca problemas".** Lo que no está en la lista **no se
+>    declara limpio: se declara NO MIRADO.**
+
+⚠️ **No sustituye a la terminal auditora.** No puede juzgar si el criterio estaba
+bien ni si algo se recortó en silencio: eso exige estar **fuera del marco**, no en
+otro proceso dentro de él. Lo que hace es quitarle de encima el trabajo mecánico.
+
+📌 **Y por qué la regla 1 no es cosmética:** *el resumen sale peor que el documento*
+lleva **cuatro apariciones en cuatro sesiones** de este proyecto, con autores
+distintos. Un verificador que resume es la quinta. **Salida cruda.**
+
 ### Nunca le pidas que cuente: dáselo contado
 
 La primera versión decía *"cualquier otra fecha, **cuéntala** desde esta"*. Y

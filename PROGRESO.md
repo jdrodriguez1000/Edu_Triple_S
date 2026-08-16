@@ -2136,6 +2136,12 @@
 # con otro traje: un veredicto verde se vuelve coartada** y la auditora baja la
 # guardia sin decidirlo. → **`LM.47`: evidencia con salida cruda, nunca veredicto; y
 # lista cerrada, donde lo no mirado se declara NO MIRADO.**
+# ✅ **Y las dos bajaron a `GUIDE.md` el mismo día: §11.i.2** (cuándo crear un
+# subagente, con la pregunta que decide y la tabla de las tres razones) **y
+# §11.i.3** (el verificador: qué recibe, su lista cerrada, y las dos reglas). Más
+# un aviso dentro de §11.i contra repartir el ciclo de TDD entre tres agentes.
+# 📌 **§11.i.2 es la parte más portable de todo esto: no depende de TDD ni de este
+# curso.** Si crece, pide sección propia.
 # 📌 **`LESSONS.md` cierra la sesión en `LM.47`, sin huecos y sin candidatas
 # sueltas.** El bloque Método pasó de **37 a 47** lecciones en un día. Ocho de las
 # diez ya estaban razonadas y medidas de sesiones anteriores; **las dos nuevas
