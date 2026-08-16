@@ -2146,6 +2146,22 @@
 # sueltas.** El bloque Método pasó de **37 a 47** lecciones en un día. Ocho de las
 # diez ya estaban razonadas y medidas de sesiones anteriores; **las dos nuevas
 # (`LM.46`, `LM.47`) salen de conversación, sin corrida detrás, y lo dicen dentro.**
+# ➡️ **SIGUIENTE PASO CONCRETO, y es en la OTRA terminal:** copiar a la
+# `CLAUDE.md` de TEAPP las dos reglas duras de tests que quedaron redactadas en
+# `GUIDE.md` §11.i — *(1) ante un rojo se arregla el código; modificar o borrar un
+# test exige autorización explícita con la razón escrita; (2) el refactor se pide
+# explícitamente cada ciclo*. **Nada de esto está todavía en TEAPP:** hoy solo se
+# escribió el método aquí. Y si monta el subagente verificador, §11.i.3 tiene su
+# lista cerrada y las dos reglas.
+# ⏳ **Lo del nivel 7 que sigue vivo y NO lo tocó esta sesión:** el arreglo del
+# guion de arranque de TEAPP (lee la prosa en vez del campo de estado y no se salta
+# lo tachado; `A-010`, `A-011`, `A-014` esperan turno), el **saldo de `[D-057]`**
+# antes del próximo bucle de llamadas, y **`T-086`** con la hora UTC anotada antes
+# del número.
+# 🧾 **Cierre de la 76: CINCO commits en vez de uno**, contra la regla de
+# `CLAUDE.md`. Pasó porque el primero se hizo cuando él pidió cerrar y el trabajo
+# siguió después — cada uno lleva su razón escrita. **No es el patrón a repetir:**
+# el motivo real es que la sesión no había terminado cuando se selló la primera vez.
 # 📌 **Lo que NO se hizo a propósito:** no se tocó el `CLAUDE.md` de TEAPP. Las dos
 # reglas duras quedan en `GUIDE.md` §11.i como texto listo para copiar allá cuando
 # se abra esa terminal.
