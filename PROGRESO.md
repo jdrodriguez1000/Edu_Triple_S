@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-18 (sesión 80)
+**Última actualización:** 2026-08-17 (sesión 80)
 
 ---
 
@@ -2505,7 +2505,37 @@
 # servidor levantado y una llamada real) y **`T-103`**, nueva — el hueco del
 # `IndexError` en el camino del timeout, **sacada como tarea propia en vez de
 # quedarse enterrada en un comentario**, que es lo que le da dónde morir.
-# 🔲 **PENDIENTE DE ESTA TERMINAL POR TERCERA SESIÓN: la Pieza 8 de
+# 🐛 **LA 81 CAZÓ UNA FECHA INVENTADA, Y LO QUE ENSEÑA NO ES LA ERRATA.** La sesión
+# 80 se fechó **2026-08-18** cuando sus tres commits son del **2026-08-17** (10:54,
+# 15:04, 15:41). Viajó a **17 sitios**: 16 en TEAPP y **`PROGRESO.md:6`, aquí**.
+# 🔑 **La fecha buena ya estaba en el repo:** el commit de las 10:54 de esa misma
+# mañana escribe `2026-08-17` bien, y las dos sesiones de la tarde no se tropezaron
+# con ella ni una vez. `LM.20` otra vez — y `[L-069]` **ya existía y no frenó nada**.
+# Una lección escrita en un archivo no muerde: es `LM.13` aplicada a la memoria.
+# 🚨 **Y el hallazgo mejor salió DE LA CORRECCIÓN, no del error.** La otra terminal
+# corrigió mi conteo —*"son 16, no 13"*— y tenía razón dentro de TEAPP, pero al
+# hacerlo **perdió la única aparición que estaba fuera de su repo**, que yo había
+# listado con ruta y línea. **Un número que sube y trae una tabla se lee como
+# estrictamente mejor, y nadie audita un dato que acaba de mejorar.** `LM.15` con
+# otra piel. 📌 **Sin culpa de nadie, y esa es la parte útil: cada terminal contó su
+# propio repo. Lo escribimos dos y lo contamos cada uno en su patio.**
+# ✅ **Reemplazo auditado leyendo el diff, sin ejecutar TEAPP:** `16 insertions,
+# 16 deletions`, **ni una línea del diff que no fuera la fecha**, 0 apariciones en
+# el árbol. Los cuatro bloques 🔴 de enmienda quedaron coherentes.
+# 🛑 **`T-103` NO era un bicho vivo, y el código de ellos ya lo decía.** El camino
+# del timeout muere en `raise HTTPException(504)` (`api.py:804`); `tutor_started[0]`
+# se lee en la **906**. Nunca se llega. `api.py:892-897` y el docstring de
+# `test_api.py:690-693` lo dicen bien — **el resumen que llegó al estudiante se comió
+# la salvedad**. Cuarta vez de este patrón: *el documento es bueno y su resumen es
+# peor que él*. Parada con disparador de acción, como `T-102`.
+# ⚠️ **Y lo dijeron ellos solos, que es lo que vale:** parar `T-103` eran **dos votos
+# técnicos, no su firma**. Quedó como `T-104`.
+# 🔲 **PENDIENTE DE ESTA TERMINAL POR CUARTA SESIÓN: la Pieza 8 de**
+# **`07-produccion/README.md`. NO se escribió hoy tampoco** — la sesión se fue en la
+# auditoría de la fecha. Es el mismo modo de fallo que `D-041` en la 54: no falló
+# por un argumento, **se agotó la sesión antes de llegar**. Ahora le toca contar
+# además la fecha que cruzó dos repos y el conteo que no la alcanzó.
+# 🔲 **PENDIENTE ANTERIOR (79 y 80), sigue vivo dentro de la Pieza 8 de
 # `07-produccion/README.md`.** Ya no es solo lo de la 79 — ahora le toca contar
 # también **el tope que no era reloj** y **el reparto en tres**. Cada sesión que pasa
 # tiene más que escribir y sigue viviendo en la conversación, no en el puente.
