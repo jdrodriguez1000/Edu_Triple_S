@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-16 (sesión 77)
+**Última actualización:** 2026-08-17 (sesión 78)
 
 ---
 
@@ -2228,6 +2228,87 @@
 # redacta cuando se trabaje, no antes.
 # ⏳ **Y sigue vivo del nivel 7, intacto desde la 76:** el guion de arranque de TEAPP
 # (`A-010`, `A-011`, `A-014`), el saldo de `[D-057]` y `T-086`.
+#
+# ---
+#
+# 🔬 **SESIÓN 78 (2026-08-17) — SUPERVISIÓN PURA. Tres hallazgos de apertura, y
+# los cuatro del día resultaron ser EL MISMO. Cerrada en TEAPP con `41c753f`.**
+# Esta terminal no tocó TEAPP: leyó, midió desde fuera y entregó. La otra corrigió
+# y cerró — **440 tests**, árbol limpio, sin `ahead`.
+# 🔴 **H-1 — el freno del paso 9 no existía; era un comentario.** `check_api_key.py`
+# avisa en mayúsculas de que la firma del laboratorio es **el par (modelo, límite)**,
+# y el test que parecía vigilarlo clavaba **media firma**: `LAB_REQUESTS_PER_MINUTE
+# == 50`, y nada sobre `MODEL`. El escenario exacto que `[D-049]` tiene programado
+# **dos veces** dentro del paso 9 (Sonnet 5, Haiku 4.5) dejaba los 440 **en verde**
+# con el portero mudo. Arreglado clavando el par, con el rojo enseñado y **la
+# salvedad escrita dentro** (no lee la consola; verifica que nadie mueva media
+# firma sola). Es `LM.13` con el nombre puesto: *un freno que no has visto morder
+# es una nota* — y aquí la nota era literalmente un comentario.
+# 🟠 **H-2 — un día entero que no ocurrió, escrito 40 veces en 6 archivos.** Toda
+# la sesión `[S-060]` de TEAPP se fechó **2026-08-15**; sus commits son del **14**,
+# el último a las 15:16 -0500. **Cazado cruzando `git log` con la prosa**, no
+# leyendo. Descartado el reloj como sospechoso con el discriminador limpio: **este
+# repo fechó bien el 16 desde la misma máquina**, y ninguno de los dos tiene
+# commits el 15. La fecha se había colado hasta **las dos skills del protocolo** y
+# hasta dentro de `[L-062]`–`[L-067]`, cinco lecciones que existen para cazar
+# afirmaciones que nadie fue a apagar.
+# 🚨 **Y al corregirlo se cayó el REMEDIO, que es el mejor hallazgo del día y es
+# suyo:** `[L-067]` había dejado escrito *"si la fecha de la última fila no es la
+# de hoy, falta la entrada"* — y **ese criterio habría dado VERDE en el caso que lo
+# originó**, porque hubo cinco cierres el mismo 14 y la fila de arriba ya llevaba
+# la fecha de hoy siendo de otro tramo. Cambiado a comparar el **id**. *Una regla
+# que no caza su propio caso es una nota.*
+# 🟡 **H-3 — las dos reglas duras de `GUIDE.md` §11.i no habían llegado a TEAPP.**
+# Entraron como `PI-6` y `PI-7`. 🔑 **Y entraron desde el VERBATIM, no desde mi
+# paráfrasis** — porque él pidió el original antes de tocar la constitución del
+# proyecto, que era la decisión correcta. A mi paráfrasis se le habían caído tres
+# cosas y **una era de carga: "del humano"**. Sin el actor, la autorización para
+# ablandar un test la puede firmar la sesión que construye o esta terminal: **la
+# regla se firma sola y deja de existir.** También perdí la regla 2 en pasiva, que
+# **invierte quién pide el refactor**. Y no le pasé las dos comprobaciones que
+# hacen exigible la regla 1 —el diff de los tests aparte, y que el rojo existiera—,
+# que eran la mitad útil.
+# 🏚️ **H-4, que salió de H-3 — la dirección de los `[LM.nn]` NACIÓ falsa, en tres
+# sitios.** La tabla de citas de TEAPP mandaba a `Edu_TripleS/PROGRESO.md`; viven
+# en **`LESSONS.md`**. No caducó: el conteo del día en que se escribió (`a12ba3c`,
+# 2026-08-09) da **`LM.1`–`LM.23` en `LESSONS.md`, `LM.13` incluida** — la única
+# lección que la propia tabla cita de ejemplo. Y el sitio es la lección entera:
+# **la dirección falsa vivía dentro del recuadro que enseña a distinguir `LM.13` de
+# `L-013`**, es decir, dentro del arreglo de la sesión 58 que cazó 16 citas malas.
+# ⚠️ **Es de la clase muda por un motivo concreto:** `PROGRESO.md` **menciona**
+# `LM.nn` unas 200 veces y **no define ninguna**. Quien sigue la dirección mala
+# *encuentra* lo que busca. → La comprobación no es *"¿hay menciones allí?"* sino
+# **"¿cuántas DEFINICIONES hay allí?"** — se cuentan encabezados, no apariciones, y
+# **en los dos destinos**.
+# 🪞 **Y la cuarta vuelta cayó sobre MÍ, catorce horas después de proponer la
+# regla.** Mi fundamento para *"nació falsa"* era flojo: dije *"el bloque `LM` está
+# en `LESSONS.md` desde el 05, la tabla es del 09"*, **y eso no se sigue** — el
+# archivo crece de a poco, y hubo de hecho una ventana (`LM.27`–`LM.31`, pagada en
+# la sesión 70) en que algunas vivían **solo** en `PROGRESO.md`. Acerté la
+# conclusión por un camino que podía haber dado la contraria. Enmendado **antes de
+# su commit**, con el conteo del día: por eso se audita con la sesión del otro
+# abierta y no después (`L-029`).
+# 🔑 **LO QUE SE LLEVA EL DÍA, Y YA TENÍA NÚMERO: `LM.32`.** *El sitio con más
+# probabilidad de esconder el error siguiente es la corrección que acabas de
+# hacer.* Cuatro caras en una jornada y de **tres dueños distintos**: un test con
+# el nombre correcto, una regla de comprobación recién escrita, el arreglo de una
+# auditoría, y **la auditoría del arreglo**. 📌 **No se escribe `LM.49`**: sería
+# `LM.32` dicha otra vez, y este repo ya sabe lo que cuesta la misma cosa escrita
+# en dos sitios. Lo que sí gana `LM.32` es su formulación operativa —**cuando
+# alguien arregle algo que tú señalaste, el arreglo entra en la cola de auditoría,
+# no sale de ella**— confirmada sobre el auditor mismo.
+# 📌 **Ninguno de los cuatro daba error. Los cuatro daban verde.**
+# ➡️ **SIGUIENTE PASO CONCRETO — el paso 9 de TEAPP, y es en la OTRA terminal:**
+# *Observabilidad y evals con rúbrica*. Empieza tocando `MODEL`, y ahí muerde el
+# disparador: leer en la consola de `teapp-measure` el límite por minuto del modelo
+# nuevo y ponerlo en `LAB_REQUESTS_PER_MINUTE` **en el mismo cambio**. Salta al
+# menos dos veces. **La diferencia con esta mañana es que ya no depende de que
+# alguien lea el comentario: la suite se pone roja.**
+# ⏳ **Y sigue vivo, sin tocar hoy:** el saldo prepagado de Anthropic antes del
+# próximo bucle de llamadas (**con la hora UTC anotada antes del número**, `T-086`),
+# `T-067`, `T-069` (fecha tope ≈ 2026-09-01, la única con reloj de verdad), `T-046`
+# y `T-081`. Y de esta terminal: `07-produccion/README.md` todavía no nombra la
+# pieza de seguridad que el mapa le asigna desde la 77.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
