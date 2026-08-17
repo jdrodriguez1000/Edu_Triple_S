@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-17 (sesión 78)
+**Última actualización:** 2026-08-17 (sesión 79)
 
 ---
 
@@ -2309,6 +2309,137 @@
 # `T-067`, `T-069` (fecha tope ≈ 2026-09-01, la única con reloj de verdad), `T-046`
 # y `T-081`. Y de esta terminal: `07-produccion/README.md` todavía no nombra la
 # pieza de seguridad que el mapa le asigna desde la 77.
+#
+# ---
+#
+# 👁️ **SESIÓN 79 (2026-08-17, la segunda del día) — OBSERVABILIDAD. El paso 9
+# arrancó, y arrancó por aquí: esta terminal entregó la especificación y la otra la
+# construyó. Cerrada en TEAPP con `c292210` — 452 tests, árbol limpio.**
+# 🔴 **ABRIÓ CON UN FRENO ESCRITO QUE NADIE TENÍA DELANTE (`LM.20`, quinta vez).**
+# El reporte de arranque preguntaba *"¿paso 9, o el saldo primero?"* como si fuera
+# una preferencia. `[D-081]` ya lo había decidido, verbatim: *"Se lee **antes del
+# próximo bucle de llamadas, sea cual sea**, con la hora UTC anotada ANTES del
+# número"*. 📌 **Y el matiz importa, y va a favor de ellos:** *"sin bloquear"* era
+# sobre el cierre del paso 8, y la condición no es *antes del paso 9* — es **antes
+# de la primera llamada**. El paso 9 se abre sin gastar un centavo.
+# 💵 **SE LEYÓ, Y EL DESCUADRE TENÍA DUEÑO: `$6,24`** (hora fijada antes del
+# número). Se esperaban ~$6,37. **El tercer inquilino del saldo es ESTE CURSO** —
+# invisible en la vista de COSTO porque enseña *"solo uso de API"*. → **`[C-009]`, y
+# no es un número: mata una premisa.** `[D-057]` y `[D-058]` calculaban
+# *"días-persona"* dando por hecho que solo TEAPP gasta. **El saldo puede agotarse
+# sin que TEAPP gaste nada.** ⚠️ Consecuencia derivada, apuntada y no perseguida: si
+# la llave de este curso vive en `Default`, está en el **único espacio que no admite
+# tope** (`[D-059]`) — el tope de $2,00 de `[D-062]` capa al laboratorio, que era el
+# sospechoso equivocado.
+# 🔬 **EL MÉTODO DEL DÍA: no se escribió un registro nuevo, se INTERROGÓ el que ya
+# existía.** Ocho preguntas contra sus dos `registro.jsonl` reales (nivel 4 y 5b
+# paso 9), **$0,00 y sin llamar a Claude**. Contestan 1 y 2 (costo, tiempo total);
+# fallan las demás. → **La regla: un registro se diseña por la pregunta que alguien
+# va a hacer el día que algo se rompa, no por lo que es fácil escribir. Y mientras
+# nadie se la haya hecho, es un archivo — no observabilidad.** Es `LM.13` con otro
+# traje: un freno que no has visto morder es una nota.
+# 🔴 **El hallazgo que decide si el paso 9 sirve: NADIE REPARTE EL TIEMPO.** En su
+# corrida del 5b, **20,7 s de Claude sobre 59 s totales**. `[D-049]` mete en el paso
+# 9 el descenso a Sonnet 5 y Haiku 4.5 — y **cambiar de modelo solo acelera la parte
+# de Claude**. Si el reparto se parece, el descenso compra un tercio. ⚠️ **El
+# principio viaja, el número NO** (esa corrida no es TEAPP; la otra terminal puso el
+# matiz y es correcto). Y ellos aportaron el remate: `app/tools.py` **ya** parte el
+# presupuesto en `connect`/`write`/`pool`/`read` — la arquitectura ya piensa en
+# fases y el registro no las escribía. **El campo no inventa una idea: le pone
+# instrumento a una que ya está en el código.**
+# ⚠️ **La salvedad que salva el titular (`LM.16`):** los 385 s del nivel 4 **no** son
+# la app siendo lenta — era él autorizando permisos a mano. Un registro que no marca
+# la espera humana entrega un 89% **cierto e inútil**.
+# 🔀 **CONVERGENCIA, que vale más que un acuerdo:** las dos terminales encontraron
+# lo mismo por caminos que no comparten fuente. Ellos leyendo `api.py` hasta el
+# `return` de la línea 838 (la práctica exitosa no escribe nada); esta interrogando
+# el `registro.jsonl`. **El caso más frecuente de la app —que funcione— era
+# invisible.** Mismo cruce que hizo `[D-058]` con la consola contra los tokens.
+# 🚨 **LA CUARTA PREGUNTA, y `.gitignore` no la cubre.** Su pregunta era *qué se
+# guarda, dónde vive, cuánto tiempo*. Falta **quién puede leerlo**. `data/` está en
+# `.gitignore` y tapado. El flanco abierto es otro: **una frase de una persona
+# copiada a mano dentro de una lección** como ejemplo. `_persistence/` **sí** va a
+# Git y **es público** (`[C-007]`: *"antes de escribir en `_persistence/` se asume
+# lectura mundial"*). Ninguna herramienta valida esa prosa. **Es la clase muda: la
+# misma por la que viajó la fecha del 15 a seis archivos.** → **`PI-8`**.
+# 🎯 **LA TENSIÓN EVALS↔PRIVACIDAD ERA FALSA HOY, y se resolvió por secuencia.** Su
+# argumento —*si guardamos solo números, me toca inventarme las frases*— cayó con
+# tres datos: (1) **no hay frases que recolectar**, porque su propia pregunta 1 es
+# *"¿alguien está usando esto?"* y no lo saben; (2) **inventarlas ya es la práctica y
+# fue buena**: `measure_tutor.py` lleva 60 frases A1 elegidas a propósito, que es lo
+# que un eval necesita y una cosecha aleatoria no da; (3) **un conjunto de prueba es
+# una cosecha, no una llave abierta** — sus propios `examen_*.jsonl` del 5b son un
+# archivo fijo. **Reparto de tres filas: traza operativa (forma, nunca la frase) ·
+# material de evals (aplazado con razón) · `_persistence/` (ninguna frase de nadie,
+# nunca, ni como ejemplo).**
+# 🪞 **DOS ERRORES DE ESTA TERMINAL, los dos cazados por la otra, los dos de
+# MECANISMO — y los dos con la conclusión correcta por un camino que podía fallar:**
+#   1. **Dije que la traza «hereda el portero» de `T-071`.** Falso: el portero toma
+#      un `md5` de `data/` antes y después de cada test — da **limpieza de la suite,
+#      no privacidad**; la privacidad la da `.gitignore`. Y el módulo **nombra su
+#      propio punto ciego**: lo que corre fuera de pytest. **El modo normal de la
+#      traza es exactamente ese.**
+#   2. **Dije que congelar la ruta en una constante de módulo pondría el test
+#      rojo.** Falso: `require_data_dir()` corre al importar y la suite **ni
+#      arranca** (`ImportError`). → **Un sabotaje que rompe la carga no es un
+#      sabotaje: parece más contundente y demuestra menos.** El alcanzable es una
+#      caché. **Lección suya, y la repitieron una hora después** pese a tenerla
+#      escrita en `[D-086]` → **la receta del sabotaje tiene que vivir donde se
+#      sabotea**, no en una decisión: dentro del docstring del test.
+# ✅ **Y DOS ENMIENDAS MÍAS QUE SÍ AGUANTARON, las dos del mismo tipo — estructura
+# contra acordarse:**
+#   1. Su *"acuérdate de desviar la traza en `conftest.py` en el mismo cambio"* era
+#      el mundo **anterior a `[D-037]`**: `conftest.py:81` desvía **una** variable y
+#      `users_dir()`/`quota_dir()`/`accounts_file()` cuelgan las tres de
+#      `require_data_dir()`. **No hay tres sitios que desviar ni habrá cuatro** —
+#      comprobado después: la traza escribió en la carpeta desviada sin tocar
+#      `conftest.py`. 🔑 **Su remedio era el mecanismo que `[L-023]` costó quitar:
+#      aquel fallo no pasó por falta de una nota, pasó porque el remedio ERA
+#      acordarse.** Lo que sí quedó, y es comprobable: **la ruta se resuelve llamando
+#      a una función, nunca en una constante** (se congela al importar).
+#   2. **La fila 3 no podía vivir solo en `decisions.md`** — `LM.20`, que en este
+#      proyecto ya mordió cinco veces. Ascendida a **`PI-8` en `CLAUDE.md`** (se lee
+#      sin buscarlo) + casilla en `protocol-close`. ⚠️ **Con su debilidad escrita en
+#      los tres sitios: `PI-8` pregunta, no detecta.** Es más flojo que `PI-6`/`PI-7`
+#      y decirlo es lo que impide marcarlo con una intención.
+# 🚨 **EL HALLAZGO DEL DÍA FUE DE ELLOS Y CONTRA ELLOS: el campo nuevo nació sin
+# guardián.** `correct: bool` se añadió a `TutorReply` para la traza; saboteado con
+# `correct=True` clavado, **la suite dio 447 en verde**. Podía mentir en producción.
+# **Causa: los tests cubrían las cuatro piezas viejas una por una, así que el archivo
+# se leía como cobertura completa de la clase.**
+# 🔑 **Y la SEGUNDA MITAD la puso esta terminal: su arreglo cubría el caso y dejaba
+# la fábrica viva.** Nada enumeraba los campos desde la clase (comprobado: cero
+# apariciones de `dataclasses.fields`, `model_fields` o `__annotations__` en todo el
+# repo). **El sexto campo iba a nacer igual de mudo, y encima con más aspecto de
+# rigor.** → **Tres alambres puestos y los tres vistos morder** (`TutorReply`,
+# `GrammarVerdict`, `Counters`; los `BaseModel` de `api.py` ya estaban clavados de
+# rebote por comparación de diccionarios). **452 passed.**
+# 🔑 **LA LECCIÓN DEL DÍA, candidata a `LESSONS.md`:** *El hueco no aparece donde el
+# código es difícil. Aparece donde un conjunto que estaba completo acaba de crecer en
+# uno.* Tercera cara en tres días: media firma en `T-099`, los 26 casos verdes con el
+# contrato roto en tres sitios del 5b, y el quinto campo de `TutorReply`.
+# 📌 **Y el criterio de dónde va el alambre, para que no sea creep:** lo merece la
+# clase **cuyos campos viajan en bloque a un sitio donde nadie los mira uno por uno**
+# (se serializan, se persisten, se comparan enteros). **Un alcance que cabe en una
+# tabla con última fila no es creep.**
+# 🆕 **`PI-8` se estrenó el mismo día y ya afinó la regla:** el closer distinguió
+# bien *"quien usa la app"* de *"el dueño del proyecto conversando con el agente"* —
+# y **esa distinción no está escrita en `PI-8`**. Acertó por buena lectura, no porque
+# la regla lo dijera. **`LM.13` sobre la regla misma: esa frase va dentro.**
+# ➡️ **SIGUIENTE PASO CONCRETO — seguir el paso 9 por observabilidad, en la OTRA
+# terminal:** el **reparto del tiempo por fase** (`connect`/`write`/`pool`/`read`),
+# que es el campo del que depende poder juzgar si el descenso de modelo ayuda.
+# ⏳ **Vivo con disparador de ACCIÓN, no de fecha** (forma correcta, `[D-081]` /
+# `[L-064]`): **`T-102`** — la traza no se ha visto escribir con el servidor
+# levantado y una llamada real; salta en la primera llamada del descenso de
+# `[D-049]`, montada encima de un gasto ya decidido en vez de pagar aparte de un
+# saldo que `[C-009]` declaró compartido. **`PI-4` NO se declara cumplido.**
+# 🔲 **Y PENDIENTE DE ESTA TERMINAL, sin escribir hoy por falta de sesión:** la
+# **Pieza 8 de `07-produccion/README.md`** — las ocho preguntas con sus respuestas
+# medidas, el reparto del tiempo, la cuarta pregunta y el reparto de tres filas. Va
+# después de `## Pieza 7 — El orden de los pasos`. **Hoy vive en la conversación y en
+# TEAPP, no en el puente.** Sigue sin nombrar la pieza de seguridad — aunque hoy le
+# salió su primer artefacto real, que es `PI-8`.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
