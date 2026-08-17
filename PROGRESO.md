@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-17 (sesión 79)
+**Última actualización:** 2026-08-18 (sesión 80)
 
 ---
 
@@ -2440,6 +2440,75 @@
 # después de `## Pieza 7 — El orden de los pasos`. **Hoy vive en la conversación y en
 # TEAPP, no en el puente.** Sigue sin nombrar la pieza de seguridad — aunque hoy le
 # salió su primer artefacto real, que es `PI-8`.
+# 🔴 **LA 80 PARÓ EL CAMPO QUE ESTA MISMA TERMINAL HABÍA PROPUESTO, y el error era
+# mío.** El paso natural del día era escribir en la traza el reparto
+# `connect`/`write`/`pool`/`read`. **No se puede medir: son TOPES, no relojes.**
+# `app/tools.py:245` es `anthropic.Timeout(connect=1.5, write=0.5, read=6.5,
+# pool=0.5)` — un presupuesto que se le **entrega** a la librería, no un cronómetro.
+# Y el dato no existe aguas abajo: en el `httpx 0.28.1` instalado hay **un solo
+# número**, `_client.py:157`, el total de la respuesta entera; los `monotonic()` de
+# `httpcore` son la expiración del *keepalive*. **Comprobado en la librería del
+# disco, no en la documentación** — `ctx7` falló y no se contestó de memoria.
+# 🤝 **Y ellos lo remataron con lo que yo no miré:** ese `.venv` tiene **dos**
+# librerías, `httpx 0.28.1` y `httpx2 2.9.1` (la del `TestClient`). Miraron la
+# segunda: otro `elapsed` único y total. **La conclusión aguanta por partida doble.**
+# 🔑 **LA LECCIÓN DEL DÍA, y es contra mí: un tope no es un reloj.** Declarar cuánto
+# se le permite durar a algo no es haber medido cuánto duró. `[D-085]` decía *"la
+# arquitectura ya piensa en fases y el registro no las escribe"* — **cierto y
+# venenoso**: se lee como si los números existieran y solo faltara apuntarlos.
+# 📌 **Y es la sesión 59 con una vuelta peor.** Allí la lección fue *abrir el archivo
+# no basta*. Aquí **abrí la tabla de las cuatro fases** (`tools.py:182-185`), la leí
+# entera, y **leí un límite como si fuera una medida.** No fue por no mirar.
+# ✅ **El reparto que SÍ decide `[D-049]` resultó más barato que el descartado:** hay
+# **una sola** llamada al modelo en toda la app (`tools.py:489`) y `MAX_RETRIES = 0`,
+# así que un cronómetro y ya está. **Pero son TRES números, no dos:** el reloj de la
+# ruta arranca **antes del `submit`** (`api.py:733`, a propósito — mide lo que espera
+# la persona), así que `total − modelo` es *"cola + nuestro código"*. **Sin separar la
+# cola, el descenso de modelo parecería inútil cuando el culpable sería la cola.**
+# 🧰 **Y la pregunta de diseño que trajeron era buena: ¿el reloj contamina las dos
+# cajas?** Voto de esta terminal: **una caja, no dos.** `respond()` ya tiene la
+# llamada en una línea propia, así que mide desde fuera y `GrammarVerdict` no se
+# toca. 🔑 **El argumento que lo cerró estaba en el disco:** de los cinco campos de
+# `TutorReply`, **tres no vienen del juez** (`words` es local, `score`/`practice`
+# salen del archivo de contadores). **La contaminación que temían ya había ocurrido
+# en `[D-066]`, y con razón** — la caja no es "qué dijo el tutor", es "lo que la ruta
+# necesita saber de esta práctica". El reloj **encaja en el significado que ya tenía**.
+# 🚫 **La cola no pasó por ninguna caja:** un cierre creado **dentro** del handler
+# (`api.py:748-754`), uno por petición. Descartada la global, que se pisaría entre
+# prácticas simultáneas **y en silencio**, que es el modo de fallo peor.
+# 🦷 **EL ALAMBRE DE AYER MORDIÓ, y en un caso que nadie le preparó.** Añadir
+# `model_seconds` puso rojo solo al test que clava los campos de `TutorReply`
+# (`Extra items in the left set`). **Segunda vez visto morder**, y esta vez de
+# rebote. Tres sabotajes más, los tres con su rojo visto — el bueno es el segundo:
+# **un reloj demasiado ancho también sube y baja con el juez**, así que pasaría
+# cualquier test que solo mirase la cota de abajo.
+# 🚨 **AUDITORÍA DEL CIERRE, y llegó a tiempo:** cuando preguntaron *"¿cerramos?"*,
+# `git status -sb` tenía **ocho archivos sin commitear** — el día entero en un solo
+# disco. Es el animal de la sesión 33 esperando su turno. Avisado, y cerraron bien:
+# **`25332da` en `origin/main`, árbol limpio, diez archivos** — verificado aquí.
+# ✅ **Y su `closer` hizo lo que esta terminal predica: no se fio del número que le
+# pasaron, corrió la suite. 456 en verde.** `LM.23` cumplida por ellos solos.
+# 🔍 **Verificado y no reportado:** `app/tools.py` **no aparece** en el commit.
+# `GrammarVerdict` quedó intacto de verdad, no de palabra.
+# ⚠️ **Detalle menor anotado, no arreglado:** los cuatro tiempos se redondean por
+# separado, así que la identidad escrita en el docstring de `trace.py`
+# —`seconds = queue + model + rest`— puede fallar por un milisegundo al leerla en el
+# archivo. No mueve ninguna decisión; pero es una identidad escrita.
+# 🪞 **Y lo trajeron ellos, que es lo que vale:** actuaron sobre **mi voto técnico**
+# sin que el estudiante hubiera votado, y lo dijeron sin que nadie preguntara.
+# **Un voto verificado contra el disco no es la decisión de su dueño.**
+# ➡️ **SIGUIENTE PASO CONCRETO, y sigue siendo el mismo de la 79 — en la OTRA
+# terminal:** seguir el paso 9. Con el reparto ya puesto, lo que viene son los
+# **evals con rúbrica**, y detrás el descenso de modelo de `[D-049]` — que es lo que
+# el reparto existe para poder juzgar.
+# ⏳ **Vivas con disparador de ACCIÓN:** **`T-102`** (ver la traza escribir con el
+# servidor levantado y una llamada real) y **`T-103`**, nueva — el hueco del
+# `IndexError` en el camino del timeout, **sacada como tarea propia en vez de
+# quedarse enterrada en un comentario**, que es lo que le da dónde morir.
+# 🔲 **PENDIENTE DE ESTA TERMINAL POR TERCERA SESIÓN: la Pieza 8 de
+# `07-produccion/README.md`.** Ya no es solo lo de la 79 — ahora le toca contar
+# también **el tope que no era reloj** y **el reparto en tres**. Cada sesión que pasa
+# tiene más que escribir y sigue viviendo en la conversación, no en el puente.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -12852,6 +12921,18 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   habría dado *falta la llave* — **un rojo con la causa equivocada** en la primera
   corrida real de la pieza. → Antes de preparar una prueba, mira **de dónde lee**
   el programa, no de dónde crees que lee.
+- **Un tope leído como si fuera un reloj** (sesión 80, mío, y es especie nueva).
+  Propuse que la traza escribiera el reparto `connect`/`write`/`pool`/`read`
+  *"porque la arquitectura ya piensa en fases y el registro no las escribe"*. Esos
+  cuatro nombres son `anthropic.Timeout(...)`: un **presupuesto que se le entrega a
+  la librería**, no un cronómetro. Los números **no existen** — `httpx` devuelve un
+  solo `elapsed`, el total. → **Declarar cuánto se le permite durar a algo no es
+  haber medido cuánto duró.** 📌 Y el agravante: **la tabla de las cuatro fases la
+  había abierto y leído entera** (`tools.py:182-185`). Es la sesión 59 (*abrirlo no
+  basta*) subida un piso: **lo leí bien y lo clasifiqué mal.**
+  🔑 La frase era **cierta y venenosa**: *"el registro no las escribe"* se lee como
+  *"están ahí, solo falta apuntarlos"*. **Una afirmación verdadera puede mandar a
+  construir algo imposible si el lector completa la mitad que no dice.**
 - **`Juan` y `juan`: una persona en Windows, dos en Linux** (sesión 33, análisis
   previo del paso 4). Si un nombre escrito por el usuario se vuelve un nombre de
   archivo sin normalizar, el marcador se parte en dos al desplegar — **sin ningún
