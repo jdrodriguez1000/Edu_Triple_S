@@ -2722,13 +2722,24 @@
 # **no** fue error: citar `eval_rubric.py:196` para el nombre fijo —el `def` está en
 # la 188 y el `return` en la 196, las dos buenas—; se anota para que no entre al
 # registro una corrección que no lo era.
-# ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal:** `T-106` ya está desbloqueada
-# (etiquetar las 60 a mano), pero antes hace falta **la corrida de 60**, que ahora
-# sí sobrevive. Pendiente de anotar en `tasks.md`: **la rendija de la extensión en el
-# portero** —los tres tests recorren `*.jsonl`, así que un corpus guardado como
-# `.json` o `.txt` entra sin que nadie lo mire; se tapa recorriendo `*` y exigiendo
-# que todo lo que no sea el `README.md` acabe en `.jsonl`—. Siguen armados `T-086`
-# (hora UTC en la próxima lectura de AWS) y el freno de `[D-081]` antes de `MODEL`.
+# ✅ **Cierre de la otra terminal verificado desde aquí:** `b43fc9f`, `HEAD` y
+# `origin/main` en el mismo commit, nada pendiente de empujar. La rendija de la
+# extensión del portero **quedó anotada como `T-108`** — comprobado en `tasks.md`,
+# así que **ya no es un pendiente, es una tarea con dueño**.
+# ⚠️ **Y traen un dato que aquí no estaba:** el coste estimado que imprime
+# `eval_rubric.py` en pantalla **está por debajo del real desde `[D-090]`** — la
+# rúbrica engordó de 1016 a 1098 caracteres y el `COST_PER_CALL_USD` no se ha vuelto
+# a medir. Lo que valga la corrida se lee en **la consola de Anthropic**, no en la
+# salida del guion. Es `[L-059]` cobrando por tercera vez: **cambiar la rúbrica
+# caduca el coste por llamada, y el número viejo sigue imprimiéndose igual de
+# seguro de sí mismo.**
+# ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal: la corrida de 60.** Un solo
+# pago (~$0,18, y el estimado del guion se queda corto) que hace **tres trabajos**:
+# línea base nueva, corpus para `T-106`, y devolver `COST_PER_CALL_USD` a estar
+# medido. Detrás va `T-106` —etiquetar las 60 a mano—, desbloqueada hoy. Siguen
+# armados `T-086` (hora UTC en la próxima lectura de AWS), el freno de `[D-081]`
+# antes de `MODEL`, y el disparador de `[D-092]` (quien mueva `MODEL` o
+# `GRAMMAR_RUBRIC` promueve el corpus saliente **en ese mismo commit**).
 
 ```
 Nombre: TEAPP  (Teaching English Application)
