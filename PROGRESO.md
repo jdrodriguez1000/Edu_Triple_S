@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-18 (sesión 84)
+**Última actualización:** 2026-08-18 (sesión 85)
 
 ---
 
@@ -2823,6 +2823,91 @@
 # huella del detector en la fila, **sin firmar**). Siguen armados `T-086` (hora UTC en
 # la próxima lectura de AWS), el freno de `[D-081]` antes de `MODEL`, y el disparador
 # de `[D-092]`.
+
+# 🚨 **La 85 fue de SUPERVISIÓN entera y firmó `[D-097]`: dónde vive el trabajo
+# humano que no se puede volver a comprar.** La pregunta llegó planteada como
+# abierta —¿`data/` o `_persistence/`?— y **el disco ya la había contestado**:
+# `_persistence/corpus/` existía desde el día anterior, con README, porteros y
+# `[D-092]` firmada. Así que la pregunta real era otra: **si el archivo de
+# etiquetas es un corpus congelado o es otra cosa.** Es otra cosa, y meterlo en
+# `corpus/` ponía **rojo mañana** a `test_no_frozen_corpus_carries_the_live_rubric`:
+# las etiquetas nacen contra la rúbrica **viva** (`bbf4be38`) y esa carpeta guarda
+# justo lo que ya **no** es producción. **Vidas opuestas bajo una misma regla.**
+# → `_persistence/labels/`, hermana y no hija.
+# 🔑 **Y el reparo de `PI-8` que traía la otra terminal estaba bien traído y mal
+# apuntado, que es el patrón del día.** Decían *"las 60 frases son inventadas, así
+# que pasa"* — cierto e **irrelevante**: `sentences_are_invented()` mira **solo el
+# campo `sentence`**, y su propio docstring lo dice. Lo que el archivo nuevo aporta
+# no son frases: es **su juicio en texto libre**, sesenta veces, en un repo
+# **público**. La cerradura iba a pasar **en verde** sobre lo que no sabe ver —
+# `LM.15` de fábrica. → El portero no vetó prosa (un detector de prosa **es** el
+# instrumento ciego): **estrechó la superficie no auditable hasta un solo campo con
+# nombre**, y lo dijo en voz alta en el docstring.
+# ✅ **Tres aportes míos entraron al diseño y los tres eran irrecuperables después:**
+# (1) `verdict` con **tres** valores, no dos — una frase discutible resuelta a la
+# fuerza **mueve la tasa de acierto medida del juez** y la duda se evapora dentro de
+# `note`; el día que se descubra, ya está clasificada y nadie sabrá cuáles se dudaron.
+# (2) la etiqueta **pegada al texto** y no solo al número, porque el número es la
+# posición en `SENTENCES` y reordenar la lista desplaza las 60 etiquetas **sin un
+# solo error**. (3) que la comparación **no estrene un segundo lector** de `OK`/`FIX`.
+# 📌 Y la otra terminal **subió el (1) un piso**: el esqueleto nace con `verdict:
+# null`, no con `unclear`, porque *"sin mirar"* y *"mirada y dudosa"* son distintas y
+# nacer en `unclear` sería nacer **ya opinando**.
+# 🚨 **El segundo hallazgo, y es el que más valía: los porteros estaban bien puestos
+# y `main()` no.** Los 14 tests cubrían la cobertura de las 60 — pero `progress()`
+# dividía por `len(rows)`, **el propio archivo**. Perder una línea al editar sesenta
+# a mano (que es exactamente cómo se pierde una línea) hacía que `python labels.py`
+# imprimiera `50 de 50 etiquetadas, 0 mal formadas`: **completo y limpio.** El
+# portero que lo cazaba vive en `pytest`, y **`pytest` no es lo que él iba a correr
+# sesenta veces.** 🔑 Misma forma que la sesión 84 —el aviso en la parte que se borra—
+# pero girada: **el control en la parte que no se corre.** → denominador contra
+# `SENTENCES`, y `main()` canta las filas que faltan, que son las únicas que ningún
+# bucle sobre `rows` puede encontrar: **no están ahí para ser miradas.**
+# 🔒 **Y un freno que faltaba entero: nada comprobaba que `labels/` estuviera en
+# Git.** Toda la razón de `[D-097]` es *"`data/` es un disco sin copia; aquí Git
+# respalda"* — y esa garantía descansaba en un `git check-ignore` corrido una vez.
+# El mismo patrón ya estaba anotado en `eval_rubric.py:76`: comprobado de verdad,
+# **pero en un comentario**. → `test_the_labels_file_is_backed_up_by_git`, con las
+# dos mitades (`check-ignore` **y** `ls-files --error-unmatch`).
+# ⚠️ **Ese test nació ROJO a propósito, y de ahí salió el argumento que decidió el
+# commit intermedio:** un rojo permanente **normaliza el rojo**. Etiquetar durante
+# horas con `551 pass, 1 fail` convierte el resumen en *"ya sé, es el de Git"*, y el
+# siguiente rojo —el que importe— aparece dentro de uno que ya se aprendió a ignorar.
+# **Es `LM.15` por el otro lado: allí el verde se leía como comprobado; aquí el rojo
+# se lee como esperado.** Verificado que no rompía nada: TEAPP lleva **3–4 commits
+# por día** todo el mes; la regla de *un commit por sesión* es de ESTE repo, no de aquél.
+# 🔴 **`L-082` es una corrección mía y la anoto entera:** señalé el lector de
+# `OK`/`FIX` de `rubric_check` y el bueno era `app.tools.split_verdict` —
+# `learner_message` devuelve `tuple[bool, str]`: dice **si** había palabra clave y
+# **tira cuál era**, justo el dato que la comparación necesita. La otra terminal
+# cometió la simétrica al declarar `T-108` bloqueante de una carpeta que su `glob` no
+# alcanza. 🔑 **El principio correcto y el objeto equivocado, las dos veces, y las dos
+# suenan igual de sólidas**: citan un mecanismo real, por su nombre real, que hace
+# algo real. **Citar un mecanismo por su nombre no comprueba su alcance** — hay que
+# abrirlo. Es la familia de `[L-081]` de ayer, un día después.
+# 🎯 **Y `L-083`, el hallazgo de la tarde, que es el más incómodo:** al explicarle
+# cuándo usar `unclear` se ilustró **con las frases 54 y 55 de las 60 que él tenía
+# que juzgar**. Cuando etiquetó, esas dos filas ya llevaban encima una opinión ajena.
+# **El daño no se ve en el resultado** —salieron `wrong` y `correct`, los dos
+# razonables—: **no se puede saber si los eligió él o los heredó**, y esa duda ya no
+# se despeja. Es el defecto que `[D-097]` existe para impedir, **colado por la puerta
+# de la explicación en vez de por la del archivo: el módulo tiene portero, el chat no.**
+# 📌 **Y me toca de cerca:** yo nombré *"la frase 37"* al argumentar el tercer valor.
+# No cité su contenido ni le colgué un veredicto, así que no ancló nada — **pero
+# señalar una fila del conjunto que se va a etiquetar está a un paso**, y el paso es
+# gratis de no dar: ilustrar con frases inventadas para el ejemplo cuesta lo mismo.
+# ✅ **`T-106` CERRADA y verificada por mí contra el disco:** 60 filas, **27
+# `correct`, 33 `wrong`, 0 `unclear`**, cero notas, números 1–60 sin repetir y **solo
+# tres campos** — la superficie de prosa libre no se llegó a usar. Tres commits
+# (`206ca43`, `28ed31b`, `f7a64ad`), `main` sincronizado, **551 tests**.
+# ⚠️ **El push salió sin preguntar** —va dentro del protocolo de `session-closer`—:
+# el repo es **público**, así que sus 60 veredictos ya están publicados. Nada que no
+# debiera estar; se anota porque **enterarse después no es lo mismo que decidirlo**.
+# ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal: `T-111`, y es el número que
+# justifica el paso 9 entero:** cruzar sus 60 etiquetas contra el veredicto real del
+# juez con `app.tools.split_verdict` (el corpus **no guarda `outcome`**: vive dentro
+# de `reply`). Las dos mitades ya existen. Detrás siguen `T-108`, `T-109`, `T-102`,
+# `T-103` y `T-086`; `T-110` sigue **candidata, sin firmar**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
