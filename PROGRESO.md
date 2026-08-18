@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-17 (sesión 82)
+**Última actualización:** 2026-08-18 (sesión 83)
 
 ---
 
@@ -2649,6 +2649,86 @@
 # la 81 corrigió la fecha de la línea 6 y **no tocó el número de sesión de al lado**.
 # Es `LM.15` en pequeño: **la mitad recién corregida avala la mitad que no se
 # miró.** Arreglado hoy.
+# 🚨 **La 83 auditó un sí/no bien empaquetado y de ahí salió todo el día.** La otra
+# terminal preguntó *"¿arrancamos con `T-107`?"* con el trabajo ya razonado. La
+# premisa aguantaba en los mecanismos —comprobados en disco: nombre fijo en
+# `eval_rubric.py:196`, `open("w")` en la 243— **pero al nombre propuesto le
+# faltaba un eje.** Las filas ya llevaban `model` dentro; lo que no estaba en
+# ningún sitio era **qué rúbrica** produjo cada respuesta. Y la rúbrica ya se
+# había movido **dos veces sin que nadie se enterara** (`[L-059]`).
+# 🔑 **Y el archivo que había en `data/` era el bicho entero en pequeño:** 10 filas
+# del diagnóstico, escritas **antes** de `[D-090]`/`[D-091]`, en una carpeta que
+# `.gitignore` cubre — **un solo disco, sin copia, nunca commiteada**. El propio
+# `.gitignore` traza la línea en su comentario (*"`data/` es memoria de la app EN
+# EJECUCIÓN; `_persistence/` es la memoria de CÓMO se construyó y sí va a Git"*):
+# **estaba mal archivado desde que se escribió**, y nadie lo vio porque
+# `save_replies` heredó la carpeta de `require_data_dir()` por tenerla a mano.
+# 🔴 **El hallazgo que más valía y que nadie había mirado: las 10 filas son 10 de 10
+# rotas.** No es un resultado, es **la selección** — el diagnóstico escogió a
+# propósito las que habían fallado. Un archivo así, sin nada que lo diga, es un
+# **100% de fallo esperando a que alguien lo divida**. Eso no lo tapa ni el modelo,
+# ni la fecha, ni el hash. → el cuarto eje del nombre, `full`/`pick`.
+# 🔻 **El criterio de la puerta: el suyo era mejor que el mío y aun así tenía un
+# hueco.** Yo propuse *"corpus que respalda una decisión firmada"* —se estira, todo
+# acaba respaldando algo—; ellos, *"corpus cuya rúbrica ya no existe en
+# producción"*, que se comprueba solo. **Pero nombra la rúbrica y olvida el
+# MODELO**, que es el eje que `[D-049]` va a mover **tres veces** a propósito. Y era
+# **retrospectivo**: en el momento de crear un corpus la rúbrica está viva por
+# definición, así que nada se guarda nunca al nacer — y **la sala de espera es
+# `data/`**, el sitio menos duradero del proyecto. → quedó **el criterio es el
+# propio nombre** (algún eje deja de coincidir con producción) y **el disparador
+# pegado al commit** que mueve `MODEL` o `GRAMMAR_RUBRIC`, mismo patrón que
+# `[D-081]`. Escrito allá como `[D-092]` y `[L-079]`.
+# 🔒 **Y la lección madre del día, que es de segundo orden sobre la de ayer:** la
+# cerradura de `PI-8` se convirtió de comentario en función (`[D-093]`)… y quedó
+# llamada **solo desde tres tests con registros a mano**. La promoción era un `mv`
+# manual, así que **ejecutar la cerradura era un acto de acordarse** — con una frase
+# en `eval_rubric.py:89` que ya lo daba por hecho en presente. 🔑 **Ayer la regla era
+# un comentario y la hicimos función; hoy era una función que había que acordarse de
+# invocar: el mismo defecto con una capa más de pintura.** → portero sobre la
+# carpeta entera, con `glob` y no con lista, **y el patrón ya lo tenían en casa**:
+# es el portero sobre `data/` de `T-071` (sesión 49). La otra terminal añadió sin
+# que se lo pidieran el tercer test —**la carpeta vacía**, porque un `glob` sin
+# resultados deja pasar a los otros dos en silencio (`[L-048]`).
+# ✅ **`T-107` y `T-105` cerradas, 516 → 533 tests, y sin gastar un centavo.** Las
+# dos huellas de rúbrica las **recalculé por mi cuenta** montando el texto desde el
+# AST en un espacio vacío, sin usar su código: `67a8a252` (vieja, 1016 chars) y
+# `bbf4be38` (actual, 1098). Coinciden. Matiz que salió de ahí: **la rúbrica vieja
+# no era un f-string**, así que la trampa que temían no podía darse en ese archivo —
+# **el aviso empieza a valer a partir de la de hoy**, que sí lleva el placeholder.
+# 🎯 **En `T-105`, la restricción que puse mordió más de lo que parecía:** *"que el
+# campo diga QUIÉN falló, no dos casillas que haya que cruzar"*. Dos booleanos dejan
+# tres combinaciones posibles y una imposible, y alguien acaba leyendo la imposible
+# como un dato. Salió **un campo, tres estados** (`correct`/`wrong`/`bad_format`)
+# naciendo en las ramas que `split_verdict` ya distinguía, con `correct` degradado a
+# **propiedad derivada** — así no hay dos campos que puedan discrepar. La otra
+# terminal dijo que la restricción les llevó a mejor sitio que su primer intento.
+# ⚠️ **Y el aviso que evitó el daño silencioso:** `correct` aparecía en cuatro
+# sitios y **solo uno sobraba**. `verdict.correct` alimenta `record_practice`, o sea
+# **el marcador del alumno**; un barrido que lo arrastrara le habría cambiado la nota
+# a la gente **sin error**, porque un marcador equivocado sigue pareciendo un
+# marcador. Confirmado después: `GrammarVerdict.correct` y `TutorReply.correct`
+# vivos, y el sabotaje del punto regalado dio **8 rojos**.
+# 🗑️ **Convivir `correct` y `outcome` se descartó con un dato, no con gusto:** cero
+# lectores de `trace.jsonl` en todo el repo —solo el escritor y los tests—, y
+# `T-102` sigue abierta diciendo que la traza **nunca se ha visto escribir con el
+# servidor levantado**. La compatibilidad que protegía era con **un lector que no
+# existe**, y el precio era las dos casillas por la puerta de atrás **más** una
+# retirada aplazada sin disparador (`[L-064]`), que habría sido el tercer *acto de
+# acordarse* del día.
+# ⚠️ **Error mío del día:** leí `744→2217` como el crecimiento del corpus; los 744
+# eran de `accounts.json`, otra fila del listado. Lo cazó la otra terminal. No movía
+# la conclusión, pero **es leer un listado y contar dos filas como una**. 📌 Lo que
+# **no** fue error: citar `eval_rubric.py:196` para el nombre fijo —el `def` está en
+# la 188 y el `return` en la 196, las dos buenas—; se anota para que no entre al
+# registro una corrección que no lo era.
+# ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal:** `T-106` ya está desbloqueada
+# (etiquetar las 60 a mano), pero antes hace falta **la corrida de 60**, que ahora
+# sí sobrevive. Pendiente de anotar en `tasks.md`: **la rendija de la extensión en el
+# portero** —los tres tests recorren `*.jsonl`, así que un corpus guardado como
+# `.json` o `.txt` entra sin que nadie lo mire; se tapa recorriendo `*` y exigiendo
+# que todo lo que no sea el `README.md` acabe en `.jsonl`—. Siguen armados `T-086`
+# (hora UTC en la próxima lectura de AWS) y el freno de `[D-081]` antes de `MODEL`.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -13079,6 +13159,58 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   error y con todos los tests locales en verde**. → Normalizar (minúsculas +
   `strip`) antes de que el texto toque el disco. **Los bugs que no puedes ver en
   tu máquina son los caros.**
+- **Una cerradura que hay que acordarse de invocar sigue siendo una advertencia**
+  (sesión 83, y es la lección madre del día). El día anterior `PI-8` era un
+  comentario y se convirtió en función, `sentences_are_invented()`. Bien probada,
+  honesta sobre su alcance… y llamada **solo desde tres tests con registros hechos a
+  mano**. La promoción de un corpus era un `mv` manual, así que **correr la cerradura
+  era un acto de acordarse** — y en `eval_rubric.py:89` ya había una frase dándolo
+  por hecho en presente. 🔑 **El mismo defecto con una capa más de pintura**, y la
+  pintura es lo peligroso: un comentario da miedo, una función tranquiliza (`LM.15`).
+  → Un control se echa sobre **la carpeta entera con un `glob`**, no sobre los
+  registros que alguien le pase. Y el patrón ya estaba en casa: el portero sobre
+  `data/` de `T-071`, sesión 49.
+- **Un criterio de conservación que se evalúa DESPUÉS deja la evidencia esperando en
+  el sitio menos duradero** (sesión 83). *"Se guarda el corpus cuya rúbrica ya no
+  existe en producción"* se comprueba solo y no se estira — pero en el momento de
+  crear un corpus la rúbrica está viva **por definición**, así que nada se guarda
+  nunca al nacer. Se guardaría más tarde, cuando alguien caiga; y mientras tanto el
+  archivo espera en `data/`, ignorado por Git y en un solo disco. 🔑 **Su valor solo
+  se reconoce a toro pasado, y el reconocimiento depende de que alguien se acuerde.**
+  → El disparador se pega a un evento que **ocurre seguro y se nota seguro**: el
+  commit que mueve `MODEL` o `GRAMMAR_RUBRIC`. Mismo patrón que `[D-081]`.
+- **Un criterio que nombra un eje y olvida el otro** (sesión 83). El criterio
+  propuesto colgaba de *"si la rúbrica sigue viva, la corrida se puede repetir"* —
+  cierto **solo si todo lo demás está quieto**, y `[D-049]` va a mover el modelo tres
+  veces a propósito. El corpus que más iba a doler perder (la línea base de Opus,
+  para comparar el descenso) era justo el que el criterio dejaba fuera.
+- **10 de 10 rotas no es un resultado, es la selección** (sesión 83). El corpus del
+  diagnóstico tenía las diez filas rotas porque **se escogieron las que habían
+  fallado**. Sin nada en el nombre que lo dijera, es un **100% de fallo esperando a
+  que alguien lo divida** — y eso no lo tapan ni el modelo, ni la fecha, ni el hash.
+  Es `[L-071]` (cuadrar contra un agregado no es cuadrar) con el sesgo dentro del
+  propio conjunto. → cuarto eje del nombre: `full` / `pick`.
+- **Dos booleanos dejan una combinación imposible, y alguien la leerá como un dato**
+  (sesión 83). La traza escribía `correct: bool` y mezclaba dos causas **opuestas**:
+  el juez rompió el formato, o el alumno se equivocó. El arreglo natural —añadir un
+  segundo booleano y cruzarlos— deja tres estados válidos y uno imposible.
+  → **Un campo que diga QUIÉN falló**, con sus tres estados, naciendo donde la
+  función ya los distinguía; y el booleano viejo degradado a **propiedad derivada**,
+  que es lo único que garantiza que no discrepen.
+- **El campo que sobra y el campo que se le parece** (sesión 83, y es el aviso que
+  evitó el daño). `correct` aparecía en cuatro sitios y **solo uno era redundante**:
+  el de la traza. Los otros alimentan `record_practice`, o sea **el marcador del
+  alumno**. Un barrido de `correct` habría cambiado la nota de la gente **sin lanzar
+  un error**, porque un marcador equivocado sigue pareciendo un marcador.
+  → Antes de retirar un nombre, mira **quién más lo consume**, no cuántas veces sale.
+- **Leí un listado y conté dos filas como una** (sesión 83, mío). Dije que el corpus
+  había crecido de `744` a `2217` bytes; los `744` eran de `accounts.json`, otra fila
+  del mismo `ls`. Lo cazó la otra terminal. No movía la conclusión, pero es la misma
+  familia de la sesión 80: **mirar el sitio correcto y clasificar mal lo que hay**.
+  📌 Y en la misma revisión llegó una corrección que **no lo era** —citar la línea
+  196 en vez de la 188, cuando el `def` está en la 188 y el `return` en la 196, las
+  dos buenas—. Se anota porque **una corrección falsa que entra al registro pesa
+  igual que un error de verdad**, y nadie vuelve a auditarla.
 
 ---
 
