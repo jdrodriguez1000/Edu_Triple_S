@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-18 (sesión 85)
+**Última actualización:** 2026-08-18 (sesión 86)
 
 ---
 
@@ -2908,6 +2908,83 @@
 # juez con `app.tools.split_verdict` (el corpus **no guarda `outcome`**: vive dentro
 # de `reply`). Las dos mitades ya existen. Detrás siguen `T-108`, `T-109`, `T-102`,
 # `T-103` y `T-086`; `T-110` sigue **candidata, sin firmar**.
+
+# 🚨 **La 86 fue de SUPERVISIÓN entera, `T-111` cerrada con `58 de 58` — y el
+# hallazgo del día es que ese 100 % NO habla del juez, habla del EXAMEN.**
+# 🔴 **Lo primero que encontré no era la tarea: era que la otra mitad del cruce no
+# tenía copia.** Las 60 respuestas del juez vivían en `data/`, y `git check-ignore`
+# lo confirmó (`.gitignore:18`). Toda la razón de `[D-097]` fue *"`data/` es un
+# disco sin copia; Git respalda"* — y ese argumento se aplicó a **las etiquetas** y
+# no a **las respuestas**. Las dos mitades del cruce, en regímenes opuestos, y la
+# desprotegida era la que costó dinero. Agravante vivo: `T-109` abierta, el nombre
+# lleva **fecha sin hora**, y hoy era esa fecha — una segunda corrida `full` lo
+# pisaba en silencio. **No es irrecomprable ($0,21) — es IRREPETIBLE**: el juez no
+# es determinista, y el número dejaría de ser auditable. → `[D-099]`,
+# `_persistence/replies/`.
+# ⚠️ **Y la salida obvia estaba cerrada:** copiarlo a `corpus/` ponía rojo a
+# `test_eval_rubric.py:547` por el nombre **y** por las filas (`bbf4be38` es la
+# huella viva). La misma trampa que la 85 esquivó con las etiquetas, un día después
+# y con el otro archivo. **`replies/` no es hermana de `corpus/`: es su ANTESALA** —
+# la misma vida en dos momentos—, y `[D-092]` ya había descrito ese agujero exacto
+# al descartar una propuesta rival. Su regla de salida ya estaba firmada.
+# 🔑 **Tres aportes míos entraron y los tres eran irrecuperables después:** (1) el
+# argumento fuerte para mover y no copiar no es *"dos copias divergen"* sino **que
+# con una copia `T-111` PUEDE leer el archivo equivocado y con el movimiento no
+# existe el archivo equivocado que leer** — freno estructural, no convención; (2)
+# **el orden invertido**: `mv` como primera acción es el único instante del plan con
+# una sola copia en el mundo → copiar, commitear, **verificar en Git**, y recién
+# entonces borrar (`LM.13`: un respaldo que no viste en Git es una intención); (3)
+# **respaldar los bytes no respalda el número** — si el cruce lee `data/` y la copia
+# está en `_persistence/`, el respaldo es un adorno. El insumo tiene que ser el
+# archivo asegurado.
+# 🐛 **`PI-8` mal apuntado por SEGUNDA vez en dos días, y peor que ayer.** La otra
+# terminal defendió el archivo con *"las frases son inventadas y `broken` está
+# vacío"*. Las dos mitades ciertas, ninguna toca lo expuesto: `sentences_are_invented`
+# **lo dice de sí misma en su docstring** (`eval_rubric.py:261`) — *"mira el campo
+# `sentence`… **no** audita `reply`"*. Y aquí la carga entera del archivo **es**
+# `reply`: sesenta párrafos generados a un repo público. Ayer la prosa libre era un
+# campo opcional que no se usó; hoy era el archivo. **`LM.15` de fábrica.** → el
+# portero cierra el conjunto de campos y un test defiende la frase del alcance.
+# 🚨 **Y el error grande del día es MÍO: escribí que no diría el agregado y lo dije
+# tres párrafos después.** Al medir el formato publiqué `27 OK / 33 FIX` — que
+# puestos al lado de sus `27 correct / 33 wrong` **son** el agregado: márgenes
+# idénticos obligan a que los desacuerdos vengan en pares. Lo etiqueté *"dato del
+# instrumento"* y esa etiqueta me bastó. 🔑 **Así se cuela: no por descuido de la
+# regla, sino porque el dato venía con una etiqueta que la regla no cubría.** Lo
+# cazó la otra terminal y selló la predicción **marcada** (*tomada después de conocer
+# los márgenes*) en vez de fingirla limpia. Es `L-083` por la misma puerta que yo
+# había nombrado en el mismo mensaje: **el módulo tiene portero, el chat no.**
+# 📌 **Consecuencia real, no simbólica:** la predicción existía para que un número
+# inesperado hiciera mirar el instrumento. Llegó anclada, **había algo que mirar y el
+# aviso no sonó.** Ninguna de las dos predicciones (su 54, mi 56) llegó a disco.
+# ✅ **Lo que sí funcionó: la regla de exclusión escrita como REGLA y no como lista**
+# — *se excluye la fila cuyo contenido o veredicto se expuso antes de etiquetar;
+# nombrarla por número no excluye* — que deja `54` y `55` fuera, la `37` dentro, y
+# contesta *"¿y la 37?"* **antes** de que nadie tenga un número delante.
+# 🎯 **`T-111`: 58 de 58 (60 de 60 al lado). Cero perdonadas, cero corregidas de
+# más, cero fallos de formato** — esto último medido por mí antes del cruce, así que
+# la trampa de `[D-067]` (denegar por defecto mezcla *se equivocó* con *rompió el
+# formato*) estaba puesta y **hoy no muerde: medida, no supuesta**.
+# 🔬 **El saboteo es lo que separó el resultado de un cable suelto:** voltear una
+# etiqueta → `57/58` con la casilla *perdona* subiendo a 1. **Un 100 % se audita
+# igual que un `0,00`** — ya pasó con la factura de AWS.
+# 🔑 **Y el techo tiene PROCEDENCIA, no es accidente de la corrida:** `eval_rubric.py:131`
+# importa las frases de **`measure_tutor.SENTENCES`**, donde se escribieron para medir
+# **otra cosa**. El conjunto nunca se diseñó para discriminar a este juez: **el techo
+# llevaba puesto desde el día del préstamo.**
+# ⛔ **Consecuencia con fecha, y es más dura de lo que se dijo:** un eval en el techo
+# no *"mide poco"* — **no puede funcionar como freno de regresión**. Da 100 antes y
+# 100 después. → `[D-101]`: `MODEL` no se mueve hasta que exista una vara capaz de
+# bajar. El freno de `[D-081]` delante de `MODEL` ahora tiene una razón **medida**
+# detrás, no solo prudencia. `[D-049]` (bajar a Sonnet) queda condicionada.
+# ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal: `T-112`**, escribir el conjunto
+# **discriminante** (no el representativo — se declaró cuál antes de escribir una
+# frase, que es `[D-040]` aplicado al siguiente artefacto). Orden fijo: **escribir →
+# etiquetar → recién entonces correr el juez.** Con `L-083` vigente y sin portero
+# posible: quien escriba esas frases será quien las etiquete, con el veredicto
+# fresco. `T-109` **sube de prioridad y deja de ser tarea de fondo**: apunta a un
+# insumo concreto. Detrás siguen `T-108`, `T-102`, `T-103`, `T-086`; `T-110` sigue
+# candidata sin firmar.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
