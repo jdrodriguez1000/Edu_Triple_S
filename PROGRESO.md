@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-18 (sesión 83)
+**Última actualización:** 2026-08-18 (sesión 84)
 
 ---
 
@@ -2733,13 +2733,82 @@
 # salida del guion. Es `[L-059]` cobrando por tercera vez: **cambiar la rúbrica
 # caduca el coste por llamada, y el número viejo sigue imprimiéndose igual de
 # seguro de sí mismo.**
-# ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal: la corrida de 60.** Un solo
-# pago (~$0,18, y el estimado del guion se queda corto) que hace **tres trabajos**:
-# línea base nueva, corpus para `T-106`, y devolver `COST_PER_CALL_USD` a estar
-# medido. Detrás va `T-106` —etiquetar las 60 a mano—, desbloqueada hoy. Siguen
-# armados `T-086` (hora UTC en la próxima lectura de AWS), el freno de `[D-081]`
-# antes de `MODEL`, y el disparador de `[D-092]` (quien mueva `MODEL` o
-# `GRAMMAR_RUBRIC` promueve el corpus saliente **en ese mismo commit**).
+# ✅ **La 84 pagó la corrida de 60 y salió ENTERA: 60 de 60, y las 60 LIMPIAS.** Cero
+# fallos en las cuatro promesas mecánicas. Es la **línea base de Opus 5** contra la
+# que se van a medir los tres descensos de `[D-049]` — y contra un 0 de partida,
+# cualquier cosa que aparezca al bajar a Sonnet es **señal, no ruido**.
+# 🔴 **Pero el día lo hizo la auditoría de ANTES de pagar, y encontró un bicho real.**
+# `eval_rubric.py` calculaba el nombre del archivo con **lo que se planeó**, no con lo
+# que llegó: `calls = len(plan)` valía 60 aunque los dos `break` del bucle —los dos
+# **documentados como el modo de fallo esperado**— cortaran en la frase 30. Una tanda
+# cortada se guardaba en un archivo llamado `full`.
+# 🔑 **Y lo que lo hacía grave era dónde vivía cada mitad.** El informe SÍ avisaba
+# (*"faltan 30 respuestas… no valen como línea base"*), pero ese aviso vive en la
+# ventana de la terminal, **que se cierra**. El nombre vive en el disco y dura hasta
+# que alguien lo abra dentro de seis semanas. **El aviso estaba en la parte que se
+# borra sola; la mentira, en la que sobrevive.**
+# 💰 **La segunda mitad costaba dinero:** `save_replies` abre en `"w"`, y modelo,
+# fecha y huella no cambian dentro del mismo día. Pagas la línea base entera, vuelves
+# a correr esa tarde, se corta en la frase 5 — y el archivo bueno desaparece. Es
+# `[L-076]` **vivo dentro de su propio arreglo**: `[D-092]` cerró la colisión entre
+# modelos y entre rúbricas, no la de una corrida **consigo misma**.
+# ✅ Arreglado antes de pagar (`165f415`): `written = replies_file(len(records))`, y
+# esa misma variable la usan el guardado y el print final. 533 → **534 tests**, y el
+# test nuevo es **el primero del proyecto que entra en `main()`** — que es justo por
+# qué nadie lo cazaba: `calls` frente a `len(records)` solo existía ahí dentro.
+# 🔑 **Y de ahí `[L-080]`, que es de la familia de `LM.15`:** ya existía un
+# `test_a_partial_run_is_named_pick_not_full`, y **el nombre bastó para dejar de
+# mirar**. Probaba una tanda que se PIDIÓ parcial, nunca una que se cortó sola. **Un
+# test cuyo nombre describe el riesgo y cuyo cuerpo no llega hasta él es peor que no
+# tenerlo: ocupa su sitio en la lista.** Un nombre de test es una afirmación que
+# nadie audita.
+# 🔍 **60 de 60 limpias es un VERDE, y aquí ningún verde se audita solo.** Reimplementé
+# las cuatro promesas **desde el texto de la rúbrica**, sin llamar a `rubric_check`, y
+# las pasé por el `.jsonl` recién pagado: **cero rotas, cero discrepancias en las 60**.
+# El verde aguanta una segunda opinión.
+# ⚠️ **Y una alarma mía que desactivé al mirar el texto:** mi barrido marcó 5
+# respuestas con comilla simple, y la rúbrica prohíbe las comillas. Fui a leerlas:
+# `doesn't`, `didn't`, `don't` — **apóstrofos de contracción**. No había hallazgo. Se
+# anota porque estuve a un paso de entregarlo como uno: **una alarma que se desactiva
+# a tiempo también es un dato.**
+# 🔻 **El hallazgo con más recorrido, y viene con una corrección mía dentro.** Pasé el
+# detector de HOY por el corpus congelado del 17: **su archivo dice 10 rotas, mi
+# recuento da 1**, y las 9 que discrepan son todas `too_many_sentences`. De ahí saqué
+# que los cuatro ejes sellan **la pregunta que se le hizo al modelo, no la báscula que
+# pesa la respuesta**. 🔴 **Pero ilustré el agujero con el caso que precisamente NO lo
+# ilustra:** `MAX_SENTENCES` vive DENTRO de `GRAMMAR_RUBRIC` (es un `f-string`), así
+# que la huella **sí se movió**, `67a8a252 → bbf4be38`. **Avisó.** Lo cazó la otra
+# terminal → `[L-081]`.
+# 🔑 **Y la lección es la misma que yo había aplicado bien media hora antes con las
+# comillas:** un hallazgo que **se siente medido cuando solo está nombrado**. Aquí
+# pesa doble porque el ejemplo elegido era justo el que el mecanismo sí atrapa.
+# 📏 **Intenté medirlo y NO se puede con la historia:** solo dos commits han tocado
+# `rubric_check.py`, y en el único donde cambió el detector cambió también la rúbrica,
+# **en el mismo commit**. No hay contraejemplo. Lo más cerca de medido que queda es
+# por construcción: `MARKDOWN_CHARACTERS` no lleva las comillas tipográficas `“ ”`,
+# que la rúbrica prohíbe sin apellido — **las conté en las 60 y salieron cero**, así
+# que hoy no cambia nada; el día que alguien las añada, todos los `broken` guardados
+# cambian de significado y **ninguna huella se mueve**. → `T-110` queda firmada como
+# **propuesta con la demostración pendiente**, no como agujero medido.
+# 📌 **No se ha perdido nada:** el corpus guarda `reply` y `sentence` crudos, así que
+# `broken` es un campo **derivado y recalculable** con la báscula que se quiera.
+# 🚨 **Y la razón de cerrar sin empezar `T-106`, que es la que manda:** el corpus de
+# hoy **tiene precio** —si se pierde, son otros `$0,18`—. **En cuanto le pegue 60
+# juicios hechos a mano, deja de tenerlo: ya no se puede volver a comprar.** Y vive en
+# `data/`, un disco sin copia y fuera de Git. `[D-092]` cubre el corpus que SALE de
+# producción; **el trabajo humano que ENTRA no lo cubre ninguna regla.** Decidir dónde
+# escribe `T-106` es una decisión de sesión entera, no de última hora.
+# ⚠️ **El tercer trabajo de la corrida sigue SIN COBRAR:** el gasto real se lee en la
+# consola de Anthropic, y `COST_PER_CALL_USD` sigue caducado hacia abajo desde
+# `[D-090]`. El saldo de `[C-009]` es **compartido**, así que hoy la atribución de los
+# `$0,18` es limpia y mañana ya es un ejercicio de resta.
+# ➡️ **SIGUIENTE PASO CONCRETO — y son DOS, en este orden.** Primero, **suyo y de hoy:
+# leer el gasto real en la consola de Anthropic** y devolver `COST_PER_CALL_USD` a
+# estar medido. Después, **en la OTRA terminal: `T-106`** —etiquetar las 60 a mano—,
+# **abriendo por dónde escribe**, que es lo que la deja sin precio. Detrás, `T-108`
+# (la rendija del portero, solo mira `*.jsonl`) y `T-110` (la huella del detector en
+# la fila, sin decidir). Siguen armados `T-086` (hora UTC en la próxima lectura de
+# AWS), el freno de `[D-081]` antes de `MODEL`, y el disparador de `[D-092]`.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -13222,6 +13291,43 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   196 en vez de la 188, cuando el `def` está en la 188 y el `return` en la 196, las
   dos buenas—. Se anota porque **una corrección falsa que entra al registro pesa
   igual que un error de verdad**, y nadie vuelve a auditarla.
+
+- **El nombre se calculaba con lo planeado, no con lo que llegó** (sesión 84, cazado
+  **antes** de pagar). `eval_rubric.py` guardaba con `calls = len(plan)`, que vale 60
+  aunque los dos `break` del bucle corten en la frase 30 — y esos dos `break` están
+  **documentados en la propia cabecera como el modo de fallo esperado**. Una tanda
+  cortada se archivaba como `full`. 🔑 **Lo grave era el reparto:** el informe SÍ
+  avisaba, pero el aviso vive en la ventana de la terminal, **que se cierra**, y el
+  nombre vive en el disco. **El aviso estaba en la parte que se borra sola; la
+  mentira, en la que sobrevive.** Y la segunda mitad costaba dinero: con `open("w")`
+  y modelo/fecha/huella iguales dentro del día, una corrida cortada por la tarde se
+  llevaba por delante la línea base pagada por la mañana — `[L-076]` **vivo dentro de
+  su propio arreglo**. → `written = replies_file(len(records))`.
+- **Un test cuyo nombre describe el riesgo y cuyo cuerpo no llega hasta él** (sesión
+  84). Existía `test_a_partial_run_is_named_pick_not_full`, y **el nombre bastó para
+  dejar de mirar**: probaba una tanda que se *pidió* parcial, nunca una que **se cortó
+  sola**. 🔑 **Es peor que no tenerlo, porque ocupa su sitio en la lista.** Un nombre
+  de test es una afirmación que nadie audita — `LM.15` mudado a la carpeta `tests/`.
+  📌 Y el test que lo tapó es **el primero del proyecto que entra en `main()`**: el
+  número que fallaba solo existía ahí dentro, y por eso ningún test de alrededor podía
+  verlo.
+- **Nombré un agujero real y lo ilustré con el único caso que NO lo ilustra** (sesión
+  84, mío, y lo cazó la otra terminal). Dije que los cuatro ejes del corpus no sellan
+  el detector — cierto, leyendo `rubric_fingerprint()`—, y lo demostré con el `10
+  contra 1` del `too_many_sentences`… que venía de `MAX_SENTENCES`, que vive **dentro**
+  de `GRAMMAR_RUBRIC` por ser un `f-string`. **La huella sí se movió y sí avisó.**
+  🔑 Es exactamente lo que yo había hecho bien media hora antes al desactivar mi propia
+  alarma de las comillas: **un hallazgo que se siente medido cuando solo está
+  nombrado.** Aquí pesó doble porque el ejemplo elegido era el que el mecanismo atrapa.
+  → Al intentar medirlo de verdad: **solo dos commits han tocado `rubric_check.py`, y
+  en el único que lo movió se movió también la rúbrica.** No hay contraejemplo, así que
+  `T-110` queda como **propuesta con la demostración pendiente**.
+- **Una alarma propia desactivada a tiempo, y se anota igual** (sesión 84). Mi barrido
+  independiente marcó 5 de las 60 respuestas por llevar comilla simple, que la rúbrica
+  prohíbe. Fui a leer el texto: `doesn't`, `didn't`, `don't` — **apóstrofos de
+  contracción**. No había hallazgo. 🔑 Se registra porque **una alarma que se apaga
+  antes de entregarse también es un dato**, y porque el reflejo que la apagó —ir al
+  texto en vez de reportar la cuenta— es el mismo que faltó en el punto de arriba.
 
 ---
 
