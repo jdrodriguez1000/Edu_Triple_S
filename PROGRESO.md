@@ -2793,22 +2793,36 @@
 # 📌 **No se ha perdido nada:** el corpus guarda `reply` y `sentence` crudos, así que
 # `broken` es un campo **derivado y recalculable** con la báscula que se quiera.
 # 🚨 **Y la razón de cerrar sin empezar `T-106`, que es la que manda:** el corpus de
-# hoy **tiene precio** —si se pierde, son otros `$0,18`—. **En cuanto le pegue 60
+# hoy **tiene precio** —si se pierde, son otros `$0,20` medidos—. **En cuanto le pegue 60
 # juicios hechos a mano, deja de tenerlo: ya no se puede volver a comprar.** Y vive en
 # `data/`, un disco sin copia y fuera de Git. `[D-092]` cubre el corpus que SALE de
 # producción; **el trabajo humano que ENTRA no lo cubre ninguna regla.** Decidir dónde
 # escribe `T-106` es una decisión de sesión entera, no de última hora.
-# ⚠️ **El tercer trabajo de la corrida sigue SIN COBRAR:** el gasto real se lee en la
-# consola de Anthropic, y `COST_PER_CALL_USD` sigue caducado hacia abajo desde
-# `[D-090]`. El saldo de `[C-009]` es **compartido**, así que hoy la atribución de los
-# `$0,18` es limpia y mañana ya es un ejercicio de resta.
-# ➡️ **SIGUIENTE PASO CONCRETO — y son DOS, en este orden.** Primero, **suyo y de hoy:
-# leer el gasto real en la consola de Anthropic** y devolver `COST_PER_CALL_USD` a
-# estar medido. Después, **en la OTRA terminal: `T-106`** —etiquetar las 60 a mano—,
-# **abriendo por dónde escribe**, que es lo que la deja sin precio. Detrás, `T-108`
-# (la rendija del portero, solo mira `*.jsonl`) y `T-110` (la huella del detector en
-# la fila, sin decidir). Siguen armados `T-086` (hora UTC en la próxima lectura de
-# AWS), el freno de `[D-081]` antes de `MODEL`, y el disparador de `[D-092]`.
+# ✅ **El tercer trabajo de la corrida SE COBRÓ, y el cierre de la otra terminal llegó
+# después del mío: `[D-096]` (`8a7c44f`).** `COST_PER_CALL_USD` vuelve a estar medido
+# en **`$0,00342`**, así que la corrida costó **`$0,2052`**, no los `$0,18` que
+# imprimió el guion — el estimado iba **un 12,5% por debajo**. 🔴 **Esta línea decía
+# "sigue SIN COBRAR" y se corrige EN EL SITIO**, porque un pendiente ya cerrado es lo
+# que la sesión 67 sirvió de prioridad nº 1 al arrancar. Verificado por mí:
+# `0,25 ÷ 0,00342 = 73,09`, y el freno de `measure_tutor` baja de **82 a 73** llamadas
+# — llevaba un día dejando pasar **nueve de más**.
+# 🔑 **Y el detalle que hace bueno ese número: la medición dio una BANDA**
+# (`$0,00325 – $0,00342`) **y se quedaron con el extremo caro.** Es lo correcto para un
+# freno y no es lo cómodo: con `0,00325` el tope habría salido 76, tres llamadas de
+# holgura regalada. **Un presupuesto se calcula con el precio malo, no con el medio.**
+# ⚠️ Tercera vez que esta constante caduca (`0,00234 → 0,00304 → 0,00342`), y la
+# primera ya dejó pasar **106 llamadas = `$0,32` reales contra `$0,25`**. Es `[L-059]`
+# cobrando otra vez: **el número viejo se sigue imprimiendo igual de seguro de sí
+# mismo.**
+# ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal: `T-106`, y NO se abre por las
+# frases.** Se abre decidiendo **dónde vive el archivo**: hoy el corpus está en
+# `data/`, y mientras solo lleve respuestas del modelo perderlo cuesta `$0,20` y se
+# vuelve a comprar; **en cuanto lleve sesenta juicios suyos deja de tener precio**, y
+# ninguna regla lo cubre. Detrás, `T-109` (dos corridas enteras el mismo día siguen
+# pisándose), `T-108` (la rendija del portero, solo mira `*.jsonl`) y `T-110` (la
+# huella del detector en la fila, **sin firmar**). Siguen armados `T-086` (hora UTC en
+# la próxima lectura de AWS), el freno de `[D-081]` antes de `MODEL`, y el disparador
+# de `[D-092]`.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
