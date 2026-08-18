@@ -2628,6 +2628,23 @@
 # agota la sesión antes de llegar.** Y cada vez tiene más que contar; ahora le tocan
 # además el tope saturado, la promesa que no se podía construir porque su ancla es
 # lo que `[D-049]` va a mover, y el comentario que apagaba la búsqueda.
+# ✅ **Y DESPUÉS DEL CIERRE SE ESCRIBIÓ LA PIEZA 8** —la que llevaba cinco sesiones
+# pendiente— en `07-produccion/README.md`, con seis apartados: el registro que se
+# diseña por la pregunta, el reparto del tiempo y el tope que no era reloj, la cuarta
+# pregunta (`PI-8`) con el reparto de tres filas, por dónde arrancan los evals, lo
+# que enseñó la primera medición real, y **una tabla de lo que TODAVÍA no está
+# probado**. 🔑 Esa última existe por la misma razón que la pieza: *un puente que solo
+# cuenta lo que salió bien es el registro que solo hablaba cuando algo fallaba, con el
+# signo cambiado.*
+# 🐛 **Y al insertarla salieron dos textos podridos en el mismo archivo, los dos del
+# bicho de `LM.24`:** el apartado **`⏭️ Siguiente paso`** decía *"pasos 0, 1 y 2
+# cerrados (sesión 31), sigue el paso 3: la pantalla"* —**más de cincuenta sesiones
+# clavado**, en el sitio que alguien lee PRIMERO para saber qué hacer, y habría
+# mandado a construir algo terminado hace meses (`LM.30`)—; y el encabezado *"El
+# análisis, en cinco piezas"* llevaba **seis** debajo. 📌 **Los dos llevaban ahí desde
+# antes de esta sesión y nadie los había leído: el archivo se abría por el medio, a
+# buscar dónde iba la pieza nueva.** Arreglados, y el primero con su enmienda escrita
+# en el sitio en vez de un bloque nuevo debajo.
 # 🔧 **Y la cabecera de este archivo llevaba dos sesiones clavada en `sesión 80`:**
 # la 81 corrigió la fecha de la línea 6 y **no tocó el número de sesión de al lado**.
 # Es `LM.15` en pequeño: **la mitad recién corregida avala la mitad que no se

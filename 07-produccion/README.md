@@ -97,7 +97,7 @@ mínimo tardas 8 años"*— es **matemática determinista, no IA**.
 
 ---
 
-## El análisis, en cinco piezas
+## El análisis, en seis piezas
 
 ### Pieza 1 — Qué cambia al salir de tu máquina
 
@@ -438,10 +438,232 @@ construyes lo demás te quita la variable ruidosa — **es el control del nivel 
 
 ---
 
+## Pieza 8 — Observabilidad y evals: el paso 9
+
+> Escrita en la **sesión 82**, con lo que dejaron las sesiones **79, 80, 81 y 82**.
+> Es la pieza que faltaba: el mapa le asignaba a este puente **la pregunta de
+> seguridad** desde la 77, y esa pregunta apareció aquí — no donde se esperaba.
+
+Las piezas 1 a 7 preguntan *cómo se construye*. Esta pregunta algo distinto:
+**cómo se sabe qué está pasando cuando ya nadie está mirando la pantalla.**
+
+---
+
+### 8.1 — Un registro se diseña por la pregunta, no por lo que es fácil escribir
+
+El paso 9 no arrancó escribiendo un registro nuevo. Arrancó **interrogando los que
+ya existían**: los `registro.jsonl` del nivel 4 y del 5b. Ocho preguntas, **$0,00 y
+sin llamar a Claude**.
+
+Contestaron **dos**: cuánto costó, y cuánto tardó en total. Las otras seis
+fallaron.
+
+> 🔑 **La regla que salió de ahí:** un registro se diseña por **la pregunta que
+> alguien va a hacer el día que algo se rompa**, no por lo que es cómodo escribir
+> mientras nada se rompe. Y mientras nadie le haya hecho una pregunta de verdad,
+> **es un archivo, no observabilidad**.
+
+Es `LM.13` con otro traje: *un freno que no has visto morder es una nota*. Un
+registro que nadie ha interrogado es un archivo con buena intención.
+
+**Y el hallazgo peor fue cuál era el hueco**, encontrado por las dos terminales a
+la vez y por caminos distintos —ellos leyendo el `return` de `api.py`, esta
+interrogando el archivo—:
+
+> 🚨 **El caso más frecuente de la app —que funcione— no escribía nada.** El
+> registro solo hablaba cuando algo iba mal. Así no se puede responder *"¿alguien
+> está usando esto?"*, que es la pregunta 1 de cualquier producto.
+
+**Y una salvedad que salvó un titular** (`LM.16`): los 385 s del nivel 4 no eran la
+app siendo lenta — era una persona autorizando permisos a mano. **Un registro que
+no marca la espera humana entrega un 89% cierto e inútil.**
+
+---
+
+### 8.2 — Repartir el tiempo, y el tropiezo que enseñó más que el reparto
+
+El descenso de modelo (`[D-049]`: Opus 5 → Sonnet 5 → Haiku 4.5) **solo acelera la
+parte de Claude**. Sin saber qué fracción del tiempo es Claude, no se puede juzgar
+si el descenso sirvió. En una corrida del 5b: **20,7 s de Claude sobre 59 s
+totales** — el principio viaja, el número no.
+
+**Esta terminal propuso el reparto equivocado, y el error es la lección.** Propuso
+escribir `connect` / `write` / `pool` / `read`, *"porque la arquitectura ya piensa
+en fases y el registro no las escribe"*.
+
+Esos cuatro nombres son `anthropic.Timeout(...)`: **un presupuesto que se le
+entrega a la librería, no un cronómetro.** Los números **no existen** — `httpx`
+devuelve un solo `elapsed`, el total. Comprobado en la librería del disco, no en la
+documentación.
+
+> 🔑 **Un tope no es un reloj.** Declarar cuánto se le permite durar a algo no es
+> haber medido cuánto duró.
+
+📌 **Y el agravante:** la tabla de las cuatro fases estaba abierta y leída entera.
+No fue por no mirar — **se leyó bien y se clasificó mal.**
+
+⚠️ **Y la frase que lo empujó era cierta y venenosa.** *"El registro no las
+escribe"* es verdad, y se lee como *"están ahí, solo falta apuntarlos"*. **Una
+afirmación verdadera puede mandar a construir algo imposible si el lector completa
+la mitad que no dice.**
+
+**El reparto que sí decide resultó más barato que el descartado**, y son **tres
+números, no dos**:
+
+| campo | qué mide | por qué hace falta |
+|---|---|---|
+| `seconds` | lo que espera la persona, de punta a punta | es el número que le importa al usuario |
+| `model_seconds` | la llamada a Claude, cronometrada alrededor | es lo único que el descenso de modelo cambia |
+| `queue_seconds` | lo que la práctica esperó en la cola antes de empezar | **sin separarla, el descenso parecería inútil cuando el culpable sería la cola** |
+
+El reloj de la ruta arranca **antes** de encolar, a propósito: mide lo que espera la
+persona, no lo que tarda el código.
+
+---
+
+### 8.3 — La cuarta pregunta: quién puede leerlo
+
+Las tres preguntas de siempre sobre un dato son *qué se guarda, dónde vive, cuánto
+tiempo*. Falta una, y `.gitignore` **no la cubre**:
+
+> 🚨 **¿Quién puede leerlo?**
+
+`data/` está en `.gitignore` y tapado. El flanco abierto es otro: **una frase escrita
+por una persona, copiada a mano dentro de una lección como ejemplo.**
+`_persistence/` **sí** va a Git, y el repo **es público**. Ninguna herramienta valida
+esa prosa.
+
+**Es la clase muda de fallo** — la misma por la que una fecha equivocada viajó a 17
+archivos sin que nada se pusiera rojo. De ahí salió **`PI-8`**, y el reparto en tres
+filas:
+
+| dónde | qué puede entrar | qué no |
+|---|---|---|
+| **traza operativa** | la **forma**: cuántas palabras, si acertó, cuánto tardó | **nunca la frase** |
+| **material de evals** | frases **inventadas** a propósito (hay 60, elegidas para A1) | cosecha de gente real |
+| **`_persistence/`** | decisiones, lecciones, tareas | **ninguna frase de nadie, nunca, ni como ejemplo** |
+
+**Y la tensión evals ↔ privacidad era falsa**, resuelta por secuencia y no por
+principio: no hay frases que recolectar, porque la pregunta 1 sigue siendo *"¿alguien
+está usando esto?"*. Inventarlas **ya era la práctica y fue buena** — un conjunto de
+prueba es una cosecha fija, no una llave abierta.
+
+---
+
+### 8.4 — Los evals: por dónde se empieza, y por qué no por lo que suena a eval
+
+La rúbrica del tutor le pide **siete** cosas al modelo. Tres necesitan que **una
+persona** lea la respuesta y opine: *¿acertó el veredicto? ¿corrigió un error o
+tres? ¿se fue del tema?*. Las otras cuatro **las comprueba un programa sin opinar**.
+
+**Se empezó por las cuatro mecánicas, y eso parece lo cómodo. No lo es:**
+
+> 🔑 **Un modelo pequeño no deja de ver que una frase A1 está mal** —eso es gramática
+> de primer año—. **Lo que se le va es la forma.** Y la forma **sale a la pantalla**,
+> porque la web pinta ese texto tal cual.
+
+📌 **Y por el camino apareció un agujero que vale más que el eval:** cuando el modelo
+rompe el formato, el código hacía lo correcto —no dar el punto— **pero no se lo
+contaba a nadie**. La traza escribía `correct: bool`, así que *"el juez rompió el
+formato"* y *"el alumno se equivocó"* llegaban al cuaderno **como el mismo
+`correct=False`**.
+
+Dos causas opuestas, un número, y arreglos en direcciones contrarias: uno va a la
+rúbrica, el otro a la clase de inglés. **Es `LM.15` dentro del paso que se llama
+Observabilidad: no da un dato falso, da uno ambiguo — y la ambigüedad no se ve en la
+gráfica.**
+
+---
+
+### 8.5 — Lo que enseñó la primera medición de verdad (sesión 82)
+
+La primera corrida real —60 llamadas, ~$0,18— midió que **18 de 60** respuestas
+rompían la forma, casi todas por escribir tres frases donde la rúbrica pedía dos.
+De ahí salieron cuatro cosas que no estaban en el plan.
+
+**1. Un detector saturado no es un detector.**
+
+La propuesta era subir el tope a tres frases porque *"la rúbrica se contradice"*.
+Leída entera, **la rúbrica pedía dos cosas, no tres** — el aliento salía de la línea
+de personaje, que es **tono, no un renglón**.
+
+El sí era correcto. **El porqué escrito, no** — y el porqué es lo que sobrevive,
+porque un motivo equivocado no molesta hoy y se cita mañana como precedente.
+
+> 🔑 **El motivo que sí decide:** una promesa que **el mejor modelo rompe casi
+> siempre** no es un instrumento, es una constante. Y `[D-049]` existe para bajar de
+> modelo **midiendo cuándo se les va la forma**. Un detector ya rojo no distingue
+> *"el modelo nuevo se rompió"* de *"esto ya estaba rojo"*.
+
+**2. Un instrumento tiene que ser más estable que lo que mide.**
+
+La otra mitad: el corrector marcaba **cualquier** comilla, y la rúbrica solo prohibía
+las que envuelven la corrección. Afinarlo exigía que el programa supiera **qué trozo
+es la corrección** — y en las respuestas medidas la corrección entraba de **cinco
+formas distintas**, una de ellas sin ninguna entradilla.
+
+> 🔑 **El ancla que ese detector necesitaba era justo lo que `[D-049]` va a mover.**
+> Al cambiar de modelo cambia el fraseo, y nadie podría distinguir *el modelo se
+> rompió* de *la heurística resbaló*.
+
+Se endureció la rúbrica en vez del corrector: **una sola regla dicha igual en los dos
+sitios.**
+
+**3. Un instrumento que cuenta y tira la evidencia obliga a pagar dos veces.**
+
+La primera corrida contó 18 fallos **y tiró el texto**. El número sorprendente llegó
+*después* del gasto, sin forma de investigarlo sin volver a pagar. Se añadió el
+guardado — y se perdió otra vez, porque el archivo tiene **un nombre fijo** y se
+sobrescribe: una tanda de diagnóstico de 10 se comió la línea base de 60.
+
+> ⚠️ **El arreglo no era dejar de sobrescribir.** El motivo de sobrescribir era
+> correcto: dos corridas mezcladas serían dos modelos revueltos. **Lo que fallaba es
+> que el nombre del archivo no distinguía lo que la sobrescritura existía para no
+> mezclar** — modelo y fecha, que es justo lo que `[D-049]` va a mover tres veces.
+
+**4. Un comentario equivocado es peor que ningún comentario.**
+
+El precio por llamada estaba escrito en **dos** archivos, y el aviso de que había
+caducado se puso en uno — mientras el que iba a gastar era el otro. La copia estaba
+**tres líneas debajo** de un comentario que decía *"esto se importa, no se copia"*.
+
+> 🔑 **El daño no es que mienta: es que resuelve la duda del lector en la dirección de
+> no mirar.** Quien fuera a corregir el número leía que había una sola copia y dejaba
+> de buscar la segunda.
+
+---
+
+### 8.6 — Lo que todavía NO está probado, dicho aquí y no descubierto luego
+
+| | estado |
+|---|---|
+| La traza escribiendo con el **servidor levantado y una llamada real** | 🔲 **no visto.** Solo probada con cliente de test y juez de mentira. No hay `trace.jsonl` en disco — verificado |
+| El **precio por llamada** | 🔴 **caducado y sin corregir**, hacia el lado malo: tres frases son más tokens, así que el coste real sube y el número guardado se queda por debajo |
+| El **corpus de 60 respuestas** | 🔴 **no existe.** Se pierde con la siguiente tanda hasta que el nombre del archivo lo distinga |
+| El corrector **cableado a producción** | 🔲 escrito a propósito **fuera** de la ruta; que la traza apunte el fallo de formato es un cambio aparte |
+
+> 📌 **Que esta tabla exista es la pieza haciendo su trabajo.** Un puente que solo
+> cuenta lo que salió bien es el mismo defecto que el registro que solo hablaba
+> cuando algo fallaba, con el signo cambiado.
+
+---
+
 ## ⏭️ Siguiente paso
 
-**Pasos 0, 1 y 2 cerrados** (sesión 31). Sigue el **paso 3: la pantalla**,
-`index.html` + `app.ts` contra la ruta `/practice` local. Es el 6c aplicado.
+> 🔴 **Corregido en la sesión 82.** Este bloque decía *"pasos 0, 1 y 2 cerrados
+> (sesión 31), sigue el paso 3: la pantalla"* — y llevaba así **más de cincuenta
+> sesiones**, en el apartado que se titula *Siguiente paso*, que es el primero que
+> alguien lee para saber qué hacer. 🔑 **Es `LM.24`: en un archivo que crece por
+> enmiendas, el texto viejo se queda arriba, que es donde cae el ojo primero.** Y
+> habría mandado a construir algo terminado hace meses, que es `LM.30`.
+
+**Pasos 0 a 8 cerrados.** En curso el **paso 9: observabilidad y evals con
+rúbrica** — el que cuenta la **Pieza 8**.
+
+El estado vivo **no vive aquí**: vive en `_persistence/` del repo de TEAPP, que se
+actualiza cada sesión. Este puente guarda **el porqué y lo aprendido**; el qué
+exacto está allá. 📌 **Un puente que intenta llevar la cuenta se queda viejo sin
+avisar** — acaba de demostrarlo.
 
 ---
 
