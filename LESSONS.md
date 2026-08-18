@@ -4883,3 +4883,235 @@ sin comentario, el que busca duplicados busca; con él, ya recibió la respuesta
 > ⚠️ **Regla práctica:** un comentario que afirma *"esto está en un solo sitio"* es
 > una afirmación verificable, y por tanto **le toca un test**, no la buena fe. Aquí
 > terminó existiendo: `test_the_wallet_is_imported_not_copied`.
+
+
+---
+
+### LM.52 — Una cerradura que hay que acordarse de echar sigue siendo una advertencia
+
+**Sesión 83.** El día anterior, `PI-8` —*"aquí no entra la frase de una persona real"*—
+era un comentario. Se convirtió en función: `sentences_are_invented()`. Bien escrita,
+bien probada, y **honesta sobre su alcance** en el docstring.
+
+Y llamada **solo desde tres tests, con registros hechos a mano**.
+
+La promoción de un corpus a la carpeta protegida era un `mv` manual. O sea que
+**invocar la cerradura era un acto de acordarse** — exactamente lo que la función
+existía para eliminar. En `eval_rubric.py` ya había una frase dándolo por hecho en
+presente, como si el control corriera solo.
+
+> 🔑 **Es el mismo defecto con una capa más de pintura, y la pintura es lo peligroso.**
+> Un comentario da miedo: quien lo lee sabe que nadie lo comprueba. **Una función
+> tranquiliza.** Tiene nombre, tiene tests, sale en verde — y nada de eso dice que
+> alguien la llame en el camino que importa.
+
+Es `LM.15` mudado un piso: allí el instrumento era ciego, aquí **el instrumento ve y
+nadie lo enciende**. Las dos veces el resultado es silencio, y el silencio se lee como
+confirmación.
+
+**Un control se echa sobre la carpeta entera, con un `glob`, no sobre los registros
+que alguien tenga a bien pasarle.** La diferencia entre un portero y un saludo es que
+el portero no depende de que le presenten a nadie: mira lo que hay, corra quien corra,
+por la vía que sea y se haya acordado quien se haya acordado.
+
+> 📌 **Y el patrón ya estaba en casa.** El portero sobre `data/` de `T-071`, sesión 49,
+> hacía exactamente esto. No hubo que inventarlo: hubo que reconocerlo.
+
+---
+
+### LM.53 — Un criterio que se evalúa después deja la evidencia esperando en el sitio menos duradero
+
+**Sesión 83.** La regla propuesta para conservar un corpus era: *"se guarda aquel cuya
+rúbrica ya no existe en producción"*.
+
+Se comprueba sola, no se estira, no admite discusión. Parece buena.
+
+**Pero en el momento de crear un corpus, la rúbrica está viva por definición.** Así que
+bajo esa regla **nada se guarda nunca al nacer**. Se guardaría más tarde, el día que
+alguien cambiara la rúbrica y se acordara de mirar atrás. Y mientras tanto el archivo
+espera en `data/`: un disco sin copia, fuera de Git.
+
+> 🔑 **Su valor solo se reconoce a toro pasado, y el reconocimiento depende de que
+> alguien se acuerde.** Que es la misma dependencia que `LM.52` acababa de quitar de
+> en medio, reapareciendo por la puerta del criterio en vez de por la del código.
+
+**El disparador se pega a un evento que ocurre seguro y se nota seguro.** Aquí: el
+commit que mueve el modelo o la rúbrica. Quien lo toca, promueve — en ese mismo commit.
+No hay que acordarse de nada porque no hay un después: el momento de decidir y el
+momento de actuar son el mismo.
+
+Un criterio correcto que se evalúa en el instante equivocado no protege nada. Y no
+falla ruidosamente: **se queda esperando, con toda la razón de su parte.**
+
+---
+
+### LM.54 — Un conjunto elegido por su resultado no tiene porcentaje
+
+**Sesión 83.** Un corpus de diagnóstico tenía diez filas y las diez estaban rotas. Eso
+no es un hallazgo del 100%: **son las diez que se escogieron precisamente porque habían
+fallado.**
+
+El nombre del archivo llevaba el modelo, la fecha y la huella de la rúbrica. Ninguno de
+los tres dice cómo se eligieron las filas. Así que en el disco quedaba un **100% de
+fallo esperando a que alguien lo divida** — y quien lo divida seis meses después tendrá
+todos los datos menos el único que importa.
+
+> 🔑 **La selección es una propiedad del conjunto, no de las filas.** Ninguna fila
+> guarda por qué está ahí. Mirándolas una a una nunca se recupera.
+
+Es `L-071` —cuadrar contra un agregado no es cuadrar— con el sesgo metido **dentro del
+propio conjunto**, donde ningún cuadre lo alcanza.
+
+→ Un cuarto eje en el nombre: `full` o `pick`. Una palabra, y convierte un número que
+miente en un número que se sabe leer.
+
+> ⚠️ **Y `pick` no significa "muestra".** Una muestra representa; una selección
+> demuestra. Un porcentaje sacado de un `pick` no significa nada, y por eso la palabra
+> tiene que estar donde no se pueda perder: en el nombre del archivo, no en el informe
+> que se cierra con la terminal.
+
+---
+
+### LM.55 — El aviso vivía en la parte que se borra; la mentira, en la que dura
+
+**Sesión 84, y se cazó antes de pagar.** El guion del eval guardaba el corpus con un
+nombre calculado así:
+
+```python
+calls = len(plan)          # 60, siempre — es lo que se PLANEÓ llamar
+```
+
+Pero el bucle llevaba dos `break` documentados **en la propia cabecera del archivo**
+como el modo de fallo esperado. Si la tanda se cortaba en la frase 30, el nombre seguía
+diciendo `full`.
+
+El informe **sí avisaba**: imprimía cuántas llegaron de cuántas se pidieron. Y ahí está
+el reparto que hace grave lo que si no sería un descuido:
+
+> 🔑 **El aviso vive en la ventana de la terminal, que se cierra. El nombre vive en el
+> disco, que dura años.** La verdad estaba en lo efímero y la mentira en lo permanente.
+> Dentro de una hora solo queda una de las dos, y no es la buena.
+
+Y la segunda mitad costaba dinero. Con `open("w")` y modelo, fecha y huella iguales
+dentro del mismo día, **una corrida cortada por la tarde machacaba la línea base pagada
+por la mañana**. `L-076` vivo dentro de su propio arreglo.
+
+**Un archivo se nombra con lo que llegó, no con lo que se pidió.** Es una línea:
+
+```python
+written = replies_file(len(records))     # lo que hay dentro, no lo que se planeó
+```
+
+> 📌 **Regla práctica:** cuando un dato aparece en dos sitios con vidas distintas —la
+> pantalla y el disco, el log y el nombre, el chat y el archivo—, el correcto tiene que
+> estar en **el que sobrevive**. El otro es cortesía.
+
+---
+
+### LM.56 — Un nombre de test es una afirmación que nadie audita
+
+**Sesión 84.** Existía este test, en verde:
+
+```
+test_a_partial_run_is_named_pick_not_full
+```
+
+El nombre describe exactamente el riesgo de `LM.55`. Por eso **nadie abrió el cuerpo**.
+Y el cuerpo probaba una tanda que se **pidió** corta — nunca una que **se cortó sola**,
+que es el único caso donde el bug existía.
+
+> 🔑 **Es peor que no tener el test, porque ocupa su sitio en la lista.** Un hueco se
+> ve. Un test con el nombre correcto y el cuerpo corto **es un hueco tapado con una
+> etiqueta que dice "cubierto"**.
+
+Es `LM.15` mudado a la carpeta `tests/`. Un instrumento ciego no da un dato falso: da
+silencio. Aquí el silencio venía firmado con el nombre del riesgo.
+
+> 📌 **Y el detalle que explica por qué se escapó tanto tiempo:** el test que faltaba
+> era **el primero del proyecto que entraba en `main()`**. El número equivocado solo
+> existía dentro de esa función, así que ninguno de los tests de alrededor —todos sobre
+> funciones puras, todos correctos— podía verlo. La cobertura era buena en todas partes
+> menos donde el programa de verdad se ejecuta.
+
+**Al leer una suite, el nombre del test es lo que se está afirmando; el cuerpo es lo
+único que se está comprobando.** Solo uno de los dos se ejecuta.
+
+---
+
+### LM.57 — Un control vive donde se ejecuta, no donde está escrito
+
+**Sesión 85.** Se construyó una carpeta para las etiquetas hechas a mano —sesenta
+juicios humanos que, una vez escritos, no se pueden volver a comprar— con catorce
+porteros en `pytest`. Buenos porteros: uno comprobaba que las sesenta frases estuvieran
+cubiertas exactamente una vez.
+
+Y aun así, esta función:
+
+```python
+def progress(rows):
+    done = sum(1 for row in rows if row.get("verdict") is not None)
+    return done, len(rows)          # ← el denominador sale del propio archivo
+```
+
+Editando sesenta líneas de JSON a mano se pierde una línea. Es así como se pierde una
+línea. Y entonces la herramienta imprimía:
+
+```
+50 de 50 etiquetadas. Filas mal formadas: 0.
+```
+
+**Completo y limpio.** El portero que lo cazaba existía — y vivía en `pytest`, que no
+es lo que alguien corre sesenta veces mientras etiqueta. Lo que se corre sesenta veces
+es `python labels.py`.
+
+> 🔑 **La cobertura no se mide por lo que la suite comprueba, sino por lo que comprueba
+> el instrumento que la persona tiene delante.** Un control que solo vive en el camino
+> que nadie recorre esa tarde está apagado esa tarde.
+
+Es `LM.55` girada noventa grados. Allí el aviso estaba en la parte que se borra; aquí
+**el control está en la parte que no se corre**.
+
+→ El denominador contra la referencia (`len(SENTENCES)`), y que la herramienta **cante
+las filas que faltan** — que son las únicas que ningún bucle sobre `rows` puede
+encontrar, porque no están ahí para ser miradas.
+
+> ⚠️ **Y la variante cara de lo mismo, del mismo día:** nada comprobaba que la carpeta
+> estuviera de verdad en Git, que era **toda la razón** de haberla creado. La garantía
+> descansaba en un `git check-ignore` corrido una vez y anotado en un comentario. Un
+> freno que no has visto morder es una nota (`LM.13`); un freno que mordió una vez
+> delante de ti, y cuya vigilancia no quedó en ningún sitio ejecutable, es un recuerdo.
+
+---
+
+### LM.58 — Citar un mecanismo por su nombre no comprueba su alcance
+
+**Sesión 85, dos veces el mismo día, una por cada terminal.**
+
+**Una.** La terminal que construye declaró que una tarea pendiente era **bloqueante**
+de la decisión del día, porque *"su portero no miraría el archivo nuevo"*. Cierto del
+portero — pero ese portero recorre `CORPUS_DIR.glob("*.jsonl")`, y bajo el plan que se
+acababa de firmar el archivo iba a **otra carpeta**. Ese `glob` no lo alcanza ni roto
+ni arreglado.
+
+**Dos.** La terminal que supervisa pidió no estrenar un segundo lector de la primera
+línea de la respuesta, y señaló el que ya existía en `rubric_check`. Pero ese es
+`learner_message`, y su propio docstring dice que devuelve **si** había palabra clave y
+**tira cuál era** — justo el dato que la comparación necesitaba. El lector bueno era
+otro, `split_verdict`, en otro módulo.
+
+> 🔑 **Las dos veces el principio era correcto y el objeto señalado era el equivocado.**
+> Y las dos suenan igual de sólidas al decirlas, porque citan **un mecanismo real, por
+> su nombre real, que hace algo real**. Lo único falso es la frase que lo une al caso
+> de hoy.
+
+Es de la clase muda. No hay error, no hay rojo, no hay traceback — **no hay código
+todavía**. Solo trabajo construido sobre un supuesto que nadie abrió, y que se
+descubriría semanas después cuando el mecanismo no hiciera lo que su cita prometía.
+
+Es la familia de `L-081` del día anterior, donde un agujero real se ilustró con el
+único ejemplo que el mecanismo sí atrapaba: **un hallazgo que se siente medido cuando
+solo está nombrado.**
+
+> 📌 **Regla práctica, y cuesta un minuto:** antes de apoyar una decisión en *"eso ya
+> lo cubre X"*, abre X y lee qué mira y qué devuelve. El nombre de una función es lo
+> que alguien quiso que hiciera. La firma es lo que hace.
