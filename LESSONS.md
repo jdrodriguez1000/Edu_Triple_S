@@ -4767,3 +4767,119 @@ literal.
 cuando alguien viene a buscarlo. Por eso el mismo día bajó a `GUIDE.md` §6 como
 tres casillas ejecutables, y a `CLAUDE.md` como puntero de una línea. **Escribir
 algo cierto donde nadie lo alcanza es `LM.20`**, y en este repo ya pasó tres veces.
+
+---
+
+### LM.49 — Un sí/no bien empaquetado no invita a auditar la premisa: invita a contestar
+
+**Sesión 82.** La pregunta llegó limpia: *"¿subimos el tope a tres frases?"*. Traía
+el trabajo hecho, la hipótesis escrita, el precio calculado y **una sola casilla que
+marcar**. Yo di el sí antes de abrir el archivo.
+
+Lo abrí después, y la hipótesis era falsa. `[D-089]` decía que la rúbrica se
+contradice —*pide aliento + corrección + explicación y solo deja dos frases*—.
+Leída entera, para el caso `FIX` pide **dos** cosas:
+
+> *"give the corrected sentence **and** name the one mistake that matters most"*
+
+El aliento sale de la línea de personaje —*"warm, encouraging tutor"*—, que es
+**tono, no un renglón**. El modelo eligió gastarse una frase en el tono.
+
+> 🔑 **Y si el argumento hubiera sido solo ése, la respuesta correcta era la
+> contraria:** decirle *"sé cálido dentro de las dos frases"*, y quedarse con
+> respuestas cortas — que es lo que la propia rúbrica defiende.
+
+**El sí era el bueno. El porqué escrito, no.** Y es la parte que sobrevive: un
+motivo equivocado no molesta hoy, se cita mañana como precedente.
+
+**El mecanismo es la forma de la pregunta, no la pereza de quien contesta.** Una
+pregunta abierta —*"¿qué ves aquí?"*— manda a mirar. Una cerrada manda a **elegir**,
+y elegir entre dos opciones que alguien ya redactó es aceptar el marco entero sin
+tocarlo: los dos caminos comparten la premisa, así que ninguna de las dos respuestas
+la pone a prueba.
+
+> ⚠️ **Es `LM.30` con otra piel** (*la urgencia no se audita, se obedece*). Allí lo
+> que apagaba la revisión era la prisa; aquí, **el acabado**. Un paquete bien hecho
+> tranquiliza igual que un verde — y `LM.15` ya dijo qué le pasa a lo que tranquiliza.
+
+**Lo que queda como hábito:** ante un sí/no que llega con todo resuelto, la primera
+pregunta no es *"¿sí o no?"* sino **"¿de dónde sale la frase que hace que esto sea
+una pregunta?"** — y esa frase casi siempre está en un archivo, no en el mensaje.
+
+---
+
+### LM.50 — Un detector cuyo ancla es lo que estás a punto de mover no es un detector
+
+**Sesión 82.** La otra mitad de la firma: el corrector marcaba como fallo *cualquier*
+comilla doble, y la rúbrica solo prohibía las que **envuelven la corrección**. Una
+respuesta correcta —`you used "going to" for the future perfectly`— salía roja.
+
+Dos salidas opuestas: **afinar el corrector** para mirar solo las comillas de la
+corrección, o **endurecer la rúbrica** y prohibirlas todas.
+
+Ellos lo plantearon como *"afinar es más código y más frágil"*. **Eso es un precio,
+no un argumento.** El argumento es que la primera opción **no se puede construir**:
+para mirar las comillas *de la corrección*, el programa tiene que saber **qué trozo
+es la corrección**. Nadie se lo dice. En las nueve respuestas medidas, la corrección
+entraba de **cinco formas distintas**, y una llegaba sin ninguna entradilla:
+
+```
+Say: She goes to school every day.
+We say: I am 20 years old.
+It should be: My sister has a dog.
+The correct sentence is: Where are you going?
+He doesn't like pizza.          ← sin entradilla
+```
+
+Sería una heurística sobre **la manera de hablar del modelo**. Y ahí está el fondo:
+
+> 🔑 **El ancla que esa heurística necesita es justo lo que el plan va a mover.** El
+> proyecto entero existía para bajar de Opus a Sonnet y a Haiku *midiendo cuándo se
+> les va la forma*. Cambiar de modelo cambia el fraseo. Cuando la heurística fallara
+> en esa corrida, **nadie podría distinguir *"el modelo se rompió"* de *"la
+> heurística resbaló"***.
+
+**Un instrumento tiene que ser más estable que lo que mide.** Si se apoya en la
+misma cosa que está midiendo, no mide: acompaña.
+
+📌 **Y hay una pista barata para verlo sin pensar tanto:** el módulo declaraba en su
+primera línea que sus promesas eran *"las que comprueba un programa **sin opinar**"*.
+Saber dónde empieza la corrección **es opinar**. La opción propuesta no era cara —
+era de otra categoría, y el propio archivo tenía la frontera escrita.
+
+---
+
+### LM.51 — Un comentario que jura que no hay copia apaga la búsqueda de la copia
+
+**Sesión 82.** `COST_PER_CALL_USD` estaba escrito en **dos** archivos. El aviso de
+que el número había caducado se puso en uno de ellos — y **quien iba a gastar era el
+otro**, que tenía su propia copia y su propio total impreso.
+
+Hasta ahí es el bicho de la sesión 33: la misma cosa en dos sitios. Lo que lo sube de
+categoría es **dónde estaba la copia**:
+
+```python
+# 🔑 Las 60 frases y el monedero se IMPORTAN, no se copian. Tener dos topes de
+# gasto es tener uno de los dos desactualizado sin saber cuál.
+from measure_tutor import (SENTENCES, CallBudget, ...)   # ← el monedero NO está aquí
+...
+COST_PER_CALL_USD = 0.00304                              # ← tres líneas más abajo
+```
+
+**Tres líneas.** El comentario decía la regla, la importación no la cumplía, y la
+copia estaba debajo de las dos.
+
+> 🔑 **Y el daño no es que mienta: es que resuelve la duda del lector en la dirección
+> de no mirar.** Quien fuera a corregir el número leía *"se importa, no se copia"*,
+> concluía que había **una sola** copia, y dejaba de buscar la segunda.
+
+Es `L-075` con agravante. Allí un docstring decía la regla y la línea de debajo la
+incumplía: el daño se acababa en esa línea. Aquí el comentario **manda al siguiente
+lector a otro sitio**, así que el error se propaga a quien venía a arreglarlo.
+
+**Un comentario equivocado es peor que ningún comentario**, y la razón es contable:
+sin comentario, el que busca duplicados busca; con él, ya recibió la respuesta.
+
+> ⚠️ **Regla práctica:** un comentario que afirma *"esto está en un solo sitio"* es
+> una afirmación verificable, y por tanto **le toca un test**, no la buena fe. Aquí
+> terminó existiendo: `test_the_wallet_is_imported_not_copied`.

@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-17 (sesión 80)
+**Última actualización:** 2026-08-17 (sesión 82)
 
 ---
 
@@ -2539,6 +2539,99 @@
 # `07-produccion/README.md`.** Ya no es solo lo de la 79 — ahora le toca contar
 # también **el tope que no era reloj** y **el reparto en tres**. Cada sesión que pasa
 # tiene más que escribir y sigue viviendo en la conversación, no en el puente.
+
+# 🧾 **LA 82 FUE ENTERA DE SUPERVISIÓN: firmó `T-104`, y el voto que salió no
+# era el que venía pedido.** Llegó como un sí/no —*"¿subimos el tope a tres
+# frases?"*— con la hipótesis de `[D-089]` detrás: *la rúbrica se contradice, pide
+# aliento + corrección + explicación y solo deja dos frases*. **Leída entera,
+# `GRAMMAR_RUBRIC` pide DOS cosas para el caso `FIX`**, no tres: *"give the
+# corrected sentence **and** name the one mistake that matters most"*. El aliento
+# sale de la línea de personaje —*"warm, encouraging tutor"*—, que es **tono, no un
+# renglón**. El modelo eligió gastarse una frase entera en el tono.
+# 🔑 **Y si el argumento hubiera sido solo ése, la respuesta correcta era la
+# CONTRARIA:** decirle *"sé cálido dentro de las dos frases"* y quedarse con
+# respuestas cortas, que es lo que la propia rúbrica defiende. **El sí era el
+# bueno; el porqué escrito, no.** → `LM.49`.
+# ✅ **El motivo que sí decide: una promesa que el mejor modelo rompe casi siempre
+# no es un instrumento, es una constante.** `too_many_sentences` con tope 2 ya
+# estaba roja con Opus 5, y `[D-049]` existe para bajar a Sonnet 5 y a Haiku 4.5
+# **midiendo cuándo se les va la forma**. Un detector saturado no distingue *"Haiku
+# se rompió"* de *"esto ya estaba rojo"*. Es `LM.15` por el otro lado: no un verde
+# que nadie audita, sino **un rojo permanente que dejó de significar algo.**
+# 🚨 **LA MITAD DE `T-104` QUE NO LE LLEGÓ AL ESTUDIANTE.** El mensaje del commit
+# `df616dd` dice literal *"firma del usuario sobre tope de tres frases **y
+# comillas**"*. El arranque de sesión preguntó **solo por las frases**. De los 10
+# fallos en disco, 9 eran de frases y **1 de comillas** — un **falso positivo**:
+# `you used "going to" for the future perfectly`. La rúbrica prohibía comillas
+# *around the correction*; ésas nombran una expresión gramatical. **Quinta vez del
+# mismo patrón: el documento es bueno y su resumen es peor que él.**
+# 🧱 **La segunda mitad se resolvió por un argumento de construcción, no de
+# precio.** Ellos lo plantearon como *"afinar el corrector es más código y más
+# frágil"*. Eso es **un precio**. El motivo real: para mirar solo las comillas *de
+# la corrección*, el programa tiene que saber **qué trozo es la corrección**, y
+# `rubric_check.py` se abre declarando que sus cuatro promesas son *"las que
+# comprueba un programa **sin opinar**"*. En las nueve respuestas `FIX` del disco la
+# corrección entra de **cinco formas distintas**, y la fila 5 llega **sin ninguna
+# entradilla**. 🔑 **Y lo que lo cierra: el ancla que esa opción necesita es justo
+# lo que `[D-049]` va a mover.** Cuando la heurística fallara en el descenso, no se
+# podría distinguir *el modelo se rompió* de *la heurística resbaló* — la
+# enfermedad del tope saturado, reintroducida en la promesa de al lado. → `LM.50`.
+# 🔴 **Y el hallazgo más caro no era ninguna de las dos mitades: las 60 respuestas
+# de la línea base NO EXISTÍAN.** `data/eval_replies.jsonl` tenía **10 filas**, y
+# `eval_rubric.py` escribe en `open("w")` sobre **un solo nombre fijo**: la tanda de
+# diagnóstico de 10 se había comido la línea base de 60. Consecuencias: `T-106`
+# —*etiquetar las 60 frases*— **no se podía hacer**, y el número que importa —*de
+# las que corrigen, cuántas se pasan*— **no era derivable**, porque "18 de 60"
+# mezcla frases `OK` y `FIX` y el fallo de tres frases solo cabe en las `FIX`.
+# 🔑 **El guardado se había añadido tras perder la PRIMERA corrida — y en modo
+# `"w"`. Arregla el caso de una corrida, no el de dos.**
+# 🪤 **El duplicado que se escondía detrás de un comentario que juraba lo
+# contrario.** `COST_PER_CALL_USD = 0,00304` estaba en **dos** archivos, y el aviso
+# de caducidad se escribió en `measure_tutor.py` — pero **quien iba a gastar era
+# `eval_rubric.py`**, que tenía su propia copia. Y la copia estaba **tres líneas
+# debajo** de un comentario que decía *"las 60 frases y el monedero se IMPORTAN, no
+# se copian"*. 🔑 **Es `L-075` con agravante: allí el docstring mentía sobre la
+# línea de abajo; aquí además APAGA LA BÚSQUEDA** — quien fuera a corregir el número
+# leía que había una sola copia y dejaba de mirar. → `LM.51`.
+# ✅ **Cerrado por ellos en el mismo día, y con dos correcciones suyas mejores que
+# lo que yo propuse.** (1) Yo dije *"que la rúbrica construya la frase desde
+# `MAX_SENTENCES`"* sin mirar que `rubric_check` ya importaba de `tools`: sería un
+# ciclo. Su solución —el número vive en `tools.py`, la prompt lo mete por f-string,
+# el corrector lo importa— es la buena. (2) Un test suyo se puso rojo porque buscaba
+# `"around the correction"` y la redacción nueva lo contiene legítimamente:
+# **arreglaron el test, no el listón**, con la razón escrita. Dos veces el mismo
+# criterio en un día, y es el difícil.
+# 📌 **Y lo mío que hay que decir: yo di el sí sin haber abierto el archivo.** Lo
+# abrí después, y de ahí salió todo lo demás. La pregunta llegaba con el trabajo ya
+# hecho y una sola casilla que marcar — **un sí/no bien empaquetado no invita a
+# auditar la premisa**, invita a contestar. → parte de `LM.49`.
+# 🛑 **La corrida de 60 NO se lanzó, y ése fue el último voto del día.** Habría
+# pagado ~$0,18 por un corpus que cualquier `eval_rubric.py 3` borra entero — y
+# `T-106` es **etiquetar 60 frases a mano**, trabajo que cruza sesiones. La segunda
+# pérdida habría costado el dinero, el número **y el etiquetado ya hecho**. 🔑 **Y
+# el arreglo no es cambiar la `"w"`: su motivo escrito es correcto** (dos corridas
+# mezcladas serían dos modelos revueltos). **Lo que falla es que el nombre del
+# archivo no distingue lo que la `"w"` existe para no mezclar** — modelo y fecha,
+# que es justo lo que `[D-049]` va a mover tres veces. → `T-107`, antepuesta.
+# ✅ **Cierre verificado desde aquí, no de palabra:** `9844eac`, `HEAD` y
+# `origin/main` en el mismo commit, árbol limpio, diez archivos. `T-104` en ✅ con
+# las dos mitades y con el motivo bueno escrito (`[D-090]`/`[D-091]`, no `[D-089]`);
+# `T-107` abierta; `T-106` bloqueada por ella; `T-105` libre.
+# ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal:** `T-107` **antes** que la
+# corrida de 60. Después, **una sola corrida** hace tres trabajos: línea base nueva,
+# corpus para `T-106`, y el coste real que devuelve `COST_PER_CALL_USD` a estar
+# medido. Si se prefiere avanzar sin gastar, `T-105` no toca ni la rúbrica ni el
+# corpus.
+# 🔲 **PENDIENTE DE ESTA TERMINAL POR QUINTA SESIÓN: la Pieza 8 de**
+# **`07-produccion/README.md`. Tampoco hoy** — la sesión se fue entera en firmar
+# `T-104`. Tercera seguida que muere por lo mismo: **no falla por un argumento, se
+# agota la sesión antes de llegar.** Y cada vez tiene más que contar; ahora le tocan
+# además el tope saturado, la promesa que no se podía construir porque su ancla es
+# lo que `[D-049]` va a mover, y el comentario que apagaba la búsqueda.
+# 🔧 **Y la cabecera de este archivo llevaba dos sesiones clavada en `sesión 80`:**
+# la 81 corrigió la fecha de la línea 6 y **no tocó el número de sesión de al lado**.
+# Es `LM.15` en pequeño: **la mitad recién corregida avala la mitad que no se
+# miró.** Arreglado hoy.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
