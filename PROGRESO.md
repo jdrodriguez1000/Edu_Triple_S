@@ -3056,6 +3056,17 @@
 # ✅ **Estado en TEAPP al cerrar:** commit `799cc00`, `origin` sincronizado, **577 tests**.
 # `[D-102]` con sus tres enmiendas, `~~D-092~~` tachada, `[L-087]` completa, `T-109` ✅,
 # `T-110` 🔗 absorbida (leyenda nueva), `T-108` con alcance de tres carpetas.
+# 📌 **CIERRE DE LA 87 — la regla nueva se llevó a donde SÍ se lee.** Al preguntar él
+# dónde había quedado escrito el esquema de importancia/urgencia, el `grep` dijo que solo
+# en `LESSONS.md` (`LM.60`) y en este archivo: **los dos sitios que no se leen al arrancar
+# y ninguno viaja a otro proyecto.** 🔑 **La especie del día, aplicada a la lección del
+# día:** lo importante viviendo donde no se mira en el momento en que haría falta.
+# → **`CLAUDE.md`** gana la sección *«Cómo se entrega un hallazgo — en CUALQUIER proyecto»*,
+# pegada a *«Las tres preguntas»*, que es la otra regla escrita para fuera del curso; y
+# **`GUIDE.md` §6.d** gana la plantilla. ⚠️ **Repartidos a propósito, no duplicados:**
+# `CLAUDE.md` lleva la regla y el porqué corto, `GUIDE.md` la forma de escribirlo y **no
+# vuelve a argumentar nada** — lo mismo dicho en dos sitios es el bicho de la sesión 33.
+# Cada uno apunta al otro y los dos a `LM.60` como fuente única del porqué.
 # ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal: `T-112`, ya DESBLOQUEADA.**
 # Escribir el conjunto **discriminante** (no el representativo). Orden fijo: **escribir →
 # etiquetar → recién entonces correr el juez**, y ese orden **se sella en Git antes de la

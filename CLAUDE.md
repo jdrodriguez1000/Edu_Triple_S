@@ -91,6 +91,37 @@ artefacto que existe.**
 
 ---
 
+## Cómo se entrega un hallazgo — en CUALQUIER proyecto, dentro o fuera del curso
+
+Todo hallazgo de auditoría o de revisión llega con **dos marcas, y van ARRIBA**,
+antes del párrafo que lo explica:
+
+- **Importancia:** baja · media · alta → *¿vale la pena corregirlo?*
+- **Urgencia:** bloqueante o no → *¿se hace ya o no?*
+
+**Importancia baja = una línea, o no se entrega.** El esquema no está para ordenar
+mejor todo lo que se me ocurra: está para **autorizarme a soltar cosas**. El coste de
+un hallazgo menor bien argumentado no son los tokens — es que **compite por la
+atención** con el que sí paraba el trabajo.
+
+🚨 **«Bloqueante» solo vale con la frase que dice qué bloquea y qué se rompe si
+sigues.** Falsificable, no adjetivo. Si no puedo escribirla, no es bloqueante. Una
+etiqueta formal de urgencia hace **más fácil** obedecerla, no más difícil: es `LM.30`
+con un campo donde escribirla, y ya se pagó una vez.
+
+La importancia es juicio y se discute. **La urgencia es un hecho o es una mentira.**
+
+📌 Si clasifico algo **alta sin haberlo medido todavía**, lo digo en la misma línea
+(*«alta, sin medir»*). Así la marca no se disfraza de dato.
+
+📌 La casilla que se pierde siempre es **alta / no bloqueante**: importante y sin
+fecha, no grita, y espera turnos enteros.
+
+📌 El porqué está en `LESSONS.md` → `LM.60`, y su veneno en `LM.30`. La plantilla para
+escribirlo, en `GUIDE.md` §6.d. **Aquí vive la regla; allá, la forma.**
+
+---
+
 ## Cómo enseñar aquí
 
 - **Concepto antes que código.** Analogía del mundo real → luego el término técnico.

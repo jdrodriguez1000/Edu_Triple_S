@@ -902,6 +902,58 @@ Tres consecuencias, y con eso tienes casi todo:
 
 ---
 
+## 6.d Plantilla: entregar un hallazgo con su prioridad
+
+📌 **La regla y su porqué NO están aquí**: la regla vive en `CLAUDE.md` §«Cómo se
+entrega un hallazgo» y el porqué en `LESSONS.md` → `LM.60`. Esto es solo la **forma**.
+Si algún día discrepan, manda `CLAUDE.md`.
+
+**Un hallazgo suelto** — la marca es la primera línea, nunca el remate:
+
+```markdown
+## 🔴 Importancia ALTA · no bloqueante
+
+<qué pasa, en una o dos frases>
+
+<la evidencia: archivo:línea, o el comando que lo enseña>
+
+<el arreglo>
+
+**No es bloqueante** porque <qué NO impide hoy>.
+```
+
+**Varios hallazgos de golpe** — tabla, y se lee sin abrir ninguno:
+
+```markdown
+| qué | importancia | urgencia | qué significa |
+|---|---|---|---|
+| <cosa> | **alta** | **bloqueante** | <qué se rompe si sigues> |
+| <cosa> | media | no | <por qué puede esperar> |
+| <cosa> | **baja** | no | <una línea, y se acabó> |
+```
+
+**Las marcas, y qué obliga cada una:**
+
+| marca | qué escribo |
+|---|---|
+| 🔴 **alta** | el párrafo completo con evidencia |
+| 🟡 **media** | dos o tres líneas |
+| ⚪ **baja** | **una línea, o no se entrega** |
+| **bloqueante** | **obligatorio**: qué bloquea y qué se rompe si sigues |
+| no bloqueante | nada extra |
+
+⚠️ **Los dos errores que esta plantilla existe para evitar:**
+
+1. **Escribir «bloqueante» sin la frase de qué se rompe.** Si no sale la frase, no era
+   bloqueante: era una tarea que apetecía hacer primero.
+2. **Argumentar bien algo de importancia baja.** Un párrafo sólido sobre una nimiedad
+   cuesta lo mismo de leer que uno sobre lo que paraba el trabajo, y se lleva la
+   atención por delante.
+
+📌 **La casilla `alta / no bloqueante` se revisa al cerrar sesión**, porque es la que
+nadie hace: no grita y no tiene fecha.
+
+
 ## 7. Patrón: script de verificación (*preflight*)
 
 La idea de `00-setup/verificar.py`, generalizada. En el mundo real esto se llama
