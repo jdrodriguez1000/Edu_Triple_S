@@ -3073,6 +3073,72 @@
 # primera frase** — es lo que faltó con las predicciones de la 86. `[L-083]` vigente y sin
 # portero posible: quien escriba las frases será quien las etiquete. Detrás: la huella del
 # detector (ALTA, no bloqueante), `T-108`, `T-102`, `T-103`, `T-086`.
+# 🚨 **La 88 fue de SUPERVISIÓN entera y el día se cerró con un FRACASO — el bueno:
+# la vara discriminante de `T-112` dio 0 desacuerdos de 30, tramo 🔴, y se reescribe.**
+# 💵 **Coste real del día: `$0,1026`.** Compraron un resultado legible, que es lo que
+# nunca llega si los tramos no están escritos antes de pagar.
+# 🎯 **El trabajo de esta terminal fue firmar tres cifras y desmontar dos cosas mías.**
+# 🔴 **Retiré un hallazgo propio, obsoleto:** llegué con *"la huella del detector no cubre
+# `VERDICT_CORRECT`/`VERDICT_WRONG`, alta"*, y ya estaba cerrado en `799cc00` — con dos
+# tests que lo ven morder. **Un arrastre no auditado ocupa el turno de lo que sí falta.**
+# 🔴 **Y una recomendación mía salió FALSA, medida por la otra terminal:** dije que correr
+# `T-112` con el servidor levantado cerraría `T-102` con el mismo gasto (`[D-103]` lo
+# decía). No cae: `app/trace.py` escribe la FORMA de la práctica y **nunca la frase**
+# (`PI-8`, `[D-085]`), así que no hay `sentence` ni `reply`, y `cross_check.py:140` los
+# necesita los dos. 🔑 **El error iba en la dirección cómoda** —suena a buena ingeniería y
+# ahorra dinero—, y para desmentirlo hay que abrir el módulo y contar campos.
+# 🎯 **`LM.61`, la lección del día, y sale del acierto y no del fallo:** los tramos sellados
+# funcionaron —el `0 de 30` no se pudo reinterpretar—, pero **la señal GRATIS que llegaba
+# antes no tenía significado escrito.** El `30/30` entre el diseño del ejecutor y las
+# etiquetas humanas dijo *"estas frases son inequívocas para dos lectores independientes"*
+# una hora antes de la factura, y pasó como color de fondo. → **Cuando selles la predicción
+# de una medición que cuesta, pregunta qué señal más barata llega primero y séllale también
+# su significado.** Lo específico —una vara inequívoca para dos humanos no discrimina a un
+# modelo grande— queda como **hipótesis con n=1**, no como regla.
+# 🔒 **Lo que se firmó desde aquí, con la razón escrita:**
+# (1) **Umbral de fracaso en ≤2 de 30, sin subirlo a 4** —entre 2 y 4 no hay diferencia de
+# significado y reescribir cuesta `$0,09`— **pero con el hueco cerrado**: la propuesta dejaba
+# 3, 4 y 5 sin significado, y un hueco entre "esperado" y "fracaso" se llena solo después de
+# conocer el número. Los cinco tramos entraron en `[D-104]`.
+# (2) **`0.31` en el tope de coste de `test_the_budget...`**, apretado: `91 × $0,00342 =
+# $0,31122`, o sea que salta con la frase 91. 🔑 **Y es una alarma de DOS ejes** —crece
+# `SENTENCES` o se re-mide `COST_PER_CALL_USD` hacia arriba—, escrito en el docstring para
+# que nadie lo "arregle" creyendo que cuenta frases.
+# (3) **Autorización `PI-6` para tocar tres tests, con el corte escrito y vale más que los
+# tres:** *se **deriva** cuando el test afirma una **relación**; se escribe **a mano** cuando
+# afirma una **decisión**.* Dos derivaron (`len(SENTENCES)`, `str(len(SENTENCES)+1)`); el
+# tercero **no**, porque derivarlo entero lo dejaba tautológico —`len(SENTENCES) ==
+# len(SENTENCES)`— y **mataba la alarma de coste que acababa de disparar bien**. `LM.15` con
+# otra cara: un test que no puede fallar ocupa su sitio en la lista.
+# 🚫 **Me negué a etiquetar, y esa fue la aportación cara del día.** Había ofrecido hacerlo el
+# turno anterior; lo retiré. Dos razones y la segunda muerde: las 60 primeras las etiquetó el
+# humano (`T-106`), y **el juez es Opus 5 y yo también** — el número que se mide es el
+# desacuerdo entre etiqueta y juez, y una etiqueta puesta por un modelo de la familia del juez
+# sube el acuerdo por prior compartido. **La vara habría medido el parecido entre dos Claudes**
+# y el `0 de 30` habría disparado el tramo 🔴 por la razón equivocada.
+# 🔎 **Tres citas de un número muerto, cazadas midiendo:** `COST_PER_CALL_USD` vale `0,00342`
+# desde `[D-096]`, pero `eval_rubric.py:5`, `eval_rubric.py:140` y `tests/test_rubric_check.py:6`
+# seguían diciendo `0,00304` — y **la de la línea 5 lleva la etiqueta «medido, no estimado»**.
+# Ya se había cobrado: el ejecutor me pasó *"de `$0,18` a `$0,27`"* y los buenos eran
+# **`$0,2052 → $0,3078`**. La constante se arregló en su casa y **las citas se quedaron**.
+# 📐 **Un ancla de paridad con el alcance recortado, antes de que se filtrara:** márgenes 15/15
+# por diseño y 15/15 por etiqueta fuerzan que las discrepancias vengan **en pares**, así que el
+# `1` y el `3` eran imposibles — **en esa comparación**. El margen del juez no está atado a
+# nada, así que **la paridad NO aplica al cruce** y los cinco tramos se quedaron intactos. Sin
+# esa línea, alguien "corrige" la banda a números pares y habrá movido la predicción después de
+# conocer un dato (`[D-100]`).
+# 🆕 **`T-108` dejó de ser teórica: el ejecutor la cruzó al primer intento y sin saberlo** —
+# escribió el sello como `.json` en `_persistence/labels/`, donde el `glob` busca `*.jsonl`, y
+# la suite siguió verde con un archivo dentro que nadie audita. Lo sacó a `_persistence/seals/`
+# — y **huyendo de una carpeta sin portero creó otra carpeta sin portero**, señalado desde aquí
+# y resuelto con tres tests y dos sabotajes vistos morder.
+# ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal: reescribir la vara de `T-112`, apuntando
+# a la FORMA BAJO CARGA** (frases largas, varios errores a la vez), **no a la rareza gramatical**.
+# La pista: `2 de 30` rompieron `too_many_sentences` contra `0 de 60` de la representativa, con
+# la misma huella de rúbrica. **Se sella como razón ANTES de escribir la primera frase**, o dentro
+# de dos días no se distinguirá de un ajuste. `[D-101]` sigue bloqueando `[D-049]`: no se baja de
+# modelo hasta que exista una vara que pueda bajar. Detrás: `T-102` (~`$0,01`, aparte), `T-108`,
+# `T-103`, `T-086`.
 
 ```
 Nombre: TEAPP  (Teaching English Application)

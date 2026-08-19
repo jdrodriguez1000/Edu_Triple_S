@@ -5180,3 +5180,40 @@ mismo día una tarea había llegado marcada bloqueante con una consecuencia inve
 📌 Y la casilla que se pierde siempre es **«alta / no bloqueante»**: importante y sin
 fecha. No grita, así que espera turnos enteros. Es el argumento a favor de los dos ejes
 en vez de uno solo.
+
+---
+
+### LM.61 — La señal gratis llega antes que la cara, y nadie le escribió qué significa
+
+Se selló bien lo caro. Antes de gastar `$0,10` en correr un juez sobre 30 frases nuevas,
+quedaron escritos en Git los cinco tramos del resultado: qué número sería un fracaso, cuál
+la banda esperada, cuál un techo deshonesto. Y funcionó — salió **0 desacuerdos de 30**, el
+tramo del fracaso, y no hubo nada que negociar. Sin esos tramos, un cero se reporta como
+*«el corrector acierta el 100% incluso en frases difíciles»*: verdad literal, conclusión
+falsa.
+
+Lo que nadie selló fue lo gratis.
+
+Una hora antes de la factura ya existía otro número. Quien escribió las frases las había
+repartido en dos grupos según el error que buscaban provocar; quien las etiquetó, sin ver ese
+reparto, produjo el mismo reparto exacto. **30 de 30.** Dos lectores independientes,
+ninguna duda, ni una discrepancia.
+
+Ese número decía, ya entonces, que las frases eran **inequívocas**. Y una frase inequívoca
+para dos lectores tenía pocas razones para tropezar a un modelo grande. El aviso estaba
+disponible, era exacto y no costaba nada — y pasó como color de fondo, porque **nadie había
+escrito de antemano qué significaría.**
+
+> 🔑 **Cuando selles la predicción de una medición que cuesta, pregunta qué señal más barata
+> llega primero y séllale también su significado.** Un precursor sin tramos escritos no es un
+> aviso: es un dato que se leerá después, cuando ya no pueda cambiar ninguna decisión.
+
+⚠️ **Y la parte específica NO es la lección.** *«Una vara inequívoca para dos lectores humanos
+no discrimina a un modelo grande»* es una **observación con n=1**. Suena a regla, entraría al
+registro con cara de regla, y nadie la volvería a auditar. Se anota como hipótesis, con su
+única observación al lado — que es lo que la regla 6 del proyecto pide de cualquier número que
+no se haya medido dos veces.
+
+📌 Es la familia de `LM.15` una vez más, con el defecto movido de sitio: allí un instrumento
+ciego daba silencio y el silencio se leía como confirmación. Aquí el instrumento **habló** y
+no había dónde apuntar lo que dijo.
