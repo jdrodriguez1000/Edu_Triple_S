@@ -5217,3 +5217,57 @@ no se haya medido dos veces.
 📌 Es la familia de `LM.15` una vez más, con el defecto movido de sitio: allí un instrumento
 ciego daba silencio y el silencio se leía como confirmación. Aquí el instrumento **habló** y
 no había dónde apuntar lo que dijo.
+
+---
+
+### LM.62 — Saltarse una práctica sin escribir por qué la convierte en prescindible
+
+TEAPP se cerró sin comparar modelos. Estaba planeado desde hacía semanas: bajar el juez de
+Opus a Sonnet y después a Haiku, midiendo qué se perdía. No se hizo, y la razón es buena —
+es un proyecto **educativo**, no se vende, no tiene clientes, no hay factura que optimizar
+a escala. El recorrido que justificaba su existencia estaba caminado entero.
+
+Y hay una segunda razón, que es la que de verdad manda: **el aprendizaje del tramo ya estaba
+cobrado.** Una vara que dos humanos leen igual puede no discriminar a un modelo — `30/30` de
+acuerdo entre humanos, `0 de 30` de desacuerdo con el juez. Repetir el ejercicio con dos
+modelos más compraba una lección más pequeña por el mismo dinero.
+
+> 🔑 **Un proyecto educativo se cierra cuando deja de enseñar, no cuando se vacía la lista de
+> tareas.** La lista nunca se vacía: siempre queda deuda pequeña y real. El criterio no es
+> «¿queda algo?», es «¿lo que queda enseña más de lo que cuesta?».
+
+Hasta aquí, una decisión de alcance normal. Lo que la hace lección es lo que pasa **después**.
+
+Dentro de seis meses alguien abrirá el registro y leerá *«el paso 9 se cerró sin comparar
+modelos»*. Esa frase, sola, no dice *«se saltó porque este proyecto no lo necesitaba»*: dice
+**«se puede saltar»**. Y el que la lea puede ser el propio autor, ya en un producto de verdad,
+buscando permiso.
+
+> 🚨 **Un salto sin motivo escrito se lee como un veredicto sobre lo saltado.** No queda como
+> «aquí no hacía falta»; queda como «no hace falta». La ausencia no se explica sola, y el
+> lector futuro completa el hueco con la versión cómoda — que es siempre la que no le pide
+> nada (`LM.26`).
+
+Por eso el cierre no dice solo qué no se hizo. Dice, en mayúsculas y con nombre propio, **qué
+sería obligatorio en una aplicación comercial**: construir una vara que discrimine *antes* de
+cambiar el modelo —un eval saturado da 100 antes y 100 después, así que no es un freno, es un
+adorno—, medir forma y veredicto por separado, distinguir *«el juez corrige de más»* de *«el
+juez perdona»* en vez de promediarlos, medir el coste real de cada candidato, y tener una
+regresión que corra sola en cada cambio.
+
+📌 **La frase que hace el trabajo es la que separa las dos cosas:** *no se hace **porque** el
+proyecto es educativo; en uno comercial sí se hace.* Sin ese «porque», las dos mitades se
+funden en una sola conclusión falsa.
+
+⚠️ **Y hay un daño de segundo orden, que apareció al auditar el cierre.** `[D-049]` —la
+decisión de bajar de modelo— aparecía citada en diecinueve sitios del código, y casi en
+ninguno era *la cosa afirmada*: era **la coartada de una protección que ya existía**. El
+módulo que comprueba la forma, la decisión de no afinar un detector, un eje del nombre de los
+corpus, el único test que clava el modelo — todos justificaban su existencia nombrando un
+descenso que ahora no va a ocurrir.
+
+> 🔑 **Cerrar una decisión no deja afirmaciones falsas sueltas: deja piezas buenas sin motivo
+> escrito.** Y una pieza sin motivo no se corrige, se borra — porque quien la encuentra lee su
+> justificación caducada y concluye que sobra. → Al renunciar a una decisión, **la renuncia
+> tiene que adoptar explícitamente lo que la decisión engendró**, o la limpieza siguiente se
+> lleva por delante justo los frenos que se querían conservar.

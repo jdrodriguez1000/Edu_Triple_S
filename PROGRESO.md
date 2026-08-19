@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-19 (sesión 87)
+**Última actualización:** 2026-08-19 (sesión 89 — TEAPP CERRADA)
 
 ---
 
@@ -3139,6 +3139,54 @@
 # de dos días no se distinguirá de un ajuste. `[D-101]` sigue bloqueando `[D-049]`: no se baja de
 # modelo hasta que exista una vara que pueda bajar. Detrás: `T-102` (~`$0,01`, aparte), `T-108`,
 # `T-103`, `T-086`.
+# 🏁 **La 89 CIERRA TEAPP. El paso 9 se cierra SIN el descenso de modelo, y la
+# renuncia a `[D-049]` está FIRMADA, no olvidada.** Decisión del usuario, tomada en
+# la otra terminal y traída aquí para que quede entendida y registrada.
+# 🎯 **POR QUÉ SE PARA — y es lo único que esta terminal tenía que comprender:**
+# TEAPP es un proyecto **educativo**. Existió para recorrer entero el camino de
+# construir una aplicación con IA: navegador, identidad, servidor propio, frenos,
+# nube, modelo real enchufado, observabilidad. **Ese recorrido está hecho.** No se
+# vende, no tiene clientes, no tiene más usuario que su autor — así que **no existe
+# la presión que justifica el descenso de modelo**: no hay factura que optimizar a
+# escala, no hay márgenes, no hay regresión en producción que vigilar.
+# 💡 **Y el aprendizaje del tramo YA se cobró:** una vara que dos humanos leen igual
+# (`30/30`) puede no discriminar a un modelo (`0 desacuerdos de 30`). Costó `$0,1026`
+# y es la lección más valiosa del arco de evals. Repetir el ejercicio con otros dos
+# modelos compra una lección **más pequeña** por el mismo dinero. **Se para porque
+# dejó de enseñar, no porque se acabaran las tareas.**
+# 🚨 **LO QUE NO PUEDE MALINTERPRETARSE, y por eso va en mayúsculas aquí:**
+# **ESTO ES VÁLIDO PORQUE EL PROYECTO ES EDUCATIVO. EN UNA APLICACIÓN COMERCIAL, LO
+# QUE HOY SE DECIDE NO HACER SÍ HABRÍA QUE HACERLO.** No es «buena práctica
+# recomendable»: es parte del trabajo. En un producto de verdad son obligatorios:
+# (1) **construir una vara que DISCRIMINE antes de cambiar de modelo** — un eval
+# saturado da 100 antes y 100 después, o sea que no es un freno, es un adorno, y
+# cambiar de modelo sin él es cambiar a ciegas; (2) **medir cada candidato en las dos
+# dimensiones por separado** —FORMA (¿obedece el contrato de salida?) y VEREDICTO
+# (¿acierta?)—, que se rompen por caminos distintos y se arreglan en direcciones
+# opuestas; (3) **distinguir los dos errores, no promediarlos** — «el juez corrige de
+# más» molesta, «el juez perdona» **enseña mal**, y caen en la misma tasa de acierto;
+# (4) **medir el coste real de cada modelo antes de elegir**, no deducirlo de la lista
+# de precios (`COST_PER_CALL_USD` está MEDIDO y ya caducó una vez); (5) **una
+# regresión que corra sola en cada cambio de modelo**.
+# 🔑 **La razón de escribirlo tan explícito:** dentro de seis meses alguien —incluido
+# él— puede leer *«el paso 9 se cerró sin comparar modelos»* y llevarse la conclusión
+# equivocada, que comparar modelos es prescindible. **NO lo es. Se saltó porque este
+# proyecto no lo necesita, y la diferencia entre las dos cosas es todo el asunto.**
+# 🔴 **Deuda que queda DORMIDA, registrada a propósito y no arreglada:** dos
+# constantes de modelo (`app/tools.py:41` y `deploy/check_api_key.py:104`) y **solo la
+# segunda clavada** por un test — cambiar el modelo de la app es un cambio **mudo**.
+# También `T-103`, `T-108` y `T-081`. En un producto comercial se arregla antes de
+# cerrar; aquí se deja escrito y se deja quieto.
+# 🔎 **La auditoría de esta terminal se entregó y allá se verifica.** Confirmó las dos
+# constantes, confirmó que **no hay un tercer sitio vivo** y que `_context/roadmap.md`
+# está limpio. Y añadió el hallazgo que no estaba: **`[D-049]` casi nunca es la cosa
+# afirmada — es la COARTADA de seis protecciones que existen por su causa** (el
+# docstring de `rubric_check.py`, la no-heurística de su línea 169, el eje `model` del
+# nombre, el `import` de `trace.py`, y el porqué del único test que clava el modelo).
+# **Cerrar `[D-049]` no deja afirmaciones falsas sueltas: deja piezas buenas sin
+# motivo escrito, y la limpieza natural de quien las lea es borrarlas.**
+# ➡️ **SIGUIENTE PASO CONCRETO — ya NO es TEAPP.** TEAPP queda terminada en
+# `claude-opus-5`. El paso siguiente lo trae él: es el punto nuevo del curso.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
