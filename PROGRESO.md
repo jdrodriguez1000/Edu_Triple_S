@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-19 (sesión 89 — TEAPP CERRADA)
+**Última actualización:** 2026-08-19 (sesión 89b — NIVEL 7 CERRADO)
 
 ---
 
@@ -3187,6 +3187,57 @@
 # motivo escrito, y la limpieza natural de quien las lea es borrarlas.**
 # ➡️ **SIGUIENTE PASO CONCRETO — ya NO es TEAPP.** TEAPP queda terminada en
 # `claude-opus-5`. El paso siguiente lo trae él: es el punto nuevo del curso.
+# 🏁 **La 89b CERRÓ FORMALMENTE EL NIVEL 7 en este repo, que es lo que faltaba —
+# TEAPP estaba terminada, el CURSO no lo había registrado.** Cuatro artefactos, no
+# una promesa: el puente, el bloque de lecciones, el mapa y esta bitácora.
+# 🆕 **`LESSONS.md` NO TENÍA BLOQUE DEL NIVEL 7, y nadie lo había notado en 60
+# sesiones.** Las `LM.x` parecían serlo y no lo son: su propia cabecera dice
+# *«este bloque no es de un nivel»* — recogen el **oficio** (las dos terminales,
+# cómo se entrega un hallazgo, cómo se sella una predicción). El contrato de
+# `CLAUDE.md` pide un bloque **por nivel**, y el 7 llevaba 62 lecciones de método
+# **tapando su propia ausencia**. 🔑 **Un bloque vecino que se le parece es peor que
+# un hueco vacío: el hueco se ve.** → Escritas `L7.1`–`L7.13`, de producción y no de
+# oficio: concurrencia, registros, nube, instrumentos.
+# 🔴 **Y el puente decía TRES cosas falsas, cada una de una especie distinta:**
+# (1) el campo **`Estado`** seguía en *«pasos 0, 1 y 2 cerrados, sesión 31»* — tercera
+# vez que este archivo lo hace, y el apartado `Siguiente paso` ya se había corregido
+# por lo mismo en la 82. **Se eliminó el apartado entero**: un campo llamado
+# *siguiente paso* en un nivel cerrado es una trampa cebada, porque siempre habrá
+# algo que parezca lo siguiente. Ahora se llama **`Cierre del nivel`**.
+# (2) 🚨 **El repo de TEAPP figuraba como `(privado)` y es PÚBLICO** — medido hoy con
+# `gh repo view`: `isPrivate: false`. **La corrección se escribió el 2026-08-05 (sesión
+# 41)… en `PROGRESO.md`, y nunca se trajo al puente.** `LM.20` en su forma pura: lo
+# cierto estaba escrito y nadie lo alcanzó, porque vivía en el archivo largo mientras
+# el error vivía en el corto que sí se lee. **Y no era cosmético: una etiqueta de
+# visibilidad equivocada decide qué te atreves a escribir dentro.**
+# (3) La tabla **§8.6 de pendientes** daba por abiertas cuatro cosas; **tres se habían
+# resuelto entre las sesiones 83 y 88** (el precio caducado, el corpus que se
+# sobrescribía, y quedaba solo `T-102`). 🔑 **Una tabla de pendientes que nadie repasa
+# al cerrar deja de avisar de lo que falta y pasa a mentir sobre lo que sobra.**
+# ✅ **La cláusula que impide el daño de mañana, y sale de la auditoría de la 89:**
+# `[D-049]` aparecía citada en 19 sitios del código de TEAPP y **casi en ninguno era la
+# cosa afirmada: era la COARTADA de piezas que ya existían** — el módulo que comprueba
+# la forma, la decisión de *no* afinar un detector, los ejes del nombre de los corpus,
+# y el único test que clava el modelo. **Cerrar una decisión no deja afirmaciones
+# falsas sueltas: deja piezas buenas sin motivo escrito** — y una pieza sin motivo no
+# se corrige, se borra. → Enmienda al frente de la Pieza 8: **todo lo que se construyó
+# por causa de `[D-049]` SE CONSERVA, y su motivo pasa a ser este cierre.**
+# 📌 **Lo que NO se hizo, a propósito:** no se reescribió el futuro de la Pieza 8
+# (*«lo que `[D-049]` va a mover»*). Se deja tal cual con la enmienda encima, porque es
+# el razonamiento **tal como fue**, y reescribirlo borraría por qué se decidió cada
+# cosa. **Un registro que se corrige hacia atrás deja de ser un registro.**
+# 🔎 **`GUIDE.md` revisado y sin cambios**: sus tres menciones al nivel 7 (auditoría de
+# historial, el commit de ejemplo, y quién escribe el código desde el 7) siguen siendo
+# ciertas con el nivel cerrado.
+# ➡️ **SIGUIENTE PASO CONCRETO — el NIVEL 8: multi-agente, orquestador y workers.**
+# La carpeta `08-avanzado/` **no existe y no se crea hasta que él lo pida** (regla de
+# `CLAUDE.md`: un nivel a la vez, no adelantar carpetas). Es **el bucle del nivel 3
+# anidado**: un orquestador es un agente cuyas herramientas son otros agentes. Trae
+# memoria y skills **compartidas** entre workers. 🔑 **Y la pregunta con la que se
+# arranca no es *«cómo hago varios agentes»* sino *«de verdad necesito varios»*** —
+# multi-agente suele ser más lento, más caro y con más partes que fallan, así que se
+# construye y se **mide contra el agente de una capa que ya tiene**. Detrás del 8, la
+# última tarea del recorrido: **`METODO.md`**.
 
 ```
 Nombre: TEAPP  (Teaching English Application)

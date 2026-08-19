@@ -7,15 +7,26 @@
 >
 > Si abres esta carpeta buscando un `07_script.py`, no falta nada: es a propósito.
 
-**Estado:** 🔨 **TEAPP contesta por la red.** Pasos **0, 1 y 2 cerrados**
-(sesión 31). El análisis de las 7 piezas quedó completo en las sesiones 28 y 29.
-**$0,00 en las cuatro sesiones.** Última: 2026-08-02.
+**Estado:** 🏁 **NIVEL CERRADO el 2026-08-19 (sesión 89).** Los **diez pasos**
+de TEAPP están caminados. La aplicación queda **terminada en `claude-opus-5`**, en
+línea, con su harness, sus frenos, su despliegue en AWS, su traza y sus evals con
+rúbrica y juez. **No vuelve como trabajo pendiente.**
 
-**Siguiente:** el paso 3 — la pantalla (`index.html` + `app.ts`) contra
-`/practice` local. Lo primero que va a fallar es **CORS**.
+🎯 **Cómo se cerró, que es la parte que se aprende:** el paso 9 se cierra **sin el
+descenso de modelo**. La renuncia a `[D-049]` (Opus 5 → Sonnet 5 → Haiku 4.5) está
+**firmada por el estudiante, no olvidada**. TEAPP es un proyecto **educativo**: no se
+vende, no tiene clientes, no tiene más usuario que su autor — así que no existe la
+presión que justifica bajar de modelo. Y el aprendizaje del tramo **ya estaba
+cobrado**: una vara que dos humanos leen igual (`30/30`) puede no discriminar a un
+modelo (`0 desacuerdos de 30`), por `$0,1026`. Repetir el ejercicio compraba una
+lección más pequeña por el mismo dinero.
 
-⚠️ **Pero antes: el paso 2 quedó SIN COMMITEAR en TEAPP.** El `session-closer`
-se lanzó y no dejó nada. Ver §7.9.
+🚨 **Y ESTO NO PUEDE LEERSE COMO QUE COMPARAR MODELOS SEA PRESCINDIBLE.** Vale
+**porque** el proyecto es educativo. **En una aplicación comercial sería obligatorio**,
+y las cinco piezas están nombradas en `LESSONS.md` → `LM.62`, que es la lección de
+cierre de este nivel.
+
+**Siguiente:** ya no es este nivel. Es el **nivel 8 — multi-agente**.
 
 > 📌 Y eso es deliberado, no lentitud: **en producción lo caro no es teclear. Es
 > equivocarse de estructura y darse cuenta con el servidor encendido.**
@@ -27,7 +38,7 @@ se lanzó y no dejó nada. Ver §7.9.
 ```
 Nombre:   TEAPP  (Teaching English Application)
 Ruta:     C:\Users\USUARIO\Documents\Company_TripleS\Test_Edu_TripleS\TEAPP
-Repo:     https://github.com/jdrodriguez1000/TEAPP_Aplication  (privado)
+Repo:     https://github.com/jdrodriguez1000/TEAPP_Aplication  (PÚBLICO)
 Creado:   sesión 30 — 2026-08-02
 ```
 
@@ -36,6 +47,14 @@ de este repo se lo tragaría y se perdería la separación entera.
 
 📌 **Esta línea se mantiene al día.** Es lo único de este archivo que no puede
 quedar desactualizado: es la dirección del proyecto.
+
+> ✅ **Corregido el 2026-08-19 (sesión 89), y la corrección llevaba 48 sesiones
+> escrita en otro archivo.** Este renglón decía **privado**. `gh repo view` dice
+> `isPrivate: false` — medido hoy y ya medido el 2026-08-05, cuando la enmienda se
+> anotó en `PROGRESO.md` **y no se trajo aquí**. 🔑 Es `LM.20` en su forma pura: **lo
+> cierto estaba escrito y nadie lo alcanzó**, porque vivía en el archivo largo y el
+> error vivía en el corto que sí se lee. Y no era cosmético: una etiqueta de
+> visibilidad equivocada decide qué te atreves a escribir dentro.
 
 ## 🔑 Cómo se trabaja: dos terminales
 
@@ -447,6 +466,26 @@ construyes lo demás te quita la variable ruidosa — **es el control del nivel 
 Las piezas 1 a 7 preguntan *cómo se construye*. Esta pregunta algo distinto:
 **cómo se sabe qué está pasando cuando ya nadie está mirando la pantalla.**
 
+> 🚨 **ENMIENDA DEL 2026-08-19 (sesión 89), y hay que leerla antes que el resto de
+> la pieza: `[D-049]` SE CERRÓ SIN EJECUTAR.** El descenso de modelo —Opus 5 → Sonnet
+> 5 → Haiku 4.5— **no se hizo**, por decisión firmada del estudiante: TEAPP es
+> educativo y no tiene la presión que lo justifica (ver el campo *Estado*, arriba).
+> **Lo que sigue en esta pieza está escrito en futuro — *"lo que `[D-049]` va a
+> mover"*— y ese futuro no llegó.** Se deja tal cual, sin reescribir, porque es el
+> razonamiento **tal como fue** y reescribirlo borraría por qué se decidió cada cosa.
+>
+> 🔑 **Y aquí va la cláusula que impide el daño, que es la lección del cierre.** Al
+> auditar el cierre apareció que `[D-049]` casi nunca era *la cosa afirmada*: era **la
+> coartada de piezas que ya existían** — el módulo que comprueba la forma, la decisión
+> de **no** afinar un detector, los ejes del nombre de los corpus, y el único test que
+> clava el modelo. **Cerrar una decisión no deja afirmaciones falsas sueltas: deja
+> piezas buenas sin motivo escrito** — y una pieza sin motivo no se corrige, se borra,
+> porque quien la encuentra lee su justificación caducada y concluye que sobra.
+>
+> ✅ **Por tanto: todo lo que se construyó por causa de `[D-049]` SE CONSERVA, y su
+> motivo pasa a ser este cierre.** Nada se retira por el hecho de que `[D-049]` esté
+> cerrada. → `LESSONS.md` → `LM.62`.
+
 ---
 
 ### 8.1 — Un registro se diseña por la pregunta, no por lo que es fácil escribir
@@ -635,12 +674,18 @@ caducado se puso en uno — mientras el que iba a gastar era el otro. La copia e
 
 ### 8.6 — Lo que todavía NO está probado, dicho aquí y no descubierto luego
 
-| | estado |
+> ✅ **Al cerrar el nivel (sesión 89) se revisó fila por fila: tres de las cuatro se
+> resolvieron entre las sesiones 83 y 88.** La columna dice el estado FINAL, no el de
+> la sesión 82. 🔑 **Esa revisión es la mitad que casi nunca se hace:** una tabla de
+> pendientes que nadie repasa al cerrar deja de avisar de lo que falta y pasa a mentir
+> sobre lo que sobra — es `LM.24`, y ya había mordido dos veces en este mismo archivo.
+
+| | estado final |
 |---|---|
-| La traza escribiendo con el **servidor levantado y una llamada real** | 🔲 **no visto.** Solo probada con cliente de test y juez de mentira. No hay `trace.jsonl` en disco — verificado |
-| El **precio por llamada** | 🔴 **caducado y sin corregir**, hacia el lado malo: tres frases son más tokens, así que el coste real sube y el número guardado se queda por debajo |
-| El **corpus de 60 respuestas** | 🔴 **no existe.** Se pierde con la siguiente tanda hasta que el nombre del archivo lo distinga |
-| El corrector **cableado a producción** | 🔲 escrito a propósito **fuera** de la ruta; que la traza apunte el fallo de formato es un cambio aparte |
+| La traza escribiendo con el **servidor levantado y una llamada real** | 🔲 **NO VISTO, y se cierra así a propósito.** Es `T-102`, ~`$0,01`. Solo probada con cliente de test y juez de mentira. ⚠️ **Es la única de las cuatro que queda abierta, y es la mitad que da nombre al paso** — se deja escrito para que no se descubra luego |
+| El **precio por llamada** | ✅ **CORREGIDO.** `COST_PER_CALL_USD` vale `$0,00342`, **medido** (`[D-096]`). 📌 Y dejó cola: tres citas del número viejo (`0,00304`) sobrevivieron al arreglo y se cazaron en la sesión 88 — *la constante se arregló en su casa y las copias se quedaron* |
+| El **corpus de 60 respuestas** | ✅ **RESUELTO.** El nombre lleva ahora **cuatro ejes** (modelo, fecha, sello de rúbrica+frases+detector, `full`/`pick`), así que dos tandas ya no se pisan (`[D-102]`). Costó perder una línea base pagada para aprenderlo |
+| El corrector **cableado a producción** | 🔲 escrito a propósito **fuera** de la ruta; que la traza apunte el fallo de formato era un cambio aparte, y no se hizo |
 
 > 📌 **Que esta tabla exista es la pieza haciendo su trabajo.** Un puente que solo
 > cuenta lo que salió bien es el mismo defecto que el registro que solo hablaba
@@ -648,22 +693,52 @@ caducado se puso en uno — mientras el que iba a gastar era el otro. La copia e
 
 ---
 
-## ⏭️ Siguiente paso
+## 🏁 Cierre del nivel
 
-> 🔴 **Corregido en la sesión 82.** Este bloque decía *"pasos 0, 1 y 2 cerrados
-> (sesión 31), sigue el paso 3: la pantalla"* — y llevaba así **más de cincuenta
-> sesiones**, en el apartado que se titula *Siguiente paso*, que es el primero que
-> alguien lee para saber qué hacer. 🔑 **Es `LM.24`: en un archivo que crece por
-> enmiendas, el texto viejo se queda arriba, que es donde cae el ojo primero.** Y
-> habría mandado a construir algo terminado hace meses, que es `LM.30`.
+> 🔴 **Este apartado se llamaba *Siguiente paso* y se ha corregido DOS veces.** En la
+> sesión 82 decía *"pasos 0, 1 y 2 cerrados (sesión 31), sigue el paso 3: la pantalla"*,
+> y llevaba así **más de cincuenta sesiones** — en el apartado que alguien lee
+> **primero** para saber qué hacer. 🔑 Es `LM.24`: **en un archivo que crece por
+> enmiendas, el texto viejo se queda arriba, que es donde cae el ojo primero**; y
+> habría mandado a construir algo terminado hacía meses, que es `LM.30`.
+> ✅ **Hoy deja de ser un apartado de futuro.** Un campo llamado *siguiente paso* en un
+> nivel cerrado es una trampa cebada: siempre habrá algo que parezca lo siguiente.
 
-**Pasos 0 a 8 cerrados.** En curso el **paso 9: observabilidad y evals con
-rúbrica** — el que cuenta la **Pieza 8**.
+**LOS DIEZ PASOS DE TEAPP ESTÁN CERRADOS.** El nivel 7 termina el **2026-08-19**
+(sesión 89). La aplicación queda viva y terminada en `claude-opus-5`.
 
-El estado vivo **no vive aquí**: vive en `_persistence/` del repo de TEAPP, que se
-actualiza cada sesión. Este puente guarda **el porqué y lo aprendido**; el qué
-exacto está allá. 📌 **Un puente que intenta llevar la cuenta se queda viejo sin
-avisar** — acaba de demostrarlo.
+**Lo que se construyó, de punta a punta:** agente en terminal → FastAPI encima →
+navegador → memoria por persona → identidad → frenos de producción → despliegue en
+AWS con URL pública → el modelo real enchufado → observabilidad y evals con rúbrica y
+juez. **Los siete conceptos que el mapa le asignaba a este nivel se tocaron todos.**
+
+⚠️ **Y se cierra con deuda viva, dicha aquí y no escondida:** `T-102` (ver la traza
+escribir con servidor y modelo real, ~`$0,01`), `T-103`, `T-108`, `T-081`, y **dos
+constantes de modelo con una sola clavada por un test** — cambiar el modelo de la app
+es hoy un cambio **mudo**. 🔑 Queda **DORMIDA, no resuelta**: se registra a propósito
+porque es la trampa que se armaría sola el día que alguien tocara el modelo. **En un
+producto comercial esto se arregla antes de cerrar; aquí se deja escrito y quieto.**
+
+📌 **El estado vivo nunca vivió aquí**: vive en `_persistence/` del repo de TEAPP.
+Este puente guarda **el porqué y lo aprendido**; el qué exacto está allá. **Un puente
+que intenta llevar la cuenta se queda viejo sin avisar** — lo demostró dos veces.
+
+---
+
+### ➡️ Lo que sigue en el curso: **nivel 8 — multi-agente**
+
+No es este nivel y no es TEAPP. Es `08-avanzado/`, la carpeta **aún sin crear** — se
+crea cuando el nivel arranque, no antes.
+
+> **Un orquestador es un agente cuyas herramientas son otros agentes.**
+
+Va al final por dependencia, no por dificultad: es **el bucle del nivel 3 anidado**, y
+sin el harness del nivel 4 cada worker multiplica las llamadas. Trae memoria y skills
+**compartidas** — la amplificación de lo que el 6b hizo para un agente solo.
+
+📌 Y después del 8 queda **`METODO.md`**, la tarea final: lo que sobrevive al cambio
+de proyecto, en un archivo corto. **Para destilar hay que tener qué destilar**, y este
+nivel es el que más método aportó.
 
 ---
 

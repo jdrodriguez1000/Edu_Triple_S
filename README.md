@@ -62,14 +62,22 @@ El detalle completo está en `PROGRESO.md`.
 > *este* curso. Meterlos en otro proyecto es pagar contexto por historia ajena.
 > **Lo reutilizable no son las piezas: es el criterio.**
 
-**Estado actual (2026-08-01):** niveles 0 a 5 cerrados, el 5b también, el
-**6b CERRADO** (sus 6 pasos, con sus 46 lecciones escritas) y el **6c
-(TypeScript) CERRADO** — sus 7 pasos corridos y medidos, con las lecciones
-`L6c.1–L6c.29` escritas y `GUIDE.md` §13. Costó **$0,1084**.
+**Estado actual (2026-08-19):** niveles **0 a 7 CERRADOS**, incluidos el 5b, el 6b
+(6 pasos, 46 lecciones) y el 6c — TypeScript, 7 pasos corridos y medidos, lecciones
+`L6c.1–L6c.29` y `GUIDE.md` §13, por **$0,1084**.
 
-**El nivel 7 arrancó** con su análisis: 5 de 7 piezas, sin escribir código y sin
-gastar un centavo. Todo está en **`07-produccion/README.md`** — el proyecto se
-construirá en **otro repositorio**, y esa carpeta es el puente.
+🏁 **El NIVEL 7 QUEDÓ CERRADO el 2026-08-19 (sesión 89).** Sus **diez pasos** están
+caminados: TEAPP existe, está en internet con URL pública y HTTPS, tiene identidad,
+memoria por persona, diez frenos, despliegue en AWS, el modelo real enchufado, traza
+de observabilidad y evals con rúbrica y juez. **El análisis, las decisiones y las
+trece lecciones (`L7.1`–`L7.13`) están en `07-produccion/README.md` y en
+`LESSONS.md`**; el código vive en otro repositorio, y esa carpeta es el puente.
+
+🚨 **Y se cerró con una renuncia firmada, que es en sí una lección:** no se comparó
+el modelo caro contra los baratos. **Vale porque TEAPP es educativo** — no se vende,
+no tiene clientes, y el aprendizaje del tramo ya estaba cobrado. **En una aplicación
+comercial sería obligatorio, no opcional.** El porqué completo, y la trampa que trae
+saltarse una práctica sin escribir por qué, en `LESSONS.md` → `LM.62`.
 
 El proyecto integrador está terminado: 6 herramientas, **121 evals que corren en
 $0,00**, un harness con 10 frenos, tres modelos comparados con datos, y una
@@ -94,8 +102,9 @@ encontró el hueco de *"¿usa lo que recordó?"*, hoy el criterio C9). Y las
 que carga a demanda. La prueba de que eso valía la pena: un error de $14 USD del
 agente se arregló **editando un `.md`, sin tocar una línea de Python**.
 
-**Lo siguiente es el nivel 7** (producción: API web + frontend). El 6c
-(TypeScript) quedó cerrado en la sesión 28.
+➡️ **Lo siguiente es el NIVEL 8: multi-agente — orquestador y workers.** Es el
+último nivel del mapa. La carpeta `08-avanzado/` **aún no existe**: se crea cuando el
+nivel arranque, no antes. Y después del 8 queda **`METODO.md`**, la tarea final.
 
 Vamos avanzando de a uno: cuando termines uno, me dices y construimos el
 siguiente.

@@ -2851,6 +2851,210 @@ la documentación oficial antes de corregir — no de memoria otra vez.
 
 ---
 
+## Nivel 7 — Producción
+
+> 🌉 **Este bloque tiene una rareza, y es a propósito.** El código del nivel 7 vive en
+> **otro repositorio** (TEAPP), así que aquí no hay script que abrir. Lo que sí vive
+> aquí es lo que se aprendió, que es lo que sobrevive al proyecto.
+>
+> 📌 **Y hay un segundo bloque de este nivel más abajo: `Método`, las `LM.x`.** No se
+> mezclan a propósito. Las `L7.x` son de **producción**: concurrencia, registros,
+> nube, instrumentos. Las `LM.x` son del **oficio**: cómo se trabaja con dos
+> terminales, cómo se entrega un hallazgo, cómo se sella una predicción. El nivel 7
+> produjo las dos cosas, y la segunda resultó ser la más transferible.
+>
+> ✅ **Nivel CERRADO el 2026-08-19 (sesión 89).** Los diez pasos de TEAPP caminados.
+
+---
+
+### L7.1 — La escritura atómica y el candado resuelven cosas distintas
+
+El servidor se caía con varias personas a la vez: 50 peticiones simultáneas daban
+entre **31 y 39 fallos**, y de 50 puntos el marcador guardaba **8**.
+
+Eran **dos** defectos con el mismo síntoma. Todas las peticiones escribían el mismo
+archivo temporal. Y además la función que sumaba un punto **leía y escribía con un
+hueco en medio**: dos personas leían el mismo número, las dos sumaban uno, las dos
+guardaban lo mismo. Un punto desaparecía sin que nada diera error.
+
+> 🔑 **La escritura atómica protege de UNA escritura cortada por la mitad. El candado
+> protege de DOS escrituras pisándose. Tener la primera no te da la segunda.**
+
+Después del arreglo: **300 peticiones simultáneas, 0 fallos, la secuencia 1…300
+completa.**
+
+### L7.2 — Un test en verde no dice «el código está bien»
+
+Dice **«el código está bien para lo que este test hace»**.
+
+Los 45 tests que había no veían nada de `L7.1`, y no por descuido: el cliente de
+pruebas manda las peticiones **de una en una**. Ningún test creó jamás el estado que
+rompía el programa — dos peticiones a la vez.
+
+> 🚨 **Un defecto de concurrencia no se encuentra probando más veces. Se encuentra
+> probando de otra forma.** Y esa forma no existía en la suite, así que la suite no
+> podía ponerse roja aunque el defecto estuviera delante.
+
+📌 Es el primer sitio del curso donde *todo verde* y *funciona* se separan del todo.
+Antes del nivel 7 solo había una persona: la simultaneidad no existía.
+
+### L7.3 — Al log el detalle; al navegador, un mensaje corto y sin rutas
+
+El error 500 devolvía al usuario la **ruta absoluta del servidor**. Eso le regala a
+un desconocido el mapa de tu máquina: dónde vive el código, cómo se llama el usuario
+del sistema, qué estructura hay debajo.
+
+> 🔑 **El mensaje de error tiene dos públicos con necesidades opuestas.** Tú necesitas
+> todo el detalle; el desconocido no necesita ninguno. **Es la misma excepción
+> partida en dos destinos**, no un mensaje que hay que hacer más vago.
+
+⚠️ Y la nota de que había que arreglarlo **existía, escrita, y no bastó**. Lo que lo
+cazó fue **volver a medirlo**.
+
+### L7.4 — Un registro se diseña por la pregunta, no por lo que es fácil escribir
+
+La tentación es apuntar lo que se tiene a mano. El registro útil se escribe al revés:
+primero la pregunta que tendrás a las 3 de la mañana con usuarios encima, y de ahí
+salen los campos.
+
+Y la pregunta que casi nadie escribe primero: **¿qué está pasando cuando ya nadie
+mira la pantalla?** No es *¿funciona?* — eso es evaluación, y se pregunta antes de
+soltarlo. Es *¿qué está haciendo AHORA?*, con gente encima y una tarjeta pagando.
+
+### L7.5 — Declarar cuánto se le permite durar a algo no es haber medido cuánto duró
+
+Para saber si vale la pena cambiar a un modelo más barato hay que saber **qué
+fracción del tiempo es el modelo**. En una corrida medida: **20,7 s de Claude sobre
+59 s totales.** Sin ese reparto, una optimización del modelo parece inútil cuando el
+culpable era la cola de espera.
+
+Al buscar dónde estaban esos números, esta terminal propuso escribir el reparto en
+cuatro fases *porque la arquitectura ya piensa en fases*.
+
+**Esos cuatro nombres eran un `Timeout`: un presupuesto que se le entrega a la
+librería, no un cronómetro.** Los números no existen — solo hay un total.
+
+> 🔑 **Un tope y un reloj se parecen en el papel y no tienen nada que ver.** Uno dice
+> *cuánto permito*; el otro, *cuánto pasó*. Y el error se cometió **con el archivo
+> abierto y leído**: no bastó con mirar el sitio correcto, hubo que clasificarlo bien.
+
+### L7.6 — El registro tiene una cuarta pregunta: quién puede leerlo
+
+Las tres de siempre son qué apuntar, cuándo y dónde. La cuarta aparece el día que en
+el registro hay **texto escrito por personas de verdad**.
+
+Un registro con las frases que la gente escribió es datos personales: vive en un
+disco, se copia en las copias de seguridad y sobrevive al proyecto. El nivel 7 lo
+resolvió apuntando **la forma de lo que pasó y nunca la frase** — cuántas palabras,
+qué falló, cuánto tardó; no qué dijo.
+
+> 📌 **Y tuvo un coste que hay que ver:** por eso mismo la traza **no sirve** para
+> alimentar los evals, que necesitan el texto. Son dos caminos separados y se pagan
+> dos veces. **La decisión correcta cuesta algo; si no cuesta nada, revísala.**
+
+### L7.7 — Un instrumento tiene que ser más estable que lo que mide
+
+El corrector automático marcaba **cualquier** comilla; la regla solo prohibía las que
+envuelven una corrección. Afinarlo exigía que el programa supiera **qué trozo es la
+corrección**, y eso entraba de **cinco formas distintas** en las respuestas medidas.
+
+Cualquier detector fino habría sido una heurística sobre **el fraseo del modelo** —
+que es justo lo que cambia al cambiar de modelo. El día que fallara, nadie podría
+distinguir *el modelo se rompió* de *la heurística resbaló*.
+
+> 🔑 **Se endureció la regla, no el instrumento.** Una sola regla dicha igual en los
+> dos sitios. **Si tu medidor se mueve cuando se mueve lo medido, no estás midiendo.**
+
+📌 Y su pariente: **una promesa que el mejor modelo rompe casi siempre no es un
+instrumento, es una constante.** Un detector ya rojo no puede avisar de nada.
+
+### L7.8 — Un instrumento que cuenta y tira la evidencia obliga a pagar dos veces
+
+La primera medición contó **18 fallos y tiró el texto**. El número sorprendente llegó
+*después* del gasto, sin forma de investigarlo sin volver a pagar.
+
+Se añadió el guardado — y se perdió otra vez, porque el archivo tenía **un nombre
+fijo**: una tanda de diagnóstico de 10 respuestas se comió la línea base de 60, ya
+pagada.
+
+> ⚠️ **El arreglo no era dejar de sobrescribir.** Sobrescribir estaba bien razonado:
+> dos corridas mezcladas son dos modelos revueltos. **Lo que fallaba es que el nombre
+> del archivo no distinguía aquello que la sobrescritura existía para no mezclar.**
+
+→ El nombre acabó con **cuatro ejes**: modelo, fecha, un sello de la pregunta y del
+examen, y si la tanda fue completa o un recorte. **Cuando algo se sobrescribe, el
+nombre es el único sitio donde puede vivir la identidad.**
+
+### L7.9 — Un comentario equivocado es peor que ningún comentario
+
+El precio por llamada estaba escrito en **dos** archivos. El aviso de que había
+caducado se puso en uno — y el que iba a gastar el dinero era el otro. La copia mala
+estaba **tres líneas debajo** de un comentario que decía *esto se importa, no se
+copia*.
+
+> 🔑 **El daño no es que mienta: es que resuelve la duda del lector en la dirección de
+> no mirar.** Quien iba a corregir el número leyó que había una sola copia y **dejó de
+> buscar la segunda**.
+
+📌 Y la cola es larga: cuando por fin se arregló la constante, **tres citas del número
+viejo sobrevivieron** en comentarios, una de ellas con la etiqueta «medido, no
+estimado». **La constante se arregla en su casa; las copias se quedan.**
+
+### L7.10 — Los bugs que no puedes ver en tu máquina son los caros
+
+`Juan` y `juan` son **una persona en Windows y dos en Linux**. Si un nombre escrito
+por el usuario se convierte en nombre de archivo sin normalizar, el marcador se parte
+en dos al desplegar — **sin ningún error, y con todos los tests locales en verde**.
+
+→ Normalizar (minúsculas y recorte de espacios) **antes de que el texto toque el
+disco**. Es una línea, y hay que escribirla el día que aún no duele.
+
+### L7.11 — La alarma de facturación va ANTES de subir nada
+
+No después del primer despliegue: antes. Y el motivo no es el susto, es el reloj: el
+plan gratuito corre **6 meses desde el día que abres la cuenta**, la uses o no. Por
+eso la nube va en el paso 7 y no en el 1 — cuando se abre, ya hay algo que subir.
+
+⚠️ **Y un `0,00 USD` acompañado de `Sin datos` no es un cero medido.** Es la ausencia
+del dato disfrazada de dato bueno. La primera factura tarda unas 24 h en existir, y
+ese reloj arranca en la primera visita a la consola, no en el primer gasto.
+
+> 🚨 **Contra un gasto de `0,00` no hay umbral positivo que dispare.** Una alarma
+> puesta en `0,01 US$` puede pasar días sin sonar y parecer que vigila. **No estaba
+> vigilando: no había nada que ver, y el silencio se leía como confirmación.**
+
+### L7.12 — La raíz de los datos, absoluta y sin valor por defecto
+
+Un guion de medida escribió en los datos **de verdad** porque heredó una ruta
+relativa. Corría fuera de los tests, así que ningún test podía verlo.
+
+→ La carpeta de datos sale de una **variable de entorno, absoluta y sin valor por
+defecto**: sin ella, la aplicación **no arranca**.
+
+> 🔑 **Un valor por defecto cómodo es un camino que nadie eligió y que siempre existe.**
+> Quitarlo convierte un error silencioso en un arranque fallido, que es justo el
+> cambio que quieres: **el fallo ruidoso es más barato que el dato corrompido.**
+
+### L7.13 — Lo que este nivel enseñó sobre terminar
+
+El paso 9 no tenía **criterio de cierre escrito**. El mapa le dedicaba una línea, y
+los ocho pasos anteriores se habían cerrado con una decisión anotada; el 9 no tenía
+ninguna.
+
+> 🔑 **Sin criterio escrito un paso no se cierra: se abandona.** Y se abandona **por
+> cansancio**, en el momento en que la lista de tareas pequeñas parece vacía — que no
+> es lo mismo que estar terminado.
+
+Al final el nivel se cerró con una decisión de alcance, no con la lista vacía: **se
+renunció a comparar modelos, firmado y explicado**, porque el aprendizaje del tramo
+ya estaba cobrado. Con deuda viva registrada a propósito, y dormida.
+
+📌 **El porqué completo de esa renuncia —y la trampa que trae— está en `LM.62`.** Es
+la lección de cierre del nivel, y vive en el bloque `Método` porque no es de
+producción: es de cómo se decide **dejar de trabajar en algo**.
+
+---
+
 ## Método — el oficio y las dos terminales
 
 > ⚠️ **Este bloque no es de un nivel.** Los demás bloques cierran un nivel del
