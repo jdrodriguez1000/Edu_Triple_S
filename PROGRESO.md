@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-19 (sesión 89b — NIVEL 7 CERRADO)
+**Última actualización:** 2026-08-19 (sesión 89c — NIVEL 7 CERRADO, nivel 8 con su forma sellada)
 
 ---
 
@@ -3238,6 +3238,45 @@
 # multi-agente suele ser más lento, más caro y con más partes que fallan, así que se
 # construye y se **mide contra el agente de una capa que ya tiene**. Detrás del 8, la
 # última tarea del recorrido: **`METODO.md`**.
+# 🔒 **La 89c CAMBIÓ LA FORMA DEL NIVEL 8, y lo propuso ÉL, no el temario.**
+# 🎯 **Su pregunta, textual:** *«si el punto 10 es el más importante, ¿podríamos
+# iniciar por ese punto? ¿por qué esperar hasta el 10 para comprender cuándo sí
+# utilizar y cuándo no?»* — El punto 10 era *«¿de verdad necesitabas varios
+# agentes?»*, y estaba planeado como **conclusión del último paso**.
+# ✅ **Tenía razón a medias, y la mitad buena es la que importa:** un criterio escrito
+# DESPUÉS de tres sesiones construyendo **se dobla solo** para justificar lo ya
+# construido — no por deshonestidad, sino por cómo funciona la cabeza. Es `LM.61` y
+# `[D-100]` del nivel 7 aplicados a un nivel que todavía no existe: **los tramos del
+# resultado se sellan antes de pagar, o el número se reinterpreta cuando llega.**
+# 🚨 **Y hay una razón más concreta y más urgente: LA LÍNEA BASE.** Para saber si el
+# orquestador gana hacen falta los números del agente de UNA capa —tiempo, coste,
+# aciertos—, y **esos se toman antes de tocar nada**. Tomados al final ya no son línea
+# base, son un recuerdo. Perder una línea base ya pagada es **`L7.8`**, y en TEAPP
+# costó dinero de verdad.
+# 🔻 **La mitad que NO se adelanta, dicha para que nadie la borre:** discutir el
+# criterio el primer día produce **una opinión que se aprende**, no un criterio que se
+# puede defender — `LM.13`, *un freno que no has visto morder es una nota*. Por eso el
+# paso 0 sella una **hipótesis**, no una conclusión. La conclusión se gana midiendo.
+# 📐 **La forma que queda, escrita en `README.md` (el mapa, que es donde vive el plan):**
+# **Paso 0, antes de la primera línea de código y produciendo un ARCHIVO, no una
+# intención:** (1) la predicción sellada en Git —en qué casos gana multi-agente y en
+# cuáles pierde, con razones—; (2) cómo se comprobaría y **qué resultado sería "me
+# equivoqué"**, falsificable y no adjetivo; (3) **la línea base del agente de una capa,
+# medida y guardada.** **Paso final: se abre el sobre** y se mira si el sello aguantó.
+# 🔑 **Y lo que de verdad pasó hoy, que vale más que el cambio de plan:** la forma del
+# nivel 8 **no la trajo el temario — la dedujo él**, aplicando a un nivel que aún no
+# arranca lo que el nivel 7 le enseñó sobre sellar predicciones. **Es `METODO.md`
+# empezando a existir solo, tres niveles antes de escribirse.**
+# ⚠️ **Por qué esto quedó escrito y no solo hablado, y también lo pidió él:** *«debemos
+# guardar esta definición en algún lado porque cuando cerremos sesión posiblemente la
+# olvidemos»*. Exacto: es `LM.20`, lo que vive solo en el chat el arranque siguiente no
+# lo alcanza. **Está en `README.md` porque cambió el PLAN, y el puntero aquí.**
+# ➡️ **SIGUIENTE PASO CONCRETO — arrancar el NIVEL 8 por su PASO 0.** No se escribe
+# código: se sella la predicción y se mide la línea base. La carpeta `08-avanzado/`
+# **sigue sin crearse** hasta que él lo pida. 📌 **Y la predicción la escribe ÉL**, que
+# para eso es suya; esta terminal solo la sella y le exige que sea falsificable.
+# 📌 Antes de empezar hay UNA decisión suya pendiente: **sobre qué agente se construye**
+# — el de divisas del 5b/6b, que ya tiene evals y línea base medible, o algo nuevo.
 
 ```
 Nombre: TEAPP  (Teaching English Application)

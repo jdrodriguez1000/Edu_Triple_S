@@ -48,7 +48,7 @@ Cada nivel es una carpeta. Se hacen en orden.
 | 6b | `06b-memoria-skills/` | Que tu agente **recuerde** y **sepa cosas** | Memoria persistente, **Skills** (habilidades cargadas a demanda) |
 | 6c | `06c-typescript/` | Portar **tu** agente a TypeScript | El mismo modelo mental en otro lenguaje |
 | 7 | `07-produccion/` 🌉 | API web + frontend con el agente adentro — **el código vive en otro repo**; aquí está el puente | **Observabilidad**, **seguridad del agente**, auth, costos por usuario, despliegue en **AWS** |
-| 8 | `08-avanzado/` | Multi-agente: orquestador y workers | Orquestación, agentes programados, memoria y skills **compartidas** |
+| 8 | `08-avanzado/` | Multi-agente: orquestador y workers. 🔒 **Abre sellando la predicción y la línea base** | Orquestación, agentes programados, memoria y skills **compartidas**, y **cuándo NO usar varios agentes** |
 | 📌 | `METODO.md` (raíz) | **Al terminar los 8:** el método destilado, para llevárselo a proyectos de verdad | — |
 
 📌 **`METODO.md` es la tarea final del recorrido**, apartada en la sesión 21. Un
@@ -281,6 +281,47 @@ Por eso va al final: no es un concepto nuevo, es el bucle del nivel 3 **anidado*
 Sin haber construido a mano el de una capa, el de dos capas es humo. Y sin el
 harness del nivel 4, un orquestador es una máquina de quemar dinero — cada worker
 multiplica las llamadas.
+
+#### 🔒 La forma del nivel: la pregunta se sella al principio, se verifica al final
+
+> **Decidido el 2026-08-19 (sesión 89c), y lo propuso el estudiante.** El plan original
+> dejaba *«¿de verdad necesitabas varios agentes?»* como conclusión del último paso.
+> Se cambió. **Ahora abre el nivel y lo cierra.**
+
+La pregunta más valiosa del nivel 8 no es *cómo se construye un orquestador*, es
+**cuándo conviene y cuándo no**. Multi-agente casi siempre es **peor** que un agente
+bien hecho: más lento, más caro, más partes que fallan, más difícil de depurar. Saber
+en qué casos gana vale más que saber montarlo.
+
+**Y por eso no puede evaluarse al final.** Un criterio escrito después de tres
+sesiones construyendo **se dobla solo** para justificar lo ya construido. No por
+deshonestidad: por cómo funciona la cabeza. Es `LM.61` y `[D-100]` del nivel 7 — los
+tramos del resultado se sellan **antes** de pagar la medición, o el número se
+reinterpreta cuando llega.
+
+**Paso 0 — antes de la primera línea de código.** Produce un archivo, no una
+intención:
+
+1. **La predicción, sellada en Git.** En qué casos creemos que multi-agente gana y en
+   cuáles pierde, con las razones escritas.
+2. **Cómo se comprobaría, y qué resultado sería «me equivoqué».** Falsificable, no
+   adjetivo — la misma vara que `CLAUDE.md` exige para la palabra *bloqueante*.
+3. **La línea base del agente de UNA capa: tiempo, coste, aciertos.** 🚨 **Se mide
+   ANTES y se guarda.** Tomada al final ya no es línea base, es un recuerdo — y
+   perder una línea base ya pagada es `L7.8`, que costó dinero de verdad.
+
+**Paso final — se abre el sobre.** Se corre el orquestador contra esa línea base y se
+mira si el sello aguantó. **Aguante o no, enseña**; lo que no enseña es un criterio
+que nunca se escribió antes de conocer el resultado.
+
+> 📌 **Lo que NO se adelanta, y es la otra mitad.** Discutir el criterio el primer día
+> produce **una opinión que te aprendes**, no un criterio que puedes defender: es
+> `LM.13` — *un freno que no has visto morder es una nota, no un freno*. Por eso el
+> paso 0 sella una **hipótesis**, no una conclusión. La conclusión se gana midiendo.
+
+📌 **Y de dónde salió esta forma:** no la trajo el temario. La dedujo el estudiante
+aplicando al nivel 8 lo que el nivel 7 le enseñó sobre sellar predicciones. **Es
+`METODO.md` empezando a existir solo**, tres niveles antes de escribirse.
 
 ---
 
