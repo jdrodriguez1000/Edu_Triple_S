@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-18 (sesión 86)
+**Última actualización:** 2026-08-19 (sesión 87)
 
 ---
 
@@ -2985,6 +2985,83 @@
 # fresco. `T-109` **sube de prioridad y deja de ser tarea de fondo**: apunta a un
 # insumo concreto. Detrás siguen `T-108`, `T-102`, `T-103`, `T-086`; `T-110` sigue
 # candidata sin firmar.
+
+
+# 🚨 **La 87 fue de SUPERVISIÓN entera y cerró `T-109` refundida con `T-110` — pero
+# el trabajo de verdad del día fueron TRES LÍNEAS, y alrededor se construyó un tramo.**
+# 🔴 **Arrancó desmontando la prioridad nº 1 del día.** `T-109` llegó marcada
+# **bloqueante** con este argumento: *"dos corridas el mismo día pisan la única copia
+# archivada del corpus que sostiene el 58/58"*. **Falso, y medido contra el disco:**
+# `eval_rubric.py:258` escribe en `data/` (`config.require_data_dir()`), `cross_check.py:169`
+# lee de `_persistence/replies/`, **son dos carpetas** y la archivada está en Git
+# (`010c8e5`). 🔑 **Y lo decía el propio módulo que motivó la tarea** —`replies.py:54-57`:
+# *"Un archivo con este mismo nombre en `data/` NO es este archivo"*—. **La tarea
+# contradecía a su docstring.** Es `LM.30` otra vez: la urgencia no se audita, se obedece.
+# 📌 **Y mira QUÉ desplazaba:** `T-112` era el disparador del paso 9 y el único ítem sin
+# número ni firma. **Lo indefinido siempre pierde el turno contra lo que ya tiene número.**
+# 🚨 **El agujero REAL era más grande, y lo encontré buscando por qué la tarea existía:**
+# los cuatro ejes del nombre sellaban modelo, fecha, `GRAMMAR_RUBRIC` y `full`/`pick` —
+# **no el conjunto de frases ni el detector**. Y `T-112` consiste exactamente en cambiar
+# el conjunto de frases: mismo modelo, misma huella, mismo `full` → **nombre idéntico al
+# de la corrida que sostiene el 58/58**, con `save_replies` en `"w"`. El eje `full` era
+# el más feo: `picked == len(SENTENCES)` se medía **contra el conjunto que iba a cambiar**.
+# ✅ **`[D-102]`: el nombre pasa de `rubric-<huella>` a `run-<sello>`**, un hash de las
+# TRES huellas —y **de las huellas, no de los textos**, que es lo que permite recalcular
+# el sello desde la fila y cruzarlo por igualdad exacta—. Un eje por cosa daba un nombre
+# de siete campos **al que siempre le faltaría el octavo**: ya le faltaron dos en 4 días.
+# `~~D-092~~` tachada; lo viejo **no se renombra** (es evidencia congelada y pagada, y la
+# regla del sello ya lo cubre: sin sello nunca coincide con producción).
+# 🔴 **TRES afirmaciones mías salieron falsas y las cazó la otra terminal, las tres de
+# la misma familia:** (1) que `row_problems` cruzaría las tres huellas contra el nombre
+# —imposible con un sello, y `LM.58` es literalmente eso un día después y por la terminal
+# que la escribió—; (2) que la mitad `open("x")` *"no colgaba de ninguna decisión abierta"*
+# — colgaba de `PI-6`, porque jubila un test; (3) que el portero del archivo legado
+# quedaba protegido *"con que siga verde"*. 🔑 **Las tres describen un mecanismo real y
+# le adjudican un alcance que no tiene.**
+# 🎯 **`[L-087]`, la lección del día y mató mi garantía (3):** saboteó el portero
+# dejándolo ciego y **574 tests en verde**. Un test que afirma `not problems` se cumple
+# igual con el guardián apagado — **verde es el resultado del arreglo bueno y del malo a
+# la vez**. → `LM.59`. Un guardián se demuestra enseñándole algo que **tenga que rechazar**.
+# 🔎 **La enumeración a mano se quedó corta, y lo cazó un `grep`:** la autorización `PI-6`
+# listaba 4 tests afectados; había un quinto que debía **seguir verde** (y por eso
+# necesitaba `name_matches_rows` con dos ramas de verdad) y faltaban **dos tests nuevos**
+# — el sello tiene tres entradas y solo una tenía prueba de que mueve el nombre.
+# ⚙️ **Forma del código, decidida aquí:** `generation_of(path)` **una sola** y compartida
+# por los dos porteros (dos detectores de generación pueden discrepar), `row_problems(row,
+# required)` **sin valor por defecto** (un default es acordarse por omisión, `L-082`) y
+# con `CAMPOS_LEGADO`/`CAMPOS_SELLADOS` en vez de un booleano.
+# 🔴 **HALLAZGO ABIERTO — importancia ALTA, no bloqueante:** `detector_fingerprint()`
+# hashea solo los bytes de `app/rubric_check.py`, pero éste importa `VERDICT_CORRECT` y
+# `VERDICT_WRONG` de `app/tools.py:309-310`, **definidas DESPUÉS de que `GRAMMAR_RUBRIC`
+# termine** — o sea que no están en la huella de la rúbrica ni en la del detector: **no
+# están en ninguna.** Y no son decorativas: `rubric_check.py:124` y `:214` son las que
+# separan *"el juez rompió el formato"* de *"el alumno se equivocó"* (`[D-067]`).
+# 🔑 **Es el agujero de `[D-102]` un piso más abajo:** selló el ARCHIVO del detector y dio
+# por sellado el DETECTOR, igual que `~~D-092~~` selló la rúbrica y dio por sellado el
+# examen. → Que la huella cubra la fuente **más los tres nombres importados**, incluido
+# `MAX_SENTENCES` aunque hoy esté cubierto: hoy lo cubre **una coincidencia en otra
+# función** (está interpolado en el `f-string`), y esa cobertura desaparece sin avisar el
+# día que alguien saque `{MAX_SENTENCES}` del texto.
+# 🧭 **Y la corrección de método que pidió ÉL, y vale más que el tramo entero:** todo
+# hallazgo de auditoría se entrega con **importancia** (baja/media/alta, ¿vale la pena?) y
+# **urgencia** (bloqueante o no), **marcadas arriba**. Ese día entregué 8-9 hallazgos con
+# el mismo tamaño y el mismo tono, y él tuvo que deducir la prioridad leyendo hasta el
+# final. → `LM.60`. Con el veneno anotado: una etiqueta formal de urgencia hace **más
+# fácil** obedecerla, así que *bloqueante* solo vale con la frase de qué se rompe si sigues.
+# 📌 **Su cierre lo dijo mejor que yo:** el trabajo de verdad fueron tres líneas
+# (`open("w") → open("x")`) y cada pieza de alrededor estaba justificada — pero la
+# pregunta *"¿no le estamos dando vueltas a algo no importante?"* la hizo él, y le tocaba
+# hacerla a la herramienta (`PI-2`). **La casilla que se pierde siempre es «alta / no
+# bloqueante»:** importante y sin fecha, no grita, y espera turnos enteros.
+# ✅ **Estado en TEAPP al cerrar:** commit `799cc00`, `origin` sincronizado, **577 tests**.
+# `[D-102]` con sus tres enmiendas, `~~D-092~~` tachada, `[L-087]` completa, `T-109` ✅,
+# `T-110` 🔗 absorbida (leyenda nueva), `T-108` con alcance de tres carpetas.
+# ➡️ **SIGUIENTE PASO CONCRETO — en la OTRA terminal: `T-112`, ya DESBLOQUEADA.**
+# Escribir el conjunto **discriminante** (no el representativo). Orden fijo: **escribir →
+# etiquetar → recién entonces correr el juez**, y ese orden **se sella en Git antes de la
+# primera frase** — es lo que faltó con las predicciones de la 86. `[L-083]` vigente y sin
+# portero posible: quien escriba las frases será quien las etiquete. Detrás: la huella del
+# detector (ALTA, no bloqueante), `T-108`, `T-102`, `T-103`, `T-086`.
 
 ```
 Nombre: TEAPP  (Teaching English Application)

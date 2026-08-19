@@ -5115,3 +5115,68 @@ solo está nombrado.**
 > 📌 **Regla práctica, y cuesta un minuto:** antes de apoyar una decisión en *"eso ya
 > lo cubre X"*, abre X y lee qué mira y qué devuelve. El nombre de una función es lo
 > que alguien quiso que hiciera. La firma es lo que hace.
+
+### LM.59 — Un test que afirma AUSENCIA se cumple igual con el instrumento ciego
+
+**Sesión 87, y mató una garantía que había propuesto yo esa misma tarde.**
+
+Al reescribir el nombre de los corpus había que proteger el archivo viejo, el que la
+decisión mandaba **no renombrar**. Yo propuse la protección así: *"`test_the_archived_
+name_agrees_with_its_rows` no se modifica — la exigencia es que **siga verde**."*
+
+Sonaba bien. Ese test recorre los archivos reales y exige que el portero no devuelva
+problemas. La otra terminal lo saboteó —dejó el portero ciego sobre la generación
+vieja— y **la suite entera pasó: 574 en verde con el guardián apagado**.
+
+> 🔑 **El motivo es general y no tiene nada que ver con este portero.** El test
+> afirmaba `not problems`. Un portero que mira bien y no encuentra nada devuelve la
+> lista vacía; un portero que **no mira nada** devuelve exactamente lo mismo. **Verde
+> es el resultado del arreglo bueno y del malo a la vez**, así que no distingue entre
+> los dos — que es la única cosa que un test tiene que hacer.
+
+Es la tercera vez de esta especie en dos días: el test que se quedaba verde y hueco al
+cambiar el nombre del corpus, este portero, y `_frozen_corpora` en su día. Por eso subió
+a lección y no se quedó en nota de tarea.
+
+📌 Y fíjate en el agravante, porque es lo que la hace fácil de repetir: **"que siga
+verde" suena a la protección más barata que existe** — no tocas nada, no firmas nada,
+no gastas un test. Justamente por barata no se audita.
+
+> 📌 **Regla práctica:** un guardián no se demuestra enseñándole lo que debe aceptar.
+> Se demuestra **enseñándole algo que tenga que rechazar**. Si no existe un test que le
+> ponga delante un caso malo y exija que muerda, no tienes un guardián: tienes una
+> función que se ejecuta.
+
+---
+
+### LM.60 — Un hallazgo sin marca de prioridad le cuesta al lector lo mismo que uno importante
+
+**Sesión 87, y la pidió él a mitad de camino.**
+
+Ese día entregué ocho o nueve hallazgos de auditoría. Todos ciertos, todos con su
+evidencia leída del disco. Y todos **con el mismo tamaño y el mismo tono**: los tres que
+bloqueaban el paso siguiente y los tres que eran higiene de docstrings. Él tuvo que
+deducir la prioridad leyendo párrafos largos hasta el final.
+
+Su corrección fue un esquema de dos ejes: **importancia** —baja, media, alta, y decidir
+de verdad si vale la pena— y **urgencia** —bloqueante o no—, marcadas **arriba** del
+hallazgo, no al final.
+
+> 🔑 **El valor del esquema no es ordenar mejor lo que ya se entrega: es autorizar a
+> soltar cosas.** Si algo es de importancia baja, se lleva una línea o no se entrega.
+> El coste de un hallazgo menor bien argumentado no son los tokens que ocupa — es que
+> **compite por la atención** con el que sí paraba el trabajo.
+
+⚠️ **Y el esquema trae su propio veneno, que ya se había pagado tres días antes.** Una
+etiqueta formal de urgencia hace **más fácil** obedecerla, no más difícil: es `LM.30`
+—*la urgencia no se audita, se obedece*— con un campo dedicado donde escribirla. Ese
+mismo día una tarea había llegado marcada bloqueante con una consecuencia inventada.
+
+> 📌 **Regla práctica, y es la que salva el esquema:** «bloqueante» solo vale con la
+> frase que dice **qué bloquea y qué se rompe si sigues**. Falsificable, no adjetivo. Si
+> no se puede escribir esa frase, no es bloqueante. La importancia es juicio y se puede
+> discutir; **la urgencia es un hecho o es una mentira.**
+
+📌 Y la casilla que se pierde siempre es **«alta / no bloqueante»**: importante y sin
+fecha. No grita, así que espera turnos enteros. Es el argumento a favor de los dos ejes
+en vez de uno solo.
