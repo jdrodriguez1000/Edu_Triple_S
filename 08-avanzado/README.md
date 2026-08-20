@@ -1637,7 +1637,10 @@ resumen educado hacia arriba.
 
 ---
 
-##### 🎲 LA APUESTA — se sella al EMPEZAR la sesión de B.5. **EN BLANCO a propósito.**
+##### 🎲 LA APUESTA — ✅ **SELLADA el 2026-08-21 (sesión 95)**, antes de la primera línea de código
+
+> Las tres preguntas de abajo se escribieron al cerrar la 94 y quedaron **en blanco a
+> propósito**. Se responden en el bloque que sigue, y **sin haber tecleado nada**.
 
 Una predicción escrita después de ver el resultado no es una predicción. Es el orden que ya
 funcionó en las sesiones 90, 93 y 94 — y en la 94 se aprendió además que **hay que
@@ -1653,6 +1656,75 @@ commitearla**: una apuesta en un archivo sin commitear se puede retocar sin deja
 3. **¿Qué le hace la profundidad a la factura y al reloj?** B.2 midió que un fan-out paga
    **el máximo** de sus ramas, no la media. A tres capas, ¿se multiplica, se suma, o hay
    un número que todavía no hemos visto?
+
+---
+
+##### ✅ LO APOSTADO — sellado el 2026-08-21, sin una línea de código
+
+**El estudiante:** *«voy a la tuya»* — se sella la de esta terminal tal cual.
+
+**📌 Y lo primero, porque cambia por qué el orden del día fue el correcto:** pagar `D-B4.1`
+antes no era prolijidad. **B.5 necesita provocar una queja REAL en la capa de abajo**, y el
+único modo fiable de producirla es el worker con derecho a negarse. Si hubiera resultado un
+cascarrabias, una queja llegando arriba **no querría decir nada** —¿se quejó porque el
+encargo estaba mal, o porque se queja de todo?—. 🔑 **La deuda de ayer es el instrumento de
+hoy.** Se saldó a las 9 de la mañana y a las 10 ya estaba midiendo.
+
+**QUÉ SE MONTA — tres capas de verdad, ninguna decorativa:**
+
+| capa | quién | qué es |
+|---|---|---|
+| 1 | el orquestador | *«Prepara el informe de estas facturas»* |
+| 2 | **un worker que a su vez orquesta** | reparte cada factura a su especialista. **Worker para el de arriba, orquestador para los de abajo** |
+| 3 | los workers de divisa (A.1) | con el **derecho a negarse** ya construido y ya medido |
+
+**El experimento:** se enruta **mal** una factura en la capa 3. El de abajo se niega —eso ya
+no es una suposición, se midió hoy—. **La pregunta es qué le llega al de arriba.**
+
+---
+
+**1️⃣ ¿ES B.5 LA PRIMERA TOPOLOGÍA QUE NO SE COLAPSA? → Sí se colapsa, y aun así SÍ es una
+topología de verdad.** Las dos cosas, y no es una contradicción.
+
+Las cuatro anteriores se colapsaron porque **el código resultó trivial** (tres líneas, diez,
+un `if`, tres de aritmética). B.5 se colapsa **peor**: no necesita código nuevo **en
+absoluto**. `correr_orquestador` llamando a algo que llama a `correr_worker` **ya está
+escrito**.
+
+🔑 **Y DE AHÍ SALE LA SEÑAL QUE EL SOBRE PEDÍA, que es lo que de verdad se apuesta:**
+**una topología es real cuando aparece un MODO DE FALLO que antes no existía — no cuando el
+código crece.** El router era un `if`, cero líneas interesantes, y aun así **inventó el error
+de enrutado**, que no existía en B.1 ni en B.2. Por esa vara B.5 **sí** es una topología:
+trae un fallo que ninguna de B.1–B.4 podía tener.
+⭐ **Contar líneas era la vara equivocada todo el tiempo, y el bloque B entero lo estuvo
+haciendo.**
+
+**2️⃣ ¿SOBREVIVE UNA QUEJA A DOS CAPAS? → Llega DEFORMADA: sobrevive el «algo salió mal» y
+muere el «qué».**
+
+No es intuición, son **dos cosas ya medidas**: B.4 mostró que el system prompt del
+intermediario **gana** a lo que venga dentro del encargo; y **hoy mismo** (`D-B4.2`) que una
+frase añadida al system prompt **desplaza** a la que ya estaba dentro. Un intermediario cuyo
+system prompt dice *«junta lo que te den y responde»* **va a resumir**.
+📌 Es `open.er-api.com` desapareciendo de la prosa **otra vez, una capa más arriba**.
+⭐ **Y se apuesta también el arreglo: no es un prompt mejor, es un CONTRATO** — lo mismo que
+ya funcionó en A.3. Si el arreglo resulta ser «pedírselo mejor», la apuesta falla entera.
+
+**3️⃣ ¿QUÉ LE HACE LA PROFUNDIDAD A LA FACTURA Y AL RELOJ? → La contabilidad de arriba va a
+contar de MENOS, y sin dar un solo error.**
+
+Es la más falsable de las tres, y es el sospechoso nº 1 nombrado abajo **disparando**:
+`sumar_worker` suma el `coste_usd` del **hijo inmediato**; el gasto de la capa 3 vive en el
+diccionario **del intermediario**, que es **otro** diccionario. **Nadie baja a buscarlo.**
+
+Y el peaje del reloj y del bolsillo: **el intermediario cuesta más o menos lo que un worker
+(~$0,007) sin producir NI UN DATO NUEVO** — solo re-dice lo que abajo ya dijo.
+🔑 **Ese número es el «casi nunca» del plan MEDIDO en vez de supuesto**, que es exactamente
+la diferencia entre ilustrar y medir.
+
+💰 **Coste estimado de B.5: ~$0,05** (dos corridas de tres capas). **Es la pieza más cara del
+bloque B**, y se dice antes de gastarla, no después.
+
 
 ---
 
