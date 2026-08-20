@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-20 (sesión 92 — NIVEL 8: B.1 hecha; el arreglo se hizo mal antes de hacerse bien, y el freno nuevo no vio nada en la corrida siguiente)
+**Última actualización:** 2026-08-20 (sesión 93 — NIVEL 8: B.2 hecha y MEDIDA; el fan-out compró 51 % de reloj y cero factura, y la aritmética cerró en los dos lados)
 
 ---
 
@@ -3519,12 +3519,109 @@
 # sitio quedó escrito el porqué. Misma familia de `LM.16`.
 # 📌 **Y por eso los 12,94 s de la última corrida NO se cuentan como mejora** frente a los
 # 15,77 de la anterior: son 18 % con +/-12 % de ruido y sin mecanismo que lo explique.
-# ➡️ **SIGUIENTE PASO CONCRETO — B.2, el FAN-OUT.** Es la forma que la tarea del duelo SÍ
-# tiene: tres monedas independientes, dos pasos cada una. 📌 **Arranca con deuda ya escrita
-# y con número:** el `for` de `orquestador.py` deshace el paralelismo que el modelo SÍ pide
-# —20,02 s con las tres peticiones en un turno— y ese número es la línea contra la que se
-# compara. 📌 Y B.1 deja tres deudas anotadas y **no pagadas a sabiendas**: `D-B1.1`,
-# `D-B1.2` y `D-B1.3`, las tres detalladas en `08-avanzado/README.md`.
+# ➡️ *(el siguiente paso de la 92 era B.2 — se hizo entero en la 93, abajo)*
+#
+# 🔀 **La 93 HIZO B.2, EL FAN-OUT, Y LA DEUDA DE DOS SESIONES QUEDÓ PAGADA CON
+# NÚMERO.** Un archivo nuevo, `fan_out.py`, y un refactor de `orquestador.py` que
+# **no cambia su comportamiento**. Gasto del día: **$0,053** en una sola corrida doble.
+# ⭐ **LA FRASE, Y YA ESTABA MEDIDA DESDE LA 91:** en A.2 el orquestador pidió las tres
+# monedas **en un solo turno** y aun así tardó 20,02 s, porque abajo había un `for`.
+# 🔑 **«Pidió tres a la vez» y «corrieron tres a la vez» son cosas distintas: quien
+# decide si algo corre en paralelo es EL HARNESS, nunca el modelo.** El modelo solo
+# puede pedirlo. Todo B.2 es el harness contestando que sí.
+# 📊 **LA MEDICIÓN, `--ambos`, dos corridas seguidas y UNA sola variable:**
+# **serie 18,22 s / $0,026387 · paralelo 8,91 s / $0,026984 · 11 llamadas API a cada
+# lado.** −51 % de tiempo. **Las once llamadas iguales son lo primero que hay que
+# mirar:** si ese número se mueve, no cambió una variable, cambiaron dos.
+# ⭐ **Y NO FUE SOLO «MÁS RÁPIDO»: LA ARITMÉTICA CIERRA EN LOS DOS LADOS.** Capa de
+# arriba 3,61 s en serie y 3,68 s en paralelo (constante, y es una comprobación
+# independiente que nadie pidió). Workers: **suma 14,61 s** en serie, **máximo 5,22 s**
+# en paralelo. Predicho serie 18,22 (medido **18,22**); predicho paralelo 8,90 (medido
+# **8,91**). 🔑 **Un número más bajo cabe en muchas explicaciones; una cuenta que cierra
+# al centésimo en los dos lados, en una sola.**
+# 🔓 **EL DESCUBRIMIENTO DE B.2: el paralelismo no se AÑADE, se DESBLOQUEA.** Lo que
+# había que arreglar no era la velocidad: era **lo compartido**. Tres cosas que estaban
+# ahí desde A.2 y que en serie no eran de nadie — el **archivo de registro** (líneas
+# entrelazadas), la **contabilidad** (`d[k] += x` son TRES operaciones y una suma se
+# pierde **sin dar error**) y la **pantalla**. 🔑 **En serie, "compartido" y "mío" no se
+# distinguen porque solo hay uno. El paralelismo no crea los recursos compartidos: los
+# DESTAPA.**
+# ⚠️ **Y la tercera es la que enseña: la pantalla NO se arregla con un candado** — un
+# candado sobre la pantalla vuelve a poner en fila justo lo que querías en paralelo. El
+# arreglo es dejar de usarla en vivo y dibujar la **línea de tiempo** al final, que
+# además es **el único sitio donde el solapamiento SE VE**. Es `D-B1.1` de la 92 evitado
+# por construcción: allá un cero cabía en dos mundos y hubo que leer a mano; aquí las
+# barras los separan solas.
+# 📌 **Los candados en serie no cuestan NADA** (nunca hay que esperar a nadie). Por eso
+# se ponen siempre, no "cuando haga falta". Y el peor de los tres defectos es el de la
+# contabilidad, porque **lo que se evapora es LA FACTURA** — el dato por el que existe
+# el bloque F — con la pantalla igual de verde. `LM.15` otra vez.
+# 🔧 **EL REFACTOR: la topología dejó de ser una línea de código y pasó a ser un
+# PARÁMETRO.** El `for` salió del bucle y son ahora `ejecutar_un_bloque()` +
+# `reparto_en_serie()`; el bucle recibe `reparto` por la puerta. ⭐ **Y
+# `ejecutar_un_bloque` NO SABE si es uno de tres en fila o uno de tres a la vez** — esa
+# ignorancia es lo que hace el reparto intercambiable. 📌 **Parámetro y no un `if`** a
+# propósito: con `if paralelo:` dentro, cada topología nueva (router, supervisor) añade
+# una rama ahí. Entrando por la puerta, **el bucle no crece nunca.** ✅ Por defecto sigue
+# siendo serie, así que **los números medidos de A.2 siguen siendo suyos**.
+# 🪤 **La trampa que `pool.map` desactiva y que nadie habría visto:** devuelve en el
+# orden en que se ENTREGARON, no en el que terminaron. Los `tool_use_id` protegerían la
+# correspondencia, pero el registro y el informe quedarían **barajados** y no se cazaría
+# hasta leer una tabla con las filas cambiadas. 🔑 **En paralelo, el orden de LLEGADA
+# deja de ser el orden de SALIDA; si tu código daba las dos por hechas, ahora son dos.**
+# 🐛 **HALLAZGO 1 — el coste SÍ se movió (+2,3 %) y NO fue la topología.** El propio
+# informe avisa de que un coste que se mueve ensucia el experimento, así que **la alarma
+# sonó y hubo que ir a mirar en vez de creerse el titular**. Repartido por capas: **abajo
+# +0,1 %** (mismas 9 llamadas: exactamente lo que debía pasar) y **arriba +12,3 %**,
+# porque en serie el orquestador respondió con una **lista** y en paralelo con una
+# **tabla de markdown**. **La topología no tocó la factura; la redacción sí.** 🔑 Se
+# anota aunque el veredicto sea "no pasa nada", porque **una alarma que se apaga antes de
+# entregarse también es un dato** (sesión 84) — y el reflejo que la apagó fue ir al
+# reparto por capas en vez de reportar el 2,3 %.
+# 🐛 **HALLAZGO 2 — el más lento manda, y CUÁL es el más lento cambia de corrida.** El
+# worker del CAD fue **el más rápido en serie (3,78 s)** y **el más lento en paralelo
+# (5,22 s)**. No hay nada especial en el CAD: es ruido de latencia. 🔑 **Pero en un
+# fan-out el ruido no se promedia: se acumula en el peor.** El total no es la latencia
+# media de un worker, es **el máximo de tres sorteos** — peor que la media y **más
+# variable** que ella. 📌 Consecuencia para C.4: **un fan-out ancho necesita tope de
+# tiempo por worker más que uno estrecho, y la razón no es fiabilidad, es aritmética.**
+# ✅ **¿Y si el ruido explicara el resultado? Se comprobó, y no.** Los workers del
+# paralelo sumaron 12,98 s contra 14,61 s los de la serie: 11 %, **dentro del ±12 % de la
+# sesión 90**. En el caso peor —si hubieran sido igual de lentos— el máximo subía a
+# ~5,88 s y el total a **9,56 s: sigue siendo −48 %**. 🔑 **La conclusión no depende del
+# ruido, y eso se dice DESPUÉS de comprobarlo.**
+# 🐛 **`D-B2.1` — un defecto que la corrida pagada destapó, arreglado el mismo día.**
+# `ULTIMA_LINEA_DE_TIEMPO` se **asignaba**, así que guardaba solo la última vuelta de
+# reparto. Hubo **una sola** vuelta, así que **el dibujo salió correcto por casualidad**.
+# Con dos, la línea de tiempo habría enseñado la mitad del trabajo **sin avisar de que
+# faltaba la otra**. 🔑 **No habría dado un dato falso: habría dado silencio sobre lo que
+# faltaba, y un dibujo incompleto se lee como uno completo.** `LM.15` con el instrumento
+# ciego siendo otra vez el escrito ese mismo día — **igual que en B.1, dos sesiones
+# seguidas.** → Arreglado acumulando y etiquetando cada tramo con su vuelta, **y con
+# prueba nº 8**, porque ⚠️ **un arreglo que no se ha visto morder es una nota** (`LM.13`):
+# en esta tarea el orquestador siempre da una vuelta, así que en vivo sigue sin verse.
+# 🆓 **LAS PRUEBAS QUEDARON EN 8 Y CUESTAN $0,00**, igual que `verificador.py` en B.1.
+# ⭐ **La nº 3 es la joya: con tres workers falsos que duermen 0,30/0,10/0,05 s mide
+# serie = 0,45 s (la suma exacta) y paralelo = 0,31 s (el máximo).** La afirmación
+# central del bloque **dejó de ser una afirmación**, y se midió sin gastar un centavo.
+# ⚠️ **Y la nº 5 dice exactamente lo que es: DEMUESTRA EL MECANISMO, no caza una carrera
+# al vuelo.** Una carrera real es intermitente y una prueba intermitente es peor que
+# ninguna (`D-B1.2`), así que las tres operaciones que esconde `+=` se separan a mano.
+# 🔑 **Nombrar un mecanismo no es haberlo medido**, y una prueba que finge medir lo que
+# solo ilustra es `LM.15` con bata de laboratorio.
+# 📌 **Las pruebas desvían el registro a un temporal**, y es la lección de la sesión 50 de
+# TEAPP (`T-072`): el instrumento de medida escribía en los datos de verdad. Y **el
+# registro REAL se verificó después de la corrida pagada**, no solo el de las pruebas:
+# 28 + 151 líneas escritas desde tres hilos, **ninguna rota**. Los candados mordieron.
+# 📌 **Sin argumentos, `fan_out.py` corre las PRUEBAS, no la demo.** Lo que cuesta dinero
+# se pide con todas las letras.
+# ➡️ **SIGUIENTE PASO CONCRETO — B.3, el ROUTER.** Es la primera topología donde **el
+# camino DEPENDE de lo que se encuentre**, y por eso es la primera que **necesita de
+# verdad un orquestador**: B.1 descubrió que un orden fijo son tres líneas seguidas y
+# B.2 que un reparto fijo son diez. 🔑 **El modelo se paga por decidir, y hasta ahora no
+# ha habido nada que decidir.** 📌 Llega además con la pregunta que B.1 dejó abierta y
+# que el bloque B debe contestar antes de cerrar: **¿un pipeline de 3 agentes que en
+# realidad necesita 2 sigue siendo un pipeline de 3?**
 
 ```
 Nombre: TEAPP  (Teaching English Application)

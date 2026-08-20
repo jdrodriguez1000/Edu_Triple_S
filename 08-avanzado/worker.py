@@ -79,6 +79,7 @@ EDITAR `05b-proyecto/agente.py`.
 import json
 import random
 import sys
+import threading
 import time
 import traceback
 from datetime import datetime, timezone
@@ -260,6 +261,15 @@ def puente_para(nombres):
     return {n: agente.FUNCIONES[n] for n in nombres}
 
 
+# 🔒 B.2 — EL CANDADO DEL REGISTRO.
+#    En serie sobra: solo hay UN hilo escribiendo. En paralelo hay TRES workers
+#    abriendo el mismo archivo a la vez, y sin candado dos líneas se entrelazan
+#    y el `.jsonl` deja de ser `.jsonl`.
+#    🔑 Fíjate en el precio: en serie no cuesta NADA, porque nunca hay que
+#       esperar a nadie. Por eso se pone SIEMPRE, no "cuando haga falta".
+_CANDADO_REGISTRO = threading.Lock()
+
+
 def anotar(evento, **datos):
     """Igual que el `anotar` de A, pero escribiendo en el registro del nivel 8."""
     linea = {
@@ -267,8 +277,9 @@ def anotar(evento, **datos):
         "evento": evento,
         **datos,
     }
-    with open(REGISTRO, "a", encoding="utf-8") as f:
-        f.write(json.dumps(linea, ensure_ascii=False) + "\n")
+    with _CANDADO_REGISTRO:
+        with open(REGISTRO, "a", encoding="utf-8") as f:
+            f.write(json.dumps(linea, ensure_ascii=False) + "\n")
 
 
 class PresupuestoAgotado(Exception):

@@ -72,6 +72,7 @@ Su caja tiene UNA cosa: `consultar_moneda`. No lleva `tasa`, ni `trm`, ni
 import json
 import random
 import sys
+import threading
 import time
 import traceback
 from datetime import datetime, timezone
@@ -179,14 +180,25 @@ class PresupuestoAgotado(Exception):
     plata, y confundirlas haría que un fallo local pareciera uno global."""
 
 
+# 🔒 B.2 — EL CANDADO DEL REGISTRO.
+#    En serie sobra: solo hay UN hilo escribiendo. En paralelo hay TRES workers
+#    abriendo el mismo archivo a la vez, y sin candado dos líneas se entrelazan
+#    y el `.jsonl` deja de ser `.jsonl`.
+#    🔑 Fíjate en el precio: en serie no cuesta NADA, porque nunca hay que
+#       esperar a nadie. Por eso se pone SIEMPRE, no "cuando haga falta".
+_CANDADO_REGISTRO = threading.Lock()
+_CANDADO_CONTABILIDAD = threading.Lock()
+
+
 def anotar(evento, **datos):
     linea = {
         "hora": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "evento": evento,
         **datos,
     }
-    with open(REGISTRO, "a", encoding="utf-8") as f:
-        f.write(json.dumps(linea, ensure_ascii=False) + "\n")
+    with _CANDADO_REGISTRO:
+        with open(REGISTRO, "a", encoding="utf-8") as f:
+            f.write(json.dumps(linea, ensure_ascii=False) + "\n")
 
 
 # ---------------------------------------------------------------------------
@@ -235,19 +247,26 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
     # --- La contabilidad de la capa de abajo. Se suma aquí y no dentro del
     #     worker, porque el worker no sabe —ni tiene por qué— que alguien lo
     #     está orquestando.
-    contabilidad["workers"] += 1
-    contabilidad["coste_workers_usd"] += resultado["coste_usd"]
-    contabilidad["llamadas_api_workers"] += resultado["llamadas_api"]
-    contabilidad["entrada_workers"] += resultado["entrada_tokens"]
-    contabilidad["salida_workers"] += resultado["salida_tokens"]
-    contabilidad["detalle"].append({
-        "worker": resultado["worker"],
-        "ok": resultado["ok"],
-        "vueltas": resultado["vueltas"],
-        "segundos": resultado["segundos"],
-        "coste_usd": resultado["coste_usd"],
-        "herramientas": resultado["herramientas"],
-    })
+    # 🔒 B.2 — EL CANDADO DE LA CONTABILIDAD.
+    #    `contabilidad[k] += x` NO es una operación: son TRES (leer, sumar,
+    #    escribir). Con tres hilos, dos pueden leer el mismo valor viejo y
+    #    una de las dos sumas se pierde. No da error: da un número menor.
+    #    🔑 Y ese es el peor defecto posible aquí, porque lo que se pierde es
+    #       LA FACTURA — el dato por el que existe todo el bloque F.
+    with _CANDADO_CONTABILIDAD:
+        contabilidad["workers"] += 1
+        contabilidad["coste_workers_usd"] += resultado["coste_usd"]
+        contabilidad["llamadas_api_workers"] += resultado["llamadas_api"]
+        contabilidad["entrada_workers"] += resultado["entrada_tokens"]
+        contabilidad["salida_workers"] += resultado["salida_tokens"]
+        contabilidad["detalle"].append({
+            "worker": resultado["worker"],
+            "ok": resultado["ok"],
+            "vueltas": resultado["vueltas"],
+            "segundos": resultado["segundos"],
+            "coste_usd": resultado["coste_usd"],
+            "herramientas": resultado["herramientas"],
+        })
 
     # --- LO QUE CRUZA. Seis campos y, si hace falta, la lista de lo que no se
     #     pudo llenar.
@@ -281,18 +300,102 @@ FUNCIONES_ORQ = {
 
 
 # ---------------------------------------------------------------------------
+# 3.b) EL REPARTO — la pieza que el bloque B convierte en variable
+# ---------------------------------------------------------------------------
+# Hasta A.3 esto era un `for` metido dentro del bucle, y por eso no se veía.
+# Sacarlo aquí no cambia nada de lo que hace: cambia QUIÉN LO DECIDE.
+#
+# ⭐ LA FRASE DE B.2:
+#    «Pidió tres a la vez» y «corrieron tres a la vez» son cosas distintas.
+#    El modelo solo puede PEDIR. Quien decide si algo corre en paralelo es el
+#    harness — o sea, estas veinte líneas.
+
+def ejecutar_un_bloque(bloque, contabilidad, verboso=True):
+    """Ejecuta UN `tool_use` y devuelve su `tool_result`.
+
+    ⭐ Y LO IMPORTANTE ES LO QUE NO SABE: no sabe si es el primero de tres en
+       fila o uno de tres a la vez. Esa ignorancia es lo que permite que el
+       reparto sea intercambiable — si esta función supiera de hilos, cambiar
+       la topología obligaría a reescribirla.
+    """
+    funcion = FUNCIONES_ORQ.get(bloque.name)
+    if funcion is None:
+        salida = {
+            "error": f"No existe la herramienta '{bloque.name}'. "
+                     f"Las tuyas son: {', '.join(FUNCIONES_ORQ)}."
+        }
+    else:
+        try:
+            salida = funcion(**bloque.input,
+                             contabilidad=contabilidad, verboso=verboso)
+        except TypeError as fallo:
+            traceback.print_exc()
+            salida = {
+                "error": f"Llamaste a '{bloque.name}' con argumentos que no "
+                         f"acepta ({fallo}). Revisa los nombres y reintenta."
+            }
+        except Exception:
+            # Un defecto NUESTRO en la capa de abajo. Al modelo se le dice
+            # honestamente que no es culpa suya; a nosotros, el traceback. Y el
+            # orquestador sigue vivo: las otras monedas no tienen por qué morir
+            # con esta.
+            #
+            # ⚠️ B.2 SUBE LA APUESTA DE ESTE `except`. En serie, un worker que
+            #    revienta ya no tumbaba a los otros dos. En paralelo, si la
+            #    excepción escapara del hilo, el `Future` la guardaría y saltaría
+            #    al recogerla — matando la tanda entera. Que se atrape AQUÍ, en
+            #    el sitio que no sabe de hilos, es lo que hace que dé igual.
+            traceback.print_exc()
+            salida = {
+                "error": "El especialista falló por un defecto interno del "
+                         "programa. No lo llames otra vez igual."
+            }
+
+    anotar("herramienta", capa="orquestador", nombre=bloque.name,
+           entrada=bloque.input, salida=salida)
+
+    return {
+        "type": "tool_result",
+        "tool_use_id": bloque.id,
+        "content": json.dumps(salida, ensure_ascii=False),
+    }
+
+
+def reparto_en_serie(bloques, contabilidad, verboso=True):
+    """El reparto de toda la vida: uno detrás de otro.
+
+    Es el `for` de A.2 sin una coma de diferencia, y sigue siendo el valor por
+    defecto para que los números de A.2 sigan valiendo.
+
+    ⏱️ Su tiempo es la SUMA de los tres. No es un defecto que se pueda
+       optimizar dentro de esta función: es lo que significa "en serie".
+    """
+    return [ejecutar_un_bloque(b, contabilidad, verboso) for b in bloques]
+
+
+
+# ---------------------------------------------------------------------------
 # 4) EL BUCLE DE ARRIBA — es el mismo bucle. Otra vez.
 # ---------------------------------------------------------------------------
 
 def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
-                       presupuesto_usd=PRESUPUESTO_ORQ_USD, verboso=True):
+                       presupuesto_usd=PRESUPUESTO_ORQ_USD, verboso=True,
+                       reparto=None):
     """Corre la capa de arriba y devuelve un diccionario con LAS DOS capas.
 
     Si comparas este bucle con el de `worker.correr_worker`, verás que son el
     mismo: mandar, mirar `stop_reason`, ejecutar lo pedido, devolver
     `tool_result`, repetir. Cambian el system prompt, el menú y qué hay detrás
     del puente. **Nada más.**
+
+    ⭐ B.2 — `reparto` es la topología, y por eso es un parámetro y no un `if`.
+       Si fuera `if paralelo:` dentro del bucle, cada topología nueva del
+       bloque B (router, supervisor) añadiría una rama aquí dentro. Entrando
+       por la puerta, el bucle no crece nunca.
     """
+    # Por defecto, en serie: A.2 no cambia de comportamiento por este refactor.
+    reparto = reparto or reparto_en_serie
+
     gastado_usd = 0.0
     entrada_tokens = 0
     salida_tokens = 0
@@ -404,53 +507,17 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
 
         historial.append({"role": "assistant", "content": respuesta.content})
 
-        resultados = []
-        # ⚠️ ESTE `for` ES LA DECISIÓN MÁS IMPORTANTE DEL ARCHIVO, Y NO SE VE.
-        #    El modelo puede pedir las tres monedas EN UN MISMO TURNO. Eso no
-        #    las hace paralelas: aquí se ejecutan una detrás de otra porque
-        #    esto es un `for`. Quien decide si algo corre a la vez es el
-        #    harness, nunca el modelo.
-        #    → "Pidió tres a la vez" y "corrieron tres a la vez" son cosas
-        #      distintas, y confundirlas es el error que el bloque B deshace.
-        for bloque in respuesta.content:
-            if bloque.type != "tool_use":
-                continue
-
-            funcion = FUNCIONES_ORQ.get(bloque.name)
-            if funcion is None:
-                salida = {
-                    "error": f"No existe la herramienta '{bloque.name}'. "
-                             f"Las tuyas son: {', '.join(FUNCIONES_ORQ)}."
-                }
-            else:
-                try:
-                    salida = funcion(**bloque.input,
-                                     contabilidad=contabilidad, verboso=verboso)
-                except TypeError as fallo:
-                    traceback.print_exc()
-                    salida = {
-                        "error": f"Llamaste a '{bloque.name}' con argumentos que no "
-                                 f"acepta ({fallo}). Revisa los nombres y reintenta."
-                    }
-                except Exception:
-                    # Un defecto NUESTRO en la capa de abajo. Al modelo se le
-                    # dice honestamente que no es culpa suya; a nosotros, el
-                    # traceback. Y el orquestador sigue vivo: las otras monedas
-                    # no tienen por qué morir con esta.
-                    traceback.print_exc()
-                    salida = {
-                        "error": "El especialista falló por un defecto interno del "
-                                 "programa. No lo llames otra vez igual."
-                    }
-
-            anotar("herramienta", capa="orquestador", nombre=bloque.name,
-                   entrada=bloque.input, salida=salida)
-
-            resultados.append({
-                "type": "tool_result",
-                "tool_use_id": bloque.id,
-                "content": json.dumps(salida, ensure_ascii=False),
-            })
+        # ⭐ B.2 — AQUÍ ESTABA EL `for`, Y AHORA ES UN PARÁMETRO.
+        #    Este bucle ya no decide si los bloques corren en fila o a la vez.
+        #    Lo decide `reparto`, que entra por la puerta de la función.
+        #    🔑 Cambiar la topología dejó de ser editar este archivo — y esa es
+        #       la forma de todo el bloque B: la topología es una PIEZA DEL
+        #       HARNESS que se puede cambiar sin tocar ni el prompt ni el bucle.
+        #    📌 Por defecto sigue siendo `reparto_en_serie`, así que A.2 corre
+        #       EXACTAMENTE igual que antes y sus números siguen siendo suyos.
+        #       El reparto en paralelo lo trae `fan_out.py`.
+        bloques = [b for b in respuesta.content if b.type == "tool_use"]
+        resultados = reparto(bloques, contabilidad, verboso)
 
         historial.append({"role": "user", "content": resultados})
 
