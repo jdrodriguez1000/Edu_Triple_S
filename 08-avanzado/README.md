@@ -1221,6 +1221,106 @@ router.**
 
 ---
 
+---
+
+#### 🎲 B.4 — EL SUPERVISOR: la apuesta, sellada el 2026-08-20 (sesión 94) antes de teclear
+
+⚠️ **Nadie edita este bloque cuando lleguen los números.** Lo que salga se escribe debajo.
+
+**El estudiante apostó *«no tengo una respuesta clara»*, y se sella tal cual.** Ayer quedó
+dicho por qué eso vale: es la única forma de apuesta que **no puede contaminar la lectura**,
+y B.3 demostró que un *«no sé»* honesto apunta mejor que una intuición adornada.
+
+---
+
+##### 🔑 Lo que B.3 le cambió a B.4 ANTES de empezar
+
+El plan del bloque B, escrito hace sesiones, dice: *«B.4 Supervisor: el orquestador juzga y
+reenvía»*. Pero B.3 midió que **un juez solo funciona con la respuesta correcta escrita de
+antemano**, y en vivo no la hay.
+
+> ⭐ **Así que B.4 no arranca preguntando cómo se construye un supervisor. Arranca
+> preguntando si un supervisor puede saber algo que el juez de B.3 no podía.**
+
+---
+
+##### 🅰️ APUESTA 1 — ¿qué puede juzgar de verdad un supervisor sin herramientas?
+
+El orquestador **no lleva herramientas reales** (decisión de A.2, no descuido). No puede
+consultar una tasa. Entonces no puede comprobar si el número es **cierto**.
+
+> 🔑 **APUESTA: un supervisor sin herramientas no puede verificar la VERDAD, pero sí la
+> COHERENCIA — y coherencia es más de lo que suena.**
+
+Lo que apuesto que SÍ puede cazar, sin tocar la red:
+
+| | qué comprueba | con qué |
+|---|---|---|
+| **campos** | ¿trae monto, fuente y fecha? | el contrato de A.3 |
+| **encaje** | ¿contesta lo que se preguntó? | comparar pregunta y respuesta |
+| **aritmética** | ¿`monto × tasa` da el resultado que dice? | multiplicar |
+
+⭐ **La tercera es la que no esperaba y es la buena:** la coherencia aritmética **se
+comprueba sin ninguna herramienta**. Si el worker dice *«1.000 USD son 4.200.000 COP a una
+tasa de 4.200»*, el supervisor puede multiplicar. No sabe si 4.200 es la tasa real — **pero
+sabe si la cuenta cierra**.
+
+⚠️ **Y lo que apuesto que NO caza, que es lo importante: un número inventado pero coherente
+consigo mismo.** Un modelo que se saca una tasa de la manga hace bien la multiplicación con
+su tasa inventada. La aritmética caza errores de aritmética, **no fabricación**.
+
+🔑 **Y eso encaja exactamente con B.3: lo que se escapa es lo impecable.**
+
+---
+
+##### 🅱️ APUESTA 2 — ¿cuántas vueltas, y de dónde sale ese número?
+
+Un worker cuesta **$0,00724** (medido en B.2). Un reenvío **duplica la capa de abajo**.
+
+> 🔑 **APUESTA A: la regla de parada honesta no es un número de vueltas, es un
+> PRESUPUESTO.** *«Reintenta 2 veces»* es un número que alguien puso a ojo. *«Reintenta
+> mientras quede presupuesto de la capa de abajo»* sale de una cantidad real. El primero
+> hay que defenderlo; el segundo se defiende solo.
+
+> 🚨 **APUESTA B, y es la que quiero medir: un reintento CIEGO casi no vale nada.**
+> Reenviar el mismo prompt al mismo modelo es pagar dos veces por el mismo billete de
+> lotería. **Si el segundo intento no lleva escrito QUÉ estuvo mal, la única fuente de
+> mejora es el azar.**
+
+📌 Eso da el experimento entero de B.4: **reintento ciego** (mismo encargo) contra
+**reintento informado** (encargo + motivo del rechazo). Una sola variable.
+
+---
+
+##### 🅲 APUESTA 3 — ¿caza el supervisor el error de enrutado de B.3?
+
+Llega un trabajo **impecable del especialista equivocado**. El supervisor lo mira.
+
+> 🔑 **APUESTA: NO lo caza — y por una razón mecánica de una sola línea.** El supervisor
+> juzga *«¿esta respuesta sirve?»* contra **el encargo que se le dio al worker**, no contra
+> **el mensaje original del usuario**. Si el router mandó *«una factura de Alemania»* al
+> worker del dólar, el encargo decía «dólares», la respuesta habla de dólares, y **encaja
+> perfectamente con su encargo**.
+
+> ⭐ **Y la condición que lo cambia todo, que es una decisión de diseño de una línea:
+> el supervisor lo caza SOLO SI VE EL MENSAJE ORIGINAL.** No el encargo. El original.
+
+📌 Segundo experimento, también de una variable: **supervisor ciego** (ve encargo +
+respuesta) contra **supervisor con el original** (ve además lo que el usuario escribió), con
+un enrutado equivocado **metido a propósito** para que haya presa que cazar — que es
+exactamente lo que le faltó a B.3.
+
+---
+
+##### ⚠️ El sospechoso de estar ciego, nombrado antes de escribirlo
+
+Cuatro sesiones seguidas lo ciego ha sido **lo escrito ese mismo día**: el verificador
+(B.1), la línea de tiempo (B.2), la etiqueta de oro (B.3).
+
+🚨 **En B.4 el primer sospechoso es el ERROR INYECTADO.** Si el enrutado equivocado que meto
+a mano es más burdo que uno real, el supervisor lo cazará por lo obvio y el resultado no
+dirá nada del caso que importa. **Un cebo demasiado fácil mide al cebo, no al cazador.**
+
 ### 🛡️ BLOQUE C — El harness a dos capas
 
 Sin esto un orquestador es una máquina de quemar dinero: cada worker multiplica las
