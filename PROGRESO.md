@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-20 (sesión 90 — NIVEL 8 arrancado, BLOQUE 0 cerrado y SELLADO)
+**Última actualización:** 2026-08-20 (sesión 91 — NIVEL 8: BLOQUE A CERRADO 4/4, y el temario creció a 21 piezas)
 
 ---
 
@@ -3344,10 +3344,114 @@
 # **pero tampoco puede levantar la frontera de `C4`, porque no sabe que `trm` existe.**
 # Es **A.3 y A.4 en estado puro**: el aislamiento que lo hace bueno es el mismo que le
 # quita el contexto para avisar.
-# ➡️ **SIGUIENTE PASO CONCRETO — el BLOQUE A del nivel 8: las piezas.** Worker,
-# orquestador, el contrato entre capas y el aislamiento de contexto. Produce `worker.py`
-# y `orquestador.py` en su versión más tonta: **un worker, en serie.** 📌 Y la primera
-# decisión de diseño ya está nombrada arriba: **cuántas herramientas lleva cada worker.**
+# ➡️ *(el siguiente paso de la 90 era el BLOQUE A — se hizo entero en la 91, abajo)*
+#
+# 🧩 **La 91 CERRÓ EL BLOQUE A ENTERO: las cuatro piezas.** Tres archivos nuevos en
+# `08-avanzado/`: `worker.py`, `orquestador.py` y `aislamiento.py`. **Gasto del día:
+# ~$0,10**, y la pieza más grande del día no costó nada.
+# ⭐ **A.1 — el worker, y el descubrimiento decepciona a propósito:** un worker NO es una
+# cosa nueva. Es `ejecutar_agente` con otro system prompt y menos herramientas. Lo único
+# de verdad distinto es que **DEVUELVE un diccionario en vez de imprimir una frase** — y
+# esa línea es la que lo hace usable como herramienta de otro agente.
+# 🔑 **En un worker los permisos dejan de ser una pregunta y se vuelven la caja de
+# herramientas.** No hay `input()` ni `pedir_permiso`: lo llama un programa, no una
+# persona, así que **no hay dónde decir que no**. El worker no escribe en disco porque
+# `guardar_reporte` no está en su caja. ⚠️ Y el precio se dijo en voz alta: el usuario ya
+# no ve pasar las decisiones. **La caja es la única defensa que queda.**
+# 📌 **Se recortan el menú Y el puente**, y no es simetría bonita: el menú es lo que el
+# modelo VE, `FUNCIONES` es lo que de verdad PUEDE correr. Recortar solo el menú deja que
+# un `trm` pedido de memoria **se encuentre y se ejecute**.
+# 🚨 **NO se tocó `05b-proyecto/agente.py`, y la razón quedó escrita en `worker.py`:** es
+# el CONTENDIENTE A, ya medido, y el sello protege *tarea + contendientes + tramos*. Se
+# repite el bucle **a sabiendas**; de `agente` se importa solo lo que es DATO. 📌 Copiar
+# las `description` habría sido peor que copiar el bucle: **el bloque F mediría redacción
+# de prompts y lo llamaría arquitectura.**
+# ⭐ **A.2 — el orquestador, y su definición operativa:** *un agente que llama a una
+# función que resulta ser un agente*. Su `tool` es JSON corriente; **nada en él dice que
+# sea un agente**. No lleva ni una herramienta de verdad: **un orquestador que puede
+# resolver la tarea él solo, la resuelve él solo**, y el bloque F mediría a A disfrazado
+# de B. (Adelanta a medias `C.3`.)
+# 🐛 **Hallazgo de A.2 (alta · no bloqueante): pidió las tres monedas EN UN TURNO y
+# corrieron una detrás de otra.** Abajo hay un `for`. **«Pidió tres a la vez» y
+# «corrieron tres a la vez» son cosas distintas: quien decide el paralelismo es el
+# harness, nunca el modelo.** Es el hueco que abre el bloque B, ya con número (20,02 s).
+# 🐛 **Hallazgo de A.2 (alta · no bloqueante): la fuente del CAD se perdió EN LA
+# FRONTERA.** `tasa` devolvió `'fuente': 'mercado (open.er-api.com)'`, el worker escribió
+# *«según la tasa de mercado»* a secas, y arriba ya no había de dónde sacarlo. **Los tres
+# workers, mismo prompt y misma tarea, redactaron de tres formas distintas.**
+# 🐛 **Hallazgo de A.2 (media · no bloqueante): el orquestador sumó las tres monedas de
+# cabeza**, sin herramienta y con un prompt que dice *«nunca inventes ni estimes»*. La
+# suma estaba bien — **y ese es el problema**: un número correcto no distingue *«lo
+# calculó bien»* de *«acertó»*. **No se corrigió: apretar el prompt después de ver una
+# corrida es la trampa del bloque 0.**
+# ⭐ **A.3 — el contrato, y NO lo pidió el plan: lo pidió el defecto de arriba.** El
+# worker pasó de entregar una frase a entregar **seis campos con nombre** + `faltan`.
+# 🔑 **El contrato se arma con lo que YA pasó por el harness, no se le pide al modelo.**
+# `fuente` y `fecha` venían exactas en el `tool_result`; pedírselas otra vez sería pagar
+# tokens para que las repita de memoria. → **Regla: antes de pedirle un dato al modelo,
+# mira si ya pasó por tu harness.**
+# ✅ **La prueba de que mordió es la parte bonita:** en la corrida nueva el worker del CAD
+# **volvió a comerse el nombre en su frase**, y la respuesta final salió con
+# `open.er-api.com` igual. **No se arregló al worker: se le quitó la decisión.** Un
+# arreglo que necesita que el modelo se porte bien **no es un arreglo, es una petición.**
+# ⚠️ **Y la mitad que no se puede olvidar: UN CONTRATO NO ES NO PERDER NADA, ES ELEGIR
+# QUÉ PERDER.** La prosa del worker ya no sube: una advertencia suya *no tiene campo donde
+# quepa*. La prosa perdía al azar y sin avisar; el contrato pierde lo decidido, y `faltan`
+# dice cuándo. **Es la diferencia entre una pérdida y un silencio.**
+# 💰 El contrato costó **+$0,00023** (más caro, no más barato). 📌 El tiempo bajó de 20,02
+# a 15,34 s y **eso NO es mérito suyo**: la 90 midió ±12 % de ruido. Atribuírselo sería
+# quedarse con el titular que gusta (`LM.16`).
+# 🐛 **Y el hallazgo 3 NO se repitió en A.3, lo cual es peor:** un defecto que aparece en
+# 1 de 2 corridas **no está arreglado, es intermitente** — y es justo el que se marca como
+# resuelto por error, porque la siguiente sale limpia.
+# 🔬 **A.4 — LA PIEZA DEL DÍA, Y COSTÓ $0,00.** La respuesta habitual —*«cada worker tiene
+# su conversación para ahorrar tokens»*— **es FALSA**: A ~17.850 tokens contra B ~20.540.
+# **El aislamiento salió MÁS CARO.**
+# 🐛 **Se probaron tres hipótesis y LAS DOS PRIMERAS ERAN DE ESTA TERMINAL Y SALIERON
+# FALSAS**, medidas con `count_tokens`: ① *«gana con más piezas»* → con 12 monedas B es 3×
+# peor. ② *«gana con piezas más gordas»* → solo gana en el caso más chico. ③ *«gana con
+# más VUELTAS por pieza»* → **sí: con 8 pasos, A = 140.796 y B = 69.544.** Las hipótesis
+# muertas quedaron escritas con sus números: **borrarlas dejaría una conclusión que parece
+# obvia sin serlo.**
+# ⭐ **EL MECANISMO ES UNA MULTIPLICACIÓN:** *coste ≈ (lo que hay dentro) × (cuántas
+# vueltas)*. Las piezas y su tamaño mueven el primer factor; **solo las vueltas mueven el
+# segundo, y el segundo multiplica.** Por eso ① y ② no despegaban: empujaban el que suma.
+# 🚨 **Y apareció lo que de verdad salva a la conversación única: EL LOTE.** En ① el modelo
+# pide las tres `tasa` en un turno. En ③ los pasos van encadenados y no se pueden agrupar:
+# 25 vueltas, cada una releyendo las otras dos piezas. → **Lo caro no es el trabajo: es la
+# DEPENDENCIA entre pasos.** 📌 Es el desmentido de la 90 (*«A ya paraleliza»*) visto desde
+# el otro lado: **explica por qué aquello le bastaba.**
+# ⚠️ **Consecuencia dicha ANTES de abrir el sobre: divisas es el terreno MÁS HOSTIL
+# POSIBLE para B.** Pasos independientes y agrupables, dos por moneda. **No se cambia.**
+# 🔬 **La contaminación se MIDIÓ y NO ocurrió.** Con la conversación del USD dentro, el
+# worker del EUR pidió su propia tasa igual. Lo único que cambió fue la factura: **+19 %
+# de tokens por cargar la conversación de otro sin usarla.** 🔑 **Una alarma que no suena
+# también es un resultado.** ⚠️ Y lo que NO demuestra: que no pueda ocurrir. Una corrida,
+# sobre un caso donde la respuesta correcta era evidente. **Nombrado, no demostrado.**
+# 🆕 **SU PREGUNTA DEL DÍA DESTAPÓ UNA PIEZA QUE FALTABA EN EL TEMARIO → `C.6 — Modelo y
+# esfuerzo por capa`.** Preguntó si puede tener workers con modelos distintos (haiku,
+# sonnet, opus) y qué modelo va en el orquestador. **Al ir a buscarlo, no estaba en
+# ningún bloque.** 🔑 **Es el bicho de la sesión 90 otra vez** —*agentes programados* se
+# había caído solo—, y esta vez la pieza perdida es **la palanca de costo más grande del
+# nivel: 5× entre la config más barata y la más cara.** Ahora son **21 piezas**.
+# 📊 **Lo ya averiguado, calculado sobre la corrida real (y la fórmula CUADRA EXACTA con
+# lo medido, $0,004649):** el reparto de tokens es **12 % arriba / 88 % abajo**. Subir el
+# orquestador a opus cuesta **+$0,019**; subir los workers, **+$0,087** — 4,5× más.
+# 🔑 **Poner el modelo caro donde hay pocos tokens es barato; donde hay muchos, arruina la
+# factura.** Y el criterio **no es jerárquico, es por la dificultad de la DECISIÓN**: un
+# worker que se equivoca trae un número malo y una rúbrica lo caza; un orquestador que se
+# equivoca **reparte mal, y los workers hacen impecablemente la tarea equivocada.**
+# 📌 Verificado contra la documentación, no de memoria: `effort` va en `output_config`, es
+# GA, y **NO funciona en `claude-haiku-4-5`**; `budget_tokens` **está eliminado** en opus-5
+# y sonnet-5 (400). Sonnet 5 tiene precio de lanzamiento hasta el 2026-08-31.
+# 🔒 **El duelo sigue con el MISMO modelo en los dos lados** (pieza 0.4). C.6 se estudia
+# después de abrir el sobre.
+# ➡️ **SIGUIENTE PASO CONCRETO — el BLOQUE B del nivel 8: las topologías.** Pipeline,
+# fan-out/fan-in, router y supervisor, las cuatro sobre el agente de divisas y con la
+# misma tarea, para poder verlas una al lado de la otra. 📌 **B.2 (fan-out) arranca con
+# deuda ya escrita:** el `for` de `orquestador.py` es lo que hoy deshace el paralelismo
+# que el modelo SÍ pide — está medido (20,02 s con tres peticiones en un turno) y ese
+# número es la línea contra la que se compara.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
