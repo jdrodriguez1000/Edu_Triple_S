@@ -1478,6 +1478,57 @@ estrenado** (`LM.13`).
 
 ---
 
+###### 🎲 PAGANDO `D-B4.1` — ✅ APUESTA SELLADA el 2026-08-21 (sesión 95), antes de la primera línea de código
+
+> 🔑 **La deuda en una frase:** el «derecho a negarse» se vio morder **en el único caso que
+> lo justifica**. Un freno probado solo donde tenía razón no está medido: está **estrenado**.
+> La pregunta que falta es la contraria — **¿devuelve también trabajo que SÍ era suyo?**
+
+**El estudiante:** *«voy a la tuya»* — se sella la de esta terminal tal cual.
+
+**DOS BRAZOS, no uno**, porque el encargo del experimento 3 traía dos cosas pegadas —el
+encargo equivocado **y** un aviso de rechazo— y no se sabe cuál de las dos lo hizo negarse.
+
+| | qué cambia | qué mide |
+|---|---|---|
+| **Brazo A** | el gemelo EXACTO del exp. 3, con el **mismo aviso literal**, pero el mensaje original ahora **sí es de dólares** (factura de EE. UU., no de Alemania) | ¿se niega por **verificar**, o por **sugestión**? |
+| **Brazo B** | el encargo normal (`Convierte 1000 USD a pesos`), **sin aviso y sin mensaje original**. Solo el system prompt nuevo | ¿el freno **estorba en el tráfico normal**? Es lo que pide la deuda, y tiene línea base: la demo de A.1 |
+
+**LA APUESTA, en tres números falsables:**
+
+1. **El brazo B hace el trabajo.** Confianza **alta**: la frase añadida es *condicional*
+   —*«si el encargo no corresponde…»*— y no hay nada en el encargo que la dispare.
+2. **El brazo A también hace el trabajo**, y con **menos confianza**. B.4 midió que una
+   instrucción del encargo **pierde** contra el system prompt; pero aquí los dos **no se
+   contradicen**, dicen lo mismo. 🔑 **Lo que decide es si el modelo VERIFICA que el encargo
+   corresponde, o si le basta el «te rechazaron» como prueba de que algo va mal.**
+3. **El brazo A cuesta MÁS que el B**, porque el aviso son tokens extra y probablemente
+   conteste mencionándolo. **Brazo B ≈ $0,0073 · brazo A ≈ $0,0078.**
+
+**Y lo que la deuda cobra:** si los **dos** trabajan, el freno **discrimina** y el hallazgo
+de la 94 se sostiene. Si **alguno** se niega, el freno es un **cascarrabias** y el hallazgo
+se matiza.
+
+**EL JUEZ — y no va a haber un booleano, que fue el fallo del día anterior.** El veredicto
+sale **del harness, no de la prosa**: `herramientas` y `vueltas` (exactos, ya pasaron por
+aquí) y `faltan` del contrato — quien trabajó llena los **6** campos; quien se negó, **cero**.
+Tres casillas, no dos: `trabajo` · `negativa_gratis` · `mixto` (usó herramientas y el
+contrato no cerró → **se mira a mano**).
+📌 **Y el texto se imprime ENTERO para leerlo con los ojos.** Que una frase sea una negativa
+no lo decide un `in`. Esa parte necesita ojos, y **se dice en voz alta en vez de disfrazarla
+de medición** — es la lección de B.4: *la parte del juicio que se puede verificar es la que
+no necesita un modelo*.
+
+**⚠️ EL SOSPECHOSO DE ESTAR CIEGO, nombrado antes de escribirlo.** Cinco sesiones seguidas
+lo ciego ha sido lo escrito ese mismo día. Hoy el candidato es **el `AVISO` del brazo A**:
+si es más sugestivo de lo que un supervisor real escribiría, mide **mi redacción**, no el
+freno — el mismo bicho del cebo. **Lo que lo salva a medias: el aviso NO se redacta de
+nuevo, es copia literal del que ya usó el experimento 3.** Si el brazo A sale raro, se mira
+aquí primero.
+
+
+---
+
 #### ⏭️ EL ARRANQUE DE B.5 — escrito al cerrar la 94, **sin una línea de código**
 
 ⚠️ **Aquí no hay lección de B.5, y es deliberado.** Esto es la pista de aterrizaje: qué
