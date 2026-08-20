@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-20 (sesión 94 — NIVEL 8: B.3 y B.4 hechas, las dos con la apuesta sellada y commiteada antes de teclear. ⭐ **El hallazgo: el permiso de negarse se CONSTRUYE, no se pide** — una frase en el system prompt y el worker devolvió el trabajo equivocado, 70 % más barato que hacerlo. Y el fallo del día fue mío: la función que juzgaba mi propia apuesta comparaba dos booleanos. $0,027253 en total.)
+**Última actualización:** 2026-08-20 (sesión 94 — NIVEL 8: B.3 y B.4 hechas, las dos con la apuesta sellada y commiteada antes de teclear. ⭐ **El hallazgo: el permiso de negarse se CONSTRUYE, no se pide** — una frase en el system prompt y el worker devolvió el trabajo equivocado, 70 % más barato que hacerlo. Y el fallo del día fue mío: la función que juzgaba mi propia apuesta comparaba dos booleanos. $0,027253 en total. **B.5 queda con la pista escrita y las 3 preguntas en blanco.**)
 
 ---
 
@@ -3787,8 +3787,24 @@
 # qué»*. B.4 acaba de dar la mitad del porqué: **si un worker construido para negarse es el
 # único testigo fiable, ¿qué pasa cuando el que tiene que negarse está DOS capas abajo y su
 # queja tiene que subir por un intermediario que fue construido para responder?**
-# 📌 Antes de B.5 conviene pagar `D-B4.1`: cuesta una corrida (~$0,007) y convierte el
-# hallazgo del día de «visto una vez» a «medido».
+# 📄 **LA PISTA DE ATERRIZAJE YA ESTÁ ESCRITA:** `08-avanzado/README.md` →
+# *«⏭️ EL ARRANQUE DE B.5»*, hecha al cerrar la 94 y **sin una línea de código**. Lleva por
+# qué B.5 llega con la pregunta cargada, la tabla de las SIETE deudas abiertas con su
+# estado, lo que ya NO hay que construir, y **los dos sospechosos de estar ciegos**.
+# 🎲 **PRIMERA COSA DE LA SESIÓN DE B.5: SELLAR LA APUESTA Y COMMITEARLA**, y está EN
+# BLANCO a propósito. Las tres preguntas: (1) ¿es B.5 la primera del bloque que NO se
+# colapsa, y cuál es la señal que lo distingue?; (2) ¿sobrevive una queja a dos capas?;
+# (3) ¿qué le hace la profundidad a la factura y al reloj?
+# 💰 **ANTES DE B.5 CONVIENE PAGAR `D-B4.1`: una corrida (~$0,007)** que convierte el
+# hallazgo del día de «visto una vez» a «medido». Se corre pasándole al worker `usd` un
+# encargo **correcto** con `SISTEMA_DIVISA_CON_DERECHO_A_NEGARSE`: si lo responde, el
+# freno discrimina; si lo devuelve, se volvió quisquilloso y el hallazgo se matiza.
+# 🚨 **Y EL AVISO QUE VALE MÁS DE TODO EL BLOQUE B:** cinco sesiones seguidas, **el
+# instrumento escrito ESE MISMO DÍA resultó ser el ciego** — el verificador (B.1), la línea
+# de tiempo (B.2), la etiqueta de oro (B.3) y el booleano del veredicto (B.4). En B.5 hay
+# **dos** candidatos: **la contabilidad a tres capas** (dos fronteras más donde una suma se
+# pierde sin dar error) y **el plan mismo**, que ya escribe la respuesta —*«casi nunca»*—.
+# 🔑 **Un experimento montado para confirmar lo que el plan ya dice no mide: ilustra.**
 
 ```
 Nombre: TEAPP  (Teaching English Application)

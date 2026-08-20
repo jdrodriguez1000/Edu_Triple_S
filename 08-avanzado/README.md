@@ -453,8 +453,8 @@ respuesta no es sí o no: es *cuál forma*.
 |---|---|---|
 | B.1 | **Pipeline** (en serie): la salida de uno entra al siguiente — ✅ **hecha** (sesión 92) | pasos que dependen unos de otros |
 | B.2 | **Fan-out / fan-in** (en paralelo) — ✅ **hecha** (sesión 93) | pedazos independientes ← *la tarea del duelo* |
-| B.3 | **Router**: elige UN worker, no varios | muchos casos distintos, uno a la vez |
-| B.4 | **Supervisor**: el orquestador juzga y reenvía | cuando la primera respuesta puede no servir |
+| B.3 | **Router**: elige UN worker, no varios — ✅ **hecha** (sesión 94) | muchos casos distintos, uno a la vez |
+| B.4 | **Supervisor**: el orquestador juzga y reenvía — ✅ **hecha** (sesión 94) | cuando la primera respuesta puede no servir |
 | B.5 | **Profundidad > 2**: un worker que a su vez orquesta | casi nunca — y hay que saber por qué |
 
 **Corre:** las cuatro primeras sobre el agente de divisas, con la misma tarea, para
@@ -1474,6 +1474,121 @@ dos supervisores vieran **el mismo texto**.
 si un worker con esa frase se vuelve **quisquilloso** y devuelve trabajo que sí era suyo.
 **Un freno que solo se ha visto morder en el caso que lo justifica no está medido: está
 estrenado** (`LM.13`).
+
+
+---
+
+#### ⏭️ EL ARRANQUE DE B.5 — escrito al cerrar la 94, **sin una línea de código**
+
+⚠️ **Aquí no hay lección de B.5, y es deliberado.** Esto es la pista de aterrizaje: qué
+pregunta abre, qué hereda y qué hay que sellar **antes** de construir.
+
+---
+
+##### 🔑 Por qué B.5 llega con la pregunta ya cargada
+
+El plan la define como *«profundidad > 2: un worker que a su vez orquesta — **casi nunca**,
+y hay que saber por qué»*. **Es la única fila del bloque B que viene con la respuesta
+insinuada en el propio plan**, y eso es una trampa: invita a construirla para confirmar.
+
+Y B.4 le dejó una pregunta concreta encima:
+
+> ⭐ **Si el único testigo fiable de un error es un worker CONSTRUIDO para negarse
+> (medido en B.4), ¿qué le pasa a esa queja cuando el que se niega está DOS capas abajo y
+> tiene que subir por un intermediario que fue construido para RESPONDER?**
+
+📌 No es retórica: en B.4 se midió que **una instrucción metida en el encargo pierde contra
+el system prompt**. Un intermediario cuyo system prompt dice *«junta lo que te den y
+responde»* es exactamente el que puede tragarse un *«esto no es lo mío»* y devolver un
+resumen educado hacia arriba.
+
+---
+
+##### 🎲 LA APUESTA — se sella al EMPEZAR la sesión de B.5. **EN BLANCO a propósito.**
+
+Una predicción escrita después de ver el resultado no es una predicción. Es el orden que ya
+funcionó en las sesiones 90, 93 y 94 — y en la 94 se aprendió además que **hay que
+commitearla**: una apuesta en un archivo sin commitear se puede retocar sin dejar rastro.
+
+1. **¿Es B.5 la primera topología del bloque que NO se colapsa?** B.1 resultó ser tres
+   líneas, B.2 diez, B.3 un `if`, B.4 tres líneas de aritmética. **Cuatro de cuatro.**
+   ¿Un worker que orquesta es una topología, o es un worker con más herramientas?
+   Y la que de verdad importa: **¿cuál es la señal que distingue las dos?**
+2. **¿Sobrevive una queja a dos capas?** Un worker de la capa 3 se niega. El de la capa 2
+   fue construido para responder. **¿Llega el «esto no es lo mío» hasta arriba, llega
+   deformado, o no llega?**
+3. **¿Qué le hace la profundidad a la factura y al reloj?** B.2 midió que un fan-out paga
+   **el máximo** de sus ramas, no la media. A tres capas, ¿se multiplica, se suma, o hay
+   un número que todavía no hemos visto?
+
+---
+
+##### 🧾 Lo que B.5 hereda, y su estado real
+
+**Deudas abiertas, anotadas y NO pagadas a sabiendas:**
+
+| # | Qué es | Estado |
+|---|---|---|
+| `D-B1.1` | el verificador no caza una paráfrasis (`Fecha del informe:`) | **abierta** |
+| `D-B1.2` | el defecto de la frontera es **intermitente: 1 de 2 corridas** | **abierta** |
+| `D-B1.3` | el archivista **reteclea** el borrador en vez de guardarlo | **abierta** |
+| `D-B2.1` | la línea de tiempo se pisaba entre vueltas | ✅ arreglada + prueba, ⚠️ **no vista morder** |
+| `D-B3.1` | la normalización de la salida del router | ⚠️ **no vista morder** (8 de 8 limpios) |
+| `D-B3.2` | la etiqueta de oro de `n5-a`, marcada discutible | **sin resolver** (la corrida sugiere `cad`) |
+| `D-B4.1` | el «derecho a negarse» **visto morder una sola vez** | **abierta — y es la que conviene pagar primero** |
+
+> 💰 **`D-B4.1` cuesta UNA corrida (~$0,007) y convierte el hallazgo del día de «visto una
+> vez» a «medido».** La pregunta es si un worker con la frase del derecho a negarse se
+> vuelve **quisquilloso** y devuelve trabajo que sí era suyo. Un freno visto morder solo en
+> el caso que lo justifica no está medido: **está estrenado** (`LM.13`).
+> → Se corre pasándole al worker `usd` un encargo **correcto** con el system prompt de
+>   `SISTEMA_DIVISA_CON_DERECHO_A_NEGARSE`. Si lo responde, el freno discrimina.
+
+**Preguntas abiertas que el bloque B debe contestar ANTES de cerrar:**
+
+- ⚠️ **¿Un pipeline de 3 agentes que en realidad necesita 2 sigue siendo un pipeline de 3?**
+  (de `D-B1.3`).
+- ⚠️ **¿Un router que resulta ser un `if` sigue siendo una topología?** — B.3 la contestó a
+  medias: el `if` gana **dentro de la frontera** y falla **del lado seguro**. Falta decidir
+  si eso la cierra.
+- 🆕 **¿Un supervisor cuya parte verificable son tres líneas de Python sigue siendo un
+  agente?** La gemela de la anterior, nacida en B.4.
+
+**Lo que B.5 ya se encuentra hecho y no tiene que construir:**
+
+- ✅ `reparto` es **un parámetro** del bucle del orquestador: una topología nueva **no toca
+  `orquestador.py`**.
+- ✅ Los tres candados de lo compartido (registro, contabilidad, pantalla).
+- ✅ El patrón de las **pruebas gratis**: piezas falsas, registro desviado a un temporal, y
+  las pruebas como modo por defecto del archivo. Tres piezas seguidas así: `verificador.py`,
+  `fan_out.py`, `router.py`, `supervisor.py`.
+- ✅ El patrón del **cebo grabado**: la presa la produce una pieza real, se guarda, y todos
+  los brazos del experimento ven **el mismo texto**.
+- ✅ El modo **`--releer`**: recalcular una conclusión sobre el registro ya pagado, $0,00.
+  🔑 No es solo ahorro — **mantiene la variable quieta**.
+
+---
+
+##### ⚠️ El sospechoso de estar ciego, y en B.5 hay dos
+
+Cinco sesiones seguidas lo ciego ha sido **lo escrito ese mismo día**:
+
+| | el instrumento ciego | qué dio |
+|---|---|---|
+| B.1 | el verificador | silencio ante la paráfrasis |
+| B.2 | la línea de tiempo | un dibujo incompleto que parecía completo |
+| B.3 | **la etiqueta de oro** | un rojo falso — cazado por la marca `discutible` |
+| B.4 | **el booleano del veredicto** | *«la apuesta falla»* — y era mentira |
+
+🚨 **En B.5 los sospechosos son dos, y conviene nombrarlos ya:**
+
+1. **La contabilidad a tres capas.** B.2 midió que `d[k] += x` son tres operaciones y una
+   suma se pierde **sin dar error**. Tres capas son **dos fronteras más** donde el dinero
+   puede evaporarse con la pantalla en verde.
+2. **El plan mismo.** *«Casi nunca, y hay que saber por qué»* ya está escrito en el temario.
+   🔑 **Un experimento montado para confirmar lo que el plan ya dice no mide: ilustra.**
+   → La apuesta 1 tiene que poder salir «sí, B.5 es una topología de verdad», o no es una
+     apuesta.
 
 ### 🛡️ BLOQUE C — El harness a dos capas
 
