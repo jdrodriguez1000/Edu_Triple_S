@@ -1321,6 +1321,160 @@ Cuatro sesiones seguidas lo ciego ha sido **lo escrito ese mismo día**: el veri
 a mano es más burdo que uno real, el supervisor lo cazará por lo obvio y el resultado no
 dirá nada del caso que importa. **Un cebo demasiado fácil mide al cebo, no al cazador.**
 
+
+---
+
+##### 📊 B.4 — LOS RESULTADOS, medidos el 2026-08-20 DESPUÉS de sellar
+
+⚠️ **La apuesta de arriba no se tocó.** Todo lo de aquí abajo se escribió después de correr.
+
+**Gasto de B.4: $0,025565.** Reparto: cebo `$0,007285` · exp1 `$0,000990` ·
+exp2 `$0,014969` · exp3 `$0,002321`. **13 pruebas que cuestan $0,00.**
+
+---
+
+###### 🅰️ APUESTA 1 — se rompió sola ANTES de correr, y para mejor
+
+La apuesta decía: *«un supervisor sin herramientas no puede verificar la verdad, pero sí la
+coherencia — y la aritmética se comprueba multiplicando»*. Al abrir `worker.py` para
+escribir el revisor apareció que **el contrato de A.3 ya trae `monto`, `tasa` y `pesos` en
+campos separados.**
+
+> ⭐ **Entonces la comprobación aritmética no necesita un modelo: son tres líneas de Python
+> y cuesta $0,00.**
+
+> 🔑 **Y eso reordena la pregunta del bloque: la parte del juicio que se puede VERIFICAR es
+> exactamente la parte que NO necesita un modelo. La parte que necesita un modelo es
+> exactamente la que no se puede verificar.**
+
+📌 Misma forma que B.1 (*«el pipeline eran tres líneas»*), B.2 (*«el reparto eran diez»*) y
+B.3 (*«el router era un `if`»*), una capa más arriba. **Cuarta vez seguida en el bloque B.**
+
+🚨 **Y la parte del juicio que sí usa modelo se midió, con un resultado feo.** Sobre el
+mismo cebo:
+
+| quién | veredicto | por qué |
+|---|---|---|
+| **revisor determinista** ($0,00) | ✅ sin objeciones | correcto: campos completos, la cuenta cierra |
+| **supervisor ciego** ($0,000456) | ❌ no sirve | *«la fecha (20 de agosto de 2026) es futura y no puede ser real»* |
+
+⚠️ **La fecha era la de hoy.** El supervisor sin herramientas **no puede comprobar la
+verdad, intentó hacerlo igual, y fabricó una objeción.** La apuesta decía que no podría
+verificar; midió algo peor: **que lo intenta y se inventa el resultado.**
+
+---
+
+###### 🅲 APUESTA 3 — CONFIRMADA, y solo se ve leyendo los motivos
+
+**Los dos supervisores rechazaron.** Y ahí casi se pierde todo:
+
+| supervisor | veredicto | motivo |
+|---|---|---|
+| **ciego** | no sirve | *«la fecha es futura»* ← **nada que ver con el enrutado** |
+| **con el original** | no sirve | *«el usuario preguntó por una factura en euros (Alemania), pero convirtió dólares»* ← **exacto** |
+
+> ⭐ **El ciego no cazó nada: acertó la casilla por el motivo equivocado.** Solo el que ve
+> el mensaje original nombra el error de enrutado — y la diferencia entre los dos es **una
+> sección de texto en el sobre.**
+
+🚨 **Y AQUÍ ESTÁ EL FALLO DEL DÍA, QUE ES MÍO.** La función que evalúa el experimento
+comparaba `sirve_ciego` y `sirve_original`: **dos booleanos.** Vio *«los dos rechazan»* e
+imprimió **«la apuesta falla»**. Era falso.
+
+> 🔑 **Un rechazo no es un dato; el dato es POR QUÉ.** Dos rechazos por motivos opuestos
+> caen en la misma casilla booleana.
+
+📌 **Y el agravante:** es el mismo defecto que `router.py` evitó **ayer, a propósito**,
+construyendo un juez de cuatro veredictos y escribiendo en su docstring por qué un booleano
+miente. Veinticuatro horas después se coló **en la función que juzga mi propia apuesta**.
+**Quinta sesión seguida en que lo ciego es lo escrito ese mismo día.**
+
+✅ **Arreglado con `habla_del_enrutado()` + pruebas 11-13, que usan los motivos REALES
+copiados del registro.** Y el arreglo se comprobó con `--releer`: **$0,00**, porque
+*arreglar el código es gratis; volver a correr es lo que cuesta* — y además una corrida
+nueva habría dado motivos distintos y no se sabría si cambió la conclusión por el arreglo o
+por el modelo. **Releer mantiene la variable quieta.**
+
+---
+
+###### 🅱️ APUESTA 2 — confirmada, y peor de lo apostado
+
+Aposté que **un reintento ciego casi no vale nada**. Medido:
+
+| brazo | qué se le dio | resultado | coste |
+|---|---|---|---|
+| **A ciego** | el mismo encargo | la misma respuesta, en dólares | $0,007259 |
+| **B informado** | encargo + el mensaje original + *«si no corresponde, dilo en vez de responderlo»* | **la misma respuesta, en dólares** | **$0,007710** |
+
+🚨 **El reintento informado tampoco valió nada — y costó 6 % MÁS.** Se le dio el contexto
+entero y una instrucción explícita para negarse, y **respondió igual.**
+
+⚠️ **La explicación cómoda sería *«le faltaba contexto»*, y es FALSA:** el contexto se lo
+dimos completo. Escribirlo así habría sido la sesión 80 otra vez — nombrar un mecanismo en
+vez de medirlo.
+
+🔑 **La causa real: el system prompt del worker le manda responder siempre** (*«no hagas
+preguntas: nadie te va a contestar. Responde en UNA sola frase con el monto en pesos»*).
+**Una instrucción metida en el encargo compite con el system prompt y pierde.**
+
+---
+
+###### ⭐ EL HALLAZGO DE B.4 — el permiso de negarse se CONSTRUYE, no se pide
+
+Experimento 3, **no planeado**: lo pidió el resultado del 2. Mismo encargo, mismo worker,
+**una sola variable — una frase añadida al system prompt.**
+
+```
+exp2 informado  (system prompt normal)      → convirtió dólares    3 vueltas  $0,007710
+exp3 con derecho(system prompt + 1 frase)   → DEVOLVIÓ EL TRABAJO  1 vuelta   $0,002321
+```
+
+> *«Este encargo no es para mí: el usuario pidió convertir 400 euros (de Alemania), no 400
+> dólares estadounidenses…»*
+
+**Nombró el error exacto. Usó CERO herramientas. Una vuelta en vez de tres. Un 70 % más
+barato.**
+
+> 🔑 **B.3 cerró diciendo que el único testigo posible era el especialista devolviendo el
+> trabajo. B.4 lo midió: ese testigo EXISTE — pero no se le pide, se le construye.**
+
+⭐ **Y negarse no es solo correcto: es más barato.** El worker se negó **antes** de llamar a
+ninguna herramienta, así que el rechazo cuesta menos que el trabajo equivocado. **Es el
+único freno del curso que ahorra dinero en vez de gastarlo.**
+
+📌 Esto toca el sobre sellado de A.1, y con una corrección importante. El sobre dice: *«el
+aislamiento que lo hace bueno es el mismo que le quita el contexto para avisar»*. **No era
+el contexto.** El contexto se lo dimos y no sirvió de nada. **Era el permiso.** La frase del
+sobre se cumple en el resultado y falla en el mecanismo, y eso se anota tal cual.
+
+---
+
+###### 🎯 Y el sospechoso nombrado antes de escribirlo: el cebo NO era demasiado fácil
+
+Se avisó que *«un cebo más burdo que un fallo real mide al cebo, no al cazador»*. **No pasó,
+y hay prueba:** el supervisor ciego **no lo cazó**. Si el cebo hubiera sido obvio, los dos lo
+habrían nombrado y el experimento no habría distinguido nada.
+
+📌 Lo que lo salvó fue la decisión de **no escribir yo la respuesta**: la produjo un worker
+de verdad, corriendo de verdad, y quedó grabada en `cebo_mal_enrutado_*.json` para que los
+dos supervisores vieran **el mismo texto**.
+
+---
+
+###### 🧾 Lo que B.4 deja, y lo que queda abierto
+
+| pieza | qué es | coste |
+|---|---|---|
+| `supervisor.py` | revisor determinista, dos supervisores, tres experimentos | — |
+| **13 pruebas** | sin tocar la red | **$0,00** |
+| `--releer` | recalcula la conclusión sobre el registro grabado | **$0,00** |
+| `cebo_mal_enrutado_*.json` | la presa, producida por un worker real | $0,007285 |
+
+**Abierto:** `D-B4.1` — el «derecho a negarse» se midió **una vez, en un caso**. No se sabe
+si un worker con esa frase se vuelve **quisquilloso** y devuelve trabajo que sí era suyo.
+**Un freno que solo se ha visto morder en el caso que lo justifica no está medido: está
+estrenado** (`LM.13`).
+
 ### 🛡️ BLOQUE C — El harness a dos capas
 
 Sin esto un orquestador es una máquina de quemar dinero: cada worker multiplica las

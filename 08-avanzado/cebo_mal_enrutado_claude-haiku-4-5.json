@@ -1,0 +1,32 @@
+{
+  "mensaje_original": "Me llegó una factura de un proveedor de Alemania por 400. ¿Cuánto es en pesos?",
+  "encargo": "Convierte 400 dólares estadounidenses a pesos colombianos.",
+  "destino_correcto": "eur",
+  "destino_usado": "usd",
+  "resultado": {
+    "worker": "usd",
+    "encargo": "Convierte 400 dólares estadounidenses a pesos colombianos.",
+    "texto": "400 dólares estadounidenses equivalen a 1.239.724 pesos colombianos según la tasa de mercado de open.er-api.com del 20 de agosto de 2026.",
+    "datos": {
+      "moneda": "USD",
+      "monto": 400,
+      "pesos": 1239724,
+      "tasa": 3099.309008,
+      "fuente": "mercado (open.er-api.com)",
+      "fecha": "Thu, 20 Aug 2026 00:02:31 +0000"
+    },
+    "faltan": [],
+    "ok": true,
+    "motivo": null,
+    "vueltas": 3,
+    "llamadas_api": 3,
+    "herramientas": [
+      "tasa",
+      "convertir"
+    ],
+    "entrada_tokens": 6010,
+    "salida_tokens": 255,
+    "coste_usd": 0.007285,
+    "segundos": 4.91
+  }
+}

@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-20 (sesión 94 — NIVEL 8: B.3 hecha, y las tres apuestas selladas y COMMITEADAS antes de teclear. El router de if 5/7 y el del modelo 7/7, pero **los dos con 0 daño**: la frontera cayó al milímetro en el nivel 3. **El hallazgo: la etiqueta de oro escrita a mano era el instrumento ciego, y estaba marcada.** $0,001688.)
+**Última actualización:** 2026-08-20 (sesión 94 — NIVEL 8: B.3 y B.4 hechas, las dos con la apuesta sellada y commiteada antes de teclear. ⭐ **El hallazgo: el permiso de negarse se CONSTRUYE, no se pide** — una frase en el system prompt y el worker devolvió el trabajo equivocado, 70 % más barato que hacerlo. Y el fallo del día fue mío: la función que juzgaba mi propia apuesta comparaba dos booleanos. $0,027253 en total.)
 
 ---
 
@@ -3711,7 +3711,8 @@
 # tarea de las tres monedas necesita los TRES workers, así que no puede demostrar un
 # router.** Enrutar solo ahorra cuando la tarea necesita **uno de N**. B.3 arrancó
 # escribiendo un banco nuevo — eso no estaba en la pista de aterrizaje de la 93.
-# ➡️ **SIGUIENTE PASO CONCRETO — B.4.** Lo abre la apuesta 3, que quedó viva y ahora
+# ➡️ *(el siguiente paso de B.3 era B.4 — se hizo en la MISMA 94, abajo)*
+# ➡️ **Lo que abría B.4:** la apuesta 3, que quedó viva y
 # apunta a un sitio concreto: **si no hay etiqueta de oro, el único testigo del error de
 # enrutado es el especialista que recibe algo que no es lo suyo y lo devuelve.** Eso es
 # un **supervisor**, no un router.
@@ -3720,6 +3721,74 @@
 # 🆕 `D-B3.1`: la normalización de la salida del router **no se ha visto morder** (8 de 8
 # formatos limpios). 🆕 `D-B3.2`: la etiqueta de oro de `n5-a` está **marcada discutible y
 # sin resolver** — y la corrida sugiere que `cad` era la buena.
+#
+# 🛡️ **Y LA MISMA 94 SIGUIÓ Y HIZO B.4, EL SUPERVISOR**, con su apuesta sellada y
+# commiteada aparte (`b962160`) antes de teclear. Un archivo nuevo, `supervisor.py`, **13
+# pruebas a $0,00** y **tres experimentos** de una variable cada uno. **Gasto de B.4:
+# $0,025565.** Total del día con B.3: **$0,027253**.
+# 🎲 **El estudiante apostó *«no tengo una respuesta clara»* y se selló tal cual** — B.3
+# había dejado dicho que un *«no sé»* honesto es la apuesta que no puede contaminar nada.
+# ⭐ **APUESTA 1 SE ROMPIÓ SOLA ANTES DE CORRER, Y PARA MEJOR.** Al abrir `worker.py` para
+# escribir el revisor apareció que el contrato de A.3 **ya trae `monto`, `tasa` y `pesos`
+# en campos separados**: la comprobación aritmética son **tres líneas de Python y $0,00**.
+# 🔑 **La parte del juicio que se puede VERIFICAR es exactamente la que NO necesita un
+# modelo; la que necesita un modelo es exactamente la que no se puede verificar.** Misma
+# forma que B.1 (tres líneas), B.2 (diez) y B.3 (un `if`): **cuarta vez seguida.**
+# 🚨 **Y la parte con modelo se midió, con resultado feo:** sobre el mismo cebo, el revisor
+# determinista dijo *«sin objeciones»* (correcto) y el **supervisor ciego rechazó por
+# *«la fecha, 20 de agosto de 2026, es futura»*** — que es **la fecha de hoy**. → Un
+# supervisor sin herramientas **no puede comprobar la verdad, lo intenta igual y fabrica
+# la objeción.** La apuesta decía que no podría; se midió algo peor.
+# ✅ **APUESTA 3 CONFIRMADA, y solo se ve leyendo los MOTIVOS.** Los dos supervisores
+# rechazaron el cebo mal enrutado, pero: el **ciego** por la fecha —nada que ver— y el que
+# **ve el mensaje original** por *«el usuario preguntó por una factura en euros (Alemania),
+# pero convirtió dólares»*. ⭐ **El ciego no cazó nada: acertó la casilla por el motivo
+# equivocado.** La diferencia entre los dos es **una sección de texto en el sobre**.
+# 🚨 **EL FALLO DEL DÍA, Y ES MÍO: la función que evaluaba mi propia apuesta comparaba dos
+# BOOLEANOS.** Vio *«los dos rechazan»* e imprimió **«la apuesta falla»**. Era falso.
+# 🔑 **Un rechazo no es un dato; el dato es POR QUÉ.** 📌 Y el agravante: es el mismo
+# defecto que `router.py` evitó **el día anterior, a propósito**, con un juez de cuatro
+# veredictos y un docstring explicando por qué un booleano miente. **Quinta sesión seguida
+# en que lo ciego es lo escrito ese mismo día**, y esta vez dentro del juez de mi apuesta.
+# ✅ Arreglado con `habla_del_enrutado()` y **pruebas 11-13 que usan los motivos REALES
+# copiados del registro**. Y comprobado con `--releer`: **$0,00**. 📌 No es solo ahorro —
+# **una corrida nueva habría dado motivos distintos y no se sabría si cambió la conclusión
+# por el arreglo o por el modelo. Releer mantiene la variable quieta.**
+# ✅ **APUESTA 2 CONFIRMADA Y PEOR DE LO APOSTADO.** Reintento **ciego**: misma respuesta,
+# $0,007259. Reintento **informado** —con el mensaje original y la instrucción explícita
+# *«si no corresponde, dilo en vez de responderlo»*—: **la misma respuesta en dólares, y
+# un 6 % MÁS CARO** ($0,007710). ⚠️ **La explicación cómoda sería *«le faltaba contexto»* y
+# es FALSA:** se lo dimos entero. 🔑 **La causa real: el system prompt del worker le manda
+# responder siempre, y una instrucción metida en el encargo compite con él y pierde.**
+# ⭐ **EL HALLAZGO DE B.4 — EL PERMISO DE NEGARSE SE CONSTRUYE, NO SE PIDE.** Experimento 3,
+# **no planeado**: lo pidió el resultado del 2. Mismo encargo, mismo worker, **una sola
+# variable: UNA frase añadida al system prompt.** → *«Este encargo no es para mí: el usuario
+# pidió convertir 400 euros (de Alemania), no 400 dólares…»*. **Nombró el error exacto, usó
+# CERO herramientas, 1 vuelta en vez de 3, y costó $0,002321 contra $0,007710: un 70 %
+# menos.**
+# 🔑 **B.3 cerró diciendo que el único testigo posible era el especialista devolviendo el
+# trabajo. B.4 lo midió: ese testigo EXISTE — pero no se le pide, SE LE CONSTRUYE.**
+# ⭐ **Y negarse no es solo correcto: es más barato**, porque ocurre ANTES de llamar a
+# ninguna herramienta. **Es el único freno del curso que ahorra dinero en vez de gastarlo.**
+# 📌 **Corrección al sobre sellado de A.1**, y se anota tal cual: el sobre dice *«el
+# aislamiento que lo hace bueno es el mismo que le quita el CONTEXTO para avisar»*. **No era
+# el contexto** —se lo dimos y no sirvió—: **era el permiso.** El sobre acierta el resultado
+# y falla el mecanismo.
+# 🎯 **Y el sospechoso nombrado antes de escribirlo NO disparó, y hay prueba:** se avisó que
+# un cebo más burdo que un fallo real mediría al cebo. **El supervisor ciego no lo cazó**,
+# así que el cebo no era obvio. Lo salvó la decisión de **no escribir yo la respuesta**: la
+# produjo un worker real y quedó grabada para que los dos supervisores vieran el mismo texto.
+# ⚠️ **`D-B4.1` ABIERTA:** el «derecho a negarse» se midió **una vez, en un caso**. No se
+# sabe si un worker con esa frase se vuelve **quisquilloso** y devuelve trabajo que sí era
+# suyo. **Un freno visto morder solo en el caso que lo justifica no está medido: está
+# estrenado** (`LM.13`).
+# ➡️ **SIGUIENTE PASO CONCRETO — B.5, y con una pregunta ya cargada.** El plan lo define
+# como *«profundidad > 2: un worker que a su vez orquesta — casi nunca, y hay que saber por
+# qué»*. B.4 acaba de dar la mitad del porqué: **si un worker construido para negarse es el
+# único testigo fiable, ¿qué pasa cuando el que tiene que negarse está DOS capas abajo y su
+# queja tiene que subir por un intermediario que fue construido para responder?**
+# 📌 Antes de B.5 conviene pagar `D-B4.1`: cuesta una corrida (~$0,007) y convierte el
+# hallazgo del día de «visto una vez» a «medido».
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -14277,6 +14346,54 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   producción no hay etiquetas de oro — esa es la razón entera por la que existe el
   router.** → Lo construido es **un instrumento de laboratorio, no un cazador**, y hay
   que decirlo antes de que su verde se lea como cobertura.
+- **Escribí un booleano dentro de la función que juzgaba mi propia apuesta, un día
+  después de construir el juez que existe para evitarlo** (sesión 94, mío, y es el
+  fallo del día). El experimento 1 de B.4 comparaba `sirve_ciego` y `sirve_original`.
+  Los dos supervisores rechazaron, así que imprimió **«la apuesta falla»** — y era
+  falso: el ciego rechazó por *«la fecha es futura»* (que es la de hoy, y nada tiene que
+  ver) y el que veía el original por *«pidió euros y convirtió dólares»*. 🔑 **Un
+  rechazo no es un dato; el dato es POR QUÉ. Dos rechazos por motivos opuestos caen en
+  la misma casilla booleana.** 📌 Y el agravante: `router.py`, escrito **el día
+  anterior**, tiene un juez de CUATRO veredictos y un docstring explicando por qué un
+  booleano miente. **Saberlo, haberlo escrito y haberlo explicado no impidió repetirlo
+  veinticuatro horas después** — en el único sitio donde el error me favorecía menos.
+  → Arreglado con prueba usando los motivos reales del registro, y **verificado por
+  RELECTURA, $0,00**: una corrida nueva habría dado motivos distintos y no se sabría si
+  cambió la conclusión por el arreglo o por el modelo.
+- **Un supervisor sin herramientas no calla: fabrica** (sesión 94). La apuesta decía que
+  un supervisor sin acceso a la red **no podría verificar** si una tasa es cierta. Se
+  midió algo peor: **lo intentó igual**. Rechazó un trabajo correcto alegando que *«la
+  fecha, 20 de agosto de 2026, es futura y no puede ser una tasa real»* — **es la fecha
+  de hoy**. 🔑 **No poder comprobar algo no produce silencio: produce una objeción
+  inventada, y una objeción inventada viene redactada igual de bien que una buena.**
+  → El revisor determinista, tres líneas de Python y $0,00, dijo lo correcto: sin
+  objeciones.
+- **La parte del juicio que se puede verificar es la que no necesita un modelo** (sesión
+  94, y es la cuarta vez seguida en el bloque B). Al abrir `worker.py` apareció que el
+  contrato de A.3 **ya trae `monto`, `tasa` y `pesos` en campos separados**: comprobar
+  que la cuenta cierra son tres líneas. 🔑 **Y su reverso es lo incómodo: la parte que
+  necesita un modelo —¿contesta esto lo que se preguntó?— es exactamente la que no se
+  puede verificar.** Misma forma que *el pipeline eran tres líneas* (B.1), *el reparto
+  eran diez* (B.2) y *el router era un `if`* (B.3).
+- **Dar el contexto entero y pedirlo explícitamente no bastó; una frase en el system
+  prompt sí** (sesión 94, y es el hallazgo del día). Al worker mal enrutado se le pasó
+  el mensaje original del usuario **y** la instrucción *«si este encargo no corresponde,
+  dilo en vez de responderlo»*. **Respondió igual, en dólares, y un 6 % más caro.** La
+  explicación cómoda —*«le faltaba contexto»*— **es falsa: se lo dimos completo**.
+  🔑 **La causa era el system prompt, que le manda responder siempre; una instrucción
+  metida en el encargo compite con él y pierde.** Con UNA frase añadida al system
+  prompt, el mismo worker con el mismo encargo **devolvió el trabajo, nombró el error
+  exacto, usó cero herramientas y costó un 70 % menos.** → **El permiso de negarse se
+  construye, no se pide.** Y negarse **ahorra dinero**, porque ocurre antes de llamar a
+  ninguna herramienta.
+- **Un sospechoso nombrado antes de escribirlo, y esta vez NO disparó — con prueba**
+  (sesión 94). Se avisó en la cabecera de `supervisor.py` que el primer candidato a
+  estar ciego era **el error inyectado**: un cebo más burdo que un fallo real mide al
+  cebo. No pasó, y la prueba es que **el supervisor ciego no lo cazó** — si hubiera sido
+  obvio, los dos lo habrían nombrado y el experimento no habría distinguido nada.
+  📌 Lo que lo salvó fue **no escribir yo la respuesta**: la produjo un worker real y se
+  grabó, para que los dos supervisores vieran exactamente el mismo texto. **Un cebo
+  redactado por quien monta el experimento mide al que lo redactó.**
 
 ---
 
