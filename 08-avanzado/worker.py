@@ -355,13 +355,21 @@ def correr_worker(encargo,
 
         for intento in range(1, agente.REINTENTOS_PROPIOS + 1):
             try:
-                respuesta = agente.cliente.messages.create(
-                    model=MODELO,
-                    max_tokens=1024,
-                    system=sistema,
-                    tools=menu,
-                    messages=mensajes,
-                )
+                # ⚠️ `tools` SE OMITE CUANDO LA CAJA ESTÁ VACÍA, y no es un
+                #    capricho: un worker sin ninguna herramienta es legítimo
+                #    —lo estrena la etapa REDACTORA del pipeline (B.1)— y
+                #    mandar una lista vacía no es lo mismo que no mandar nada.
+                #    Se añadió en la sesión 92; A.1 no cambia de conducta,
+                #    porque con menú lleno el `if` no se toma.
+                peticion = {
+                    "model": MODELO,
+                    "max_tokens": 1024,
+                    "system": sistema,
+                    "messages": mensajes,
+                }
+                if menu:
+                    peticion["tools"] = menu
+                respuesta = agente.cliente.messages.create(**peticion)
                 este_costo = agente.costo(respuesta.usage)
                 gastado_usd += este_costo
                 entrada_tokens += respuesta.usage.input_tokens

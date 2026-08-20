@@ -451,7 +451,7 @@ respuesta no es sí o no: es *cuál forma*.
 
 | # | Forma | Cuándo tiene sentido |
 |---|---|---|
-| B.1 | **Pipeline** (en serie): la salida de uno entra al siguiente | pasos que dependen unos de otros |
+| B.1 | **Pipeline** (en serie): la salida de uno entra al siguiente — ✅ **hecha** (sesión 92) | pasos que dependen unos de otros |
 | B.2 | **Fan-out / fan-in** (en paralelo) | pedazos independientes ← *la tarea del duelo* |
 | B.3 | **Router**: elige UN worker, no varios | muchos casos distintos, uno a la vez |
 | B.4 | **Supervisor**: el orquestador juzga y reenvía | cuando la primera respuesta puede no servir |
@@ -459,6 +459,99 @@ respuesta no es sí o no: es *cuál forma*.
 
 **Corre:** las cuatro primeras sobre el agente de divisas, con la misma tarea, para
 poder verlas una al lado de la otra.
+
+---
+
+#### ✅ B.1 — EL PIPELINE (sesión 92) → `pipeline.py` + `verificador.py`
+
+**Lo primero, porque es lo que más se confunde.** El agente del 5b ya tenía pasos en
+orden: `tasa` corre antes que `convertir`, y la prueba está en la firma —
+`def convertir(monto, de, a, tasa)`, la tasa **entra como parámetro**. Es una
+dependencia de verdad. **Y aun así no es un pipeline.**
+
+🔑 **La pregunta de una topología no es *«¿hay pasos en orden?»* —eso lo tiene casi
+cualquier agente—. Es *«¿QUÉ está encadenado: herramientas o agentes?»*.**
+
+| | Quién decide el orden | Qué viaja |
+|---|---|---|
+| herramienta → herramienta | **el modelo**, en una conversación | un dato exacto, en un `tool_result` |
+| agente → agente | **tu código**, entre dos conversaciones | lo que el primero **entendió** |
+
+**Por eso la tarea del duelo no sirve para B.1** y hubo que inventar otro trabajo con
+las mismas seis herramientas: recolector → redactor → archivista. Las tres monedas son
+independientes; el euro no espera al dólar.
+
+🚨 **EL DESCUBRIMIENTO: NO HAY ORQUESTADOR.** El orden es fijo, y un orden fijo son tres
+líneas seguidas de Python. **Una topología no necesita un agente que la dirija** — lo
+necesita cuando el camino DEPENDE de lo que se encuentre (router B.3, supervisor B.4).
+📌 Dicho al revés, que es como se recuerda: **el modelo se paga por decidir. Si no hay
+nada que decidir, no hay nada que pagar.**
+
+⏱️ **El tiempo de un pipeline es la SUMA, nunca el máximo**, y eso no es un defecto
+optimizable: es la definición. **El paralelismo que sí existe vive DENTRO de un
+eslabón** —la etapa 1 hace 6 llamadas en 3 vueltas— **nunca ENTRE eslabones**.
+
+##### 🐛 El defecto medido, y el arreglo mal hecho antes del bueno
+
+Primera corrida. Sigue un solo campo cruzando dos fronteras:
+
+```
+harness    "actualizado": "Thu, 20 Aug 2026 00:02:31 +0000"
+etapa 1    "— 20 de agosto de 2026"
+etapa 2    "**Fecha de consulta:** 20 de agosto de 2026"
+```
+
+La etapa 2 **le puso una etiqueta que nadie le dio**. `actualizado` es cuándo la fuente
+movió la tasa; *«fecha de consulta»* es cuándo preguntamos nosotros. Si la API llevara
+tres días sin actualizar, el informe diría *«consultado hoy»* sobre una tasa vieja.
+
+🚨 **Y el primer arreglo fue una PETICIÓN.** Se le mandó al archivista la verdad cruda
+del harness pidiéndole que comparara. Contestó **«coinciden exactamente con los datos
+verificados»** teniendo `actualizado` en pantalla al lado del borrador que decía *fecha
+de consulta*. Costó **+907 tokens (+34 % en esa etapa) para no encontrar nada**, y los
+dos informes salieron **idénticos byte a byte** (mismo `md5`).
+
+⭐ **UNA COMPARACIÓN ES UN `if`, NO UNA INSTRUCCIÓN EN UN PROMPT.** Es la frase de A.3
+—*un arreglo que necesita que el modelo se porte bien no es un arreglo*— repetida un día
+después por quien la había escrito. → `verificador.py`: cuesta $0,00, corre **siempre**
+entre la etapa 2 y la 3 (sin parámetro para saltárselo, que es la sesión 83 de TEAPP), y
+**bloquea el archivado** si hay una cifra que ninguna herramienta devolvió.
+
+📉 Medido: la etapa 3 pasó de **$0,008272 a $0,004671 (−44 %)** y de 4027 a 2946 tokens
+de entrada. **Más barato Y más correcto** — porque el trabajo se movió al sitio donde era
+determinista.
+
+##### 🚨 Y en la corrida siguiente el freno nuevo NO vio nada. Las tres deudas.
+
+**`D-B1.1` — el límite declarado se disparó en la primera corrida en vivo.**
+El verificador trae un test, el nº 7, que comprueba **que falla**: *«una paráfrasis no se
+caza»*. La corrida siguiente escribió **`Fecha del informe:`** en vez de *fecha de
+consulta*, y el freno pasó de largo. 🔑 **Lo grave no es el hueco: es que el cero era
+compatible con dos mundos** —*«el borrador está limpio»* y *«mi freno es estrecho»*
+pintan la misma pantalla— **y solo leerlo a mano los separó**, que es justo lo que el
+freno existía para evitar. (Esta vez el borrador **sí** estaba bien: la fecha correcta
+viajaba en la Nota.) → **`LM.15` con el instrumento ciego siendo el propio, escrito ese
+mismo día.**
+
+**`D-B1.2` — el defecto es intermitente: 1 de 2 corridas.**
+Mismo prompt, mismo modelo, misma entrada, etiqueta distinta. Ya estaba escrito en
+`PROGRESO.md` desde la sesión 91: *un defecto que aparece en 1 de 2 corridas no está
+arreglado, es intermitente — y es justo el que se marca como resuelto por error, porque
+la siguiente sale limpia*. **Es exactamente lo que pasó.** Sin la corrida anterior
+delante, hoy la frontera quedaría marcada como resuelta.
+
+**`D-B1.3` — el archivista no guarda el borrador: lo vuelve a teclear.**
+El archivo guardado termina en `---`, que era **el separador del encargo**, no del
+informe. 345 tokens de salida copiando un texto **que Python ya tenía en una variable**,
+y el `---` es la prueba barata de que copiar por el modelo pierde. 🔑 Es *el modelo se
+paga por decidir* apuntando a esta misma etapa: quitada la verificación, al archivista no
+le queda nada que decidir — guardar un texto con un nombre dado es un `write_text`.
+⚠️ **Y deja una pregunta que el bloque B debe contestar antes de cerrar: ¿un pipeline de
+3 agentes que en realidad necesita 2 sigue siendo un pipeline de 3?**
+
+📌 **Las tres se anotan y no se pagan hoy, a sabiendas:** son variaciones de lecciones ya
+medidas, y B.2 entra con una deuda que lleva dos sesiones esperando **con su número al
+lado**.
 
 ---
 

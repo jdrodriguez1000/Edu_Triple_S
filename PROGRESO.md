@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-20 (sesión 91 — NIVEL 8: BLOQUE A CERRADO 4/4, y el temario creció a 21 piezas)
+**Última actualización:** 2026-08-20 (sesión 92 — NIVEL 8: B.1 hecha; el arreglo se hizo mal antes de hacerse bien, y el freno nuevo no vio nada en la corrida siguiente)
 
 ---
 
@@ -3446,12 +3446,85 @@
 # y sonnet-5 (400). Sonnet 5 tiene precio de lanzamiento hasta el 2026-08-31.
 # 🔒 **El duelo sigue con el MISMO modelo en los dos lados** (pieza 0.4). C.6 se estudia
 # después de abrir el sobre.
-# ➡️ **SIGUIENTE PASO CONCRETO — el BLOQUE B del nivel 8: las topologías.** Pipeline,
-# fan-out/fan-in, router y supervisor, las cuatro sobre el agente de divisas y con la
-# misma tarea, para poder verlas una al lado de la otra. 📌 **B.2 (fan-out) arranca con
-# deuda ya escrita:** el `for` de `orquestador.py` es lo que hoy deshace el paralelismo
-# que el modelo SÍ pide — está medido (20,02 s con tres peticiones en un turno) y ese
-# número es la línea contra la que se compara.
+# ➡️ *(el siguiente paso de la 91 era el BLOQUE B — la 92 hizo B.1, abajo)*
+#
+# 🔗 **La 92 HIZO B.1, EL PIPELINE.** Dos archivos nuevos en `08-avanzado/`:
+# `pipeline.py` y `verificador.py`. **Gasto del día: ~$0,038** en tres corridas. Y el
+# archivo que más enseña —el verificador— corre por **$0,00**.
+# ❓ **Su pregunta de arranque, y era la correcta:** *«¿este nivel es mirar cuál de las
+# topologías es la mejor para un proyecto?»* **No.** No se pueden ordenar de peor a
+# mejor: un martillo no es mejor que un destornillador, es mejor para clavos.
+# 🔑 **Y la prueba no fue un argumento — ya la había medido él en A.4:** el aislamiento
+# salió MÁS caro (17.850 contra 20.540 tokens) y con 8 pasos encadenados salió al revés
+# (140.796 contra 69.544). **La arquitectura no cambió entre las dos medidas: cambió la
+# FORMA DE LA TAREA.** El bloque B no enseña cuál gana; enseña a **leer una tarea y
+# reconocer qué forma tiene antes de escribir código**.
+# ⭐ **SU RESPUESTA A LA PREGUNTA DEL DÍA FUE CORRECTA Y AUN ASÍ HUBO QUE AFINARLA:** dijo
+# que `tasa` va antes que `convertir`, y lo está — la prueba es la firma,
+# `def convertir(monto, de, a, tasa)`, **la tasa entra como parámetro**. Pero eso encadena
+# DOS HERRAMIENTAS dentro de una conversación. 🔑 **La pregunta de una topología no es
+# «¿hay pasos en orden?» —eso lo tiene casi cualquier agente— es «¿QUÉ está encadenado:
+# herramientas o agentes?».** El orden de las herramientas lo decide el MODELO y viaja un
+# dato exacto; el de los agentes lo decide TU CÓDIGO y viaja lo que el primero ENTENDIÓ.
+# 🚨 **EL DESCUBRIMIENTO DE B.1: `pipeline.py` NO TIENE ORQUESTADOR.** El orden es fijo, y
+# un orden fijo son tres líneas seguidas. **Una topología no necesita un agente que la
+# dirija** — lo necesita cuando el camino DEPENDE de lo que se encuentre (B.3, B.4).
+# 📌 **El modelo se paga por decidir. Si no hay nada que decidir, no hay nada que pagar.**
+# ⏱️ **El tiempo de un pipeline es la SUMA, nunca el máximo**, y no es optimizable: es la
+# definición. **El paralelismo que sí hay vive DENTRO de un eslabón** (la etapa 1 hace 6
+# llamadas en 3 vueltas) **nunca ENTRE eslabones** — cuarta confirmación del agrupamiento.
+# 🐛 **LA FRONTERA PERDIÓ ALGO, MEDIDO:** el harness devolvió
+# `"actualizado": "Thu, 20 Aug 2026 00:02:31 +0000"` y la etapa 2 escribió **«Fecha de
+# consulta: 20 de agosto»** — una etiqueta que nadie le dio. Con la API tres días sin
+# actualizar, el informe diría *consultado hoy* sobre una tasa vieja.
+# 🚨 **Y EL PRIMER ARREGLO DE ESTA TERMINAL FUE UNA PETICIÓN, NO UN ARREGLO.** Se le mandó
+# al archivista la verdad cruda pidiéndole que comparara, y contestó **«coinciden
+# exactamente con los datos verificados»** con `actualizado` en pantalla al lado del
+# borrador que decía *fecha de consulta*. **+907 tokens (+34 % en esa etapa) para no
+# encontrar nada**, y los dos informes salieron **idénticos byte a byte** (mismo `md5`).
+# 🔑 **Es la frase de A.3 —*un arreglo que necesita que el modelo se porte bien no es un
+# arreglo*— repetida UN DÍA DESPUÉS por quien la había escrito.** → **Una comparación es
+# un `if`, no una instrucción en un prompt.**
+# ✅ **`verificador.py`: el `if`.** Cuatro comprobaciones, 13 pruebas en verde sin modelo
+# ni red. Corre **siempre** entre la etapa 2 y la 3, sin parámetro para saltárselo (sesión
+# 83 de TEAPP), y **bloquea el archivado** si hay una cifra sin respaldo. La etapa 3 bajó
+# de **$0,008272 a $0,004671 (-44 %)**: más barato Y más correcto, porque el trabajo se
+# movió al sitio donde era determinista. 📌 Lleva dos pruebas que suelen faltar: que el
+# borrador limpio **no** dispare nada, y una que comprueba **que el freno falla**.
+# 🚨 **Y EN LA CORRIDA SIGUIENTE EL FRENO NUEVO NO VIO NADA — `D-B1.1`.** La prueba nº 7
+# declaraba el límite (*«una paráfrasis no se caza»*) y **se disparó en la primera corrida
+# en vivo**: la etapa 2 escribió **`Fecha del informe:`** y el freno pasó de largo.
+# 🔑 **Lo grave no es el hueco: es que el cero era compatible con dos mundos** —*el
+# borrador está limpio* y *mi freno es estrecho* pintan la misma pantalla— **y solo
+# leerlo a mano los separó**, que es justo lo que el freno existía para evitar. (Esta vez
+# el borrador **sí** estaba bien.) **`LM.15` con el instrumento ciego siendo el propio,
+# escrito ese mismo día.**
+# 🐛 **`D-B1.2` — el defecto es INTERMITENTE: 1 de 2 corridas.** Mismo prompt, mismo
+# modelo, misma entrada, etiqueta distinta. **La lección ya estaba escrita en este archivo
+# desde la sesión 91** y describe exactamente lo ocurrido: *un defecto que aparece en 1 de
+# 2 no está arreglado, y es justo el que se marca como resuelto porque la siguiente sale
+# limpia*. Sin la corrida anterior delante, hoy la frontera quedaría cerrada. Es `LM.20`
+# otra vez: **la corrección ya estaba escrita aquí** — pero esta vez sí se alcanzó.
+# 🐛 **`D-B1.3` — el archivista no guarda el borrador: lo RETECLEA.** El archivo guardado
+# termina en `---`, que era **el separador del encargo**, no del informe. 345 tokens de
+# salida copiando un texto que **Python ya tenía en una variable**, y ese `---` es la
+# prueba barata de que copiar por el modelo pierde. 🔑 Quitada la verificación, al
+# archivista **no le queda nada que decidir**: guardar un texto con un nombre dado es un
+# `write_text`. ⚠️ **Deja una pregunta abierta para el bloque B: ¿un pipeline de 3 agentes
+# que en realidad necesita 2 sigue siendo un pipeline de 3?**
+# ⚠️ **Un error de esta terminal, corregido antes de que hiciera daño:** el script imprimía
+# *«compáralo con los 15,34 s del fan-out de A.3»*. **Esa comparación no vale por dos
+# razones**: está dentro del ruido (+/-12 %, sesión 90) y **no son la misma tarea** —el
+# pipeline redacta y guarda, A.3 no hacía ninguna de las dos. La línea se quitó y en su
+# sitio quedó escrito el porqué. Misma familia de `LM.16`.
+# 📌 **Y por eso los 12,94 s de la última corrida NO se cuentan como mejora** frente a los
+# 15,77 de la anterior: son 18 % con +/-12 % de ruido y sin mecanismo que lo explique.
+# ➡️ **SIGUIENTE PASO CONCRETO — B.2, el FAN-OUT.** Es la forma que la tarea del duelo SÍ
+# tiene: tres monedas independientes, dos pasos cada una. 📌 **Arranca con deuda ya escrita
+# y con número:** el `for` de `orquestador.py` deshace el paralelismo que el modelo SÍ pide
+# —20,02 s con las tres peticiones en un turno— y ese número es la línea contra la que se
+# compara. 📌 Y B.1 deja tres deudas anotadas y **no pagadas a sabiendas**: `D-B1.1`,
+# `D-B1.2` y `D-B1.3`, las tres detalladas en `08-avanzado/README.md`.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
