@@ -102,9 +102,11 @@ encontró el hueco de *"¿usa lo que recordó?"*, hoy el criterio C9). Y las
 que carga a demanda. La prueba de que eso valía la pena: un error de $14 USD del
 agente se arregló **editando un `.md`, sin tocar una línea de Python**.
 
-➡️ **Lo siguiente es el NIVEL 8: multi-agente — orquestador y workers.** Es el
-último nivel del mapa. La carpeta `08-avanzado/` **aún no existe**: se crea cuando el
-nivel arranque, no antes. Y después del 8 queda **`METODO.md`**, la tarea final.
+➡️ **El NIVEL 8 ARRANCÓ el 2026-08-20 (sesión 90).** `08-avanzado/` ya existe, y su
+**bloque 0 está cerrado y sellado**: la apuesta escrita antes de construir nada y la
+línea base del agente de una capa, medida. El plan del nivel —**20 piezas en 7
+bloques**— vive en `08-avanzado/README.md`. Después del 8 queda **`METODO.md`**, la
+tarea final.
 
 Vamos avanzando de a uno: cuando termines uno, me dices y construimos el
 siguiente.

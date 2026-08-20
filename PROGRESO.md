@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-19 (sesión 89c — NIVEL 7 CERRADO, nivel 8 con su forma sellada)
+**Última actualización:** 2026-08-20 (sesión 90 — NIVEL 8 arrancado, BLOQUE 0 cerrado y SELLADO)
 
 ---
 
@@ -3277,6 +3277,77 @@
 # para eso es suya; esta terminal solo la sella y le exige que sea falsificable.
 # 📌 Antes de empezar hay UNA decisión suya pendiente: **sobre qué agente se construye**
 # — el de divisas del 5b/6b, que ya tiene evals y línea base medible, o algo nuevo.
+# 🚀 **La 90 ARRANCÓ EL NIVEL 8 y CERRÓ SU BLOQUE 0 ENTERO.** `08-avanzado/` creada
+# (él la pidió), con cinco artefactos: `README.md` (el temario), `SOBRE.md` (la apuesta
+# sellada), `rubrica_duelo.md`, `linea_base.py` y `juez_duelo.py`. **Gasto del día:
+# $0,194** — $0,069 el duelo y $0,125 el juez.
+# 🔄 **EL PLAN DEL NIVEL SE DIO LA VUELTA, Y LO PIDIÓ ÉL:** *«lo importante es no dejar
+# nada por fuera, al fin y al cabo lo que estamos haciendo es estudiar»*. La primera
+# versión estaba organizada alrededor del **duelo**, y por eso solo sobrevivían las
+# piezas que el duelo necesitaba. 🔑 **La prueba de que tenía razón no fue un argumento:
+# el mapa del curso promete «orquestación, AGENTES PROGRAMADOS, memoria y skills
+# compartidas» y *agentes programados* NO APARECÍA en el plan.** Se había caído sin que
+# nadie lo notara. → **Un plan organizado alrededor de una medición no es un temario: es
+# la lista de lo que hace falta para medir.** Ahora son **20 piezas en 7 bloques**, y
+# una pieza puede **tacharse con la razón escrita**, nunca olvidarse.
+# 🐛 **LA TAREA DEL DUELO ERA IMPOSIBLE, y se cazó ANTES de sellar nada.** Era
+# *«compárame USD, EUR y CAD en los últimos 30 días»* — y `historial(dias)` pega contra
+# `datos.gov.co`: **la TRM es del dólar y de nadie más**. La respuesta correcta habría
+# sido **admitir un límite**, así que la línea base habría medido honestidad ante una
+# frontera en vez de la tarea. 🔑 **Y el delator ya estaba en casa:** `rubrica.md` del 5b
+# tiene la pregunta *«¿a cómo está el euro oficial en Colombia?»* justo por eso.
+# → Tarea nueva: **tres montos de 1.000 (USD, EUR, CAD) a pesos, con fuente y fecha, y
+# guardar el reporte.** Más chica, y se acepta a sabiendas: agrandarla sería amañar el
+# duelo a favor del esquema que el sobre existe para juzgar.
+# ❓ **Su pregunta del día, y es de `METODO.md`:** *«si empiezo un proyecto desde cero,
+# ¿debo construirlo sin multi-agente, medirlo, construirlo con multi-agente y comparar?»*
+# **No.** En un proyecto real no se construye dos veces: se empieza por una capa **porque
+# es la respuesta probablemente correcta**, y la línea base es el **subproducto** de
+# haberla anotado. 🔑 **El error caro no es construir dos veces — es no anotar los
+# números del primero**, que es lo que le pasa a casi todo el mundo: migran, queda más
+# complicado, y **no tienen forma de saber si sirvió**. Es `L7.8`. Y no es todo o nada:
+# se migra **el pedazo** que se parte en trozos independientes.
+# 🔒 **EL SOBRE, con tres autorías separadas a propósito:** la **Parte 1** es suya y
+# textual; la **Parte 1-bis** es la expectativa de esta terminal, guardada aparte y con
+# el descuento escrito; los **tramos** los propuso esta terminal y él los **adoptó**.
+# **B gana solo si cumple los TRES: ≤ 8,33 s, ≤ $0,046, ≥ 9/11.**
+# 📊 **LÍNEA BASE MEDIDA (contendiente A, 3 corridas):** mediana **11,11 s**,
+# **$0,023194**, **10/11 aciertos (0,9091)**. Juez `sonnet-5`, **ciego a las capas**.
+# 🚨 **Y LA PRIMERA MEDIDA DESMINTIÓ MI PROPIA PREMISA: A YA PARALELIZA.** Yo escribí
+# *«A hace ~8 vueltas seguidas, B hace ~6, luego B es más rápido»*. **Son 4 vueltas**: el
+# modelo pide las **tres `tasa` en un turno** y las **tres `convertir` en el siguiente**.
+# Siete llamadas en cuatro viajes. **El margen que le suponía al paralelo ya lo tenía
+# cobrado A.** → Se **anotó el desmentido con fecha** y **no se movió nada**: es `LM.21`,
+# *un sello protege de decidir tarde, no de que el mundo desmienta lo que sellaste*.
+# 🔬 **Las tres corridas enseñaron dos cosas que una sola habría escondido.** (1) **El
+# tiempo es ruidoso y el coste no**: ±12% contra <3%, sin tocar nada — el umbral del 25%
+# quedó **validado con un dato**, no razonado. (2) **El mismo agente eligió herramientas
+# DISTINTAS entre corridas**: la de humo usó `tasa` para el dólar, las tres oficiales
+# `trm`. Mismo prompt, misma tarea. 🔑 **Un agente no es una función: medido una vez, se
+# mide una de sus posibilidades y se cree que es la única.**
+# ⚠️ **El tramo de aciertos se quedó con su RAZÓN DESMENTIDA y su número intacto.** Se
+# puso en «1 casilla» para perdonarle a B la pérdida estructural de `C4`… y **A tampoco
+# la tiene**: las tres corridas mezclaron TRM oficial y mercado sin decirlo. `LM.21` por
+# segunda vez el mismo día.
+# 🐛 **UN HUECO DE LA RÚBRICA, ENCONTRADO Y NO CORREGIDO A PROPÓSITO.** El juez aprobó
+# `C1-USD` razonando que `trm` *«equivale a `tasa` para el dólar»*; la rúbrica solo lo
+# prohíbe para euro y canadiense, así que la lectura se sostiene. 🚨 **No se apretó, y el
+# motivo pesa más que el hueco:** apretarla bajaría a A de 10/11 a 9/11 **después de ver
+# su resultado**, y una línea base más baja **le facilita el trabajo a B**, que es el
+# esquema en juicio. **Un hueco que trata igual a los dos no sesga el duelo; corregirlo a
+# mitad, sí.** B se califica con la misma lectura.
+# 💰 **El juez costó $0,125 y todo el duelo $0,069: medir salió casi el DOBLE que la
+# cosa medida.** No es un error — es lo normal cuando la tarea es barata, y explica por
+# qué tanta gente no mide.
+# 🔮 **Y quedó una predicción sellada ANTES de construir B:** si el worker del dólar
+# lleva solo `tasa` y `convertir`, **no puede cometer el error de A** (mezclar fuentes)
+# **pero tampoco puede levantar la frontera de `C4`, porque no sabe que `trm` existe.**
+# Es **A.3 y A.4 en estado puro**: el aislamiento que lo hace bueno es el mismo que le
+# quita el contexto para avisar.
+# ➡️ **SIGUIENTE PASO CONCRETO — el BLOQUE A del nivel 8: las piezas.** Worker,
+# orquestador, el contrato entre capas y el aislamiento de contexto. Produce `worker.py`
+# y `orquestador.py` en su versión más tonta: **un worker, en serie.** 📌 Y la primera
+# decisión de diseño ya está nombrada arriba: **cuántas herramientas lleva cada worker.**
 
 ```
 Nombre: TEAPP  (Teaching English Application)

@@ -1,0 +1,37 @@
+{
+  "medido": "2026-08-20T14:19:24+00:00",
+  "contendiente": "A_una_capa",
+  "configuracion": {
+    "agente": "05b-proyecto/agente.py",
+    "modelo": "claude-haiku-4-5",
+    "herramientas": 6,
+    "max_vueltas": 12,
+    "memoria": "no aplica (el 5b no la tiene)",
+    "skills": "no aplica (el 5b no las tiene)",
+    "permisos": "concedidos automáticamente",
+    "tarea": "Tengo 1.000 dólares, 1.000 euros y 1.000 dólares canadienses. Dime cuánto es cada uno en pesos hoy, con la fuente y la fecha de cada cifra, y guárdame el reporte."
+  },
+  "corridas": [
+    {
+      "corrida": 1,
+      "segundos": 12.67,
+      "usd": 0.022819,
+      "respuesta": "**Resumen de tu dinero en pesos (20 de agosto de 2026):**\n\n- **1.000 USD = $3.053.480 COP** (TRM oficial, datos.gov.co)\n- **1.000 EUR = $3.610.380 COP** (Mercado, open.er-api.com)\n- **1.000 CAD = $2.241.559 COP** (Mercado, open.er-api.com)\n\n**Total: $8.905.419 COP**\n\nEl reporte está guardado en `conversion-usd-eur-cad-2026-08-20.txt`."
+    },
+    {
+      "corrida": 2,
+      "segundos": 10.0,
+      "usd": 0.023481,
+      "respuesta": "**Aquí está tu conversión a pesos hoy:**\n\n- **1.000 USD = $3.053.480 COP** (TRM oficial, 20 de agosto de 2026)\n- **1.000 EUR = $3.610.380 COP** (Mercado, 20 de agosto de 2026)\n- **1.000 CAD = $2.241.559 COP** (Mercado, 20 de agosto de 2026)\n\n**Total: $8.905.419 COP**\n\nEl reporte está guardado como `conversion_a_pesos_2026-08-20.txt` con todas las fuentes y fechas."
+    },
+    {
+      "corrida": 3,
+      "segundos": 11.11,
+      "usd": 0.023194,
+      "respuesta": "**Resumen de tu conversión a pesos hoy (20 de agosto de 2026):**\n\n- **1.000 USD = $3.053.480 COP** (TRM oficial - datos.gov.co)\n- **1.000 EUR = $3.610.380 COP** (Mercado - open.er-api.com)\n- **1.000 CAD = $2.241.559 COP** (Mercado - open.er-api.com)\n\n**Total: $8.905.419 COP**\n\nEl reporte se guardó como `conversion_pesos_20ago2026.txt` con todos los detalles de fuentes y fechas."
+    }
+  ],
+  "segundos_mediana": 11.11,
+  "usd_mediana": 0.023194,
+  "usd_total_gastado": 0.069494
+}
