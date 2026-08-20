@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-20 (sesión 93 — NIVEL 8: B.2 hecha y MEDIDA; el fan-out compró 51 % de reloj y cero factura, y la aritmética cerró en los dos lados)
+**Última actualización:** 2026-08-20 (sesión 93 — NIVEL 8: B.2 hecha y MEDIDA; el fan-out compró 51 % de reloj y cero factura, y la aritmética cerró en los dos lados. **B.3 arranca sellando su apuesta: la pista está escrita y las 3 preguntas, en blanco.**)
 
 ---
 
@@ -3616,12 +3616,33 @@
 # 📌 **Sin argumentos, `fan_out.py` corre las PRUEBAS, no la demo.** Lo que cuesta dinero
 # se pide con todas las letras.
 # ➡️ **SIGUIENTE PASO CONCRETO — B.3, el ROUTER.** Es la primera topología donde **el
-# camino DEPENDE de lo que se encuentre**, y por eso es la primera que **necesita de
-# verdad un orquestador**: B.1 descubrió que un orden fijo son tres líneas seguidas y
-# B.2 que un reparto fijo son diez. 🔑 **El modelo se paga por decidir, y hasta ahora no
-# ha habido nada que decidir.** 📌 Llega además con la pregunta que B.1 dejó abierta y
-# que el bloque B debe contestar antes de cerrar: **¿un pipeline de 3 agentes que en
-# realidad necesita 2 sigue siendo un pipeline de 3?**
+# camino DEPENDE de lo que se encuentre**, y por eso la primera que **necesita de verdad
+# un orquestador**: B.1 descubrió que un orden fijo son tres líneas seguidas y B.2 que un
+# reparto fijo son diez. 🔑 **El modelo se paga por decidir, y hasta ahora no ha habido
+# nada que decidir.**
+# 📄 **LA PISTA DE ATERRIZAJE YA ESTÁ ESCRITA:** `08-avanzado/README.md` →
+# *«⏭️ EL ARRANQUE DE B.3»*, hecha al cerrar la 93 y **sin una línea de código**. Lleva
+# la tabla de por qué B.3 se diferencia de las dos anteriores, lo que hereda, y lo que ya
+# NO hay que construir (el `reparto` como parámetro, los tres candados, el patrón de las
+# pruebas gratis).
+# 🎲 **PRIMERA COSA DE LA SESIÓN DE B.3: SELLAR LA APUESTA, y está EN BLANCO a
+# propósito.** Tres preguntas por escrito ANTES de teclear —(1) ¿un router necesita un
+# modelo o le basta un `if`, y dónde está la frontera?; (2) ¿cuánto cuesta la decisión de
+# enrutar frente a llamar a todos y descartar?; (3) ¿qué pasa cuando el router se
+# equivoca, y quién lo caza?—. 🔑 **Una predicción escrita después de ver el resultado no
+# es una predicción**: es el orden que funcionó en la 90.
+# ⚠️ **DEUDAS QUE B.3 HEREDA:** `D-B1.1`, `D-B1.2` y `D-B1.3` siguen **abiertas** (no
+# pagadas a sabiendas desde la 92). `D-B2.1` está **arreglada y con prueba, pero NO vista
+# morder en vivo** — en esta tarea el orquestador siempre da una vuelta.
+# ❓ **Y dos preguntas abiertas que el bloque B debe contestar ANTES de cerrar:** *¿un
+# pipeline de 3 agentes que en realidad necesita 2 sigue siendo un pipeline de 3?* (viene
+# de `D-B1.3`) y su gemela nueva, *¿un router que resulta ser un `if` sigue siendo una
+# topología?* — que se hereda porque **B.1 y B.2 ganaron esa apuesta las dos veces**.
+# 🚨 **Y el aviso que vale más de las dos últimas sesiones:** en B.1 y en B.2, **el
+# instrumento de medida escrito ESE MISMO DÍA resultó ser el ciego** (el verificador que
+# no vio la paráfrasis; la línea de tiempo que se pisaba). Las dos veces **no dio un dato
+# falso: dio SILENCIO**, y el silencio se lee como confirmación. 🔑 **En B.3, el primer
+# sospechoso de estar ciego es lo que se escriba para vigilar al router.**
 
 ```
 Nombre: TEAPP  (Teaching English Application)

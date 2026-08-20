@@ -866,6 +866,92 @@ escritas desde tres hilos. Los candados mordieron de verdad.
 
 ---
 
+#### ⏭️ EL ARRANQUE DE B.3 — escrito al cerrar la 93, **sin una línea de código**
+
+⚠️ **Aquí no hay lección de B.3, y es deliberado.** Esto es la pista de aterrizaje: qué
+pregunta abre, qué hereda y qué hay que sellar **antes** de construir — el mismo orden que
+funcionó en la 90, donde la apuesta se sellaba antes de teclear.
+
+---
+
+##### 🔑 Por qué B.3 es distinta de las dos anteriores
+
+| | quién decide el camino | ¿hace falta un orquestador? |
+|---|---|---|
+| **B.1 pipeline** | está fijo de antemano | **no** — un orden fijo son tres líneas seguidas |
+| **B.2 fan-out** | está fijo de antemano | **no** — un reparto fijo son diez líneas |
+| **B.3 router** | **depende de lo que llegue** | **sí, y es la primera vez** |
+
+> ⭐ **El modelo se paga por decidir. En B.1 y B.2 no había nada que decidir — y por eso
+> ninguna de las dos necesitaba un agente dirigiendo.** B.3 es la primera topología donde
+> el camino no se puede escribir por adelantado, y por tanto la primera que **compra algo
+> con el dinero que gasta arriba.**
+
+📌 Esa frase salió de B.1 y B.2 **midiendo**, no del temario. Es la que hay que poner a
+prueba en B.3: si un router también resultara ser un `if`, el bloque B tendría que decirlo.
+
+---
+
+##### 🎲 LA APUESTA — se sella ANTES de construir, y todavía está SIN RESPONDER
+
+Estas tres se contestan **al empezar la sesión de B.3**, por escrito y antes de teclear.
+Se dejan aquí en blanco a propósito: una predicción escrita después de ver el resultado no
+es una predicción.
+
+1. **¿Un router necesita un modelo, o le basta un `if` sobre el texto de entrada?**
+   Y si le basta un `if` en el caso fácil, **¿dónde está la frontera** en la que deja de
+   bastar?
+2. **¿Cuánto cuesta la decisión de enrutar?** El orquestador de A.2 gastó ~$0,0047 en dos
+   llamadas solo para repartir y juntar. Un router hace *menos* trabajo que eso.
+   **¿Sale a cuenta pagar por elegir, comparado con llamar a todos y descartar?**
+3. **¿Qué pasa cuando el router se equivoca?** Un worker que se equivoca trae un número
+   malo y una rúbrica lo caza. **Un router que se equivoca manda el trabajo entero al
+   especialista equivocado, que lo hace impecablemente.** ¿Se detecta? ¿Con qué?
+
+---
+
+##### 🧾 Lo que B.3 hereda, y su estado real
+
+**Deudas abiertas, anotadas y NO pagadas a sabiendas:**
+
+| # | Qué es | Estado |
+|---|---|---|
+| `D-B1.1` | el freno del verificador no caza una paráfrasis (`Fecha del informe:`) | **abierta** |
+| `D-B1.2` | el defecto de la frontera es **intermitente: 1 de 2 corridas** | **abierta** |
+| `D-B1.3` | el archivista **reteclea** el borrador en vez de guardarlo (345 tokens) | **abierta** |
+| `D-B2.1` | la línea de tiempo se pisaba entre vueltas | ✅ arreglada + prueba nº 8, ⚠️ **no vista morder en vivo** (`LM.13`) |
+
+**Preguntas abiertas que el bloque B debe contestar antes de cerrar:**
+
+- ⚠️ **¿Un pipeline de 3 agentes que en realidad necesita 2 sigue siendo un pipeline de
+  3?** (viene de `D-B1.3`: quitada la verificación, al archivista no le queda nada que
+  decidir).
+- 🆕 **¿Un router que resulta ser un `if` sigue siendo una topología?** Es la misma
+  pregunta con otro traje, y B.3 la hereda porque B.1 y B.2 la ganaron las dos veces.
+
+**Lo que B.3 ya se encuentra hecho y no tiene que construir:**
+
+- ✅ `reparto` es **un parámetro** del bucle del orquestador. Una topología nueva **no
+  toca `orquestador.py`**: se escribe aparte y se pasa por la puerta.
+- ✅ Los tres candados de lo compartido (registro, contabilidad, pantalla) ya están, y
+  **en serie no cuestan nada**.
+- ✅ El patrón de las pruebas gratis: workers falsos que duermen, registro desviado a un
+  temporal, y `--test` como comportamiento por defecto del archivo.
+
+---
+
+##### 📌 La regla que se repitió dos sesiones seguidas, y conviene tenerla delante
+
+En B.1 y en B.2, **el instrumento de medida escrito ese mismo día resultó ser el ciego**:
+el verificador que no vio la paráfrasis (`D-B1.1`) y la línea de tiempo que se pisaba
+(`D-B2.1`). Las dos veces el defecto **no dio un dato falso: dio silencio**, y el silencio
+se lee como confirmación.
+
+🔑 **En B.3, el primer sospechoso de estar ciego es lo que se escriba para vigilar al
+router.**
+
+---
+
 ### 🛡️ BLOQUE C — El harness a dos capas
 
 Sin esto un orquestador es una máquina de quemar dinero: cada worker multiplica las
