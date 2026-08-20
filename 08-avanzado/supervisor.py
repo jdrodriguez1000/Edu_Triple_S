@@ -461,16 +461,10 @@ def experimento_2():
 
     # --- Brazo B: reintento INFORMADO. El encargo + el motivo. -------------
     #
-    # ⚠️ El texto del rechazo se escribe aquí y es parte del experimento, no
+    # ⚠️ El texto del rechazo (ver `con_aviso`) es parte del experimento, no
     #    decoración: dice QUÉ estuvo mal sin decir qué hacer. Si le dijera «usa
     #    euros», el reintento no mediría nada — le habría dado la respuesta.
-    encargo_informado = (
-        f"{cebo['encargo']}\n\n"
-        f"AVISO: un supervisor rechazó tu respuesta anterior. Lo que el usuario "
-        f"pidió en realidad fue: «{cebo['mensaje_original']}». "
-        f"Si este encargo no corresponde a lo que pidió el usuario, dilo "
-        f"claramente en vez de responderlo."
-    )
+    encargo_informado = con_aviso(cebo["encargo"], cebo["mensaje_original"])
     print("\n  ── B) REINTENTO INFORMADO: el encargo + qué estuvo mal ──")
     print(f"     (se le dice QUÉ falló, NO qué hacer)\n")
     b = worker.correr_worker(encargo_informado, nombre=DESTINO_USADO)
@@ -588,6 +582,48 @@ def _pruebas():
     check("13. un motivo vacío no revienta la pista",
           habla_del_enrutado(None) is False and habla_del_enrutado("") is False)
 
+    # 14) 🔑 EL SOSPECHOSO DE ESTAR CIEGO, VIGILADO POR UNA PRUEBA. El brazo A
+    #     del experimento 4 solo mide algo si su aviso es EL MISMO que el del
+    #     experimento 3. Esta prueba afirma que lo único que cambia entre dos
+    #     avisos es el mensaje original: todo lo demás, letra por letra, igual.
+    uno = con_aviso("ENC", "AAA")
+    dos = con_aviso("ENC", "BBB")
+    check("14. el aviso es idéntico salvo el mensaje original",
+          uno.replace("AAA", "BBB") == dos and uno != dos)
+
+    # 15) El encargo del brazo A no es una copia parecida del cebo: es EL MISMO
+    #     string. Si alguien reescribe uno de los dos, esto se pone rojo.
+    check("15. el brazo A usa el MISMO encargo que el cebo",
+          ENCARGO_BIEN_ENRUTADO == ENCARGO_MAL)
+
+    # 16) El veredicto sobre un trabajo REAL — el del cebo grabado, no uno
+    #     inventado por mí. Es la misma regla del cebo: los datos los produce
+    #     una corrida de verdad.
+    guardado = json.loads(CEBO.read_text(encoding="utf-8")) if CEBO.exists() else None
+    if guardado:
+        check("16. el trabajo real del cebo se juzga como `trabajo`",
+              veredicto_negativa(guardado["resultado"]) == "trabajo",
+              f"dio: {veredicto_negativa(guardado['resultado'])}")
+    else:
+        check("16. (sin cebo grabado, se salta)", True)
+
+    # 17) Una negativa: cero herramientas y el contrato entero sin llenar.
+    negativa = {"datos": {c: None for c in worker.CAMPOS_DIVISA},
+                "faltan": list(worker.CAMPOS_DIVISA), "herramientas": []}
+    check("17. una negativa sin herramientas se juzga `negativa_gratis`",
+          veredicto_negativa(negativa) == "negativa_gratis")
+
+    # 18) 🚨 LA PRUEBA QUE DEFIENDE EL PUNTO: un caso a medias —llamó a `tasa` y
+    #     luego se negó— NO se cuela en ninguna de las dos casillas limpias.
+    #     Esta prueba afirma un LÍMITE, igual que la nº 5. Si un día se pone
+    #     roja sola, alguien colapsó el juez a un booleano otra vez.
+    medias = {"datos": {c: None for c in worker.CAMPOS_DIVISA},
+              "faltan": list(worker.CAMPOS_DIVISA), "herramientas": ["tasa"]}
+    medias["datos"]["tasa"] = 4200.0
+    check("18. un caso a medias cae en `mixto`, no se fuerza (límite)",
+          veredicto_negativa(medias) == "mixto",
+          f"dio: {veredicto_negativa(medias)}")
+
     print()
     if fallos:
         print(f"  ❌ {len(fallos)} prueba(s) en rojo: {', '.join(fallos)}")
@@ -686,6 +722,28 @@ SISTEMA_DIVISA_CON_DERECHO_A_NEGARSE = (
 )
 
 
+# 🔑 EL AVISO VIVE EN UNA FUNCIÓN, Y NO ES POR ELEGANCIA.
+#    Estaba COPIADO palabra por palabra en el experimento 2 y en el 3, y el 4
+#    necesita exactamente el mismo texto. Si una de las copias se retocara, dos
+#    experimentos que se comparan entre sí dejarían de compararse — sin dar un
+#    error, que es la forma cara de fallar. Es el bicho de la sesión 33 de TEAPP:
+#    la misma cosa escrita en dos sitios.
+#    ⭐ Y para el experimento 4 pesa más: si yo reescribiera el aviso "parecido"
+#      para el brazo A, compararía dos redacciones MÍAS y lo llamaría medición.
+#      Con una función, que sea el mismo texto deja de ser una promesa de la
+#      documentación y pasa a ser una propiedad del programa. La prueba 14 la
+#      vigila.
+def con_aviso(encargo, mensaje_original):
+    """El encargo, más el aviso de rechazo y el mensaje original del usuario."""
+    return (
+        f"{encargo}\n\n"
+        f"AVISO: un supervisor rechazó tu respuesta anterior. Lo que el usuario "
+        f"pidió en realidad fue: «{mensaje_original}». "
+        f"Si este encargo no corresponde a lo que pidió el usuario, dilo "
+        f"claramente en vez de responderlo."
+    )
+
+
 def experimento_3():
     """El mismo encargo informado, el mismo worker, OTRO system prompt.
 
@@ -695,13 +753,7 @@ def experimento_3():
     if cebo is None:
         return 1
 
-    encargo_informado = (
-        f"{cebo['encargo']}\n\n"
-        f"AVISO: un supervisor rechazó tu respuesta anterior. Lo que el usuario "
-        f"pidió en realidad fue: «{cebo['mensaje_original']}». "
-        f"Si este encargo no corresponde a lo que pidió el usuario, dilo "
-        f"claramente en vez de responderlo."
-    )
+    encargo_informado = con_aviso(cebo["encargo"], cebo["mensaje_original"])
 
     print("\n" + "=" * 72)
     print("  EXPERIMENTO 3 — ¿dónde tiene que vivir el permiso de negarse?")
@@ -723,11 +775,184 @@ def experimento_3():
     return 0
 
 
+# ---------------------------------------------------------------------------
+# 7c) EXPERIMENTO 4 — PAGA `D-B4.1`: ¿el freno DISCRIMINA o es un cascarrabias?
+# ---------------------------------------------------------------------------
+#
+# 🚨 LA DEUDA, EN UNA FRASE: el «derecho a negarse» del experimento 3 se vio
+#    morder EN EL ÚNICO CASO QUE LO JUSTIFICA — un encargo equivocado. Un freno
+#    probado solo donde tenía razón no está medido: está ESTRENADO (`LM.13`).
+#
+# La pregunta que falta es la CONTRARIA, y es la que decide si el hallazgo de
+# la sesión 94 se sostiene: **¿devuelve también trabajo que SÍ era suyo?**
+#
+#     DOS BRAZOS, Y NO ES POR ABUNDANCIA
+#
+# El encargo del experimento 3 traía DOS cosas pegadas —un encargo equivocado
+# **y** un aviso de rechazo— y no se sabe cuál de las dos lo hizo negarse.
+# Separarlas cuesta una corrida más:
+#
+#   BRAZO A — el gemelo EXACTO del experimento 3. Mismo encargo (el MISMO
+#     string, ver abajo), mismo aviso (la MISMA función), mismo system prompt.
+#     Cambia UNA cosa: el mensaje original ahora sí es de dólares.
+#     🔑 Mide si se niega por VERIFICAR o por SUGESTIÓN. Es el caso duro: se le
+#        dice «un supervisor te rechazó» cuando el trabajo estaba bien.
+#
+#   BRAZO B — el tráfico normal. El encargo de la demo de A.1, SIN aviso y SIN
+#     mensaje original. Lo único distinto del A.1 de siempre: el system prompt.
+#     🔑 Es literalmente lo que pide la deuda, y es el único con línea base.
+#
+# ⚠️ EL SOSPECHOSO DE ESTAR CIEGO, nombrado ANTES de escribir esto y sellado en
+#    el README: **el AVISO del brazo A**, porque lo escribo yo. Si es más
+#    sugestivo de lo que un supervisor real escribiría, mide mi redacción y no
+#    el freno — el bicho del cebo otra vez. Lo salva a medias que NO se redacta
+#    de nuevo: sale de `con_aviso`, la misma función del experimento 3, y la
+#    prueba 14 lo vigila.
+
+# ⭐ ES EL MISMO STRING, Y AHÍ ESTÁ TODO EL EXPERIMENTO. No una copia parecida:
+#    el mismo objeto. Lo que convierte este encargo en correcto no es una
+#    palabra suya — es que el mensaje original de abajo habla de dólares.
+#    Si un día alguien "mejora" el texto del cebo, este brazo lo hereda solo.
+ENCARGO_BIEN_ENRUTADO = ENCARGO_MAL
+
+# La única variable del brazo A: Estados Unidos donde el cebo decía Alemania.
+MENSAJE_ORIGINAL_BIEN = ("Me llegó una factura de un proveedor de Estados Unidos "
+                         "por 400. ¿Cuánto es en pesos?")
+
+# El brazo B es la demo de A.1, palabra por palabra. Su línea base ya está
+# pagada y grabada en `registro_workers_*.jsonl`.
+ENCARGO_NORMAL = "Convierte 1000 USD a pesos colombianos."
+
+# 🎲 Lo apostado, ANTES de correr, copiado del README ya commiteado. Vive aquí
+#    para que la pantalla compare sola y yo no pueda "recordar" otra cifra.
+#    📌 Es la lección de la sesión 94: estimé por sensación un número que la
+#       pieza escribe sola, e inflé la entrada al doble.
+APOSTADO = {"a": 0.0078, "b": 0.0073}
+
+
+def veredicto_negativa(res):
+    """¿Trabajó o se negó? Y sale del HARNESS, no de la prosa.
+
+    🚨 AQUÍ NO HAY UN BOOLEANO, Y ES DELIBERADO: el fallo de la sesión 94 fue
+       escribir uno dentro de la función que juzgaba mi propia apuesta. Dos
+       resultados por motivos opuestos caían en la misma casilla.
+
+    Las tres señales son EXACTAS y ya pasaron por este harness — no se le
+    vuelven a preguntar al modelo:
+      · `herramientas` — qué pidió de verdad, en orden;
+      · los 6 campos del contrato — quien trabajó los llena todos;
+      · y la tercera casilla, `mixto`, que existe para NO forzar los raros
+        dentro de una de las dos limpias.
+
+    ⚠️ LO QUE ESTA FUNCIÓN NO JUZGA, Y SE DICE EN VOZ ALTA: si el TEXTO es una
+       negativa. Eso necesita ojos, y disfrazarlo de un `in` sobre la prosa
+       sería la sesión 94 otra vez con otra ropa. Por eso el experimento
+       imprime el texto ENTERO. Es la lección de B.4: la parte del juicio que
+       se puede verificar es la que no necesita un modelo.
+    """
+    datos = res.get("datos") or {}
+    llenos = [c for c in worker.CAMPOS_DIVISA if datos.get(c) is not None]
+    usadas = res.get("herramientas") or []
+
+    if usadas and len(llenos) == len(worker.CAMPOS_DIVISA):
+        return "trabajo"
+    if not usadas and not llenos:
+        return "negativa_gratis"
+    return "mixto"
+
+
+def _brazo(titulo, encargo, res):
+    """Imprime un brazo: el veredicto del harness y el texto para tus ojos."""
+    v = veredicto_negativa(res)
+    icono = {"trabajo": "🔨", "negativa_gratis": "🛑", "mixto": "❓"}[v]
+    print(f"\n  ── {titulo} ──")
+    print(f"     veredicto (del harness): {icono} {v}")
+    print(f"     herramientas: {', '.join(res['herramientas']) or 'NINGUNA'}"
+          f"   ·   vueltas: {res['vueltas']}   ·   ${res['coste_usd']:.6f}")
+    if res["faltan"]:
+        print(f"     contrato sin llenar: {', '.join(res['faltan'])}")
+    print("     texto ENTERO (esto lo juzgan tus ojos, no un `in`):")
+    print(f"       «{res['texto']}»")
+    return v
+
+
+def experimento_4():
+    """Paga `D-B4.1`. Dos corridas de worker: ~$0,0151.
+
+    💰 Cuesta dinero. Y el modo de leerlo está escrito antes de correrlo:
+       si los DOS trabajan, el freno discrimina y el hallazgo de la 94 se
+       sostiene. Si ALGUNO se niega, el freno es un cascarrabias.
+    """
+    print("\n" + "=" * 72)
+    print("  EXPERIMENTO 4 — ¿el derecho a negarse DISCRIMINA, o es un cascarrabias?")
+    print("=" * 72)
+    print("\n  Paga la deuda `D-B4.1`. Los dos brazos llevan el system prompt")
+    print("  CON derecho a negarse, y los dos reciben trabajo que SÍ es suyo.")
+
+    # --- BRAZO A: el gemelo del exp. 3, con el original ya correcto --------
+    encargo_a = con_aviso(ENCARGO_BIEN_ENRUTADO, MENSAJE_ORIGINAL_BIEN)
+    print("\n" + "-" * 72)
+    print("  BRAZO A — el gemelo del experimento 3. Se le dice que lo rechazaron,")
+    print("            y el encargo AHORA SÍ corresponde.")
+    print(f"    original: «{MENSAJE_ORIGINAL_BIEN}»")
+    print(f"    encargo : «{ENCARGO_BIEN_ENRUTADO}»  ← el MISMO string del cebo")
+    a = worker.correr_worker(encargo_a, nombre=DESTINO_USADO,
+                             sistema=SISTEMA_DIVISA_CON_DERECHO_A_NEGARSE)
+
+    # --- BRAZO B: tráfico normal, sin aviso -------------------------------
+    print("\n" + "-" * 72)
+    print("  BRAZO B — tráfico normal. Sin aviso, sin mensaje original.")
+    print("            Lo único distinto de la demo de A.1: el system prompt.")
+    print(f"    encargo : «{ENCARGO_NORMAL}»")
+    b = worker.correr_worker(ENCARGO_NORMAL, nombre=DESTINO_USADO,
+                             sistema=SISTEMA_DIVISA_CON_DERECHO_A_NEGARSE)
+
+    # --- Lectura -----------------------------------------------------------
+    print("\n" + "=" * 72)
+    print("  LO QUE SALIÓ")
+    print("=" * 72)
+    va = _brazo("BRAZO A (con aviso de rechazo)", encargo_a, a)
+    vb = _brazo("BRAZO B (tráfico normal)", ENCARGO_NORMAL, b)
+
+    print("\n  ── LA APUESTA CONTRA LO MEDIDO ──")
+    for cual, res, v in (("a", a, va), ("b", b, vb)):
+        real, pred = res["coste_usd"], APOSTADO[cual]
+        desvio = (real - pred) / pred * 100
+        print(f"     brazo {cual.upper()}: apostado ${pred:.4f} · medido "
+              f"${real:.6f}  ({desvio:+.0f} %)   → {v}")
+
+    total = a["coste_usd"] + b["coste_usd"]
+
+    print("\n  ── QUÉ DECIDE LA DEUDA ──")
+    if va == "trabajo" and vb == "trabajo":
+        print("     ✅ LOS DOS TRABAJARON → el freno DISCRIMINA.")
+        print("        El hallazgo de la sesión 94 se sostiene: el derecho a")
+        print("        negarse no vuelve quisquilloso al worker.")
+    elif "negativa_gratis" in (va, vb):
+        print("     🚨 ALGUNO SE NEGÓ ANTE TRABAJO SUYO → es un CASCARRABIAS.")
+        print("        El hallazgo de la 94 se MATIZA: el freno funciona, pero")
+        print("        cobra un peaje en el tráfico bueno. Y mira CUÁL se negó:")
+        print("        si fue solo el A, el culpable es el aviso, no el freno.")
+    else:
+        print("     ❓ HAY UN `mixto`. No se fuerza a ninguna casilla limpia:")
+        print("        se lee el texto entero de arriba y se decide a mano.")
+
+    print(f"\n  gasto del experimento 4: ${total:.6f}")
+    anotar("exp4_fin", veredicto_a=va, veredicto_b=vb,
+           texto_a=a["texto"], texto_b=b["texto"],
+           herramientas_a=a["herramientas"], herramientas_b=b["herramientas"],
+           coste_a=a["coste_usd"], coste_b=b["coste_usd"],
+           gasto_usd=round(total, 6))
+    return 0
+
+
 def main(argv):
     if "--releer" in argv:
         return releer()
     if "--exp3" in argv:
         return experimento_3()
+    if "--exp4" in argv:
+        return experimento_4()
     if "--cebo" in argv:
         crear_cebo()
         return 0

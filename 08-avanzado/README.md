@@ -1529,6 +1529,88 @@ aquí primero.
 
 ---
 
+###### ✅ `D-B4.1` PAGADA — lo que salió, el 2026-08-21. **$0,015387**
+
+**LOS DOS BRAZOS TRABAJARON.** `tasa, convertir` · 3 vueltas · contrato completo, los dos.
+
+| brazo | veredicto | herramientas | apostado | medido | desvío |
+|---|---|---|---|---|---|
+| **A** — con el aviso mentiroso | 🔨 `trabajo` | `tasa, convertir` | $0,0078 | **$0,007960** | **+2 %** |
+| **B** — tráfico normal | 🔨 `trabajo` | `tasa, convertir` | $0,0073 | **$0,007427** | **+2 %** |
+
+⭐ **LA DEUDA QUEDA SALDADA: el freno DISCRIMINA.** El worker con derecho a negarse se
+niega cuando el encargo no le corresponde y **trabaja cuando sí** — incluso cuando se le
+dice que un supervisor acaba de rechazarlo. **No es un cascarrabias, y el hallazgo de la
+sesión 94 se sostiene.** El brazo A además mata el confundido: no se negó por sugestión,
+porque con el mismo aviso y el encargo correcto **no se negó**.
+
+📌 **Y la apuesta acertó los tres puntos, pero el 3 por la razón EQUIVOCADA.** Predije que
+A costaría más *«porque probablemente conteste mencionando el aviso»*. **No lo mencionó ni
+una vez.** El sobrecosto vino entero de los tokens de **entrada** (6520 contra 6167), no de
+la respuesta. 🔑 Es la sesión 84 otra vez: **acertar la casilla no es haber acertado el
+mecanismo**, y un número que sale bien tapa un porqué que salió mal.
+
+---
+
+###### 🚨 LO QUE NADIE FUE A BUSCAR — y es el hallazgo del día
+
+> **Importancia: alta · Urgencia: no bloqueante.** No rompe nada hoy **porque el contrato de
+> A.3 lo está tapando** — y ese es justamente el punto.
+
+**La frase del derecho a negarse le hizo PERDER LA FUENTE a la prosa.** Los dos textos de
+hoy dicen *«según la tasa de mercado de 20 de agosto de 2026»*, **sin `open.er-api.com`**.
+El registro entero, leído después:
+
+| system prompt | corridas | ¿la prosa conserva la fuente? |
+|---|---|---|
+| `SISTEMA_DIVISA` (el de siempre) | 5 | **5 de 5 sí** |
+| `SISTEMA_DIVISA_CON_DERECHO_A_NEGARSE` | 2 | **0 de 2** |
+
+🔑 **El mecanismo es el de B.4 al revés.** El system prompt viejo dice *«Di siempre de dónde
+salió la cifra»*; la frase nueva **compite con esa y le gana**. En B.4 se midió que una
+instrucción del ENCARGO pierde contra el system prompt. Aquí se ve la otra mitad: **una
+frase añadida al system prompt desplaza a la que ya estaba dentro.** Un freno no se suma
+gratis — **empuja**. Y nadie lo pidió, y nadie lo habría notado.
+
+⭐ **PERO LO QUE DE VERDAD PASÓ HOY ES ESTO: EL CONTRATO DE A.3 SE VIO MORDER.** `fuente`
+llegó completa en las **2 de 2**, porque no sale de lo que el modelo redacta — sale de lo
+que la herramienta devolvió y **el harness guardó**. Es el defecto de A.2 reapareciendo
+**solo, sin que nadie lo provocara**, y el arreglo aguantándolo.
+🔑 Por `LM.13`, un freno que no has visto morder es una nota. **Este dejó de ser una nota
+hoy, y de rebote: lo destapó un experimento que iba a otra cosa.**
+
+⚠️ **NO ESTÁ MEDIDO, y se dice antes de que suene a dato:** son **2 corridas contra 5**, y
+las 2 llevan el system prompt nuevo. El reparto es limpio pero pequeño.
+
+**`D-B4.2` ABIERTA (~$0,007):** una corrida con el system prompt nuevo **añadiéndole** el
+énfasis de la fuente. Si la recupera, la causa era **el desplazamiento**; si no, es otra
+cosa. Se deja abierta a sabiendas: la deuda del día ya está pagada, el contrato tapa el
+agujero, y **el registro queda escrito, así que el rastro no se enfría.**
+
+---
+
+###### 🧾 Lo que costó, y lo que quedó vigilando
+
+| pieza | coste |
+|---|---|
+| `experimento_4()` — dos brazos | **$0,015387** |
+| `veredicto_negativa()` — 3 casillas, del harness | — |
+| **5 pruebas nuevas** (14-18), suite de 13 → **18** | **$0,00** |
+| `con_aviso()` — el aviso, que estaba **COPIADO** en el exp. 2 y el 3 | **$0,00** |
+
+📌 **`con_aviso` no es limpieza cosmética.** El aviso estaba escrito **dos veces, palabra por
+palabra**. El brazo A necesita EXACTAMENTE ese texto: si lo hubiera reescrito «parecido»,
+habría comparado **dos redacciones mías** y lo habría llamado medición — el bicho del cebo.
+Con una función, que sea el mismo texto **deja de ser una promesa de la documentación y pasa
+a ser una propiedad del programa**, y la prueba 14 la vigila.
+
+📌 **La prueba 18 afirma un LÍMITE**, como la 5: un caso a medias —llamó a `tasa` y luego se
+negó— **cae en `mixto` y no se fuerza** a ninguna casilla limpia. Si un día se pone roja
+sola, alguien colapsó el juez a un booleano otra vez.
+
+
+---
+
 #### ⏭️ EL ARRANQUE DE B.5 — escrito al cerrar la 94, **sin una línea de código**
 
 ⚠️ **Aquí no hay lección de B.5, y es deliberado.** Esto es la pista de aterrizaje: qué
@@ -1586,10 +1668,12 @@ commitearla**: una apuesta en un archivo sin commitear se puede retocar sin deja
 | `D-B2.1` | la línea de tiempo se pisaba entre vueltas | ✅ arreglada + prueba, ⚠️ **no vista morder** |
 | `D-B3.1` | la normalización de la salida del router | ⚠️ **no vista morder** (8 de 8 limpios) |
 | `D-B3.2` | la etiqueta de oro de `n5-a`, marcada discutible | **sin resolver** (la corrida sugiere `cad`) |
-| `D-B4.1` | el «derecho a negarse» **visto morder una sola vez** | **abierta — y es la que conviene pagar primero** |
+| `D-B4.1` | el «derecho a negarse» **visto morder una sola vez** | ✅ **PAGADA** (sesión 95): el freno **discrimina** |
+| `D-B4.2` | la frase del derecho a negarse **le quita la fuente a la prosa** (0 de 2 contra 5 de 5) | **abierta** — el contrato la tapa, ~$0,007 |
 
-> 💰 **`D-B4.1` cuesta UNA corrida (~$0,007) y convierte el hallazgo del día de «visto una
-> vez» a «medido».** La pregunta es si un worker con la frase del derecho a negarse se
+> ✅ **PAGADA en la sesión 95, y costó DOS corridas ($0,015387), no una.** El segundo brazo
+> se añadió al ver que el encargo del experimento 3 traía dos cosas pegadas. Salió que el
+> freno **discrimina**. 🔑 Y de rebote destapó `D-B4.2`. La pregunta original decía: La pregunta es si un worker con la frase del derecho a negarse se
 > vuelve **quisquilloso** y devuelve trabajo que sí era suyo. Un freno visto morder solo en
 > el caso que lo justifica no está medido: **está estrenado** (`LM.13`).
 > → Se corre pasándole al worker `usd` un encargo **correcto** con el system prompt de
