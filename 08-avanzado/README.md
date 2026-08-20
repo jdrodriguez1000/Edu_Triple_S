@@ -892,11 +892,15 @@ prueba en B.3: si un router también resultara ser un `if`, el bloque B tendría
 
 ---
 
-##### 🎲 LA APUESTA — se sella ANTES de construir, y todavía está SIN RESPONDER
+##### 🎲 LA APUESTA — ✅ SELLADA el 2026-08-20 (sesión 94), antes de la primera línea de código
 
-Estas tres se contestan **al empezar la sesión de B.3**, por escrito y antes de teclear.
-Se dejan aquí en blanco a propósito: una predicción escrita después de ver el resultado no
-es una predicción.
+Las tres se contestaron **al empezar la sesión de B.3**, por escrito y antes de teclear.
+Estaban en blanco a propósito: una predicción escrita después de ver el resultado no es una
+predicción.
+
+⚠️ **Nadie edita este bloque cuando lleguen los resultados.** Lo que salga se escribe
+**debajo**, en su propio apartado, y se compara. Una apuesta que se retoca deja de ser una
+apuesta.
 
 1. **¿Un router necesita un modelo, o le basta un `if` sobre el texto de entrada?**
    Y si le basta un `if` en el caso fácil, **¿dónde está la frontera** en la que deja de
@@ -907,6 +911,101 @@ es una predicción.
 3. **¿Qué pasa cuando el router se equivoca?** Un worker que se equivoca trae un número
    malo y una rúbrica lo caza. **Un router que se equivoca manda el trabajo entero al
    especialista equivocado, que lo hace impecablemente.** ¿Se detecta? ¿Con qué?
+
+---
+
+###### 🅰️ APUESTA 1 — ¿modelo o `if`?
+
+| quién | apuesta |
+|---|---|
+| **estudiante** | **le basta un `if`** |
+| **esta terminal** | **lo mismo, en esta tarea** — y la mitad que importa es *dónde deja de bastar* |
+
+> 🔑 **LA FRONTERA APOSTADA: un `if` basta mientras la clave de enrutado se pueda EXTRAER
+> del texto. Deja de bastar cuando hay que INFERIRLA.**
+
+| lo que llega | ¿gana el `if`? | por qué |
+|---|---|---|
+| *"convierte 100 dólares"* | ✅ sí | la palabra está ahí, literal |
+| *"convierte 100 USD"* | ✅ sí | sinónimo → **la lista se alarga, la idea no cambia** |
+| *"cuánto es la factura de Alemania"* | ✅ sí, con trabajo | tabla país→moneda: sigue siendo enumerar |
+| *"pásalo a la moneda del cliente"* | ❌ **no** | **no hay nada que extraer** |
+
+📌 **La frontera no es cuántos destinos hay.** Se puede enrutar a cincuenta especialistas
+con un `dict` y una palabra clave. La cruza que la respuesta deje de estar *escrita* en la
+entrada.
+
+⚠️ **Y el veneno, apostado el mismo día:** un `if` **no falla a gritos**. Cuando nada
+coincide cae al `else`, y el especialista equivocado hace el trabajo **impecablemente**.
+🔑 **Las preguntas 1 y 3 son la misma vista desde dos lados:** elegir el `if` no es elegir
+"más simple", es elegir **un modo de fallo silencioso** en vez de uno caro (`LM.15`).
+
+---
+
+###### 🅱️ APUESTA 2 — ¿sale a cuenta pagar por elegir?
+
+**Primero el dato, MEDIDO del registro de B.2** — corrida paralela de las `19:21`, aislada
+de las otras tres corridas del mismo archivo:
+
+```
+ARRIBA (repartir + juntar)   2 llamadas   $0,005233
+ABAJO  (3 workers × 3)       9 llamadas   $0,021751
+                                          ─────────
+                                          $0,026984   ← cuadra con la cifra de B.2 ✓
+```
+
+**Un worker completo cuesta $0,00724.** (usd $0,007315 · cad $0,007236 · eur $0,007200 —
+casi idénticos, que es lo que debía pasar.)
+
+```
+enrutar          =  R + 1 worker  =  R + $0,00724
+llamar a los 3   =  3 workers     =      $0,02175
+
+sale a cuenta si   R < 2 × $0,00724  =  $0,0145
+```
+
+> 🔑 **EL UMBRAL SON DOS WORKERS.** La decisión puede costar hasta el doble de un
+> especialista y aún así ganar.
+
+| quién | apuesta |
+|---|---|
+| **estudiante** | **"hace más"** — el router no hace menos trabajo que repartir |
+| **esta terminal** | **R ≈ $0,00043**, unas 34× por debajo del umbral: en dinero, enrutar gana holgado |
+
+Razonamiento de la cifra: la llamada de enrutado **no lleva herramientas** y escribe **una
+palabra** (`"eur"`), no 217 tokens. La 1.ª llamada del orquestador fue 1003 entrada → 217
+salida = $0,002088; un router sería ~400 → ~5.
+
+📌 **Las dos apuestas pueden ganar a la vez y no es empate:** "la decisión cuesta poco" y
+"el router **como sistema** hace más que repartir, porque además carga el fallback" son
+compatibles. Lo que hay que mirar al medir es **cuál de las dos lecturas era**.
+
+🚨 **Y la cuenta destapó algo que la pista de aterrizaje NO tenía:** *"Tengo 1.000 dólares,
+1.000 euros y 1.000 canadienses"* necesita **los tres** workers, legítimamente. **Ahí no
+hay nada que enrutar.** Enrutar solo ahorra cuando la tarea necesita **uno de N**.
+→ **B.3 arranca escribiendo una tarea nueva.** No es un extra: sin eso el bloque no puede
+demostrar su propia tesis.
+
+---
+
+###### 🅲 APUESTA 3 — ¿quién caza al router equivocado?
+
+| quién | apuesta |
+|---|---|
+| **estudiante** | **"no sé"** — y se sella tal cual, porque es honesto |
+| **esta terminal** | **no lo caza nadie** |
+
+Razonamiento: **todo lo que hay vigilando mira la SALIDA** — la rúbrica, el verificador, el
+juez. Y la salida del especialista equivocado es impecable: bien escrita, con fuente y
+fecha, **correcta en su tema**. El error solo existe en la **relación entre la entrada y la
+decisión**, y ahí no hay nadie mirando.
+
+📌 **"No sé" es la apuesta más valiosa de las tres**, porque es la única que nadie ha
+medido: es la que paga el bloque.
+
+⚠️ Y el callejón al que lleva: para cazarlo hace falta un **segundo juicio sobre la
+decisión**, que es otro modelo. **¿Y quién vigila a ese?** B.3 tiene que contestarlo con
+**un artefacto que exista**, no con una nota.
 
 ---
 
