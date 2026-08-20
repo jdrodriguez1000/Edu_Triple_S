@@ -5475,3 +5475,36 @@ descenso que ahora no va a ocurrir.
 > justificación caducada y concluye que sobra. → Al renunciar a una decisión, **la renuncia
 > tiene que adoptar explícitamente lo que la decisión engendró**, o la limpieza siguiente se
 > lleva por delante justo los frenos que se querían conservar.
+
+---
+
+### LM.63 — Un fallo se resume por su consecuencia, y la consecuencia es la mitad que no sirve para arreglarlo
+
+Un especialista se negó, y dijo por qué: *«me mandaron dólares donde iban euros»*. Su jefe
+inmediato lo repitió **entero** y le añadió una coletilla: *«por lo tanto no tengo el dato»*.
+El jefe del jefe se quedó con **la coletilla** y tiró el motivo.
+
+🔑 **Ninguna capa mintió, y aun así arriba llegó una frase inútil.** *«No tiene el dato»* es
+verdad y no le dice a nadie qué arreglar. La **causa** es accionable; la **consecuencia** es
+lo que se parece a todas las demás consecuencias — y por eso es la que sobrevive a un
+resumen: resumir es quedarse con lo último y lo general.
+
+⭐ **Y la prueba de que eso hace daño llegó sola, en la misma corrida.** La otra rama falló
+por una caída de red real, que nadie inyectó. Dos fallos **de naturaleza opuesta** —uno
+culpa nuestra y arreglable, otro ajeno y transitorio— llegaron arriba con la misma frase:
+*«no se pudo, por falta de datos de conversión»*. **Indistinguibles.**
+
+🚨 **Y es peor que un booleano.** `correct: bool` mezcla causas contrarias en una casilla,
+pero al menos **se ve** que no explica nada. La prosa mezcla igual y **suena informativa**:
+tiene sujeto, verbo y motivo aparente. Un resumen educado es un booleano que aprendió a
+disimular.
+
+📌 **Lo que lo salva no es un prompt mejor pidiendo detalle, es la FORMA de lo que cruza.**
+En la misma corrida, el salto que iba por **contrato** (campos de un diccionario) conservó
+el motivo entero, y el que iba por **prosa** lo perdió — con el system prompt de esa capa
+ordenándole explícitamente conservarlo. La instrucción estaba; no bastó.
+
+**Dónde muerde fuera de aquí:** cualquier cadena donde un error suba por texto — capas de
+servicios, informes de agentes, alertas que un humano lee al final. Si arriba no puedes
+distinguir *«hay que arreglar algo»* de *«reintenta en un minuto»*, la cadena está
+funcionando **exactamente como se diseñó**, y esa es la mala noticia.

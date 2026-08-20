@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 95 — NIVEL 8: `D-B4.1` PAGADA y **B.5 HECHA**, las dos con la apuesta sellada y commiteada antes de teclear. ⭐ **El hallazgo: los tres «especialistas» de A.2 y A.3 nunca fueron tres especialistas — son el mismo worker con tres etiquetas**, y lo destapó un experimento que iba a otra cosa. El freno del derecho a negarse **discrimina** (no es un cascarrabias). Y por sexta sesión seguida **el instrumento ciego era lo escrito ese mismo día**: esta vez mentía A FAVOR, y lo cazaron los números, no el texto. $0,065053 en total. **B.5 cierra con la apuesta 2 en blanco → `D-B5.1`.**)
+**Última actualización:** 2026-08-20 (sesión 96 — NIVEL 8: **`D-B5.1` PAGADA**, con la apuesta sellada y commiteada antes de correr. **3 de 3 acertadas**, una con el mecanismo a medias. ⭐ **La queja muere en el salto 2→1 y conserva la CONSECUENCIA tirando la CAUSA.** Y el hallazgo lo regaló una caída de red REAL: un bug propio y un hipo de la red llegaron arriba **indistinguibles**. $0,016262. **El bloque B queda cerrado sin apuestas en blanco.**)
 
 ---
 
@@ -3792,31 +3792,27 @@
 # 🎯 **Marcador de las tres apuestas: 1 acertada, 1 sin responder, 1 FALLADA.** La fallada
 # es un buen dato: la contabilidad a tres capas cuadró al centavo en las dos corridas.
 #
-# ➡️ **SIGUIENTE PASO CONCRETO — decidir entre DOS caminos, y la decisión es suya.**
+# ✅ **`D-B5.1` PAGADA (sesión 96). EL BLOQUE B QUEDA CERRADO SIN APUESTAS EN BLANCO.**
+# $0,016262 · 9 llamadas · **3 de 3 acertadas**, una con el mecanismo solo a medias.
 #
-#   (a) **PAGAR `D-B5.1` (~$0,025)** y cerrar el bloque B sin agujeros. La apuesta 2
-#       —*«¿sobrevive una queja a dos capas?»*— **sigue en blanco**, y es la segunda vez
-#       en el bloque que el cazador se queda sin estrenar (`LM.13`).
-#       ✅ **Ya está lista para pagarse de una sola vez**: el arreglo se hizo sin volver a
-#          correr —`_torcer` tuerce el ENCARGO, no la etiqueta— y las pruebas 12-14 lo ven
-#          morder **gratis**. Solo falta la corrida.
-#   (b) **ARRANCAR EL BLOQUE C — el harness a dos capas** (C.1 traza anidada, C.2
-#       presupuesto repartido, C.3 permisos, C.4 fallos del worker, C.5 tope de recursión,
-#       C.6 modelo y esfuerzo por capa). 📌 **B.5 acaba de dejarle deberes a C.1**: la
-#       única razón por la que se cazó el instrumento ciego fue el gasto **separado por
-#       capa** en el registro. Eso es media C.1 ya construida y ya vista morder.
+# ➡️ **SIGUIENTE PASO CONCRETO — ARRANCAR EL BLOQUE C, el harness a dos capas.**
+#   C.1 traza anidada · C.2 presupuesto repartido · C.3 permisos · C.4 fallos del worker ·
+#   C.5 tope de recursión · C.6 modelo y esfuerzo por capa.
+# 📌 **Y ya tiene DOS deberes esperándolo, los dos medidos y no supuestos:**
+#   · **C.1** — el gasto separado por capa del registro ya está construido y ya se vio morder
+#     (fue lo que cazó el instrumento ciego de la 95).
+#   · **C.4** — `D-B5.3`: un fallo NUESTRO y uno de RED llegan arriba indistinguibles.
+#     Eso no es una hipótesis: pasó solo, en la corrida de hoy, sin que nadie lo montara.
 #
-# 🎲 **Y sea cual sea, LA PRIMERA COSA DE LA SESIÓN ES SELLAR LA APUESTA Y COMMITEARLA.**
-# Van tres sesiones con ese orden y las tres han cobrado.
-# 🚨 **EL AVISO QUE YA VA POR SEIS: el instrumento ciego ha sido, seis sesiones seguidas,
-# lo escrito ESE MISMO DÍA** — el verificador (B.1), la línea de tiempo (B.2), la etiqueta
-# de oro (B.3), el booleano del veredicto (B.4) y el enrutado forzado (B.5).
-# 🔑 **Y lo nuevo de la 95: esta vez el instrumento ciego mentía A FAVOR de mi apuesta.**
-# Un error que te contradice se revisa solo; **uno que te da la razón, no.** → En la
-# próxima pieza, el primer sitio donde mirar es **la medición que salió como esperabas**.
-# 📌 **Deudas vivas del bloque B:** `D-B1.1`, `D-B1.2`, `D-B1.3`, `D-B4.2`, `D-B5.1`,
-# `D-B5.2`. (`D-B2.1` y `D-B3.1` arregladas pero **no vistas morder**; `D-B3.2` sin
-# resolver; `D-B4.1` ✅ pagada hoy.)
+# 🎲 **LA PRIMERA COSA DE LA SESIÓN ES SELLAR LA APUESTA Y COMMITEARLA.** Van CUATRO
+# sesiones con ese orden y las cuatro han cobrado.
+# 🚨 **El aviso, que ya va por siete sesiones:** el instrumento ciego ha sido siempre lo
+# escrito ESE MISMO DÍA. Hoy el sospechoso se nombró antes —la debilidad del cebo— y **no
+# disparó, con prueba grabada**. Es la segunda vez que nombrarlo antes lo desarma.
+# 📌 **Y el vicio que NO se corrige: cuatro estimaciones de coste infladas seguidas.** Las
+# cuatro eran contables antes de correr. **Acertar la casilla no es acertar el mecanismo.**
+# 📌 **Deudas vivas del bloque B:** `D-B1.1`, `D-B1.2`, `D-B1.3`, `D-B4.2`, `D-B5.2`,
+# **`D-B5.3`** (nueva). (`D-B5.1` ✅ pagada hoy; `D-B4.1` ✅ pagada ayer.)
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -14489,6 +14485,45 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   como variables del módulo. 📌 Entraron por la puerta con sus valores por defecto intactos y
   **la prueba 1 vigila que sigan siendo `None`** — si uno cambiara, **A.2 dejaría de ser A.2
   sin dar un error** y sus números pagados dejarían de valer.
+
+- **La queja SÍ sobrevivió una capa y murió en la otra — y lo que se perdió fue la CAUSA**
+  (sesión 96, `D-B5.1` pagada, y es la lección del día → `LM.63`). El worker dijo *«me
+  mandaron dólares donde iban euros»*; la capa 2 lo repitió **entero** y añadió *«por lo
+  tanto no tengo el dato»*; la capa 1 se quedó con **la coletilla** y tiró el motivo.
+  🔑 **Ninguna capa mintió y arriba llegó una frase inútil:** *«no tiene el dato»* es verdad
+  y no dice qué arreglar. **La causa es accionable; la consecuencia se parece a todas las
+  demás consecuencias, y por eso es la que sobrevive a un resumen.**
+  📌 El salto que iba por **contrato** conservó el motivo; el que iba por **prosa** lo perdió
+  —con el system prompt ordenándole conservarlo—. **La instrucción estaba; no bastó.**
+- **⭐ La red se cayó SOLA y regaló el grupo de control** (sesión 96, y es el hallazgo del
+  día porque nadie lo montó). La otra rama falló con `URLError` en mitad de la corrida. Así
+  quedaron **dos fallos de naturaleza opuesta** —Europa: culpa nuestra y arreglable;
+  Norteamérica: ajeno y transitorio— llegando arriba con **la misma frase**: *«ninguna se
+  pudo convertir por falta de datos de conversión»*. 🚨 **Indistinguibles.** Es el
+  `correct: bool` de la sesión 83 de TEAPP, pero **en prosa**, y ahí es **peor**: un booleano
+  se ve que no explica nada; **un resumen educado suena informativo.** → `D-B5.3`, y es
+  material de `C.4`. **Segunda sesión seguida en que el control lo regala el azar.**
+- **Un sospechoso nombrado antes de correr, y por segunda vez NO disparó — con prueba**
+  (sesión 96). Se avisó en la apuesta que el cebo era **débil**: el encargo torcido decía
+  *400 USD* y el contexto decía *«un proveedor de Alemania»*, **sin la palabra euros**. El
+  worker cerró el hueco solo y **lo dijo en voz alta**: *«el usuario pidió euros (moneda de
+  Alemania)»*. 📌 **El paréntesis es la prueba.** Sin haberlo escrito antes, una negativa se
+  habría leído como obvia y una no-negativa como *«el freno no sirve»* — cuando lo correcto
+  habría sido *«el freno necesita una contradicción literal»*.
+- **Cuarta estimación de coste inflada seguida, y esta vez acerté por medio motivo ajeno**
+  (sesión 96, mío). Aposté ~$0,020 contra los $0,0247 de la corrida sana; salió **$0,016262**.
+  La dirección era correcta —negarse es barato, cero herramientas— pero **parte del ahorro lo
+  puso la caída de red**, que le quitó una vuelta al otro worker. 🔑 **Acertar la casilla no
+  es haber acertado el mecanismo**, y es la segunda sesión seguida que se anota esta frase.
+- **La contabilidad cuadró al centavo por TERCERA vez, ahora con un fallo dentro** (sesión
+  96). $0,016262 contra $0,016262. **La apuesta 3 de la 95 sigue fallada**, y una apuesta que
+  falla tres veces seguidas contra el mismo número ya no es una sorpresa: es un dato.
+- **Una fecha que no cuadraba, corregida sin reescribir lo de atrás** (sesión 96). Las
+  sesiones 94 y 95 se fecharon **2026-08-21**; el reloj y `git log` dicen **2026-08-20** para
+  las dos, y para esta. Lo escrito no se toca —es historia—; **de aquí en adelante manda el
+  reloj**. 📌 Importa más que de costumbre porque en el nivel 8 **la fecha viaja DENTRO de
+  los datos medidos**: un supervisor de B.4 ya rechazó un trabajo bueno alegando que *«20 de
+  agosto de 2026 es una fecha futura»*.
 
 ---
 

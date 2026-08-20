@@ -1975,6 +1975,64 @@ cuarta oportunidad de fallar, y **se anota que se sabía**.
 
 ---
 
+##### 📊 `D-B5.1` — LO QUE SALIÓ, el 2026-08-20 (sesión 96). **$0,016262** · 9 llamadas
+
+**🎯 Marcador: 3 de 3 acertadas** — una de ellas **con el mecanismo solo a medias**.
+
+**1️⃣ El worker SE NEGÓ, y el punto flojo NO disparó — con prueba.** Dijo:
+*«Ese encargo no es para mí: el usuario pidió la conversión de **euros (moneda de Alemania)**,
+no de dólares estadounidenses.»* ⭐ **El paréntesis es la prueba: hizo la inferencia en voz
+alta.** Se avisó antes de correr que el cebo era débil porque el contexto nunca dice «euros»;
+el modelo cerró el hueco solo. **1 vuelta, CERO herramientas, $0,002115.**
+📌 Segunda vez en el bloque que un sospechoso nombrado antes no dispara (B.4 fue la primera),
+y **la prueba es del mismo tipo: quedó grabado el texto exacto.**
+
+**2️⃣ LA QUEJA MUERE EN EL SALTO 2→1, exactamente donde se apostó.** La misma queja, tres
+capas, misma corrida:
+
+| capa | qué dijo | qué cruza |
+|---|---|---|
+| **3** worker | *«no es para mí: el usuario pidió **euros**, no dólares»* | — |
+| **2** intermediario | *«el especialista reporta que no es para él: **euros, no dólares**. Por lo tanto, no tengo el dato»* | **contrato** ✅ llega entera |
+| **1** arriba | *«No se pudo resolver… **el especialista no tiene el dato de conversión**»* | **prosa** 🚨 muere |
+
+🔑 **Y CÓMO murió es más fino que la predicción.** La capa 2 dijo **dos** cosas: la **causa**
+(*mandaron dólares donde iban euros*) y la **consecuencia** (*por lo tanto no tengo el dato*).
+**La capa 1 conservó la consecuencia y tiró la causa** — y se quedó con **la mitad inútil**:
+*«no tiene el dato»* no le dice a nadie qué arreglar.
+📌 La apuesta sellada el día antes —*«sobrevive el "algo salió mal" y muere el "qué"»*— queda
+**pagada y acertada**, y ahora con el sitio exacto.
+
+**⭐ EL HALLAZGO DEL DÍA, Y NADIE LO MONTÓ: LA RED SE CAYÓ SOLA.** El worker de Norteamérica
+no pudo consultar la tasa (`URLError`) en mitad de la corrida. Eso regaló **un grupo de
+control gratis**, igual que en B.5. Quedaron **dos fallos de naturaleza opuesta**:
+
+- **Europa** → **culpa nuestra y arreglable**: enrutamos mal.
+- **Norteamérica** → **transitorio y ajeno**: se cayó la red; se reintenta y ya.
+
+Y así llegaron los dos a la capa 1: *«Ninguna de las dos se pudo convertir **por falta de
+datos de conversión**»*.
+🚨 **INDISTINGUIBLES.** Un bug propio y un hipo de la red, fusionados en una frase con el
+mismo tono. Es el `correct: bool` de la sesión 83 de TEAPP —causas contrarias en la misma
+casilla— pero **en PROSA y a tres capas**, y aquí es **peor que un booleano: suena
+informativo.** → **`D-B5.3`**, y es material de `C.4`.
+
+**3️⃣ EL COSTE: dirección acertada, número inflado — la CUARTA seguida.** Apostado ~$0,020
+contra los $0,0247 de la corrida sana; salió **$0,016262**. ⚠️ **Y parte del ahorro no es
+mío:** el fallo de red le quitó una vuelta al worker de Norteamérica. **Acertar la casilla no
+es haber acertado el mecanismo** — segunda vez en dos sesiones que se anota esta misma frase.
+
+**📌 LA CONTABILIDAD CUADRÓ AL CENTAVO POR TERCERA VEZ** ($0,016262 = $0,016262). La apuesta 3
+de la sesión 95 sigue **fallada**, ahora con una corrida más y **con un fallo dentro**.
+
+> ✅ **`D-B5.1` PAGADA. El bloque B queda cerrado sin la apuesta 2 en blanco.**
+> ⚠️ **Lo que NO se midió:** el coste quedó **contaminado** por la caída de red, y no se
+> vuelve a correr — la pregunta de la deuda se contestó, y con más nitidez de la esperada.
+> **Volver a correr por un número limpio sería pagar $0,02 por decorar un dato que ya no
+> decide nada.**
+
+---
+
 ##### 🛠️ Lo que B.5 tocó, y una línea del sobre que resultó falsa
 
 ⚠️ **El sobre decía: *«una topología nueva NO toca `orquestador.py`»*. Es falso, y se
