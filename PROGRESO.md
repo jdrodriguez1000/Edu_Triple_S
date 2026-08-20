@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-20 (sesión 93 — NIVEL 8: B.2 hecha y MEDIDA; el fan-out compró 51 % de reloj y cero factura, y la aritmética cerró en los dos lados. **B.3 arranca sellando su apuesta: la pista está escrita y las 3 preguntas, en blanco.**)
+**Última actualización:** 2026-08-20 (sesión 94 — NIVEL 8: B.3 hecha, y las tres apuestas selladas y COMMITEADAS antes de teclear. El router de if 5/7 y el del modelo 7/7, pero **los dos con 0 daño**: la frontera cayó al milímetro en el nivel 3. **El hallazgo: la etiqueta de oro escrita a mano era el instrumento ciego, y estaba marcada.** $0,001688.)
 
 ---
 
@@ -3643,6 +3643,83 @@
 # no vio la paráfrasis; la línea de tiempo que se pisaba). Las dos veces **no dio un dato
 # falso: dio SILENCIO**, y el silencio se lee como confirmación. 🔑 **En B.3, el primer
 # sospechoso de estar ciego es lo que se escriba para vigilar al router.**
+#
+# 🧭 **La 94 HIZO B.3, EL ROUTER, Y LAS TRES APUESTAS SE SELLARON Y COMMITEARON ANTES
+# DE LA PRIMERA LÍNEA DE CÓDIGO** (`5998742`). Un archivo nuevo, `router.py`.
+# **Gasto del día: $0,001688** — el más barato de todo el bloque B.
+# 🔒 **EL SELLADO SE COMMITEÓ, Y ESO ES PARTE DE LA LECCIÓN:** una apuesta que vive en un
+# archivo sin commitear no está sellada, porque se puede retocar sin dejar rastro. El
+# orden de la 90 con el mecanismo por fin cerrado.
+# 📊 **LA MEDICIÓN, `--ambos`, ocho entradas graduadas y UNA sola variable (quién decide):**
+# **`if` 5/7 aciertos · $0,000000 · 0,00 s** contra **modelo 7/7 · $0,001688 · 6,02 s.**
+# Los dos con **0 daño**.
+# ⭐ **LA APUESTA 1 CAYÓ AL MILÍMETRO.** Los dos apostamos *«le basta un `if`»*, y esta
+# terminal añadió la frontera: **el `if` basta mientras la clave se pueda EXTRAER del
+# texto; deja de bastar cuando hay que INFERIRLA.** Los 4 casos de nivel 1-2 (la palabra
+# está escrita), verdes los dos. **Los DOS casos de nivel 3** —*«una factura de Alemania»*,
+# *«un taller de Toronto»*— **son exactamente los dos que se cayeron.** Ni uno de más.
+# 🔑 **Y resultó ser un CORTE LIMPIO, no una pendiente:** el `if` no se degrada poco a
+# poco, funciona perfecto hasta el borde y se apaga entero al cruzarlo.
+# 🚨 **PERO `5/7` CONTRA `7/7` NO ES LA COMPARACIÓN QUE IMPORTA, y ese es el hallazgo.**
+# **Hacen daño: 0 y 0.** Los dos fallos del `if` fueron **abstenciones** —dijo *«no sé»*—.
+# Ni una sola vez mandó el trabajo al especialista equivocado. 🔑 **La pregunta no es
+# «¿cuál acierta más?», es «¿cuál se equivoca PEOR?», y en ese eje empataron a cero.**
+# ⭐ **Y ese eje SOLO EXISTE porque el juez tiene cuatro veredictos.** Con un booleano la
+# lectura habría sido *«el modelo es mejor, 7 contra 5»*, borrando la diferencia entre un
+# fallo seguro y uno peligroso. **El instrumento que se declaró sospechoso al escribirlo
+# es el que salvó la lectura** — sesión 83 (`correct: bool`) aplicada ANTES de morder.
+# 💰 **APUESTA 2: dirección acertada, número fallado por 2×.** Apostado **$0,000430** por
+# decisión, medido **$0,000211**. La salida la clavé (5 tokens, y no por mérito: es una
+# palabra); **la entrada la inflé al doble** (400 predichos contra **186** reales). Se
+# anota aunque no mueva nada: es la sesión 80 en pequeño, **estimar por sensación un
+# número que la pieza escribe sola.** Conclusión intacta y con 69× de margen:
+# enrutar $0,007451 contra llamar a los tres $0,021720, umbral $0,014480.
+# 🆕 **Y LA APUESTA 2 SE DEJÓ UN EJE FUERA QUE LA MEDICIÓN DESTAPÓ: EL RELOJ.** 6,02 s / 8
+# = **0,75 s por decisión**, contra **0,00 s** del `if`. 🔑 **Enrutar con un modelo es
+# barato en dinero y caro en tiempo** — la pregunta decía *«¿cuánto cuesta?»* y el dinero
+# se comió la palabra. Es B.2 al revés: allí se compró reloj sin tocar factura.
+# ❌ **APUESTA 3 SIGUE SIN RESPUESTA, y decirlo es el resultado.** Nadie se equivocó en
+# nada puntuable, **así que no hubo ningún error que cazar**: un cazador que no vio pasar
+# a su presa está sin estrenar (`LM.13`). 🚨 **Y hay algo peor, visible solo mirando el
+# juez recién escrito: `juzgar()` funciona porque las respuestas correctas las escribí YO
+# antes. En producción no hay etiquetas de oro — esa es la razón entera por la que existe
+# el router.** → Lo construido hoy es **un instrumento de laboratorio, no un cazador**, y
+# la apuesta *«no lo caza nadie»* sigue en pie ahora **con razón mecánica, no intuición**.
+# 📌 Y deja la pregunta apuntando a un sitio: sin etiqueta de oro, el único testigo posible
+# es **el propio especialista devolviendo el trabajo** — y eso ya no es un router.
+# 🚨 **EL HALLAZGO DEL DÍA — EL SOSPECHOSO MARCADO DISPARÓ.** `router.py` declara en su
+# cabecera, antes de una línea de código, que el segundo candidato a estar ciego son **las
+# etiquetas de oro escritas a mano**. Ocurrió: el caso ambiguo `n5-a` fue **el único rojo
+# de la corrida**, y salió rojo **en los dos routers con la misma respuesta (`cad`)**.
+# ⭐ **Dos decisores independientes —uno de ellos sin nada de inteligencia— coincidiendo
+# contra mi etiqueta no es evidencia de que fallaran: es evidencia de que la etiqueta
+# estaba mal.** Sin la marca `discutible`, el titular del día habría sido *«los dos routers
+# cometen una invención (🔥)»* — **el veredicto más grave de los cuatro, inventado por mí.**
+# 🔑 **Es `LM.15` con el instrumento ciego siendo la RESPUESTA CORRECTA, no el medidor.**
+# Tercera sesión seguida en que lo ciego es lo escrito ese mismo día (B.1 el verificador,
+# B.2 la línea de tiempo, B.3 la etiqueta de oro) — **y la primera en que se marcó ANTES y
+# por eso no hizo daño.** → La regla: **un caso cuya respuesta correcta el autor no tiene
+# clara no se resuelve poniendo la que le parece mejor. Se marca y se saca del marcador.
+# La duda es un dato; convertirla en etiqueta la borra.**
+# 🆓 **13 PRUEBAS Y CUESTAN $0,00**, tercera pieza seguida del bloque B así.
+# ⭐ **La nº 4 es la rara: afirma un LÍMITE, no una capacidad** —*«el `if` NO infiere
+# Alemania → eur»*—. Si algún día se pone verde sola, alguien amplió el router y **hay que
+# volver a apostar**. Un test que vigila una frontera envejece al revés que los demás.
+# 📌 **Los 8 `stop_reason` salieron `end_turn`** y los 8 crudos fueron la palabra limpia: la
+# normalización de la salida del modelo **está y NO se vio morder** (`LM.13`).
+# 📌 **Y una que cambió el plan sin código:** la cuenta de la apuesta 2 destapó que **la
+# tarea de las tres monedas necesita los TRES workers, así que no puede demostrar un
+# router.** Enrutar solo ahorra cuando la tarea necesita **uno de N**. B.3 arrancó
+# escribiendo un banco nuevo — eso no estaba en la pista de aterrizaje de la 93.
+# ➡️ **SIGUIENTE PASO CONCRETO — B.4.** Lo abre la apuesta 3, que quedó viva y ahora
+# apunta a un sitio concreto: **si no hay etiqueta de oro, el único testigo del error de
+# enrutado es el especialista que recibe algo que no es lo suyo y lo devuelve.** Eso es
+# un **supervisor**, no un router.
+# ⚠️ **DEUDAS QUE B.4 HEREDA:** `D-B1.1`, `D-B1.2` y `D-B1.3` siguen **abiertas** (sin
+# pagar a sabiendas desde la 92). `D-B2.1` arreglada con prueba pero **no vista morder**.
+# 🆕 `D-B3.1`: la normalización de la salida del router **no se ha visto morder** (8 de 8
+# formatos limpios). 🆕 `D-B3.2`: la etiqueta de oro de `n5-a` está **marcada discutible y
+# sin resolver** — y la corrida sugiere que `cad` era la buena.
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -14162,6 +14239,44 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   contracción**. No había hallazgo. 🔑 Se registra porque **una alarma que se apaga
   antes de entregarse también es un dato**, y porque el reflejo que la apagó —ir al
   texto en vez de reportar la cuenta— es el mismo que faltó en el punto de arriba.
+
+- **La respuesta correcta era el instrumento ciego, y estaba marcada** (sesión 94, y es
+  la lección madre del día). `router.py` declaró en su cabecera, **antes de una línea de
+  código**, que el segundo candidato a estar ciego eran **las etiquetas de oro escritas
+  a mano**. Ocurrió: el caso ambiguo `n5-a` fue **el único rojo de la corrida**, y salió
+  rojo **en los dos routers, con la misma respuesta**. 🔑 **Dos decisores independientes
+  —uno de ellos sin nada de inteligencia— coincidiendo contra mi etiqueta no es evidencia
+  de que fallaran: es evidencia de que la etiqueta estaba mal.** Sin la marca
+  `discutible`, el titular del día habría sido *«los dos routers cometen una invención»*
+  —el veredicto más grave de los cuatro— **inventado por mí**. → Es `LM.15` con el
+  instrumento ciego siendo **la respuesta correcta**, no el medidor: tercera sesión
+  seguida en que lo ciego es lo escrito ese mismo día (B.1 el verificador, B.2 la línea
+  de tiempo, B.3 la etiqueta), **y la primera en que se marcó antes y por eso no hizo
+  daño.** 📌 La regla: **un caso cuya respuesta correcta el autor no tiene clara no se
+  resuelve poniendo la que le parece mejor. Se marca y se saca del marcador. La duda es
+  un dato; convertirla en etiqueta la borra.**
+- **El marcador correcto contaba lo que no importaba** (sesión 94). `if` 5/7 contra
+  modelo 7/7 invita a concluir *«el modelo es mejor»*. Pero la fila de abajo dice
+  **0 daño y 0 daño**: los dos fallos del `if` fueron **abstenciones**, y ni una vez
+  mandó el trabajo al especialista equivocado. 🔑 **La pregunta no es «¿cuál acierta
+  más?», es «¿cuál se equivoca PEOR?»** — y ese eje **solo existe porque el juez tiene
+  cuatro veredictos en vez de un booleano**. Con `bool`, los dos fallos seguros y dos
+  peligrosos habrían caído en la misma casilla. Es la sesión 83 de TEAPP (`correct: bool`
+  mezclando causas contrarias) aplicada **antes** de morder, no después.
+- **Estimé por sensación un número que la pieza escribe sola** (sesión 94, mío). Aposté
+  **$0,000430** por decisión de enrutado y salió **$0,000211**: la salida la clavé
+  (5 tokens, y sin mérito — es una palabra), pero **inflé la entrada al doble**, 400
+  predichos contra **186** reales. No movió la conclusión (69× de margen sobre el
+  umbral), y se anota igual: es la sesión 80 en pequeño. 📌 **Contar los tokens del
+  system prompt costaba lo mismo que estimarlos.**
+- **Una corrida verde no contesta la pregunta de quién caza el error** (sesión 94). La
+  apuesta 3 —*«¿quién detecta a un router equivocado?»*— quedó **sin responder**, porque
+  ninguno de los dos falló en nada puntuable: **no hubo presa que cazar** y el cazador
+  quedó sin estrenar (`LM.13`). 🚨 Y mirando el juez recién escrito salió lo peor:
+  **`juzgar()` funciona porque las respuestas correctas se escribieron antes. En
+  producción no hay etiquetas de oro — esa es la razón entera por la que existe el
+  router.** → Lo construido es **un instrumento de laboratorio, no un cazador**, y hay
+  que decirlo antes de que su verde se lea como cobertura.
 
 ---
 

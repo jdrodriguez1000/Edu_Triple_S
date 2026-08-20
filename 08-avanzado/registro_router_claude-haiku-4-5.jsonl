@@ -1,0 +1,30 @@
+{"hora": "2026-08-20T19:44:05+00:00", "evento": "corrida_inicio", "router": "if", "entradas": 8}
+{"hora": "2026-08-20T19:44:05+00:00", "evento": "decision_router", "router": "if", "texto": "¿Cuánto son 250 dólares en pesos?", "destino": "usd", "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:05+00:00", "evento": "decision_router", "router": "if", "texto": "Necesito pasar 300 euros a pesos colombianos.", "destino": "eur", "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:05+00:00", "evento": "decision_router", "router": "if", "texto": "Convierte 250 USD a pesos.", "destino": "usd", "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:05+00:00", "evento": "decision_router", "router": "if", "texto": "¿A cómo está el billete verde hoy?", "destino": "usd", "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:05+00:00", "evento": "decision_router", "router": "if", "texto": "Me llegó una factura de un proveedor de Alemania por 400. ¿Cuánto es en pesos?", "destino": null, "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:05+00:00", "evento": "decision_router", "router": "if", "texto": "Un taller de Toronto me cobró 500 por la reparación. Pásalo a pesos.", "destino": null, "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:05+00:00", "evento": "decision_router", "router": "if", "texto": "Pásalo a la moneda del cliente, por favor.", "destino": null, "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:05+00:00", "evento": "decision_router", "router": "if", "texto": "¿Cuánto es un dólar canadiense en dólares americanos?", "destino": "cad", "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:05+00:00", "evento": "corrida_fin", "router": "if", "puntuables": 7, "aciertos": 5, "dano": 0, "abstenciones": 2, "gasto_usd": 0.0, "llamadas_api": 0, "segundos": 0.014339685440063477}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "corrida_inicio", "router": "if", "entradas": 8}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "decision_router", "router": "if", "texto": "¿Cuánto son 250 dólares en pesos?", "destino": "usd", "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "decision_router", "router": "if", "texto": "Necesito pasar 300 euros a pesos colombianos.", "destino": "eur", "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "decision_router", "router": "if", "texto": "Convierte 250 USD a pesos.", "destino": "usd", "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "decision_router", "router": "if", "texto": "¿A cómo está el billete verde hoy?", "destino": "usd", "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "decision_router", "router": "if", "texto": "Me llegó una factura de un proveedor de Alemania por 400. ¿Cuánto es en pesos?", "destino": null, "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "decision_router", "router": "if", "texto": "Un taller de Toronto me cobró 500 por la reparación. Pásalo a pesos.", "destino": null, "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "decision_router", "router": "if", "texto": "Pásalo a la moneda del cliente, por favor.", "destino": null, "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "decision_router", "router": "if", "texto": "¿Cuánto es un dólar canadiense en dólares americanos?", "destino": "cad", "costo_usd": 0.0}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "corrida_fin", "router": "if", "puntuables": 7, "aciertos": 5, "dano": 0, "abstenciones": 2, "gasto_usd": 0.0, "llamadas_api": 0, "segundos": 0.002310514450073242}
+{"hora": "2026-08-20T19:44:16+00:00", "evento": "corrida_inicio", "router": "modelo", "entradas": 8}
+{"hora": "2026-08-20T19:44:17+00:00", "evento": "decision_router", "router": "modelo", "texto": "¿Cuánto son 250 dólares en pesos?", "crudo": "usd", "destino": "usd", "entrada": 185, "salida": 5, "costo_usd": 0.00021, "stop_reason": "end_turn"}
+{"hora": "2026-08-20T19:44:18+00:00", "evento": "decision_router", "router": "modelo", "texto": "Necesito pasar 300 euros a pesos colombianos.", "crudo": "eur", "destino": "eur", "entrada": 183, "salida": 5, "costo_usd": 0.000208, "stop_reason": "end_turn"}
+{"hora": "2026-08-20T19:44:19+00:00", "evento": "decision_router", "router": "modelo", "texto": "Convierte 250 USD a pesos.", "crudo": "usd", "destino": "usd", "entrada": 178, "salida": 5, "costo_usd": 0.000203, "stop_reason": "end_turn"}
+{"hora": "2026-08-20T19:44:19+00:00", "evento": "decision_router", "router": "modelo", "texto": "¿A cómo está el billete verde hoy?", "crudo": "usd", "destino": "usd", "entrada": 182, "salida": 5, "costo_usd": 0.000207, "stop_reason": "end_turn"}
+{"hora": "2026-08-20T19:44:20+00:00", "evento": "decision_router", "router": "modelo", "texto": "Me llegó una factura de un proveedor de Alemania por 400. ¿Cuánto es en pesos?", "crudo": "eur", "destino": "eur", "entrada": 198, "salida": 5, "costo_usd": 0.000223, "stop_reason": "end_turn"}
+{"hora": "2026-08-20T19:44:21+00:00", "evento": "decision_router", "router": "modelo", "texto": "Un taller de Toronto me cobró 500 por la reparación. Pásalo a pesos.", "crudo": "cad", "destino": "cad", "entrada": 192, "salida": 5, "costo_usd": 0.000217, "stop_reason": "end_turn"}
+{"hora": "2026-08-20T19:44:22+00:00", "evento": "decision_router", "router": "modelo", "texto": "Pásalo a la moneda del cliente, por favor.", "crudo": "ninguno", "destino": null, "entrada": 181, "salida": 5, "costo_usd": 0.000206, "stop_reason": "end_turn"}
+{"hora": "2026-08-20T19:44:22+00:00", "evento": "decision_router", "router": "modelo", "texto": "¿Cuánto es un dólar canadiense en dólares americanos?", "crudo": "cad", "destino": "cad", "entrada": 189, "salida": 5, "costo_usd": 0.000214, "stop_reason": "end_turn"}
+{"hora": "2026-08-20T19:44:22+00:00", "evento": "corrida_fin", "router": "modelo", "puntuables": 7, "aciertos": 7, "dano": 0, "abstenciones": 0, "gasto_usd": 0.0016879999999999998, "llamadas_api": 8, "segundos": 6.018017530441284}

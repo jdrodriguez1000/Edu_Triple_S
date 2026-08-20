@@ -1009,6 +1009,176 @@ decisión**, que es otro modelo. **¿Y quién vigila a ese?** B.3 tiene que cont
 
 ---
 
+##### 📊 LOS RESULTADOS — medidos el 2026-08-20, DESPUÉS de sellar
+
+⚠️ **Este apartado se escribió después de correr.** La apuesta de arriba no se tocó ni una
+coma: se compara contra ella, que es lo único que hace que apostar sirva de algo.
+
+**La corrida:** `python router.py --ambos`. Ocho entradas, dos routers, el mismo juez.
+**Coste total del día: $0,001688.** El router de `if`, $0,00 exactos.
+
+---
+
+###### 📋 La tabla, por nivel — que es donde vive la frontera
+
+| nivel | qué pide | `if` | modelo |
+|---|---|---|---|
+| **1** literal (×2) | *"250 dólares"*, *"300 euros"* | ✅ ✅ | ✅ ✅ |
+| **2** sinónimo (×2) | *"250 USD"*, *"el billete verde"* | ✅ ✅ | ✅ ✅ |
+| **3** inferir (×2) | *"una factura de Alemania"*, *"un taller de Toronto"* | ⚪ ⚪ | ✅ ✅ |
+| **4** nada que extraer | *"la moneda del cliente"* | ✅ | ✅ |
+| **5** ambigua 🤔 | *"un dólar canadiense en dólares americanos"* | 🔥 `cad` | 🔥 `cad` |
+
+```
+                     if      modelo
+aciertos              5           7    de 7 puntuables
+hacen daño            0           0
+abstenciones          2           0
+gasto         $0.000000   $0.001688
+tiempo             0,00 s      6,02 s
+```
+
+---
+
+###### 🅰️ APUESTA 1 — la frontera cayó AL MILÍMETRO, y el marcador engaña
+
+✅ **La predicción de DÓNDE se rompe el `if` acertó exactamente.** Los cuatro casos de
+nivel 1 y 2 (la clave está escrita), verdes. **Los dos casos de nivel 3** —los únicos que
+piden inferir Alemania→euro y Toronto→dólar canadiense— **son exactamente los dos que se
+cayeron.** Ni uno de más ni uno de menos.
+
+> 🔑 **La frontera apostada era «extraer vs inferir» y resultó ser un corte limpio, no una
+> pendiente.** El `if` no se degrada poco a poco: funciona perfecto hasta el borde y se
+> apaga entero al cruzarlo.
+
+⚠️ **PERO `5/7` contra `7/7` NO ES LA COMPARACIÓN QUE IMPORTA, y esto es el hallazgo.**
+Mira la fila de abajo: **hacen daño, 0 y 0.** Los dos fallos del `if` fueron
+**abstenciones** — dijo *"no sé"*, que es lo seguro. **Ni una sola vez mandó el trabajo al
+especialista equivocado.**
+
+> ⭐ **La pregunta no es «¿cuál acierta más?», es «¿cuál se equivoca PEOR?» — y en ese eje
+> empataron a cero.** Un router que abstiene 2 de 7 te deja con dos casos sin resolver y
+> te avisa. Uno que se equivoca 2 de 7 te deja con dos respuestas impecables y falsas.
+
+📌 **Y ese eje solo existe porque `juzgar()` tiene cuatro veredictos.** Con un booleano, el
+`if` habría salido *"5 aciertos, 2 fallos"* y el modelo *"7 aciertos"* — y la conclusión
+habría sido *"el modelo es mejor"*, borrando lo único que separa un fallo seguro de uno
+peligroso. **El instrumento que se declaró sospechoso al escribirlo es el que salvó la
+lectura.**
+
+**Veredicto de la apuesta:** las dos partes ganaron algo. *«Le basta un `if`»* es **cierto
+dentro de la frontera y falso fuera**, y la frontera está donde se apostó. Lo que ninguno
+de los dos dijo es que **el `if` falla del lado seguro**, y eso cambia cuándo elegirlo.
+
+---
+
+###### 🅱️ APUESTA 2 — dirección acertada, número fallado por 2×
+
+| | apostado | medido |
+|---|---|---|
+| coste por decisión | **$0,000430** | **$0,000211** |
+| tokens de salida | ~5 | **5** ✅ exacto |
+| tokens de entrada | ~400 | **186** ❌ el doble de lo real |
+
+**La conclusión no se movió, y con margen absurdo:**
+
+```
+enrutar          =  $0,000211 + $0,00724  =  $0,007451
+llamar a los 3   =  3 × $0,00724          =  $0,021720
+umbral (2 workers)                        =  $0,014480
+→ SÍ sale a cuenta, con 69× de margen
+```
+
+📌 **Se anota el fallo aunque no cambie nada:** predije 400 tokens de entrada y son 186.
+Inflé el tamaño del system prompt del router al doble. **Es el mismo error de la sesión 80
+en pequeño — estimar por sensación un número que la pieza escribe sola.** El de salida sí
+lo clavé, y no por mérito: la salida es una palabra, y eso no había que estimarlo.
+
+🆕 **Y LA APUESTA 2 SE DEJÓ UN EJE FUERA, que la medición destapó: EL RELOJ.**
+El router del modelo tardó **6,02 s en 8 decisiones = 0,75 s por decisión**. El `if`:
+**0,00 s.**
+
+> 🔑 **Enrutar con un modelo es barato en dinero y caro en tiempo.** La pregunta estaba
+> escrita como *"¿cuánto CUESTA?"* y el dinero se comió la palabra. Es la lección de B.2 al
+> revés: allí el paralelismo compró 51 % de reloj sin tocar la factura; aquí el router
+> compra precisión pagando reloj.
+
+📌 **Y ese 0,75 s no se paga igual en todas partes:** una vez por tarea es invisible;
+dentro de un bucle que enruta en cada vuelta, se multiplica. Cuándo duele es una pregunta
+de **topología**, no de router.
+
+---
+
+###### 🅲 APUESTA 3 — SIGUE SIN RESPUESTA, y decirlo es el resultado
+
+❌ **No se contestó, y una corrida verde no la contesta.** Ninguno de los dos routers se
+equivocó en nada puntuable, así que **no hubo ningún error que cazar**. Un cazador que
+nunca vio pasar a su presa no está probado: está sin estrenar (`LM.13`).
+
+🚨 **Y hay algo peor, que solo se ve mirando el juez que acabo de construir:**
+
+> **`juzgar()` solo funciona porque yo escribí las respuestas correctas ANTES.**
+> En producción no hay etiquetas de oro. Nadie sabe a qué especialista había que mandar
+> el mensaje — **esa es la razón entera por la que existe el router.**
+
+🔑 **Lo que se construyó hoy es un instrumento de laboratorio, no un cazador.** Sirve para
+comparar dos routers sobre casos conocidos, y no sirve **en absoluto** para detectar un
+error de enrutado en vivo. La apuesta de esta terminal (*"no lo caza nadie"*) sigue en pie
+y **ahora con una razón mecánica en vez de una intuición**: el error de un router solo se
+define contra una respuesta correcta, y en vivo no la hay.
+
+📌 **Eso deja la pregunta apuntando a un sitio concreto:** si no hay etiqueta de oro, el
+único testigo posible es **el propio especialista diciendo «esto no es lo mío»**. Y eso ya
+no es un router: es **el destinatario devolviendo el trabajo.** B.4 en adelante.
+
+---
+
+###### 🚨 EL HALLAZGO DEL DÍA — el sospechoso marcado DISPARÓ
+
+El archivo `router.py` declara en su cabecera, antes de una línea de código, que el segundo
+candidato a estar ciego son **las etiquetas de oro escritas a mano**. Ocurrió.
+
+**`n5-a`** (*"¿Cuánto es un dólar canadiense en dólares americanos?"*) fue **el único rojo
+de toda la corrida** — y salió rojo **en los dos routers, con la misma respuesta: `cad`.**
+
+> ⭐ **Dos decisores independientes, uno de ellos sin nada de inteligencia, coincidiendo
+> contra mi etiqueta. Eso no es evidencia de que fallaran: es evidencia de que la etiqueta
+> estaba mal.**
+
+⚠️ **Y mira lo que se evitó.** Si `n5-a` no llevara la marca `discutible`, el informe
+diría: *«los dos routers cometen 1 invención (🔥)»* — el veredicto más grave de los cuatro,
+**en los dos a la vez**, y el titular del día habría sido un peligro inventado por mí.
+
+🔑 **Es `LM.15` con el instrumento ciego siendo la RESPUESTA CORRECTA, no el medidor.**
+Tercera sesión seguida en que lo escrito ese mismo día es lo que estaba ciego (B.1 el
+verificador, B.2 la línea de tiempo, B.3 la etiqueta de oro) — pero **la primera en que se
+marcó ANTES y por eso no hizo daño.**
+
+📌 La regla que se lleva: **un caso cuya respuesta correcta el autor no tiene clara no se
+resuelve poniendo la que le parece mejor. Se marca y se saca del marcador.** La duda es un
+dato; convertirla en etiqueta la borra.
+
+---
+
+###### ✅ Lo que B.3 deja construido
+
+| pieza | qué es | coste |
+|---|---|---|
+| `router.py` | los dos routers, el banco de 8, el juez de 4 veredictos | — |
+| **13 pruebas** | pasan sin tocar la red | **$0,00** |
+| `registro_router_*.jsonl` | 30 líneas: cada decisión con su crudo, tokens y `stop_reason` | — |
+
+⭐ **La prueba nº 4 es la rara y conviene mirarla:** afirma un **LÍMITE**, no una capacidad
+—*«el `if` NO infiere Alemania → eur»*—. Si algún día se pone verde sola, es que alguien
+amplió el router y **hay que volver a apostar**. Un test que vigila una frontera envejece
+al revés que los demás.
+
+📌 **Los 8 `stop_reason` salieron `end_turn` y los 8 crudos fueron la palabra limpia.** El
+formato se respetó 8 de 8, así que la normalización de la salida del modelo **no se vio
+morder** — está, y sigue siendo una nota (`LM.13`).
+
+---
+
 ##### 🧾 Lo que B.3 hereda, y su estado real
 
 **Deudas abiertas, anotadas y NO pagadas a sabiendas:**
