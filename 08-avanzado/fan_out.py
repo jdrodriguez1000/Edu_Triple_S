@@ -133,7 +133,7 @@ def reiniciar_linea_de_tiempo():
 # 2) EL REPARTO EN PARALELO — la pieza entera de B.2
 # ---------------------------------------------------------------------------
 
-def reparto_en_paralelo(bloques, contabilidad, verboso=True):
+def reparto_en_paralelo(bloques, contabilidad, verboso=True, funciones=None):
     """El mismo trabajo que `reparto_en_serie`, a la vez.
 
     Recibe lo mismo, devuelve lo mismo, en el mismo orden. Es intercambiable
@@ -157,7 +157,8 @@ def reparto_en_paralelo(bloques, contabilidad, verboso=True):
         #    ve al final es la línea de tiempo, que sí.
         try:
             return orquestador.ejecutar_un_bloque(bloque, contabilidad,
-                                                  verboso=False)
+                                                  verboso=False,
+                                                  funciones=funciones)
         finally:
             # `finally`: si el bloque revienta, su barra igual se dibuja. Un
             # hueco en la línea de tiempo es un dato, no un adorno que falta.

@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-20 (sesión 94 — NIVEL 8: B.3 y B.4 hechas, las dos con la apuesta sellada y commiteada antes de teclear. ⭐ **El hallazgo: el permiso de negarse se CONSTRUYE, no se pide** — una frase en el system prompt y el worker devolvió el trabajo equivocado, 70 % más barato que hacerlo. Y el fallo del día fue mío: la función que juzgaba mi propia apuesta comparaba dos booleanos. $0,027253 en total. **B.5 queda con la pista escrita y las 3 preguntas en blanco.**)
+**Última actualización:** 2026-08-21 (sesión 95 — NIVEL 8: `D-B4.1` PAGADA y **B.5 HECHA**, las dos con la apuesta sellada y commiteada antes de teclear. ⭐ **El hallazgo: los tres «especialistas» de A.2 y A.3 nunca fueron tres especialistas — son el mismo worker con tres etiquetas**, y lo destapó un experimento que iba a otra cosa. El freno del derecho a negarse **discrimina** (no es un cascarrabias). Y por sexta sesión seguida **el instrumento ciego era lo escrito ese mismo día**: esta vez mentía A FAVOR, y lo cazaron los números, no el texto. $0,065053 en total. **B.5 cierra con la apuesta 2 en blanco → `D-B5.1`.**)
 
 ---
 
@@ -3782,29 +3782,41 @@
 # sabe si un worker con esa frase se vuelve **quisquilloso** y devuelve trabajo que sí era
 # suyo. **Un freno visto morder solo en el caso que lo justifica no está medido: está
 # estrenado** (`LM.13`).
-# ➡️ **SIGUIENTE PASO CONCRETO — B.5, y con una pregunta ya cargada.** El plan lo define
-# como *«profundidad > 2: un worker que a su vez orquesta — casi nunca, y hay que saber por
-# qué»*. B.4 acaba de dar la mitad del porqué: **si un worker construido para negarse es el
-# único testigo fiable, ¿qué pasa cuando el que tiene que negarse está DOS capas abajo y su
-# queja tiene que subir por un intermediario que fue construido para responder?**
-# 📄 **LA PISTA DE ATERRIZAJE YA ESTÁ ESCRITA:** `08-avanzado/README.md` →
-# *«⏭️ EL ARRANQUE DE B.5»*, hecha al cerrar la 94 y **sin una línea de código**. Lleva por
-# qué B.5 llega con la pregunta cargada, la tabla de las SIETE deudas abiertas con su
-# estado, lo que ya NO hay que construir, y **los dos sospechosos de estar ciegos**.
-# 🎲 **PRIMERA COSA DE LA SESIÓN DE B.5: SELLAR LA APUESTA Y COMMITEARLA**, y está EN
-# BLANCO a propósito. Las tres preguntas: (1) ¿es B.5 la primera del bloque que NO se
-# colapsa, y cuál es la señal que lo distingue?; (2) ¿sobrevive una queja a dos capas?;
-# (3) ¿qué le hace la profundidad a la factura y al reloj?
-# 💰 **ANTES DE B.5 CONVIENE PAGAR `D-B4.1`: una corrida (~$0,007)** que convierte el
-# hallazgo del día de «visto una vez» a «medido». Se corre pasándole al worker `usd` un
-# encargo **correcto** con `SISTEMA_DIVISA_CON_DERECHO_A_NEGARSE`: si lo responde, el
-# freno discrimina; si lo devuelve, se volvió quisquilloso y el hallazgo se matiza.
-# 🚨 **Y EL AVISO QUE VALE MÁS DE TODO EL BLOQUE B:** cinco sesiones seguidas, **el
-# instrumento escrito ESE MISMO DÍA resultó ser el ciego** — el verificador (B.1), la línea
-# de tiempo (B.2), la etiqueta de oro (B.3) y el booleano del veredicto (B.4). En B.5 hay
-# **dos** candidatos: **la contabilidad a tres capas** (dos fronteras más donde una suma se
-# pierde sin dar error) y **el plan mismo**, que ya escribe la respuesta —*«casi nunca»*—.
-# 🔑 **Un experimento montado para confirmar lo que el plan ya dice no mide: ilustra.**
+# ✅ **B.5 HECHA (sesión 95). El BLOQUE B QUEDA CERRADO en sus cinco piezas.**
+# `profundidad.py` · 14 pruebas gratis · $0,049666 en dos corridas de tres capas.
+# ⭐ **El hallazgo del día no era el que se fue a buscar: los tres «especialistas» de A.2
+# y A.3 nunca fueron tres especialistas — son el MISMO worker con tres etiquetas.** El
+# system prompt dice «eres un especialista en UNA sola moneda» y nunca dice cuál.
+# 🚨 **Y lo destapó un experimento VERDE que no midió nada**, cuyo marcador mentía a favor
+# de mi apuesta. Lo cazaron los NÚMEROS —dos líneas `usd` y ninguna `eur`—, no el texto.
+# 🎯 **Marcador de las tres apuestas: 1 acertada, 1 sin responder, 1 FALLADA.** La fallada
+# es un buen dato: la contabilidad a tres capas cuadró al centavo en las dos corridas.
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — decidir entre DOS caminos, y la decisión es suya.**
+#
+#   (a) **PAGAR `D-B5.1` (~$0,025)** y cerrar el bloque B sin agujeros. La apuesta 2
+#       —*«¿sobrevive una queja a dos capas?»*— **sigue en blanco**, y es la segunda vez
+#       en el bloque que el cazador se queda sin estrenar (`LM.13`).
+#       ✅ **Ya está lista para pagarse de una sola vez**: el arreglo se hizo sin volver a
+#          correr —`_torcer` tuerce el ENCARGO, no la etiqueta— y las pruebas 12-14 lo ven
+#          morder **gratis**. Solo falta la corrida.
+#   (b) **ARRANCAR EL BLOQUE C — el harness a dos capas** (C.1 traza anidada, C.2
+#       presupuesto repartido, C.3 permisos, C.4 fallos del worker, C.5 tope de recursión,
+#       C.6 modelo y esfuerzo por capa). 📌 **B.5 acaba de dejarle deberes a C.1**: la
+#       única razón por la que se cazó el instrumento ciego fue el gasto **separado por
+#       capa** en el registro. Eso es media C.1 ya construida y ya vista morder.
+#
+# 🎲 **Y sea cual sea, LA PRIMERA COSA DE LA SESIÓN ES SELLAR LA APUESTA Y COMMITEARLA.**
+# Van tres sesiones con ese orden y las tres han cobrado.
+# 🚨 **EL AVISO QUE YA VA POR SEIS: el instrumento ciego ha sido, seis sesiones seguidas,
+# lo escrito ESE MISMO DÍA** — el verificador (B.1), la línea de tiempo (B.2), la etiqueta
+# de oro (B.3), el booleano del veredicto (B.4) y el enrutado forzado (B.5).
+# 🔑 **Y lo nuevo de la 95: esta vez el instrumento ciego mentía A FAVOR de mi apuesta.**
+# Un error que te contradice se revisa solo; **uno que te da la razón, no.** → En la
+# próxima pieza, el primer sitio donde mirar es **la medición que salió como esperabas**.
+# 📌 **Deudas vivas del bloque B:** `D-B1.1`, `D-B1.2`, `D-B1.3`, `D-B4.2`, `D-B5.1`,
+# `D-B5.2`. (`D-B2.1` y `D-B3.1` arregladas pero **no vistas morder**; `D-B3.2` sin
+# resolver; `D-B4.1` ✅ pagada hoy.)
 
 ```
 Nombre: TEAPP  (Teaching English Application)
@@ -14410,6 +14422,73 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   📌 Lo que lo salvó fue **no escribir yo la respuesta**: la produjo un worker real y se
   grabó, para que los dos supervisores vieran exactamente el mismo texto. **Un cebo
   redactado por quien monta el experimento mide al que lo redactó.**
+
+- **El freno del «derecho a negarse» DISCRIMINA, y hubo que pagar para saberlo** (sesión 95,
+  `D-B4.1`). Ayer se vio morder **en el único caso que lo justifica**. Hoy, dos brazos con
+  trabajo que **sí** era suyo: los dos **trabajaron**. Y el brazo duro mata el confundido —
+  se le dijo *«un supervisor te rechazó»* sobre un encargo correcto **y no se dejó
+  sugestionar**. 🔑 **La deuda de ayer resultó ser el instrumento de hoy:** sin saber que el
+  freno discrimina, una queja llegando arriba en B.5 no habría querido decir nada.
+  📌 La apuesta acertó los tres puntos y los números al **+2 %** — pero el tercero **por la
+  razón equivocada**: predije que costaría más *«porque mencionaría el aviso»* y **no lo
+  mencionó ni una vez**; el sobrecosto era todo de tokens de entrada. **Acertar la casilla no
+  es haber acertado el mecanismo.**
+- **Una frase añadida al system prompt DESPLAZA a la que ya estaba dentro** (sesión 95,
+  hallazgo lateral, `D-B4.2`). Las dos corridas con el derecho a negarse **perdieron la
+  fuente en la prosa** (*«tasa de mercado de 20 de agosto»*, sin `open.er-api.com`); las
+  cinco con el prompt viejo la conservaron. **5 de 5 contra 0 de 2.** 🔑 Es B.4 al revés:
+  allí una instrucción del *encargo* perdía contra el system prompt; aquí una frase nueva
+  del system prompt le gana a una vieja. **Un freno no se suma gratis: empuja.**
+  ⭐ **Y lo que de verdad pasó: el contrato de A.3 SE VIO MORDER.** `fuente` llegó completa
+  2 de 2 porque sale del harness, no de la redacción. El defecto de A.2 reapareció **solo,
+  sin que nadie lo provocara**, y el arreglo aguantó. Por `LM.13` dejó de ser una nota.
+  ⚠️ **No está medido** —2 corridas contra 5— y se dice antes de que suene a dato.
+
+- **Un experimento verde que no midió nada, y el marcador mentía a MI FAVOR** (sesión 95, y
+  es el fallo del día). B.5 iba a medir si una queja sobrevive dos capas. El marcador
+  imprimió *«no · dice que algo no se pudo resolver»* → titular: *«la queja no sobrevive»*,
+  **el veredicto más dramático de los tres, e inventado**. 🚨 **No hubo enrutado equivocado:**
+  mi inyección torcía `nombre=`, que es **solo una etiqueta** del registro. El encargo seguía
+  diciendo `400 EUR`, el worker lo hizo **bien**, y el de arriba dijo *«ambas se resolvieron
+  exitosamente»* — **que era verdad**. 🔑 **Lo cazaron los NÚMEROS, no el texto:** la tabla de
+  gasto tenía **dos líneas `usd` y ninguna `eur`**. La prosa de las tres capas era impecable y
+  no decía nada. **Sexta sesión seguida en que lo ciego es lo escrito ese mismo día** — y la
+  primera en que el error **favorecía** mi apuesta, que es la que menos se revisa.
+  → 📌 **La prueba que faltaba costaba $0,00**: bastaba leer el texto que se le iba a mandar
+    al worker. Ahora existe (12-14) y **su ausencia costó $0,0247**.
+- **⭐ Los tres «especialistas» de A.2 y A.3 NUNCA FUERON TRES ESPECIALISTAS** (sesión 95, y
+  es el hallazgo del día, destapado por el fallo de arriba). Son **el mismo worker con tres
+  etiquetas**: el system prompt dice *«eres un especialista en UNA sola moneda»* y **nunca
+  dice cuál**; `tasa` y `convertir` reciben la moneda por parámetro. **La especialización
+  vivía en un `string` del registro, no en una restricción.** → `D-B5.2`.
+  📌 **Y afina el hallazgo de la 94 en vez de retirarlo:** el worker de B.4 se negó porque
+  detectó una **contradicción dentro del sobre** —encargo contra contexto—, **no** *«esta
+  moneda no es la mía»*. El derecho a negarse sigue en pie; **su mecanismo es más estrecho
+  de lo que se escribió ayer.**
+- **La prosa perdió el dato y el contrato lo salvó, en la MISMA corrida** (sesión 95, y no se
+  montó: apareció solo en la línea base de B.5). Capa 3 → capa 2 cruza un **contrato**: la
+  fuente y la fecha llegaron **enteras**, y la capa 2 las puso en una tabla. Capa 2 → capa 1
+  cruza **prosa**: **las dos murieron**. Mismo modelo, mismo minuto, misma corrida.
+  🔑 **Lo único distinto es la FORMA de lo que cruza** — y la capa 2 tenía en su system prompt
+  la orden explícita de conservarlas. **Es A.2 contra A.3 una capa más arriba, con un grupo
+  de control que nadie tuvo que construir.**
+- **Una apuesta a la que se le dio la oportunidad de fallar, y falló** (sesión 95). Aposté que
+  a tres capas la contabilidad contaría de menos. **Cuadró al centavo en las dos corridas.**
+  📌 Se anota **cómo** se le dio la oportunidad: la forma barata de ganar era sumar solo lo que
+  la capa 2 gastó ella sola. **Se sumó el total a propósito, y la prueba 10 lo vigila.**
+  🔑 **Una apuesta que no puede perder no es una apuesta, es una ilustración.**
+- **El «casi nunca» del plan, por fin con un número** (sesión 95). En las dos corridas de tres
+  capas, **el 38,6 % del gasto se va en capas que no averiguan ni un dato**: los workers
+  cuestan el 61,4 % y las dos capas de arriba **solo re-dicen lo que abajo ya dijo**.
+  📌 Y otra estimación mía inflada, la tercera del bloque: aposté *«el intermediario cuesta
+  ~$0,007, como un worker»* y costó **$0,0032**, menos de la mitad. Da 2 vueltas sin
+  herramientas; un worker da 3 con menú. **Era contable antes de correr.**
+- **Una línea del sobre de B.5 resultó FALSA, y se corrige** (sesión 95). Decía *«una
+  topología nueva no toca `orquestador.py`»*. Cierto para `reparto`, **falso para B.5**: la
+  capa 2 necesita otro system prompt, otro menú y otro puente, y los tres estaban clavados
+  como variables del módulo. 📌 Entraron por la puerta con sus valores por defecto intactos y
+  **la prueba 1 vigila que sigan siendo `None`** — si uno cambiara, **A.2 dejaría de ser A.2
+  sin dar un error** y sus números pagados dejarían de valer.
 
 ---
 

@@ -310,19 +310,26 @@ FUNCIONES_ORQ = {
 #    El modelo solo puede PEDIR. Quien decide si algo corre en paralelo es el
 #    harness — o sea, estas veinte líneas.
 
-def ejecutar_un_bloque(bloque, contabilidad, verboso=True):
+def ejecutar_un_bloque(bloque, contabilidad, verboso=True, funciones=None):
     """Ejecuta UN `tool_use` y devuelve su `tool_result`.
 
     ⭐ Y LO IMPORTANTE ES LO QUE NO SABE: no sabe si es el primero de tres en
        fila o uno de tres a la vez. Esa ignorancia es lo que permite que el
        reparto sea intercambiable — si esta función supiera de hilos, cambiar
        la topología obligaría a reescribirla.
+
+    ⭐ B.5 — `funciones` entra por la puerta, igual que `reparto` en B.2, y por
+       la misma razón: la capa de en medio de B.5 es OTRO orquestador con OTRO
+       puente. Si el puente siguiera siendo el global, la única forma de tener
+       dos menús sería copiar este archivo.
+       📌 Por defecto es `FUNCIONES_ORQ`, así que A.2 no cambia de conducta.
     """
-    funcion = FUNCIONES_ORQ.get(bloque.name)
+    funciones = funciones if funciones is not None else FUNCIONES_ORQ
+    funcion = funciones.get(bloque.name)
     if funcion is None:
         salida = {
             "error": f"No existe la herramienta '{bloque.name}'. "
-                     f"Las tuyas son: {', '.join(FUNCIONES_ORQ)}."
+                     f"Las tuyas son: {', '.join(funciones)}."
         }
     else:
         try:
@@ -351,8 +358,8 @@ def ejecutar_un_bloque(bloque, contabilidad, verboso=True):
                          "programa. No lo llames otra vez igual."
             }
 
-    anotar("herramienta", capa="orquestador", nombre=bloque.name,
-           entrada=bloque.input, salida=salida)
+    anotar("herramienta", capa=contabilidad.get("capa", "orquestador"),
+           nombre=bloque.name, entrada=bloque.input, salida=salida)
 
     return {
         "type": "tool_result",
@@ -361,7 +368,7 @@ def ejecutar_un_bloque(bloque, contabilidad, verboso=True):
     }
 
 
-def reparto_en_serie(bloques, contabilidad, verboso=True):
+def reparto_en_serie(bloques, contabilidad, verboso=True, funciones=None):
     """El reparto de toda la vida: uno detrás de otro.
 
     Es el `for` de A.2 sin una coma de diferencia, y sigue siendo el valor por
@@ -370,7 +377,8 @@ def reparto_en_serie(bloques, contabilidad, verboso=True):
     ⏱️ Su tiempo es la SUMA de los tres. No es un defecto que se pueda
        optimizar dentro de esta función: es lo que significa "en serie".
     """
-    return [ejecutar_un_bloque(b, contabilidad, verboso) for b in bloques]
+    return [ejecutar_un_bloque(b, contabilidad, verboso, funciones)
+            for b in bloques]
 
 
 
@@ -380,7 +388,8 @@ def reparto_en_serie(bloques, contabilidad, verboso=True):
 
 def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                        presupuesto_usd=PRESUPUESTO_ORQ_USD, verboso=True,
-                       reparto=None):
+                       reparto=None, sistema=None, tools=None, funciones=None,
+                       nombre="orquestador"):
     """Corre la capa de arriba y devuelve un diccionario con LAS DOS capas.
 
     Si comparas este bucle con el de `worker.correr_worker`, verás que son el
@@ -396,12 +405,22 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
     # Por defecto, en serie: A.2 no cambia de comportamiento por este refactor.
     reparto = reparto or reparto_en_serie
 
+    # ⭐ B.5 — LAS TRES PIEZAS QUE HACÍAN DE ESTE BUCLE «EL» ORQUESTADOR Y AHORA
+    #    LO HACEN «UN» ORQUESTADOR: con qué habla, qué menú ve y qué hay detrás.
+    #    Con esto, la capa de en medio de B.5 no es un archivo nuevo: es esta
+    #    misma función llamada con otros tres argumentos.
+    #    📌 Los tres por defecto son los de A.2. Si algún día uno de estos
+    #       `or` se pone en verde por accidente, A.2 se entera por sus números.
+    sistema = sistema or SISTEMA_ORQ
+    tools = tools if tools is not None else TOOLS_ORQ
+
     gastado_usd = 0.0
     entrada_tokens = 0
     salida_tokens = 0
     llamadas_api = 0
 
     contabilidad = {
+        "capa": nombre,
         "workers": 0,
         "coste_workers_usd": 0.0,
         "llamadas_api_workers": 0,
@@ -411,7 +430,7 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
     }
 
     arranque = time.monotonic()
-    anotar("orquestador_inicio", tarea=tarea)
+    anotar("orquestador_inicio", capa=nombre, tarea=tarea)
 
     if verboso:
         print(f"\n🧠 orquestador ← {tarea}")
@@ -430,8 +449,8 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                 respuesta = agente.cliente.messages.create(
                     model=MODELO,
                     max_tokens=2048,
-                    system=SISTEMA_ORQ,
-                    tools=TOOLS_ORQ,
+                    system=sistema,
+                    tools=tools,
                     messages=mensajes,
                 )
                 este_costo = agente.costo(respuesta.usage)
@@ -439,7 +458,7 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                 entrada_tokens += respuesta.usage.input_tokens
                 salida_tokens += respuesta.usage.output_tokens
                 llamadas_api += 1
-                anotar("llamada_api", capa="orquestador", intento=intento,
+                anotar("llamada_api", capa=nombre, intento=intento,
                        entrada=respuesta.usage.input_tokens,
                        salida=respuesta.usage.output_tokens,
                        costo_usd=round(este_costo, 6),
@@ -448,7 +467,7 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                 return respuesta
 
             except agente.REINTENTABLES as fallo:
-                anotar("error_temporal", capa="orquestador", intento=intento,
+                anotar("error_temporal", capa=nombre, intento=intento,
                        tipo=type(fallo).__name__)
                 if intento == agente.REINTENTOS_PROPIOS:
                     raise
@@ -458,7 +477,7 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                 time.sleep(espera)
 
             except anthropic.APIStatusError as fallo:
-                anotar("error_permanente", capa="orquestador",
+                anotar("error_permanente", capa=nombre,
                        tipo=type(fallo).__name__, codigo=fallo.status_code)
                 raise
 
@@ -486,7 +505,7 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
             "workers_usados":           contabilidad["workers"],
             "detalle_workers":          contabilidad["detalle"],
         }
-        anotar("orquestador_fin", **resultado)
+        anotar("orquestador_fin", capa=nombre, **resultado)
         return resultado
 
     for vuelta in range(1, max_vueltas + 1):
@@ -517,7 +536,7 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
         #       EXACTAMENTE igual que antes y sus números siguen siendo suyos.
         #       El reparto en paralelo lo trae `fan_out.py`.
         bloques = [b for b in respuesta.content if b.type == "tool_use"]
-        resultados = reparto(bloques, contabilidad, verboso)
+        resultados = reparto(bloques, contabilidad, verboso, funciones)
 
         historial.append({"role": "user", "content": resultados})
 

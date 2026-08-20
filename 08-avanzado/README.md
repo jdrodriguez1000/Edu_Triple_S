@@ -1797,6 +1797,135 @@ Cinco sesiones seguidas lo ciego ha sido **lo escrito ese mismo día**:
    → La apuesta 1 tiene que poder salir «sí, B.5 es una topología de verdad», o no es una
      apuesta.
 
+---
+
+#### 📊 B.5 — LO QUE SALIÓ, el 2026-08-21 (sesión 95). **$0,049666**
+
+`profundidad.py` · **14 pruebas gratis** · dos corridas de tres capas.
+
+---
+
+##### 🚨 EL INSTRUMENTO CIEGO ERA EL MÍO — sexta sesión seguida, y esta vez mentía A FAVOR
+
+**El marcador imprimió *«no · dice que algo no se pudo resolver»*.** Leído sin mirar más, el
+titular del día habría sido **«la queja no sobrevive dos capas»** — el veredicto más
+dramático de los tres. **Y habría sido inventado.**
+
+Lo que pasó de verdad, leído en el registro:
+
+```
+worker llamado: usd          ← la etiqueta
+encargo:  «Convierte 400 EUR a pesos colombianos.»
+contrato: moneda EUR · pesos 1.444.152     ← lo hizo BIEN
+```
+
+**No hubo enrutado equivocado.** La inyección torcía `nombre=`, que es **solo una etiqueta**
+para el registro y la pantalla. El encargo seguía diciendo `400 EUR`, las herramientas
+reciben la moneda por parámetro, y el worker trabajó correctamente. El de arriba dijo
+*«ambas facturas se resolvieron exitosamente»* — **y era verdad**.
+
+🔑 **LO CAZARON LOS NÚMEROS, NO EL TEXTO.** La tabla de gasto tenía **dos líneas `usd` y
+ninguna `eur`**: los dos encargos habían ido al mismo sitio. La prosa de las tres capas era
+impecable y no decía nada. **Un verde no se audita solo** (`LM.15`), y lo único que lo
+contradijo fue una cifra que nadie había puesto ahí para eso.
+
+⭐ **Y DE AHÍ SALIÓ ALGO MÁS GRANDE QUE EL EXPERIMENTO: los tres «especialistas» de A.2 y
+A.3 NUNCA FUERON TRES ESPECIALISTAS.** Son el **mismo worker con tres etiquetas**. El system
+prompt dice *«eres un especialista en UNA sola moneda»* y **nunca dice cuál**; `tasa` y
+`convertir` reciben la moneda por parámetro. **La especialización vivía en un `string` del
+registro, no en una restricción.**
+
+📌 **Y obliga a afinar el hallazgo de la 94, no a retirarlo.** El worker de B.4 se negó
+diciendo *«el usuario pidió 400 euros, no 400 dólares»*: detectó una **contradicción DENTRO
+del sobre** —el encargo decía una cosa y el contexto otra—, **no** *«esta moneda no es la
+mía»*. El derecho a negarse sigue en pie; **su mecanismo es más estrecho de lo que se
+escribió ayer.** Es la sesión 84 otra vez: *nombrar un mecanismo no es haberlo medido.*
+
+---
+
+##### 🎯 EL MARCADOR DE LAS TRES APUESTAS
+
+**1️⃣ ¿ES UNA TOPOLOGÍA DE VERDAD? → ✅ ACERTADA, las dos mitades.**
+`profundidad.py` **no tiene ni un bucle nuevo**: la capa 2 es `correr_orquestador` llamada
+con otros tres argumentos. Se colapsó más que las cuatro anteriores. **Y aun así trajo un
+modo de fallo que ninguna podía tener** — el que se acaba de describir arriba nació aquí.
+⚠️ **Con una salvedad que se anota:** lo que apareció **no** fue el modo de fallo apostado
+(la queja tragada). Fue **otro**. La vara —*«una topología es real cuando aparece un modo de
+fallo que antes no existía»*— **acierta**; el fallo concreto que predije, no.
+
+**2️⃣ ¿SOBREVIVE UNA QUEJA A DOS CAPAS? → ⬜ SIN RESPONDER. No hubo presa que cazar.**
+Es `LM.13` y es la **segunda vez en el bloque B**: en B.3 el cazador se quedó sin estrenar
+porque nadie falló; aquí porque **el fallo no llegó a ocurrir**. → **`D-B5.1`**.
+
+⭐ **PERO LA CORRIDA SANA CONTESTÓ EL MECANISMO SIN QUE NADIE SE LO PIDIERA:**
+
+| frontera | qué cruza | ¿sobreviven `fuente` y `fecha`? |
+|---|---|---|
+| capa 3 → capa 2 | **contrato** (6 campos) | **sí, enteras** — la capa 2 las puso en una tabla |
+| capa 2 → capa 1 | **prosa** | **NO — se pierden las dos** |
+
+🔑 **Misma corrida, mismo modelo, mismo minuto. Lo único distinto es la FORMA de lo que
+cruza.** Es A.2 contra A.3 repetido una capa más arriba, **y sin haberlo montado**. La capa 2
+tenía en su system prompt la orden explícita de conservar fuente y fecha —y las conservó—;
+lo que no tenía era **un contrato**, y ahí murieron. 📌 Es media apuesta 2 cobrada: el
+mecanismo apostado (**la prosa deforma; el arreglo es un contrato, no un prompt mejor**)
+queda **medido**. Lo que falta es la queja.
+
+**3️⃣ ¿LA FACTURA Y EL RELOJ? → ❌ FALLADA en su mitad principal, y es un buen dato.**
+La contabilidad de arriba **cuadró al centavo** con el registro sumado aparte, **en las dos
+corridas**: `$0,024920` = `$0,024920` y `$0,024746` = `$0,024746`. **El sospechoso nº 1 del
+sobre NO disparó.**
+📌 Y se anota cómo se le dio la oportunidad de fallar: la forma barata de ganar la apuesta
+era sumar solo lo que la capa 2 gastó ella sola. **Se sumó `coste_total_usd` a propósito, y
+hay una prueba (la 10) que lo vigila.** Una apuesta que no puede perder no es una apuesta.
+
+**Pero la segunda mitad SÍ dio número, y es el «casi nunca» del plan medido:**
+
+| capa | qué hace | corrida sana | % |
+|---|---|---|---|
+| 3 — workers | **el trabajo de verdad** | $0,015309 | **61,4 %** |
+| 2 — intermediarios | re-dice lo que abajo ya dijo | $0,006494 | 26,1 % |
+| 1 — orquestador | re-dice lo que la 2 ya dijo | $0,003117 | 12,5 % |
+
+🔑 **El 38,6 % del gasto se va en capas que no averiguan NI UN DATO** — y sale **idéntico**
+en las dos corridas. Eso es *«profundidad > 2: casi nunca»* con una cifra detrás.
+📌 Y una estimación mía que salió mal, otra vez del lado de inflar: aposté *«el intermediario
+cuesta ~$0,007, como un worker»*. Costó **$0,0032**, **menos de la mitad**. Un intermediario
+da 2 vueltas sin herramientas; un worker da 3 con menú. **Era contable antes de correr.**
+
+---
+
+##### 🧾 Deudas que deja B.5
+
+| # | Qué es | Cuesta |
+|---|---|---|
+| `D-B5.1` | **la apuesta 2 sigue en blanco**: ¿sobrevive una queja a dos capas? | **~$0,025**, una corrida |
+| `D-B5.2` | los «especialistas» son **etiquetas, no restricciones**. ¿Debe un worker de divisa llevar su moneda clavada? | decisión de diseño, $0,00 |
+
+> ✅ **`D-B5.1` ya está lista para pagarse de una sola vez.** El arreglo se hizo **sin volver
+> a correr**: `_torcer` ahora tuerce **el encargo**, no la etiqueta, y las **pruebas 12-14**
+> lo ven morder **gratis** — basta leer el texto que se le iba a mandar al worker.
+> 🔑 **Arreglar el código es gratis; la corrida es lo que cuesta.** Y una corrida nueva hoy
+> habría movido dos variables a la vez.
+> 📌 **Esa prueba es la que faltaba, y su ausencia costó $0,0247.** Un instrumento que no se
+> ha visto morder es una nota, no un instrumento — y esta vez se podía comprobar **sin API**.
+
+---
+
+##### 🛠️ Lo que B.5 tocó, y una línea del sobre que resultó falsa
+
+⚠️ **El sobre decía: *«una topología nueva NO toca `orquestador.py`»*. Es falso, y se
+corrige.** Era cierto para `reparto` —la topología del bloque B.2—, pero la capa 2 necesita
+**otro system prompt, otro menú y otro puente**, y los tres estaban clavados como variables
+del módulo. Entraron por la puerta hoy, con sus tres valores por defecto intactos y **la
+prueba 1 vigilando que sigan siendo `None`**, porque si uno cambiara, **A.2 dejaría de ser
+A.2 sin dar un error** y sus números pagados dejarían de valer.
+
+📌 `fan_out.py` se puso al día en dos líneas: su reparto pasa el puente hacia abajo. **Las 8
+pruebas del paralelismo, las 13 del router y las 18 del supervisor siguieron verdes** después
+del cambio — que es la única razón por la que se puede afirmar que A.2 no se movió.
+
+
 ### 🛡️ BLOQUE C — El harness a dos capas
 
 Sin esto un orquestador es una máquina de quemar dinero: cada worker multiplica las
