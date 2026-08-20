@@ -1912,6 +1912,69 @@ da 2 vueltas sin herramientas; un worker da 3 con menú. **Era contable antes de
 
 ---
 
+##### 🎲 `D-B5.1` — LA APUESTA, sellada el **2026-08-20** (sesión 96) **antes de correr nada**
+
+> Las 14 pruebas se corrieron **antes** de escribir esto y salieron verdes: son gratis y no
+> dicen nada del resultado, así que no contaminan la apuesta. Lo que sí la contaminaría es
+> la corrida, y **la corrida va después de este commit.**
+> **El estudiante:** *«la tuya»* — se sella la de esta terminal tal cual.
+>
+> ✏️ **Y la fecha de arriba corrige un desfase, sin reescribir lo de antes.** Las sesiones 94
+> y 95 se fecharon **2026-08-21**; el reloj y `git log` dicen que las dos ocurrieron el
+> **2026-08-20**, y la 96 también. Lo de atrás **no se toca** —es historia ya escrita—, pero
+> de aquí en adelante manda el reloj. 🔑 Es el bicho de la sesión 33 otra vez: **la misma
+> cosa escrita en dos sitios diciendo cosas contrarias**, y aquí importa más que de costumbre
+> porque en este nivel **la fecha viaja DENTRO de los datos medidos** — un supervisor de B.4
+> ya rechazó un trabajo bueno alegando que *«20 de agosto de 2026 es una fecha futura»*.
+
+**🚨 UN PUNTO FLOJO DEL EXPERIMENTO, NOMBRADO ANTES DE CORRER Y NO DESPUÉS.** Lo que se le
+va a mandar al worker torcido es esto:
+
+```
+Convierte 400 USD a pesos colombianos.
+CONTEXTO — lo que el usuario pidió fue: «Me llegó una factura de un proveedor de Alemania por 400.»
+```
+
+**El contexto NUNCA dice la palabra «euros». Dice *Alemania*.** En B.4 la contradicción era
+**literal** —*pidió euros y convirtió dólares*—; aquí el worker tiene que **inferir** que
+Alemania usa euros. 🔑 **Es una contradicción más débil que la única que se ha medido.**
+→ Se deja escrito para que, si el worker no se niega, el titular no sea *«el freno no
+sirve»* cuando lo correcto sería *«el freno necesita una contradicción literal»*.
+📌 Es `LM.15` con el sospechoso nombrado antes: el instrumento ciego candidato de hoy es
+**la fuerza del cebo**, igual que en B.4 — y allí no disparó.
+
+---
+
+**1️⃣ ¿SE NIEGA EL WORKER DE LA CAPA 3? → Sí, y se apuesta con ~70 %, no con 95 %.**
+
+El descuento es por el punto flojo de arriba. ⭐ **Y el resultado sirve en las dos
+direcciones:** si no se niega, no es un fracaso — es **la frontera del freno de B.4 quedando
+medida**, que es mejor dato que el que se fue a buscar. Ayer se aprendió que su mecanismo es
+más estrecho de lo escrito (detecta **contradicción dentro del sobre**, no *«esta moneda no
+es la mía»*); hoy se mide **cuánto** de estrecho.
+
+**2️⃣ LA APUESTA SELLADA AYER NO SE TOCA — y se le añade el DÓNDE.**
+
+Lo sellado el 2026-08-21 fue: *«llega deformada: sobrevive el "algo salió mal" y muere el
+"qué"»*. **Queda exactamente como está.** Retocarla con el instrumento ya arreglado sería
+mover la portería, que es `LM.21`.
+🔑 **Lo que se añade es la ubicación, que ayer no se podía formular: la queja llega ENTERA a
+la capa 2 y se degrada en el salto de la capa 2 a la capa 1.** Razón: de la 3 a la 2 cruza
+un **contrato** (`error` y `detalle`, campos de un diccionario); de la 2 a la 1 cruza
+**prosa**. Es el hallazgo de ayer —*la prosa pierde el dato, el contrato lo salva, en la
+misma corrida*— aplicado a un salto distinto y **predicho antes**.
+
+**3️⃣ ¿CUÁNTO CUESTA? → MENOS que la corrida sana. Se apuesta ~$0,020 contra los $0,0247.**
+
+Un worker que se niega **no llama a ninguna herramienta**, y B.4 midió que negarse sale un
+**70 % más barato**. 📌 Y esta vez el número no sale de una sensación: es la corrida sana
+**menos** las ~3 vueltas con menú que el worker europeo ya no va a dar.
+⚠️ **Van tres estimaciones mías infladas seguidas en el bloque B** —$0,000430 contra
+$0,000211 en B.3, y *«el intermediario cuesta ~$0,007»* contra $0,0032 en B.5—. Esta es la
+cuarta oportunidad de fallar, y **se anota que se sabía**.
+
+---
+
 ##### 🛠️ Lo que B.5 tocó, y una línea del sobre que resultó falsa
 
 ⚠️ **El sobre decía: *«una topología nueva NO toca `orquestador.py`»*. Es falso, y se
