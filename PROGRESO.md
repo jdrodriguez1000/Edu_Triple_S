@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 101 — NIVEL 8: **C.4 COMPLETO Y LAS CINCO APUESTAS GANADAS — y lo que más enseñó no fue ninguna de las cinco.** El worker ahora **siempre cierra**: se caiga, se demore o no conteste. 🔑 El crash no tumbaba a nadie —eso ya funcionaba— pero **`correr_worker` que lanza nunca devuelve, y su gasto no entraba en la factura**: $0,004000 gastados, $0,000000 en el libro (`LM.73`). El árbol gana `nodo_abierto`, porque **la ausencia no contradice a nadie** (`LM.74`); el plazo pasa de un residuo de 8,2 min a 90 s **decididos con un dato** (`LM.75`). 🚨 Y `max_vueltas` **nunca había mordido: 0 de 102 cierres registrados** — el archivo que venía a decirlo lo dio por resuelto en su tercer renglón. 💸 Corrida pagada $0,027482: el modelo repitió **la causa que le dio el harness**, sin inventar. 🚨 Hallazgo del día, anotado y NO arreglado a decisión suya: **teníamos la respuesta del CAD y la tiramos** — un `or` que trata `ok` (el proceso) y `pesos` (el resultado) como una sola pregunta. 📊 `fallos.py` nuevo con 26 pruebas · `traza.py` 41→**46** · `LESSONS.md` 72→**76**. 💸 Gasto **$0,034612**, de los que **$0,007130 fueron un error mío** — con la regla de ayer escrita y su lista a medias (`LM.76`). ✅ Y al cierre, a decisión suya, **`worker.py` y `orquestador.py` dejaron de pagar en pelado**: `--pagar` obligatoria y el aviso con el precio LEÍDO de su registro.)
+**Última actualización:** 2026-08-21 (sesión 101 — NIVEL 8: **C.4 COMPLETO Y LAS CINCO APUESTAS GANADAS — y lo que más enseñó no fue ninguna de las cinco.** El worker ahora **siempre cierra**: se caiga, se demore o no conteste. 🔑 El crash no tumbaba a nadie —eso ya funcionaba— pero **`correr_worker` que lanza nunca devuelve, y su gasto no entraba en la factura**: $0,004000 gastados, $0,000000 en el libro (`LM.73`). El árbol gana `nodo_abierto`, porque **la ausencia no contradice a nadie** (`LM.74`); el plazo pasa de un residuo de 8,2 min a 90 s **decididos con un dato** (`LM.75`). 🚨 Y `max_vueltas` **nunca había mordido: 0 de 102 cierres registrados** — el archivo que venía a decirlo lo dio por resuelto en su tercer renglón. 💸 Corrida pagada $0,027482: el modelo repitió **la causa que le dio el harness**, sin inventar. 🚨 Hallazgo del día, anotado y NO arreglado a decisión suya: **teníamos la respuesta del CAD y la tiramos** — un `or` que trata `ok` (el proceso) y `pesos` (el resultado) como una sola pregunta. 📊 `fallos.py` nuevo con 26 pruebas · `traza.py` 41→**46** · `LESSONS.md` 72→**76**. 💸 Gasto **$0,034612**, de los que **$0,007130 fueron un error mío** — con la regla de ayer escrita y su lista a medias (`LM.76`). ✅ Y al cierre, a decisión suya, **`worker.py` y `orquestador.py` dejaron de pagar en pelado**: `--pagar` obligatoria y el aviso con el precio LEÍDO de su registro. ➡️ **La 102 NO arranca en C.5:** arranca cerrando el hueco que abrió el arreglo de hoy — **la causa `crash_temporal` invita a un reintento que el reparto va a rechazar**, comprobado a $0,00, y son dos instrucciones contrarias del mismo harness en dos turnos seguidos.)
 
 ---
 
@@ -4464,9 +4464,38 @@
 #   **46** · `README.md` del nivel 8 con el bloque C.4 entero · `LESSONS.md`
 #   72 → **76** (`LM.73`–`LM.76`).
 #
-# ➡️ **SIGUIENTE PASO CONCRETO — C.5, el TOPE DE RECURSIÓN** (el bucle
-#   orquestador ↔ worker: dos agentes pueden pasarse la pelota para siempre).
-#   Con cinco deudas encima, todas con dueño:
+# ➡️ **SIGUIENTE PASO CONCRETO — NO ES C.5. ES CERRAR EL HUECO QUE ABRIÓ EL
+#   ARREGLO DE HOY, y después C.5.** Decisión suya al cierre de la 101.
+#
+#   🚨 **INVITAMOS A UN REINTENTO QUE EL PRESUPUESTO VA A RECHAZAR.**
+#   *Importancia: alta · Urgencia: no bloqueante.* La causa `crash_temporal`
+#   —escrita hoy— le dice al modelo *«esta sí puede salir bien al segundo
+#   intento»*. Si acepta la invitación y vuelve a pedir esa moneda,
+#   `reparto.tomar()` **ya no tiene trozo** y le contesta *«es uno de más. No lo
+#   reintentes»*. **Comprobado a $0,00** con el instrumento de C.4: la 4ª llamada
+#   devuelve `sin_trozo: true`.
+#   🔑 **Dos instrucciones contrarias del mismo harness en dos turnos seguidos**,
+#   y la segunda además dice algo FALSO: no es que el worker sobre, es que se le
+#   acabó el sitio. ⭐ Es `LM.71` **por TERCERA vez en tres sesiones** —un arreglo
+#   reabre el que tiene al lado— y ninguna prueba lo vio porque **cada una vigila
+#   su mitad**: la de la causa comprueba el mensaje, la del reparto comprueba el
+#   cuarto worker, y **nadie miraba la frase que va entre las dos**.
+#   📌 Y no se ha visto nunca con dinero delante: `crash_temporal` necesita una
+#   caída real de la API. **Es un modo de fallo que sólo asoma el día peor.**
+#   🔲 **Tres salidas, y es decisión de DISEÑO, no de código:**
+#      (a) reservar un trozo para reintentos
+#      (b) condicionar la invitación a que quede trozo
+#      (c) retirar la invitación: decir la causa y no dar consejo
+#      **(c) es la más honesta y la más pobre.** Sin decidir — se decide al
+#      abrir la 102, y **entra con su prueba al lado o no entra** (`LM.13`).
+#   📌 Está anotado en los tres sitios: `orquestador.py` (en `_CAUSAS`, la
+#      línea), el README del nivel («lo que C.4 deja abierto») y aquí.
+#
+# ➡️ **Y DESPUÉS SÍ, C.5 — el TOPE DE RECURSIÓN** (el bucle orquestador ↔
+#   worker: dos agentes pueden pasarse la pelota para siempre). 📌 Fíjate en que
+#   el hueco de arriba es **su antesala**: un reintento que nadie acota es
+#   exactamente la pelota de C.5, un turno antes.
+#   Con cuatro deudas heredadas encima, todas con dueño y **ninguna de C.4**:
 #   · 🔲 **El `or` de la frontera** (el hallazgo de hoy). Es una decisión de
 #     diseño sin tomar, no un bug: decidir **qué significa un resultado parcial**
 #     antes de tocar la línea.

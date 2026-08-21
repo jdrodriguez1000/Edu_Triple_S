@@ -3700,6 +3700,20 @@ mover la portería—, pero queda dicho por qué está rojo.
 - La corrida pagada: la causa sube limpia y el modelo la repite.
 
 **Abierto, con dueño:**
+- 🔲 🚨 **LA ÚNICA DEUDA QUE ES DE C.4, Y LA ABRIÓ EL ARREGLO DE C.4.** La causa
+  `crash_temporal` le dice al modelo *«esta sí puede salir bien al segundo
+  intento»* — y si acepta la invitación, `reparto.tomar()` **ya no tiene trozo**
+  y le contesta *«es uno de más. No lo reintentes»*. Comprobado a $0,00: la 4ª
+  llamada devuelve `sin_trozo: true`. 🔑 **Dos instrucciones contrarias del mismo
+  harness en dos turnos seguidos**, y la segunda además dice algo falso: no es
+  que el worker sobre, es que se le acabó el sitio. Es `LM.71` **por tercera vez
+  en tres sesiones** —un arreglo reabre el que tiene al lado— y ninguna prueba lo
+  vio porque **cada una vigila su mitad**: una comprueba el mensaje, otra el
+  cuarto worker, y nadie miraba la frase que va entre las dos. 📌 Nunca se ha
+  visto con dinero delante: `crash_temporal` necesita una caída real de la API.
+  **Tres salidas, y es decisión de diseño:** (a) reservar un trozo para
+  reintentos, (b) condicionar la invitación a que quede trozo, (c) retirar la
+  invitación. **(c) es la más honesta y la más pobre.**
 - 🔲 🚨 **Teníamos la respuesta del CAD y la tiramos.** El worker cortó a media cadena, pero
   su contrato salió completo y correcto: `pesos: 2.219.774`, `faltan: []`, `discrepa: []`. La
   pregunta del usuario era *«1.000 CAD, ¿cuánto es en pesos?»* — **eso lo teníamos**. Lo que

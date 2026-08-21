@@ -282,6 +282,27 @@ _CAUSAS = {
     # 🔑 Y para el reintentable esa frase no es imprecisa, es **dañina**: le
     #    prohíbe justo lo único que lo arreglaba. Es `LM.71` con otra ropa —
     #    el mensaje que llega primero entierra la causa real.
+    # 🔲 PENDIENTE CON DUEÑO — **PRIMERA COSA DE LA SESIÓN 102, ANTES DE C.5.**
+    #    ⚠️ ESTA FRASE INVITA A UN REINTENTO QUE LA CAPA DE AL LADO VA A
+    #       RECHAZAR, y el hueco lo abrió el arreglo de la sesión 101.
+    #    Si el modelo acepta la invitación y vuelve a pedir esa moneda,
+    #    `reparto.tomar()` ya no tiene trozo —el encargo se repartió para tres—
+    #    y le contesta: *«es uno de más. No lo reintentes.»* Comprobado a $0,00
+    #    con el instrumento de C.4: la 4ª llamada devuelve `sin_trozo: true`.
+    # 🔑 Son DOS INSTRUCCIONES CONTRARIAS DEL MISMO HARNESS en dos turnos
+    #    seguidos, y la segunda además dice algo falso: no es que el worker
+    #    sobre, es que se le acabó el sitio. Es `LM.71` por TERCERA vez en tres
+    #    sesiones —un arreglo reabre el que tiene al lado— y ninguna prueba lo
+    #    vio porque **cada una vigila su mitad**: la de la causa comprueba el
+    #    mensaje, la del reparto comprueba el cuarto worker, y nadie miraba la
+    #    frase que va entre las dos.
+    # 📌 Y no se ha visto nunca con dinero delante: `crash_temporal` necesita
+    #    una caída real de la API. Es un modo de fallo que sólo asoma el día peor.
+    # 🔲 Tres salidas, y la elección es de diseño, no de código:
+    #      (a) reservar un trozo para reintentos
+    #      (b) condicionar la invitación a que quede trozo
+    #      (c) retirar la invitación: decir la causa y no dar consejo
+    #    (c) es la más honesta y la más pobre. Sin decidir.
     "crash_temporal": ("El especialista de {moneda} se cayó por un problema "
                        "PASAJERO de conexión con el servicio, y ya reintentó "
                        "por su cuenta sin suerte. Si te queda margen, esta es "
