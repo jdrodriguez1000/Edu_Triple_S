@@ -40,3 +40,8 @@ caja/
 #      Este cuesta $0,00 y subirlo solo ensucia el `git status` de la siguiente
 #      sesión con un cambio que no significa nada.
 08-avanzado/registro_demo_traza.jsonl
+
+# Las pruebas GRATIS de presupuesto.py escriben aqui, y NO suben: son lineas
+# inventadas. Si cayeran en registro_workers_*.jsonl contaminarian la evidencia
+# PAGADA del nivel 8 -- que es justo el bicho que se cazo en la sesion 99.
+08-avanzado/registro_pruebas_gratis.jsonl

@@ -58,6 +58,9 @@ workers se lanzan es EL MODELO de arriba, en tiempo de ejecución.
 """
 
 import threading
+from pathlib import Path
+
+AQUI = Path(__file__).resolve().parent
 
 
 # ---------------------------------------------------------------------------
@@ -356,6 +359,28 @@ def _pruebas():
     #    worker sustituido por uno falso, así que sigue costando $0,00.
     import orquestador          # dentro, para no morder la importación circular
 
+    # 🐛 EL INSTRUMENTO DE MEDIDA ESCRIBÍA EN LOS DATOS DE VERDAD, Y SE CAZÓ
+    #    CONTANDO — no revisando código.
+    #    Al medir el coste real de una llamada sobre los registros pagados, la
+    #    secuencia que salió era 0,002300 -> 0,002650 -> 0,003000: **los números
+    #    inventados de `_GUION`, aquí abajo.** Las pruebas gratis de este archivo
+    #    llevaban once líneas de mentira metidas en
+    #    `registro_workers_claude-haiku-4-5.jsonl`, que es la EVIDENCIA PAGADA
+    #    del nivel — la que sube a Git justamente porque volver a producirla
+    #    cuesta dinero.
+    # 🚨 Es la sesión 50 de TEAPP, palabra por palabra: *el que estaba ensuciando
+    #    los datos de verdad era la báscula.* Y aquí llevaba puesto desde ayer:
+    #    la prueba `P9` ya venía dejando su línea `sin_trozo`.
+    # 🔑 Lo que lo hace peor que un dato falso es que **no da error**: un registro
+    #    contaminado se lee igual de bien, y el conteo de mañana saldrá torcido
+    #    sin que nadie lo note. Lo cazó que los números falsos eran RECONOCIBLES.
+    #    Si `_GUION` hubiera usado cifras verosímiles, seguirían ahí.
+    # → Las pruebas escriben en su propio archivo, y ese NO sube (`.gitignore`).
+    import worker as w
+    _reg_w, _reg_o = w.REGISTRO, orquestador.REGISTRO
+    w.REGISTRO = AQUI / "registro_pruebas_gratis.jsonl"
+    orquestador.REGISTRO = w.REGISTRO
+
     vistos = []
 
     def worker_falso(encargo, nombre="x", presupuesto_usd=None, verboso=True, **kw):
@@ -412,6 +437,145 @@ def _pruebas():
               f"{vistos}")
     finally:
         orquestador.worker.correr_worker = real
+
+    # --- P11/P12/P13/P14: EL TECHO ARREGLADO, MEDIDO SIN PAGAR UN CENTAVO -
+    # 🚨 ES LA OBLIGACIÓN DE `LM.13` PARA EL ARREGLO DE HOY: un freno que nadie
+    #    ha visto morder es una nota. Ayer el freno viejo se pasó un 27,5 % del
+    #    techo; hoy se cambió `gastado >= techo` por `gastado + estimado > techo`
+    #    y **eso hay que verlo, no prometerlo**.
+    #
+    # ⭐ Y SE MIDE SOBRE EL BUCLE DE VERDAD, no sobre una copia de la aritmética.
+    #    Lo único falso es la API: un cliente de mentira que devuelve respuestas
+    #    con `usage` inventado pero REALISTA, y un puente de herramientas de
+    #    mentira para no tocar la red. Todo lo demás —el `if` del freno, la
+    #    estimación, `cerrar()`, el `except`— es el código que correrá pagando.
+    # 🔑 Comprobar una copia de la fórmula habría dado verde con el bug de ayer
+    #    dentro: la copia habría tenido el bug copiado.
+
+    class _Uso:
+        def __init__(self, e, s):
+            self.input_tokens, self.output_tokens = e, s
+
+    class _Bloque:
+        def __init__(self, tipo, **kw):
+            self.type = tipo
+            self.__dict__.update(kw)
+
+    class _Respuesta:
+        def __init__(self, bloques, stop, uso):
+            self.content, self.stop_reason, self.usage = bloques, stop, uso
+
+    # Tres llamadas con el historial CRECIENDO, que es lo que pasa de verdad:
+    # cada vuelta reenvía todo lo anterior, así que la entrada sube y la llamada
+    # se encarece. Los tokens salen de quedar cerca de los $0,0024 medidos.
+    _GUION = [
+        (1400, 180, "tasa"),
+        (1900, 150, "convertir"),
+        (2400, 120, None),          # None = redacta y termina
+    ]
+
+    class _ClienteFalso:
+        def __init__(self):
+            self.messages = self
+            self.n = 0
+
+        def create(self, **kw):
+            e, s, herr = _GUION[min(self.n, len(_GUION) - 1)]
+            self.n += 1
+            if herr is None:
+                return _Respuesta([_Bloque("text", text="Son 4.000.000 de pesos.")],
+                                  "end_turn", _Uso(e, s))
+            return _Respuesta(
+                [_Bloque("tool_use", name=herr, id="t%d" % self.n, input={})],
+                "tool_use", _Uso(e, s))
+
+    def _correr_worker_falso(presupuesto_usd):
+        """Corre el worker REAL con la API y las herramientas de mentira."""
+        cliente_real = w.agente.cliente
+        puente_real = w.puente_para
+        w.agente.cliente = _ClienteFalso()
+        w.puente_para = lambda nombres: {
+            "tasa": lambda **kw: {"tasa": 4000.0, "fuente": "falsa", "fecha": "hoy"},
+            "convertir": lambda **kw: {"pesos": 4000000.0},
+        }
+        try:
+            return w.correr_worker("falso", nombre="prueba",
+                                   presupuesto_usd=presupuesto_usd, verboso=False)
+        finally:
+            w.agente.cliente = cliente_real
+            w.puente_para = puente_real
+
+    # P11 · con el trozo APRETADO el freno muerde ANTES de pasarse del techo.
+    #       Es la prueba que el freno viejo habría FALLADO: con `>=` la llamada 2
+    #       se autorizaba (gastado $0,00230 < trozo $0,003606) y el gasto acababa
+    #       en $0,00495 — un 37 % por encima del trozo.
+    trozo_ap = RepartoDeEntrada(total_usd=PRESUPUESTO_APRETADO_USD).trozo_nominal()
+    rp = _correr_worker_falso(trozo_ap)
+    check("P11 · el trozo APRETADO se respeta: el gasto NO se pasa del techo",
+          rp["coste_usd"] <= trozo_ap and rp["motivo"] == "presupuesto",
+          "gasto $%.6f de $%.6f - motivo=%s"
+          % (rp["coste_usd"], trozo_ap, rp["motivo"]))
+
+    # P11b · Y EL PRECIO DEL ARREGLO, COMO NÚMERO Y NO COMO ADJETIVO.
+    #        El freno viejo dejaba llegar a la llamada 3; este corta en la 2.
+    #        Una llamada menos de trabajo hecho, a cambio de no pasarse del techo.
+    check("P11b · y el corte se ADELANTA: una sola llamada, no dos",
+          rp["llamadas_api"] == 1,
+          "%d llamadas - herramientas: %s"
+          % (rp["llamadas_api"], rp["herramientas"] or "ninguna"))
+
+    # P12 · LA BÁSCULA DE LA PROPIA ESTIMACIÓN. Estimar puede quedarse corto, y
+    #       cuando se queda corto el techo se pasa igual. Que este contador
+    #       exista es lo que separa el arreglo de una promesa.
+    trozo_no = RepartoDeEntrada().trozo_nominal()
+    rn = _correr_worker_falso(trozo_no)
+    check("P12 · la estimación no se quedó corta en ninguna llamada",
+          rn["estimaciones_cortas"] == 0,
+          "%d de %d - peor llamada $%.6f vs estimada $%.6f"
+          % (rn["estimaciones_cortas"], rn["llamadas_api"],
+             rn["peor_llamada_usd"], w.COSTE_ESTIMADO_LLAMADA_USD))
+
+    # P13 · Y LA OTRA MITAD, QUE ES `P1` EN EL CAMINO REAL: con el presupuesto
+    #       NORMAL el freno arreglado tiene que seguir CALLADO. Un freno más
+    #       estricto que muerde en operación normal no es más seguro: es una
+    #       avería, y sería la forma fácil de "ganar" esta sesión.
+    check("P13 · con presupuesto NORMAL el freno arreglado SIGUE callado",
+          rn["motivo"] is None and rn["ok"] and rn["llamadas_api"] == 3,
+          "motivo=%s - %d llamadas - $%.6f de $%.6f"
+          % (rn["motivo"], rn["llamadas_api"], rn["coste_usd"], trozo_no))
+
+    # P14 · LA CAUSA CRUZA LA FRONTERA HACIA ARRIBA (2º pendiente de C.2).
+    #       Ayer subía `{"error": "No se pudo consultar USD."}` sin causa, y el
+    #       modelo se inventó una: «limitaciones en el servicio».
+    def _worker_cortado(encargo, nombre="x", presupuesto_usd=None, verboso=True, **kw):
+        return {"ok": False, "texto": "(me detuve: se acabo el presupuesto)",
+                "coste_usd": 0.0, "vueltas": 1, "llamadas_api": 1,
+                "entrada_tokens": 0, "salida_tokens": 0, "segundos": 0.0,
+                "herramientas": ["tasa"], "motivo": "presupuesto",
+                "worker": nombre, "datos": None, "faltan": ["pesos"]}
+
+    real2 = orquestador.worker.correr_worker
+    orquestador.worker.correr_worker = _worker_cortado
+    try:
+        conta2 = {"capa": "orquestador", "workers": 0, "coste_workers_usd": 0.0,
+                  "llamadas_api_workers": 0, "entrada_workers": 0,
+                  "salida_workers": 0, "detalle": [], "reparto": None}
+        subio = orquestador.herramienta_consultar_moneda(1000, "USD", conta2,
+                                                         verboso=False)
+        check("P14 · el fallo sube con MOTIVO, no mudo",
+              subio.get("motivo") == "presupuesto",
+              "motivo=%s" % subio.get("motivo"))
+        # ⚠️ Y la segunda mitad, que es la que de verdad importa: el modelo no
+        #    lee `motivo`, lee prosa. Si la causa no viaja en español, se la
+        #    inventa igual aunque el campo exista.
+        causa = (subio.get("causa") or "").lower()
+        check("P14b · y con la causa EN ESPAÑOL, que es lo que el modelo repite",
+              "presupuesto" in causa and "no es un fallo del servicio" in causa,
+              "<<%s>>" % subio.get("causa"))
+    finally:
+        orquestador.worker.correr_worker = real2
+
+    w.REGISTRO, orquestador.REGISTRO = _reg_w, _reg_o
 
     print()
     if fallos:

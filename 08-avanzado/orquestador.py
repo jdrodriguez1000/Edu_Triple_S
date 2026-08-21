@@ -251,6 +251,27 @@ def registro_desviado(modulos=None):
 # 3) EL PUENTE — LA LÍNEA DONDE UN AGENTE SE VUELVE UNA HERRAMIENTA
 # ---------------------------------------------------------------------------
 
+# ⭐ C.2 · CIERRE — LAS CAUSAS, EN LAS PALABRAS QUE EL MODELO VA A REPETIR.
+#
+# Cada frase se escribe pensando en que el orquestador la va a copiar casi tal
+# cual a su respuesta final. Por eso dicen QUÉ pasó y QUÉ hacer, y por eso
+# ninguna culpa a un tercero: la mentira de ayer fue exactamente esa.
+#
+# 📌 Fíjate en que las tres terminan diciéndole si reintentar o no. Un agente al
+#    que le dices «falló» sin decirle «no insistas» reintenta, y reintentar sin
+#    dinero es gastar el poco que queda en fallar otra vez.
+_CAUSAS = {
+    "presupuesto": ("El especialista de {moneda} se quedó sin el presupuesto "
+                    "que se le asignó para esta consulta y se detuvo a medias. "
+                    "No es un fallo del servicio de tasas: es nuestro límite de "
+                    "coste. No lo reintentes."),
+    "max_vueltas": ("El especialista de {moneda} agotó su número máximo de "
+                    "vueltas sin llegar a una respuesta. No lo reintentes."),
+    None: ("El especialista de {moneda} terminó sin el dato de la conversión. "
+           "No lo reintentes."),
+}
+
+
 def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
     """Esta función ES el orquestador entero, conceptualmente.
 
@@ -366,7 +387,25 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
     # `pesos` es el campo sin el cual la consulta no sirvió de nada. Que no esté
     # NO es "un campo vacío más": es que esta moneda no se resolvió.
     if not resultado["ok"] or datos.get("pesos") is None:
+        # 🚨 C.2 · CIERRE — LA CAUSA CRUZA LA FRONTERA, Y ES UN ARREGLO QUE
+        #    COSTÓ UNA MENTIRA VERLO.
+        #    Hasta ayer aquí subía `{"error": "No se pudo consultar USD."}` y
+        #    nada más. El modelo de arriba, sin causa, se la inventó: dijo que
+        #    las monedas fallaron «debido a limitaciones en el servicio».
+        #    El servicio estaba perfecto — el que se quedó sin dinero fui yo.
+        # 🔑 No mintió sobre el QUÉ: mintió sobre el POR QUÉ, y lo hizo porque
+        #    nadie se lo dijo. **A un agente al que no le das la causa se la
+        #    inventa, y suena razonable.** Es el mismo agujero que `motivo`
+        #    acababa de tapar entre el worker y la contabilidad, UNA FRONTERA
+        #    MÁS ARRIBA. Un arreglo no se propaga solo a la siguiente costura.
+        # ⚠️ Y sube en DOS formas a propósito, porque tienen dos lectores:
+        #    · `motivo` — la etiqueta corta, para nosotros y para las pruebas.
+        #    · `causa`  — la frase en español, para el MODELO, que no lee
+        #      diccionarios de estados: lee prosa y la repite.
         return {"error": f"No se pudo consultar {moneda}.",
+                "motivo": resultado["motivo"],
+                "causa": _CAUSAS.get(resultado["motivo"],
+                                     _CAUSAS[None]).format(moneda=moneda),
                 "detalle": resultado["texto"],
                 "faltan": faltan}
 

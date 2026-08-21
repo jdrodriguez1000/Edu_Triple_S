@@ -121,6 +121,53 @@ MAX_VUELTAS_WORKER = 5
 #    problema que no era suyo. Un tope por worker AÍSLA EL DAÑO.
 PRESUPUESTO_WORKER_USD = 0.05
 
+# ---------------------------------------------------------------------------
+# 🚨 C.2 · CIERRE — EL PRECIO DE LA PRÓXIMA LLAMADA, Y POR QUÉ HAY QUE ADIVINARLO
+# ---------------------------------------------------------------------------
+# Hasta la sesión 98 el freno preguntaba `if gastado >= presupuesto`. Suena bien
+# y NO ACOTA NADA, y se vio con un número: la corrida apretada gastó $0,018388
+# contra un techo de $0,014424 — **un 27,5 % por encima**, y se pasaron los
+# CUATRO participantes.
+#
+# El mecanismo cabe en una línea: la comprobación es ANTERIOR a la llamada, pero
+# **nadie sabe cuánto va a costar la llamada que está autorizando**. Un freno así
+# no acota en `techo`: acota en `techo + N × coste_de_una_llamada`.
+#
+# ⭐ Y LO QUE MÁS ENSEÑA ES QUE ESTE DEFECTO SE DESCARTÓ EN OTRO CANDIDATO.
+#    Al elegir esquema (sesión 98) se rechazó la bolsa común escribiendo que su
+#    pega era «hay que ESTIMAR lo que costará una llamada antes de hacerla».
+#    El esquema elegido tenía la misma pega — sólo que **escondida**: repartir a
+#    la entrada no libra de estimar, **aplaza la estimación al momento de
+#    autorizar, que es donde no se ve**. 🔑 Un defecto que sabes nombrar en la
+#    opción que descartas puede estar entero en la que elegiste.
+#
+# → Así que se estima, y la estimación se declara con sus dos partes:
+COSTE_ESTIMADO_LLAMADA_USD = 0.002404   # MEDIDO: media de las dos llamadas C.1
+
+
+def estimar_proxima_llamada(peor_vista_usd=0.0):
+    """Cuánto va a costar la llamada que estoy a punto de autorizar.
+
+    Dos fuentes, y se toma **la mayor de las dos** a propósito:
+
+      · la constante medida, que es lo único que hay antes de la 1ª llamada;
+      · la peor llamada que ESTE worker ya ha pagado hoy.
+
+    ⭐ La segunda no es un adorno: dentro de un worker el historial **sólo
+       crece**, así que cada llamada manda más tokens de entrada que la
+       anterior. La peor vista no es una media — es un **suelo** razonado para
+       la siguiente.
+
+    ⚠️ Y AQUÍ VA LA HONESTIDAD DEL ARREGLO, ESCRITA ANTES DE MEDIRLO: una
+       estimación puede quedarse corta. Si la llamada real cuesta más de lo
+       estimado, el techo se pasa igual — menos, pero se pasa. El freno arreglado
+       acota en `techo + error_de_estimación`, no en `techo`.
+       🔑 Por eso el worker **cuenta cuántas veces se quedó corto** y lo devuelve
+          en `estimaciones_cortas`. Un arreglo que no trae cómo se comprueba a sí
+          mismo es la nota que `LM.13` prohíbe.
+    """
+    return max(COSTE_ESTIMADO_LLAMADA_USD, peor_vista_usd)
+
 # --- El registro, y vive AQUÍ a propósito ----------------------------------
 # 🚨 ES LA LECCIÓN DE LA SESIÓN 50 DE TEAPP, APLICADA ANTES DE QUE MUERDA: allá
 #    el que estaba ensuciando los datos de verdad era el instrumento de medida.
@@ -335,6 +382,9 @@ def correr_worker(encargo,
     entrada_tokens = 0
     salida_tokens = 0
     llamadas_api = 0
+    # C.2 · cierre — las dos cifras que el techo arreglado necesita:
+    peor_llamada_usd = 0.0      # el suelo de la próxima estimación
+    estimaciones_cortas = 0     # veces que la real costó MÁS que la estimada
     usadas = []          # qué herramientas pidió, en orden. Es evidencia.
     # Lo que pasó por el harness, entero. De aquí sale el contrato de A.3, y
     # por eso se guarda la SALIDA y no solo el nombre: el nombre dice que se
@@ -366,10 +416,21 @@ def correr_worker(encargo,
         es el de esta llamada, no el de la corrida.
         """
         nonlocal gastado_usd, entrada_tokens, salida_tokens, llamadas_api
+        nonlocal peor_llamada_usd, estimaciones_cortas
 
-        if gastado_usd >= presupuesto_usd:
+        # ⭐ C.2 · CIERRE — EL TECHO ACOTA DE VERDAD, Y LA DIFERENCIA ES UN `+`.
+        #    Antes: `if gastado >= presupuesto` — autorizar sin saber el precio.
+        #    Ahora: se pregunta si el dinero alcanza para la llamada CONCRETA
+        #    que se está a punto de hacer.
+        # 📌 El precio de este `+` está dicho arriba y hay que decirlo en voz
+        #    alta: el corte se ADELANTA. Con el freno viejo el worker llegaba
+        #    más lejos y se pasaba del techo; con este corta a tiempo y llega
+        #    menos lejos. **No hay una tercera opción sin cambiar de esquema.**
+        estimado_usd = estimar_proxima_llamada(peor_llamada_usd)
+        if gastado_usd + estimado_usd > presupuesto_usd:
             raise PresupuestoAgotado(
-                f"llevas ${gastado_usd:.4f} de ${presupuesto_usd:.2f}")
+                f"llevas ${gastado_usd:.6f} de ${presupuesto_usd:.6f} y la "
+                f"siguiente llamada cuesta ~${estimado_usd:.6f}: no cabe")
 
         for intento in range(1, agente.REINTENTOS_PROPIOS + 1):
             try:
@@ -390,6 +451,12 @@ def correr_worker(encargo,
                 respuesta = agente.cliente.messages.create(**peticion)
                 este_costo = agente.costo(respuesta.usage)
                 gastado_usd += este_costo
+                # La comprobación de la estimación contra la realidad. Es gratis
+                # —el dato ya está pagado— y es lo único que convierte el arreglo
+                # de arriba en algo medido y no en algo prometido.
+                if este_costo > estimado_usd:
+                    estimaciones_cortas += 1
+                peor_llamada_usd = max(peor_llamada_usd, este_costo)
                 entrada_tokens += respuesta.usage.input_tokens
                 salida_tokens += respuesta.usage.output_tokens
                 llamadas_api += 1
@@ -397,6 +464,7 @@ def correr_worker(encargo,
                        entrada=respuesta.usage.input_tokens,
                        salida=respuesta.usage.output_tokens,
                        costo_usd=round(este_costo, 6),
+                       estimado_usd=round(estimado_usd, 6),
                        acumulado_usd=round(gastado_usd, 6),
                        stop_reason=respuesta.stop_reason)
                 return respuesta
@@ -445,6 +513,9 @@ def correr_worker(encargo,
             "entrada_tokens": entrada_tokens,
             "salida_tokens":  salida_tokens,
             "coste_usd":      round(gastado_usd, 6),
+            # C.2 · cierre — el arreglo del techo, con su propia báscula al lado.
+            "peor_llamada_usd":     round(peor_llamada_usd, 6),
+            "estimaciones_cortas":  estimaciones_cortas,
             "segundos":       round(time.monotonic() - arranque, 2),
         }
         anotar("worker_fin", **resultado)
