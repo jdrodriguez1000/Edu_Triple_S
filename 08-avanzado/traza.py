@@ -257,7 +257,346 @@ def demo(verboso=True):
 
 
 # ---------------------------------------------------------------------------
-# 4) EL PORTERO — ninguna prueba gratis puede escribir en el registro pagado
+# 4) C.1 · PASO 3 — EL REGISTRO GRABADO, Y EL QUE TIENE QUE GRITAR
+# ---------------------------------------------------------------------------
+
+# La corrida de la demo, volcada a disco. NO es un registro pagado: no entra en
+# `REGISTROS` y el portero no lo vigila. Cuesta $0,00 y se puede rehacer.
+REGISTRO_DEMO = AQUI / "registro_demo_c1.jsonl"
+
+
+def grabar_demo(ruta=None, verboso=True):
+    """Corre la demo y **graba** su corrida en un archivo. Devuelve las líneas.
+
+    🔑 POR QUÉ HACE FALTA ESTO, Y NO ES UN RODEO.
+       El paso 3 tiene que torcer el `padre` de un registro **grabado** — así fue
+       como el paso 1 mató a `capa`—. Pero no existe ninguno: los registros
+       pagados de las sesiones 92 a 96 no tienen `id` ni `padre`, y no hay de
+       dónde sacarlos (prueba 20). **Así que hay que fabricarlo.**
+
+    📌 Y al fabricarlo se estrena la forma del PASO 4: «reconstruir una corrida
+       ya grabada» solo puede significar **una corrida nueva**. Aquí está la
+       primera.
+
+    ⚠️ Este archivo NO es un registro pagado y no debe confundirse con uno. Por
+       eso vive con otro nombre, fuera de `REGISTROS`, y el portero no lo mira:
+       el portero vigila que nadie escriba en los de verdad, y este se escribe a
+       propósito cada vez.
+    """
+    ruta = Path(ruta) if ruta else REGISTRO_DEMO
+    _, lineas = demo(verboso=False)
+    ruta.write_text(
+        "\n".join(json.dumps(d, ensure_ascii=False) for d in lineas) + "\n",
+        encoding="utf-8")
+    if verboso:
+        con_padre = sum(1 for d in lineas if d.get("id"))
+        print(f"  grabado: {ruta.name} — {len(lineas)} líneas, "
+              f"{con_padre} con parentesco")
+    return lineas
+
+
+def auditar_arbol(lineas):
+    """El que tiene que gritar. Devuelve la lista de quejas; vacía = árbol sano.
+
+    🚨 ESTE ES EL LECTOR QUE `capa` NUNCA TUVO, Y AHÍ ESTÁ TODO EL PASO 3.
+       El paso 1 midió que `capa` era un adjetivo, y el motivo exacto era que su
+       único lector —`auditar()`— la usaba para **imprimir** un reparto, no para
+       **comprobarlo**. `arbol()` hace hoy lo mismo con `padre`: lo lee para
+       dibujar. Un campo que solo se dibuja no puede estar mal nunca.
+
+    🔑 LAS CUATRO QUEJAS, Y QUIÉN LAS CAZA. No es un detalle de implementación:
+       es la mitad de lo que se apostó esta mañana.
+
+         `padre_inexistente`  ← lo caza `padre` SOLO (apunta a algo que no está)
+         `ciclo`              ← lo caza `padre` SOLO (se muerde la cola)
+         `profundidad`        ← solo lo caza **`profundidad`**
+         `corrida`            ← solo lo caza **`corrida`**
+
+       Las dos primeras son integridad del propio campo. Las dos últimas **no se
+       podrían escribir con `padre` a secas**: hacen falta DOS campos, escritos
+       en el mismo instante, que puedan contradecirse. El apuntador dice «mi
+       padre es t5»; el contador dice «yo estoy en el escalón 2». Si t5 está en
+       el escalón 7, uno de los dos miente — y no hace falta saber cuál para
+       saber que algo se rompió.
+
+    ⭐ Y de ahí sale por qué `capa` no podía estar mal nunca: **estaba sola en su
+       renglón.** Un dato que nadie puede contradecir no es que sea correcto: es
+       que **no es comprobable**, que es otra cosa y peor, porque se le parece.
+
+    ⚠️ LO QUE ESTE AUDITOR **NO** COMPRUEBA, DICHO AQUÍ Y NO ESCONDIDO:
+       que dos líneas con el mismo `id` declaren el mismo padre. Es integridad
+       de verdad y falta. Se deja fuera **a propósito**: ninguna de las cinco
+       torceduras del sobre la ejercita, y un detector que nunca se ve morder es
+       una nota, no un detector (`LM.13`). Queda apuntado para el paso 4.
+    """
+    # Un nodo por `id`. Las líneas viejas sin marca se ignoran: no son un error
+    # del árbol, son de antes de que el árbol existiera (prueba 19).
+    nodos = {}
+    for d in lineas:
+        tid = d.get("id")
+        if tid is None:
+            continue
+        nodos.setdefault(tid, {
+            "padre": d.get("padre"),
+            "profundidad": d.get("profundidad"),
+            "corrida": d.get("corrida"),
+            "tramo": d.get("tramo", "?"),
+        })
+
+    quejas = []
+
+    def quejarse(tipo, tid, detalle):
+        quejas.append({"tipo": tipo, "id": tid, "detalle": detalle})
+
+    for tid, n in nodos.items():
+        padre = n["padre"]
+
+        # 1) El padre tiene que existir. Una raíz (padre None) es legítima.
+        if padre is not None and padre not in nodos:
+            quejarse("padre_inexistente", tid,
+                     f"apunta a «{padre}», que no está en el registro")
+            continue
+
+        # 2) Y la raíz tiene que estar en el escalón 0. Si no, es que alguien le
+        #    quitó el padre a una línea que sí lo tenía.
+        if padre is None:
+            if n["profundidad"] not in (0, None):
+                quejarse("profundidad", tid,
+                         f"no tiene padre pero dice estar en el escalón "
+                         f"{n['profundidad']}")
+            continue
+
+        p = nodos[padre]
+
+        # 3) El contador contra el apuntador. Aquí es donde `profundidad` deja
+        #    de ser decoración del dibujo y se vuelve testigo.
+        if (None not in (n["profundidad"], p["profundidad"])
+                and n["profundidad"] != p["profundidad"] + 1):
+            quejarse("profundidad", tid,
+                     f"dice escalón {n['profundidad']}, pero su padre «{padre}» "
+                     f"está en el {p['profundidad']}")
+
+        # 4) Padre e hijo tienen que ser de la misma corrida. Sin este campo, una
+        #    línea de prueba podría colgar de una línea pagada y el árbol saldría
+        #    creíble — que es el bicho de esta misma sesión, un escalón más
+        #    arriba.
+        if None not in (n["corrida"], p["corrida"]) and n["corrida"] != p["corrida"]:
+            quejarse("corrida", tid,
+                     f"es de la corrida «{n['corrida']}» y su padre «{padre}» "
+                     f"de la «{p['corrida']}»")
+
+    # 5) Ciclos. Se busca subiendo desde cada nodo: si se vuelve a pisar un id ya
+    #    pisado en ESTE camino, la rama se muerde la cola. Sin esto, `arbol()`
+    #    entraría en recursión infinita y el síntoma sería un `RecursionError`,
+    #    que no dice nada de lo que pasó.
+    for tid in nodos:
+        visto, actual_id = [], tid
+        while actual_id is not None and actual_id in nodos:
+            if actual_id in visto:
+                quejarse("ciclo", tid, " → ".join(visto + [actual_id]))
+                break
+            visto.append(actual_id)
+            actual_id = nodos[actual_id]["padre"]
+
+    return quejas
+
+
+def informe_arbol(quejas, titulo="", verboso=True):
+    """Imprime lo que el auditor encontró. Devuelve True si el árbol está sano."""
+    if verboso:
+        if titulo:
+            print(f"\n  {titulo}")
+        if not quejas:
+            print("    ✅ árbol sano: ninguna queja")
+        for q in quejas:
+            print(f"    🚨 [{q['tipo']}] {q['id']}: {q['detalle']}")
+    return not quejas
+
+
+# ---------------------------------------------------------------------------
+# 5) LAS CINCO MENTIRAS — C.1 · PASO 3
+# ---------------------------------------------------------------------------
+#
+# 🚨 EL SOSPECHOSO DE ESTAR CIEGO, NOMBRADO EN EL SOBRE ANTES DE ESCRIBIR ESTO:
+#
+#        «el que elige las cinco torceduras es el mismo que sabe cuáles su
+#         auditor puede cazar»
+#
+#    Cuatro de cinco cazadas sería un resultado sospechosamente cómodo si yo
+#    elegí las cinco. Dos defensas, y las dos están en el código, no en la
+#    intención:
+#
+#    1. `auditar_arbol` se escribió y se congeló ANTES que este apartado.
+#    2. 🔑 **Cada mentira se escribe en su versión más astuta**: se le repara
+#       todo lo demás que podría delatarla. Una mentira que se deja pillar por
+#       un descuido no mide al detector, mide al descuido.
+#
+#    Y la mentira 5 entra en la lista **con su rojo esperado en blanco**: su
+#    prueba exige que el auditor la DEJE PASAR. Una prueba que exige que el
+#    instrumento falle es la única que no se puede escribir a su medida.
+
+def _ids_por_tramo(lineas, nombre):
+    """Los ids cuyo tramo empieza por `nombre`, en el orden en que aparecen."""
+    vistos = []
+    for d in lineas:
+        if d.get("id") and str(d.get("tramo", "")).startswith(nombre):
+            if d["id"] not in vistos:
+                vistos.append(d["id"])
+    return vistos
+
+
+def _cambiar(lineas, tid, **campos):
+    """Copia las líneas con los campos de `tid` cambiados. No muta el original."""
+    salida, n = [], 0
+    for d in lineas:
+        d = dict(d)
+        if d.get("id") == tid:
+            d.update(campos)
+            n += 1
+        salida.append(d)
+    return salida, n
+
+
+def m1_padre_fantasma(lineas):
+    """El `padre` apunta a un `id` que no existe en el registro.
+
+    Es la mentira de un worker cuya línea de arriba se perdió: el gasto sigue
+    ahí, con dueño, y el dueño no está en ninguna parte.
+    """
+    victima = _ids_por_tramo(lineas, "worker:eur")[0]
+    fuera, n = _cambiar(lineas, victima, padre="t999")
+    return fuera, f"{victima} pasa a colgar de «t999», que no existe ({n} líneas)"
+
+
+def m2_ciclo(lineas):
+    """La raíz acaba colgando de su propio nieto: la rama se muerde la cola.
+
+    📌 Esta es la única de las cinco que NO se puede escribir en versión astuta,
+       y el motivo es aritmético, no un descuido mío: **en un ciclo no hay
+       escalones que cuadren.** Alguien tendría que estar un peldaño por debajo
+       de alguien que está por debajo de él. Se anota porque es un hallazgo:
+       **hay mentiras que un segundo testigo delata SIEMPRE.**
+    """
+    raiz = _ids_por_tramo(lineas, "capa:")[0]
+    nieto = _ids_por_tramo(lineas, "worker:cad")[0]
+    fuera, n = _cambiar(lineas, raiz, padre=nieto)
+    return fuera, f"la raíz {raiz} pasa a colgar de su nieto {nieto} ({n} líneas)"
+
+
+def m3_profundidad_vieja(lineas):
+    """Se cambia el `padre` a uno que SÍ existe y se deja la `profundidad` vieja.
+
+    Versión astuta: el padre nuevo es real, es de la misma corrida y no hace
+    ciclo. Lo único que no cuadra es el escalón — o sea, **solo la caza el
+    segundo testigo.** Con `padre` a secas esta mentira sería invisible.
+    """
+    victima = _ids_por_tramo(lineas, "worker:eur")[0]
+    raiz = _ids_por_tramo(lineas, "capa:")[0]
+    fuera, n = _cambiar(lineas, victima, padre=raiz)   # y NO se toca profundidad
+    return fuera, (f"{victima} sube a colgar de la raíz {raiz} pero sigue "
+                   f"diciendo que está en el escalón 2 ({n} líneas)")
+
+
+def m4_otra_corrida(lineas_a, lineas_b):
+    """Una línea de una corrida cuelga de una línea de OTRA corrida.
+
+    Versión astuta: el padre existe, no hay ciclo, y **el escalón cuadra** — se
+    engancha un nodo del escalón 1 a una raíz del escalón 0. Lo único que la
+    delata es `corrida`.
+
+    🚨 Y no es una mentira de laboratorio: **es el bicho de esta misma sesión,
+       un escalón más arriba.** Una línea de prueba colgando de una línea
+       pagada, en el mismo archivo, con pinta de árbol correcto.
+    """
+    juntas = list(lineas_a) + list(lineas_b)
+    raiz_a = _ids_por_tramo(lineas_a, "capa:")[0]
+    hijo_b = _ids_por_tramo(lineas_b, "tool:")[0]
+    fuera, n = _cambiar(juntas, hijo_b, padre=raiz_a)
+    return fuera, (f"{hijo_b} (corrida B) pasa a colgar de {raiz_a} (corrida A), "
+                   f"y el escalón cuadra ({n} líneas)")
+
+
+def m5_a_la_hermana(lineas):
+    """Una rama se mueve a su hermana de al lado. Todo lo demás, cuadrado.
+
+    🚨 ESTA ES LA MENTIRA DEL PASO 1, PALABRA POR PALABRA. El gasto del `eur`
+       pasa a figurar bajo la rama del `usd`, y el total no se mueve ni una
+       millonésima. Lo único que cambia es de quién es hijo — que es justo el
+       campo que se escribió hoy para arreglar aquello.
+
+    🔑 Y el árbol que sale es **perfectamente válido**: el padre existe, el
+       escalón cuadra, la corrida cuadra, no hay ciclo. No hay nada en el
+       registro que lo desmienta, porque **esa corrida pudo haber ocurrido de
+       verdad.** El auditor tiene que dejarla pasar, y su prueba lo exige.
+    """
+    victima = _ids_por_tramo(lineas, "worker:eur")[0]
+    padre_viejo = next(d["padre"] for d in lineas if d.get("id") == victima)
+    hermana = next(t for t in _ids_por_tramo(lineas, "tool:") if t != padre_viejo)
+    fuera, n = _cambiar(lineas, victima, padre=hermana)
+    return fuera, (f"{victima} se muda de {padre_viejo} a su hermana {hermana}; "
+                   f"mismo escalón, misma corrida ({n} líneas)")
+
+
+def experimento_padre(verboso=True):
+    """Las cinco mentiras contra el auditor, sobre un registro GRABADO. $0,00.
+
+    Devuelve `{nombre: (cazada, quejas, descripción)}`.
+    """
+    lineas_a = grabar_demo(verboso=False)
+    ruta_b = AQUI / "_demo_b.jsonl"
+    lineas_b = grabar_demo(ruta=ruta_b, verboso=False)
+    ruta_b.unlink(missing_ok=True)
+
+    casos = [
+        ("1. padre fantasma", lambda: m1_padre_fantasma(lineas_a),
+         {"padre_inexistente"}),
+        ("2. ciclo", lambda: m2_ciclo(lineas_a), {"ciclo"}),
+        ("3. profundidad vieja", lambda: m3_profundidad_vieja(lineas_a),
+         {"profundidad"}),
+        ("4. otra corrida", lambda: m4_otra_corrida(lineas_a, lineas_b),
+         {"corrida"}),
+        ("5. a la hermana", lambda: m5_a_la_hermana(lineas_a), set()),
+    ]
+
+    sano = auditar_arbol(lineas_a)
+    resultados = {"0. sin torcer": (bool(sano), sano, "el registro tal cual se grabó")}
+
+    if verboso:
+        print("\n" + "=" * 72)
+        print("  C.1 · PASO 3 — LAS CINCO MENTIRAS CONTRA EL AUDITOR")
+        print("=" * 72)
+        print(f"  Registro grabado ... {REGISTRO_DEMO.name}, {len(lineas_a)} líneas")
+        informe_arbol(sano, "Sin torcer (si esto grita, no se puede medir nada):")
+
+    for nombre, hacer, esperado in casos:
+        torcidas, desc = hacer()
+        quejas = auditar_arbol(torcidas)
+        tipos = {q["tipo"] for q in quejas}
+        resultados[nombre] = (bool(quejas), quejas, desc)
+        if verboso:
+            print(f"\n  {nombre.upper()}")
+            print(f"    qué se torció: {desc}")
+            informe_arbol(quejas, "")
+            if esperado and not esperado <= tipos:
+                print(f"    ⚠️ se esperaba {esperado} y salió {tipos or 'nada'}")
+
+    if verboso:
+        print("\n" + "-" * 72)
+        print("  MARCADOR")
+        for nombre, (cazada, quejas, _) in resultados.items():
+            if nombre.startswith("0."):
+                continue
+            tipos = sorted({q["tipo"] for q in quejas})
+            print(f"    {nombre:24} "
+                  f"{'🚨 CAZADA' if cazada else '😶 pasa sin más'}"
+                  f"   {', '.join(tipos)}")
+        print("=" * 72)
+
+    return resultados
+
+
+# ---------------------------------------------------------------------------
+# 6) EL PORTERO — ninguna prueba gratis puede escribir en el registro pagado
 # ---------------------------------------------------------------------------
 
 def portero(verboso=True):
@@ -325,7 +664,7 @@ def portero(verboso=True):
 
 
 # ---------------------------------------------------------------------------
-# 5) LAS PRUEBAS — $0,00
+# 7) LAS PRUEBAS — $0,00
 # ---------------------------------------------------------------------------
 
 def _pruebas():
@@ -520,6 +859,79 @@ def _pruebas():
           not any("padre" in d for d in viejas),
           f"{sum('padre' in d for d in viejas)} líneas viejas con padre")
 
+    # --- C.1 · PASO 3: torcer el parentesco y exigir rojo ------------------
+    #
+    # 🚨 ESTAS SIETE SON LA OBLIGACIÓN SELLADA EN EL SOBRE. Si `padre` no puede
+    #    ponerse rojo al torcerlo, es el tercer adjetivo del registro —después
+    #    de `capa` y `worker`— y C.1 cambió una etiqueta por otra más larga.
+
+    a_lineas = grabar_demo(verboso=False)
+    ruta_b = AQUI / "_prueba_b.jsonl"
+    b_lineas = grabar_demo(ruta=ruta_b, verboso=False)
+    ruta_b.unlink(missing_ok=True)
+
+    def tipos_de(quejas):
+        return {q["tipo"] for q in quejas}
+
+    # 21) El registro grabado nace SANO. Sin esto no se puede medir nada: un
+    #     auditor que ya grita antes de la mentira grita por otra cosa.
+    check("21. el registro recién grabado no tiene ni una queja",
+          not auditar_arbol(a_lineas), auditar_arbol(a_lineas))
+
+    # 22) Mentira 1 — el padre no existe. La caza `padre` SOLO.
+    q1 = auditar_arbol(m1_padre_fantasma(a_lineas)[0])
+    check("22. 🚨 padre fantasma: ROJO, y lo caza `padre` solo",
+          tipos_de(q1) == {"padre_inexistente"}, q1)
+
+    # 23) Mentira 2 — ciclo. Y se comprueba TAMBIÉN que salte `profundidad`,
+    #     porque un ciclo es la única mentira que no se puede cuadrar: en un
+    #     ciclo no hay escalones posibles. **Hay mentiras que el segundo testigo
+    #     delata siempre.**
+    q2 = auditar_arbol(m2_ciclo(a_lineas)[0])
+    check("23. 🚨 ciclo: ROJO por `ciclo` Y por `profundidad` (no se puede cuadrar)",
+          {"ciclo", "profundidad"} <= tipos_de(q2), q2)
+
+    # 24) Mentira 3 — padre real, escalón viejo. 🔑 ES LA PRUEBA DE QUE
+    #     `profundidad` NO ES DECORACIÓN: con `padre` a secas esto sería
+    #     invisible, porque el padre nuevo existe y es de la misma corrida.
+    q3 = auditar_arbol(m3_profundidad_vieja(a_lineas)[0])
+    check("24. 🚨 escalón viejo: ROJO, y SOLO lo caza el segundo testigo",
+          tipos_de(q3) == {"profundidad"}, q3)
+
+    # 25) Mentira 4 — colgar de otra corrida, con el escalón cuadrado a mano.
+    #     Solo la caza `corrida`. Es el bicho de esta sesión un escalón arriba.
+    q4 = auditar_arbol(m4_otra_corrida(a_lineas, b_lineas)[0])
+    check("25. 🚨 padre de otra corrida: ROJO, y SOLO lo caza `corrida`",
+          tipos_de(q4) == {"corrida"}, q4)
+
+    # 26) 🚨 LA PRUEBA QUE EXIGE QUE EL INSTRUMENTO **FALLE**, y es la defensa
+    #     contra el sospechoso de hoy: «el que elige las torceduras es el mismo
+    #     que sabe cuáles su auditor puede cazar».
+    #     Mover una rama a su hermana produce un árbol PERFECTAMENTE VÁLIDO: el
+    #     padre existe, el escalón cuadra, la corrida cuadra, no hay ciclo. Y es
+    #     la mentira del paso 1 palabra por palabra: el gasto del `eur` bajo la
+    #     rama del `usd`, con el total sin moverse.
+    #     🔑 Si mañana alguien enseña al auditor a cazarla, ESTA PRUEBA SE PONE
+    #        ROJA y hay que venir aquí a tacharla. Es exactamente lo que tiene
+    #        que pasar: el límite queda escrito, no supuesto.
+    q5 = auditar_arbol(m5_a_la_hermana(a_lineas)[0])
+    check("26. 🚨 a la hermana: el auditor la DEJA PASAR (límite medido, no supuesto)",
+          not q5, q5)
+
+    # 27) Ninguna torcedura mutó el original. Sin esto, la mentira 2 heredaría la
+    #     1 y el marcador mediría mentiras acumuladas, no cada una.
+    check("27. las cinco mentiras trabajan sobre copias: el original queda sano",
+          not auditar_arbol(a_lineas), auditar_arbol(a_lineas))
+
+    # 28) Y grabar la demo no toca los registros PAGADOS. El registro nuevo vive
+    #     fuera de `REGISTROS` a propósito: el portero vigila los de verdad, y
+    #     este se escribe adrede cada vez.
+    antes = {r: sum(1 for _ in open(r, encoding="utf-8")) for r in REGISTROS}
+    grabar_demo(verboso=False)
+    despues = {r: sum(1 for _ in open(r, encoding="utf-8")) for r in REGISTROS}
+    check("28. grabar la demo NO escribe ni una línea en el registro pagado",
+          antes == despues, f"{antes} → {despues}")
+
     print()
     if fallos:
         print(f"  ❌ {len(fallos)} prueba(s) en rojo: {', '.join(fallos)}")
@@ -534,6 +946,9 @@ def main(argv):
         return 0
     if "--demo" in argv:
         demo()
+        return 0
+    if "--padre" in argv:
+        experimento_padre()
         return 0
     if "--portero" in argv:
         sucios, _ = portero()

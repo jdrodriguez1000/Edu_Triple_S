@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 97 — NIVEL 8: **BLOQUE C ARRANCADO, C.1 pasos 1 y 2 HECHOS, $0,00 en toda la sesión**. Apuesta sellada antes de teclear (5ª seguida) y esta vez se **CONTÓ** lo contable. ⭐ **Apuesta 3 ganada: $0,036617 cambiaron de dueño y el total no se movió** → `LM.64`. 🌳 **El parentesco ya cruza los hilos y nadie escribe un `padre=`** — pero las corridas ya pagadas **no se pueden convertir en árbol nunca** → `LM.65`. 🐛 Y un bicho lateral muerto en el origen, con portero y visto morder: las pruebas *gratis* escribían en el registro **pagado**.)
+**Última actualización:** 2026-08-21 (sesión 97 — NIVEL 8: **BLOQUE C, C.1 pasos 1, 2 y 3 HECHOS, $0,00 en toda la sesión**. ✅ **La obligación del sobre, PAGADA:** torcer `padre` en un registro grabado pone rojo — `padre` no es otro adjetivo. 🎯 **La apuesta 4 sale exacta: 4 de 5 mentiras cazadas y la 5ª pasa**, y la 5ª es la del paso 1 palabra por palabra → **añadir estructura sube el listón de la mentira, no lo cierra.** ⭐ **La mitad de la vigilancia no la pone `padre`: la ponen `profundidad` y `corrida` como testigos que pueden desmentirlo** → `LM.66`. 28 pruebas en verde.)
 
 ---
 
@@ -3830,7 +3830,10 @@
 #   pagados de las sesiones 92-96 **no se pueden convertir en árbol. No es caro: es imposible.**
 #   → `LM.65`, y queda como **prueba 20** para que no se olvide.
 #
-# ➡️ **SIGUIENTE PASO CONCRETO — C.1 · PASO 3: LA PRUEBA QUE TUERCE EL PARENTESCO Y EXIGE
+# ➡️ *(el siguiente paso de aquí era C.1 · PASO 3 — se hizo en la MISMA 97; ver abajo)*
+# ➡️ **Lo que abría el paso 3:** la obligación sellada en el sobre, con blanco concreto —
+#   torcer el `padre` de un registro GRABADO y exigir rojo.
+#   *(enunciado original conservado)* **C.1 · PASO 3: LA PRUEBA QUE TUERCE EL PARENTESCO Y EXIGE
 #   ROJO.** Es la obligación sellada en el sobre, y ahora tiene blanco concreto: las pruebas 12
 #   y 18 ya son media pieza —una tuerce el mecanismo, la otra el resultado—; **falta torcer el
 #   `padre` de un registro GRABADO**, que es la forma exacta en que el paso 1 mató a `capa`.
@@ -3846,6 +3849,33 @@
 #   es lo que resuelve la apuesta 1. ⚠️ Si el 4 exige pagar, **la apuesta 2 ($0,00) falla**, y
 #   se anota como fallada en vez de redefinirse.
 # 📌 **La apuesta 2 ($0,00) sigue viva:** la sesión 97 no llamó a la API ni una vez.
+#
+# ============================================================================
+# SESIÓN 97 · PASO 3 — LO QUE SALIÓ, y en qué queda el bloque C
+# ============================================================================
+# ✅ **LA OBLIGACIÓN DEL SOBRE ESTÁ PAGADA.** Torcer `padre` en un registro grabado pone rojo:
+#   `padre` NO es el tercer adjetivo del registro. Y se pagó de la única forma que valía: con
+#   cuatro pruebas que se ponen rojas y **una que exige que el auditor falle**.
+# 🎯 **Marcador: 4 de 5 cazadas.** fantasma → `padre` solo · ciclo → `ciclo` + `profundidad` ·
+#   escalón viejo → **solo `profundidad`** · otra corrida → **solo `corrida`** · a la hermana →
+#   **pasa**. La apuesta 4 sale exacta, fila por fila.
+# ⭐ **Titular: añadir estructura SUBE EL LISTÓN de la mentira, no lo cierra.** La quinta es la
+#   mentira del paso 1 palabra por palabra, y el auditor **hace bien** en dejarla pasar: produce
+#   un árbol que pudo haber ocurrido de verdad. 🔑 **El árbol dice fielmente lo que pasó; no dice
+#   si lo que pasó era lo que se pedía.** Para eso hace falta el encargo al lado → eso es F.1.
+# 🔑 **`LM.66` — un dato se vuelve comprobable el día que hay otro que puede desmentirlo.**
+# 💰 **La apuesta 2 ($0,00) SIGUE VIVA:** tres pasos de C.1 y ni una llamada a la API.
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — C.1 · PASO 4: EL ÁRBOL DE UNA CORRIDA NUEVA, y esta vez CON
+#   MODELO.** Es donde la apuesta 2 se juega de verdad: `grabar_demo()` usa workers falsos, y el
+#   paso 4 pide el camino entero de punta a punta. ⚠️ **Si el paso 4 exige pagar, la apuesta 2
+#   está FALLADA y se anota como fallada, no se redefine** (`LM.21`).
+# 📌 **Lo que el paso 4 hereda ya medido:** (1) el árbol es fiable como relato de lo que pasó y
+#   NO es juez de si era lo correcto; (2) falta el detector de `id` con dos padres distintos, y
+#   entra **con su torcedura al lado** o no entra; (3) los registros pagados no se convierten en
+#   árbol nunca (`LM.65`), así que «una corrida ya grabada» significa **una corrida nueva**.
+# 📌 **Y el paso 5 sin cambios:** pasarle el árbol al defecto de la sesión 95, que es lo que
+#   resuelve la apuesta 1.
 #
 # ➡️ *(el siguiente paso de la 96 era ARRANCAR EL BLOQUE C — se hizo en la 97, arriba)*
 # 🎲 **LA PRIMERA COSA DE LA SESIÓN ES SELLAR LA APUESTA Y COMMITEARLA.** Van CINCO
@@ -14660,6 +14690,47 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   árbol.** 📌 Y los workers de la demo son falsos a propósito —se mide el parentesco, no el
   modelo— pero **el camino es el de verdad**: un árbol dibujado por un camino de mentira
   mediría al camino de mentira.
+- **✅ LA OBLIGACIÓN DEL SOBRE, PAGADA: torcer `padre` SÍ pone algo rojo** (sesión 97, paso 3
+  de C.1, $0,00, 28 pruebas). Hubo que **fabricar** el registro que se iba a torcer —no existía
+  ninguno con parentesco, y los pagados no lo tendrán nunca (`LM.65`)—: `grabar_demo()` vuelca
+  13 líneas con parentesco por $0,00. 📌 Y con eso **se estrenó sin querer la forma del paso 4**:
+  *«reconstruir una corrida ya grabada»* solo puede significar **una corrida nueva**.
+- **🎯 La apuesta 4 sale EXACTA, fila por fila: cuatro mentiras cazadas y la quinta pasa**
+  (sesión 97). Padre fantasma → rojo. Ciclo → rojo. Escalón viejo → rojo. Hija de otra corrida
+  → rojo. **A la hermana de al lado → pasa sin que nadie grite.** 🚨 Y la quinta **es la mentira
+  del paso 1 palabra por palabra** —el gasto del `eur` bajo la rama del `usd`, con el total sin
+  moverse— hecha en el campo que se escribió **ese mismo día para arreglar aquello**.
+  🔑 **Y el auditor hace bien en dejarla pasar:** el árbol que sale es válido —padre real,
+  escalón cuadrado, misma corrida, sin ciclo— **porque esa corrida pudo haber ocurrido de
+  verdad**. ⭐ **El titular no es «`padre` funciona»: añadir estructura SUBE EL LISTÓN de la
+  mentira, no lo cierra.** Antes pasaba cualquiera; ahora pasan solo las que producen un mundo
+  posible. Es una mejora enorme y es un techo, y las dos cosas van juntas.
+- **⭐ La mitad de la vigilancia NO la pone `padre` — la ponen los testigos que pueden
+  desmentirlo** (sesión 97, apuesta 5 confirmada → `LM.66`). De las cuatro cazadas, dos las caza
+  `padre` solo (integridad de su propio campo); la del escalón **solo la caza `profundidad`** y
+  la de la corrida **solo la caza `corrida`** — las dos escritas en su **versión astuta**, con
+  todo lo demás reparado a mano para que solo quedara en pie el testigo que se medía.
+  🔑 **Y de ahí sale por fin por qué `capa` no podía estar mal nunca: estaba SOLA en su renglón.
+  Un dato que nadie puede contradecir no es que sea correcto — es que no es comprobable**, que
+  es otra cosa y peor, porque da exactamente el mismo verde. → La pregunta útil ante un campo
+  así no es *«¿está bien?»* sino **«¿qué otro dato tendría que estar en desacuerdo con este si
+  estuviera mal?»**.
+- **Hay mentiras que un segundo testigo delata SIEMPRE, y no por vigilancia sino por
+  imposibilidad** (sesión 97). El ciclo es **la única de las cinco que no se puede escribir en
+  versión astuta**, y el motivo es aritmético: **en un ciclo no hay escalones que cuadren.**
+  Por eso salta dos veces, y la prueba 23 exige las dos. ⚠️ Y hay un motivo práctico además del
+  bonito: sin detector de ciclos, `arbol()` daría un `RecursionError`, que no dice nada.
+- **La defensa contra el sospechoso de hoy funcionó, y se puede señalar el renglón**
+  (sesión 97, cuarta sesión seguida nombrándolo). El sospechoso era *«el que elige las cinco
+  torceduras es el mismo que sabe cuáles su auditor puede cazar»*. Dos defensas, las dos en el
+  código y no en la intención: el auditor se escribió y se congeló **antes** que las mentiras, y
+  **la prueba 26 exige que el auditor DEJE PASAR la quinta**. 🔑 Es la única de las 28 que **no
+  se puede escribir a la medida del instrumento, porque pide que el instrumento falle.** Si
+  mañana alguien enseña a cazar la 5, esa prueba se pone roja y hay que volver a tacharla.
+- **⚠️ Y lo que el auditor NO comprueba queda dicho, no escondido** (sesión 97): que dos líneas
+  con el mismo `id` declaren el mismo padre. Falta, es integridad de verdad, y se dejó fuera **a
+  propósito** — ninguna de las cinco torceduras la ejercita, y **un detector que nunca se ve
+  morder es una nota, no un detector** (`LM.13`). Apuntado para el paso 4 con su torcedura al lado.
 - **Se decidió, y se dejó escrito, cuál de los campos nuevos es estructura y cuál decoración**
   (sesión 97). `corrida`, `id`, `padre` y `profundidad` **aguantan el peso**; **`tramo` es una
   etiqueta**, de la misma clase que la `capa` que el paso 1 mató esa mañana. Se incluyó igual,

@@ -5581,3 +5581,54 @@ petición, versiones de esquema, marcas de origen de un dato. Todo eso parece ap
 porque *«se puede añadir cuando haga falta»*, y casi todo se puede. **Lo que identifica de
 dónde vino algo, no.** Ese es el único trabajo que hay que hacer antes de tener el problema,
 porque el día que se tiene, ya es tarde para los datos que lo demuestran.
+
+
+### LM.66 — Un dato se vuelve comprobable el día que hay otro que puede desmentirlo
+
+Un registro tenía un campo que decía quién había hecho cada línea. Se le cambió el dueño a 35
+renglones, a mano, sin tocar un solo número. **Nada se puso rojo.** Ni una prueba, ni una suma,
+ni un informe. El campo llevaba cinco piezas de trabajo siendo leído para *imprimir* un reparto
+y **nunca para comprobarlo**.
+
+El arreglo obvio parecía ser *añadir una prueba que lo vigile*. Es el arreglo equivocado, y el
+motivo es lo que hay que quedarse: **no había con qué compararlo.** Ese campo estaba solo en su
+renglón. Cualquier valor que tuviera era consistente con todo lo demás, porque no había nada
+más que hablara del mismo asunto. **Una prueba no puede comprobar un dato que nada contradice:
+solo puede repetir lo que el dato dice.**
+
+🔑 **Lo que lo arregló no fue una prueba: fue un segundo testigo.** Se grabaron, en el mismo
+instante y por caminos distintos, dos cosas que hablan de lo mismo desde ángulos que no se
+pueden coordinar: un apuntador (*«mi padre es el tramo t2»*) y un contador (*«yo estoy en el
+escalón 2»*). Ahora se pueden contradecir. Si t2 está en el escalón 0, **uno de los dos miente,
+y no hace falta saber cuál para saber que algo se rompió.**
+
+📌 Medido, no supuesto. De cinco mentiras posibles sobre el parentesco, cuatro se cazan y **dos
+de esas cuatro solo las caza el segundo testigo** — la del escalón que no cuadra y la del padre
+de otra corrida. Escritas las dos en su versión más astuta: reparando a mano todo lo demás que
+podría delatarlas, para que solo quedara en pie el testigo que se medía.
+
+⭐ **Y una consecuencia que ordena una confusión vieja: un dato que nadie puede contradecir no
+es que sea correcto, es que no es comprobable** — y las dos cosas se parecen muchísimo desde
+fuera. Un campo que nunca ha fallado y un campo que no puede fallar dan exactamente el mismo
+verde. Ante uno de esos, la pregunta útil no es *«¿está bien?»* sino **«¿qué otro dato tendría
+que estar en desacuerdo con este si estuviera mal?»**. Si la respuesta es *ninguno*, no hay
+nada que comprobar todavía.
+
+⚠️ **Pero el segundo testigo sube el listón, no cierra la puerta.** La quinta mentira —mover
+una rama entera a su hermana de al lado, cuadrando el escalón y la corrida— **pasa sin que
+nadie grite, y hace bien**: produce algo que pudo haber ocurrido de verdad. 🔑 **La redundancia
+caza las mentiras que rompen la forma; las que producen un mundo posible, no.** Para esas hace
+falta salir del registro y traer lo que se pedía, que ya no es observabilidad: es evaluación.
+
+📌 Hay un caso donde el segundo testigo no falla nunca, y merece nombre propio: cuando la
+mentira es **aritméticamente imposible de cuadrar**. Un ciclo en un árbol no tiene escalones
+que puedan encajar — alguien tendría que estar un peldaño por debajo de alguien que está por
+debajo de él. Ahí el testigo redundante no caza por vigilancia, **caza por imposibilidad**, y
+esa clase entera de mentira queda cerrada.
+
+**Dónde muerde fuera de aquí:** cualquier campo que se escribe una vez y se lee para mostrar.
+Etiquetas de origen, dueños, categorías, estados. Antes de escribir la prueba que lo vigile,
+mira si hay algo con qué contrastarlo — y si no lo hay, **el trabajo no es la prueba, es grabar
+el segundo dato.** Y el corolario incómodo para cualquier tablero: un número que cuadra
+(la suma total, el balance, el conteo) puede estar **contestando una pregunta más pequeña de la
+que parece**. Cuadrar la suma no es haber atribuido nada.

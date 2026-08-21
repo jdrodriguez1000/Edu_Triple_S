@@ -2515,6 +2515,131 @@ pondrá roja y habrá que venir aquí a tacharla — **y eso es exactamente lo q
 
 ---
 
+##### 📊 C.1 · PASO 3 — LO QUE SALIÓ, el 2026-08-21. **$0,00 · 28 pruebas · la apuesta 4 sale EXACTA**
+
+`traza.grabar_demo()` · `traza.auditar_arbol()` · las cinco mentiras · `python traza.py --padre`.
+
+**Lo primero, y no estaba en el plan: hubo que FABRICAR el registro que se iba a torcer.**
+No existía ninguno con parentesco — los pagados no lo tienen y nunca lo tendrán (`LM.65`).
+`grabar_demo()` vuelca una corrida de la demo a `registro_demo_c1.jsonl`: **13 líneas, 13 con
+parentesco, $0,00.** 📌 Y con eso se estrenó la forma del paso 4 sin querer: *«reconstruir una
+corrida ya grabada»* solo puede significar **una corrida nueva**, y aquí está la primera.
+
+##### 🎯 EL MARCADOR — cuatro de cinco, y la quinta pasa
+
+| # | La mentira | Predicho | Salió | Quién la cazó |
+|---|---|---|---|---|
+| 1 | padre fantasma | sí | 🚨 **cazada** | `padre` solo |
+| 2 | ciclo | sí | 🚨 **cazada** | `ciclo` **y** `profundidad` |
+| 3 | escalón viejo | sí | 🚨 **cazada** | **solo `profundidad`** |
+| 4 | otra corrida | sí | 🚨 **cazada** | **solo `corrida`** |
+| 5 | a la hermana | **no** | 😶 **pasa sin más** | nadie, y no se puede |
+
+✅ **LA OBLIGACIÓN DEL SOBRE QUEDA PAGADA: torcer `padre` pone algo rojo.** `padre` **no** es
+el tercer adjetivo del registro. Y se pagó de la única forma que valía: no diciéndolo, sino
+con cuatro pruebas que se ponen rojas y **una que exige que el auditor falle**.
+
+---
+
+##### 🥇 HALLAZGO 1 — `padre` es estructura, pero la estructura solo caza lo que rompe la forma
+
+🚨 **La mentira 5 es la del paso 1, palabra por palabra**, hecha en el campo que se escribió
+**hoy para arreglar aquello**: el gasto del `eur` pasa a colgar de la rama del `usd`, y el
+total no se mueve ni una millonésima. **Y el auditor la deja pasar.**
+
+🔑 **Y hace bien, que es lo incómodo.** El árbol que sale es **perfectamente válido**: el padre
+existe, el escalón cuadra, la corrida cuadra, no hay ciclo. No hay nada en el registro que lo
+desmienta **porque esa corrida pudo haber ocurrido de verdad**. Un detector que la cazara
+estaría inventándose una regla que el mundo no tiene.
+
+> ⭐ **El titular del paso 3 no es «`padre` funciona». Es esto: añadir estructura sube el
+> listón de la mentira, no lo cierra.** Antes de `padre`, cualquier mentira pasaba. Ahora
+> pasan solo las que producen una corrida que **habría podido pasar**. Eso es una mejora
+> enorme y es un techo, y las dos cosas hay que decirlas juntas.
+
+📌 **Lo que esto le hace al hallazgo de la sesión 95:** aquel defecto se cazó viendo *dos líneas
+`usd` y ninguna `eur`*. Con el árbol se ve **sin sospechar**, porque la rama `eur` no existe.
+Pero si el enrutado hubiera mandado el trabajo del `eur` al worker del `usd` **y el registro lo
+hubiera anotado así**, el árbol saldría impecable. 🔑 **El árbol dice fielmente lo que pasó; no
+dice si lo que pasó era lo que se pedía.** Para eso hace falta el encargo al lado — que es F.1.
+
+---
+
+##### 🥈 HALLAZGO 2 — la mitad de la vigilancia NO la pone `padre` (apuesta 5, confirmada)
+
+De las cuatro cazadas, **dos las caza `padre` por sí mismo** (el fantasma y el ciclo: son
+integridad de su propio campo). Las otras dos, no:
+
+- la **3** —padre real, escalón viejo— **solo la caza `profundidad`**;
+- la **4** —hija de otra corrida, con el escalón cuadrado a mano— **solo la caza `corrida`**.
+
+Las dos están escritas en su **versión astuta**: se les reparó a mano todo lo demás que podría
+delatarlas, para que solo quedara en pie el testigo que se estaba midiendo.
+
+🔑 **`profundidad` y `corrida` no son adornos del dibujo: son testigos independientes escritos
+en el mismo instante.** El apuntador dice *«mi padre es t2»*; el contador dice *«yo estoy en el
+escalón 2»*. Si t2 está en el escalón 0, **uno de los dos miente — y no hace falta saber cuál
+para saber que algo se rompió.**
+
+> ⭐ **Y de aquí sale, por fin, la respuesta a por qué `capa` no podía estar mal nunca: estaba
+> SOLA en su renglón.** Un dato que nadie puede contradecir no es que sea correcto — es que
+> **no es comprobable**, que es otra cosa y bastante peor, porque se le parece mucho.
+>
+> 🔑 La regla general, y vale fuera de este archivo: **un campo se vuelve comprobable el día
+> que hay otro que puede desmentirlo.** No cuando se le añade una prueba: cuando se le añade un
+> testigo. → `LM.66`.
+
+📌 Es la misma forma que `LM.10` (dos observadores, dos redes, el mismo `308`) y que la prueba 3
+de `profundidad.py` (auditar contra un total sabido de antemano). **Aquí se aplica a un campo
+del registro y no a una medición**, y por eso valía la pena verlo: la regla era más general de
+lo que parecía cuando se aprendió.
+
+---
+
+##### 🥉 HALLAZGO 3 — hay mentiras que un segundo testigo delata SIEMPRE, y no por suerte
+
+La mentira 2 —el ciclo— es **la única de las cinco que no se puede escribir en versión astuta**,
+y el motivo es aritmético, no un descuido: **en un ciclo no hay escalones que cuadren.** Alguien
+tendría que estar un peldaño por debajo de alguien que está por debajo de él.
+
+Por eso salta **dos veces**: por `ciclo` y por `profundidad`. La prueba 23 exige las dos, y el
+motivo de exigir la segunda es que **es la que no se puede esquivar**. 🔑 Un dato redundante no
+solo caza mentiras: caza una clase entera de mentiras **por imposibilidad**, no por vigilancia.
+
+⚠️ Y hay una razón práctica además de la bonita: sin el detector de ciclos, `arbol()` entraría
+en **recursión infinita** y el síntoma sería un `RecursionError` — un error que no dice nada de
+lo que pasó.
+
+---
+
+##### ⚠️ Lo que este auditor NO comprueba, dicho aquí y no escondido en el código
+
+**Que dos líneas con el mismo `id` declaren el mismo padre.** Es integridad de verdad y falta.
+Se dejó fuera **a propósito**: ninguna de las cinco torceduras la ejercita, y **un detector que
+nunca se ve morder es una nota, no un detector** (`LM.13`). Queda apuntado para el paso 4, con
+su torcedura al lado el día que se escriba.
+
+##### 🧾 Lo que el paso 3 dejó
+
+| | |
+|---|---|
+| `grabar_demo()` | fabrica el registro con parentesco que no existía — 13 líneas, $0,00 |
+| `auditar_arbol()` | el lector que `capa` nunca tuvo: 4 quejas, escrito y congelado **antes** de las mentiras |
+| Las 5 mentiras | `m1`…`m5`, cada una en su versión más astuta |
+| Pruebas | **28 en verde** (21-28 son de hoy), y los otros cinco módulos siguen verdes |
+| Registro pagado | **79 + 225 líneas, sin moverse** — prueba 28 y el portero |
+
+📌 **La defensa contra el sospechoso de hoy funcionó, y se puede señalar dónde:** la prueba 26
+exige que el auditor **deje pasar** la mentira 5. Es la única de las 28 que **no se puede
+escribir a la medida del instrumento**, porque pide que el instrumento falle. Si mañana alguien
+enseña a cazar la 5, esa prueba se pone roja y hay que volver aquí a tacharla.
+
+➡️ **Lo que esto le cambia al paso 4, antes de escribirlo:** el árbol ya es fiable como
+**relato de lo que pasó**, y queda medido que **no** es un juez de si lo que pasó era lo
+correcto. El paso 4 —el árbol de una corrida nueva— hereda las dos cosas.
+
+---
+
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
