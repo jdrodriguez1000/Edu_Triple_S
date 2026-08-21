@@ -31,3 +31,12 @@ caja/
 # Editores
 .vscode/
 .idea/
+
+# El registro que `traza.grabar_demo()` vuelca para poder torcerlo (nivel 8, C.1).
+# No sube por la misma razón que `caja/`: se regenera entero en cada corrida de
+# las pruebas, con identificadores nuevos, así que NO ES EVIDENCIA DE NADA.
+#   ⚠️ Ojo con la asimetría, que es la regla de arriba y no una excepción: los
+#      registros PAGADOS sí suben, porque volver a producirlos cuesta dinero.
+#      Este cuesta $0,00 y subirlo solo ensucia el `git status` de la siguiente
+#      sesión con un cambio que no significa nada.
+08-avanzado/registro_demo_traza.jsonl

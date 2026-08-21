@@ -273,7 +273,16 @@ def demo(verboso=True):
 
 # La corrida de la demo, volcada a disco. NO es un registro pagado: no entra en
 # `REGISTROS` y el portero no lo vigila. Cuesta $0,00 y se puede rehacer.
-REGISTRO_DEMO = AQUI / "registro_demo_c1.jsonl"
+#
+# 📌 NO SUBE AL REPOSITORIO, y el motivo es la regla que ya está en `.gitignore`:
+#    los `.jsonl` suben porque son EVIDENCIA de algo que se pagó. Este no lo es
+#    —se regenera entero cada vez que corren las pruebas, con ids nuevos— así que
+#    subirlo solo ensucia el `git status` de la siguiente sesión con un cambio
+#    que no significa nada.
+# ⚠️ Y se le quitó el `_c1` del nombre que tenía: venía de cuando las corridas se
+#    llamaban `c1`, esquema que el paso 4 tuvo que matar. Un nombre de archivo
+#    que cita un identificador difunto es una pista falsa esperando.
+REGISTRO_DEMO = AQUI / "registro_demo_traza.jsonl"
 
 
 def grabar_demo(ruta=None, verboso=True):

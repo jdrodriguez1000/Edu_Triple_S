@@ -3898,6 +3898,16 @@
 #   📌 El detalle de C.2 se escribe el día que se llegue a él, que es la regla del nivel.
 # 🔲 **PENDIENTE CON DUEÑO, arrastrado del paso 3:** el detector de un mismo `id` con dos padres
 #   distintos. **Entra con su torcedura al lado o no entra** (`LM.13`).
+# 🧹 **Higiene hecha al cerrar, para que no sorprenda mañana:** (1) `registro_demo_c1.jsonl`
+#   **se dejó de subir** y pasó a llamarse `registro_demo_traza.jsonl` — se regenera en cada
+#   corrida de pruebas, así que **no es evidencia de nada** y solo ensuciaba el `git status`;
+#   el motivo quedó escrito en `.gitignore`, con la asimetría dicha: **los registros PAGADOS sí
+#   suben, porque volver a producirlos cuesta dinero.** Y el `_c1` del nombre citaba un esquema
+#   de identificadores que el paso 4 tuvo que matar: **un nombre de archivo que cita algo
+#   difunto es una pista falsa esperando.** (2) `GUIDE.md` revisado: no tiene sección del nivel
+#   8 y nada de lo de hoy lo dejó obsoleto. El bloque de lecciones del nivel va **al cerrar el
+#   nivel**, no ahora.
+#
 # 🔑 **Y lo que C.1 deja para el resto del nivel, en una línea:** el harness ya sabe **de quién
 #   es hija cada línea** y **si el nombre de quien la escribió es verdad**. Lo que sigue sin
 #   saber es **si lo que pasó era lo que se pedía** — y eso no es observabilidad, es F.1.
