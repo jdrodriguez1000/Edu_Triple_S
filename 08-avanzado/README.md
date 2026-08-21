@@ -2640,6 +2640,80 @@ correcto. El paso 4 —el árbol de una corrida nueva— hereda las dos cosas.
 
 ---
 
+#### 🎲 C.1 · PASO 4 — LA APUESTA, sellada el **2026-08-21** (sesión 97) **antes de correr nada**
+
+> ⚠️ Se escribe y se **commitea antes** de gastar el primer centavo. Sexta seguida.
+
+##### 🔴 Y lo primero es una apuesta PERDIDA, que se anota antes que nada
+
+**LA APUESTA 2 —«C.1 CUESTA $0,00»— ESTÁ FALLADA.** El paso 4 exige pagar, y no hay forma
+honesta de esquivarlo:
+
+La demo recorre el camino de verdad en su tramo de en medio —`reparto_en_paralelo`,
+`ejecutar_un_bloque`, los dos `anotar`— pero **sus workers son falsos**. Nunca se han ejecutado
+`correr_orquestador` ni `correr_worker`: los bucles de agente de verdad, donde el modelo decide
+qué herramienta llamar. Y el paso 4 es, literalmente, *«el árbol de una corrida de verdad»*.
+🔑 **Un árbol dibujado sobre un camino de mentira mide al camino de mentira** — está escrito en
+el docstring de `demo()` desde el paso 2, y aplicarlo aquí obliga a pagar.
+
+⭐ **Se anota como fallada y NO se redefine** (`LM.21`), y lo que importa es el modo de fallo,
+que estaba predicho palabra por palabra en la propia apuesta 2:
+
+> *«Si al final hace falta una corrida nueva para validar el parentesco de punta a punta, está
+> fallada — y entonces la quinta estimación seguida no habrá sido inflada sino corta, que es un
+> vicio nuevo y también cuenta.»*
+
+🔑 **Cinco sesiones estimando de más, y la sexta se queda corta.** El error no fue el número:
+fue **contar el coste de lo que se iba a escribir y no el de lo que haría falta para creérselo.**
+Los pasos 1, 2 y 3 costaron $0,00 de verdad. El que cuesta es el que **valida** los otros tres.
+
+##### 💰 Lo que cuesta, MEDIDO y no estimado
+
+`python fan_out.py --paralelo` es el único camino real de dos capas. Medido en la sesión 93:
+**$0,026984 · 8,91 s · 11 llamadas a la API.** El coste ha variado **menos del 3 %** entre
+corridas (la 91 lo midió), así que la horquilla honesta es **$0,024 – $0,030**.
+
+---
+
+##### ⚠️ El sospechoso de estar ciego — quinta sesión seguida nombrándolo, y este da más miedo
+
+🚨 **La demo y la corrida real comparten casi todo el camino, así que voy a mirar el árbol de
+verdad buscando confirmar la forma que ya vi.**
+
+Los cuatro anteriores eran instrumentos ciegos. Este no: **este es sesgo de confirmación sobre
+un dibujo.** Un árbol de once llamadas es lo bastante bonito como para asentir con la cabeza, y
+«se ve bien» no es una medición. La defensa no puede ser *mirar con cuidado*.
+
+→ **La defensa, y se sella como obligación, no como intención: la forma esperada se escribe
+AQUÍ, con números, y se comprueba a máquina.** Seis afirmaciones, cada una falsable por
+separado:
+
+| # | Lo que tiene que salir | Falla si… |
+|---|---|---|
+| 1 | **exactamente 1 raíz**, profundidad máxima **2** | hay huérfanos, o una capa de más |
+| 2 | **3 tramos `tool:consultar_moneda` con `propio $0,000000`** | alguno gasta por su cuenta |
+| 3 | **3 tramos `worker:*` con `propio > 0`** | un worker no paga nada |
+| 4 | `auditar_arbol()` → **cero quejas** sobre un registro que nadie torció | grita sin mentira |
+| 5 | 🔑 **la suma del árbol == el total de la factura de `auditar()`** | dos caminos, un número, y no cuadran |
+| 6 | **al menos un tramo con varias `llamada_api` dentro** (el bucle del agente) | la corrida real se parece a la demo más de lo esperado |
+
+🔑 **La 5 es la que de verdad se apuesta, y es `LM.66` aplicado a sí mismo.** El árbol suma
+hacia arriba desde `padre`; `auditar()` suma en plano sin mirar el parentesco. **Son dos caminos
+independientes hasta el mismo número.** Si no cuadran, uno de los dos miente y ese es el
+hallazgo del día — mejor que cualquier árbol bonito.
+
+📌 **La 6 está puesta para poder fallar sola.** La demo tenía una `llamada_api` por worker
+porque yo la escribí así; un agente de verdad puede dar varias vueltas. Si la corrida real sale
+idéntica en forma a la demo, **eso es sospechoso, no tranquilizador**.
+
+##### ❌ Lo que NO se apuesta
+
+**Que el árbol salga limpio a la primera.** La corrida real pisa dos funciones que ningún árbol
+ha visto nunca. Si sale torcido, el paso 4 no ha fracasado: **ha hecho su trabajo**, que es la
+primera vez que este parentesco se mira fuera del laboratorio.
+
+---
+
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
