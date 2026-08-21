@@ -2422,6 +2422,99 @@ la forma exacta en que el paso 1 mató a `capa`.
 
 ---
 
+#### 🎲 C.1 · PASO 3 — LA APUESTA, sellada el **2026-08-21** (sesión 97) **antes de la primera línea de código**
+
+> ⚠️ Se escribe y se **commitea antes** de escribir `torcer_padre`. Una apuesta en un archivo
+> sin commitear se puede retocar sin dejar rastro, y entonces no es una apuesta: es un
+> comentario. Es la quinta sesión seguida que se sella así.
+
+##### 📏 Lo que ya se sabe, y NO es la apuesta
+
+Dos cosas quedaron medidas antes de apostar, así que no cuentan:
+
+1. **No existe ningún registro grabado con parentesco.** Los pagados de las sesiones 92-96 no
+   tienen `id` ni `padre` (prueba 20, y `LM.65`). → El paso 3 tiene que **fabricar** el
+   registro que va a torcer, con `demo()`, que ya recorre el camino de verdad y cuesta $0,00.
+   📌 Eso no es un rodeo: **es el paso 4 asomando.** «Reconstruir una corrida ya grabada» solo
+   puede significar **una corrida nueva**, y aquí es donde se estrena.
+2. **`padre` no tiene hoy ni un solo lector que lo compruebe.** `arbol()` lo lee para *dibujar*,
+   igual que `auditar()` leía `capa` para *imprimir*. Ese es exactamente el defecto que el paso
+   1 midió, un campo más allá.
+
+---
+
+##### 4️⃣ LAS CINCO TORCEDURAS, Y LA PREDICCIÓN ES QUE **CUATRO SE CAZAN Y UNA NO**
+
+Un `padre` no se puede torcer de una sola manera. Caben cinco mentiras, y **no son
+equivalentes** — esa es la apuesta:
+
+| # | La mentira | ¿se caza? |
+|---|---|---|
+| 1 | el `padre` apunta a un `id` **que no existe** | **sí** |
+| 2 | **ciclo**: el abuelo acaba colgando de su nieto | **sí** |
+| 3 | se cambia el `padre` y se deja la **`profundidad` vieja** | **sí** |
+| 4 | la línea cuelga de un padre **de otra corrida** | **sí** |
+| 5 | una rama se mueve **a su hermana de al lado**, cuadrando todo lo demás | 🚨 **NO** |
+
+**Se apuesta con ~75 %**, y lo que se apuesta es la tabla entera, incluida la última fila.
+
+🚨 **Y la quinta no es una torcedura cualquiera: es, palabra por palabra, la mentira del paso
+1.** El gasto del `eur` figurando como del `usd`, con el total sin moverse ni una millonésima.
+La diferencia es que ahora se hace en el campo que se escribió **hoy para arreglarlo**.
+
+🔑 **Si la apuesta gana, el titular no es «`padre` funciona».** Es este: **`padre` es
+estructura, pero la estructura solo caza las mentiras que rompen la forma.** Mover una rama a
+su hermana produce un árbol **perfectamente válido** — no hay nada en el registro que lo
+desmienta, porque ese árbol podría haber ocurrido de verdad.
+
+⭐ **Se apuesta también en la dirección incómoda:** si la 5 **sí** se cazara, la apuesta está
+fallada y es mejor noticia. Y si alguna de las cuatro primeras **no** se caza, entonces la
+obligación del sobre está a medio pagar y hay que decirlo así, no redondear hacia arriba.
+
+---
+
+##### 5️⃣ EL QUE CAZA **NO ES `padre`**, Y ESO ES LO QUE DE VERDAD SE APRENDE HOY
+
+Predicción por separado, y más fina que la anterior. De las cuatro que se cazan:
+
+- las **1 y 2** las caza `padre` **solo** — son integridad del propio campo: apunta a algo que
+  no está, o se muerde la cola;
+- la **3** solo la caza **`profundidad`**;
+- la **4** solo la caza **`corrida`**.
+
+🔑 **O sea: la mitad de la vigilancia no viene de `padre`, viene de tener OTRO campo escrito en
+el mismo instante que puede contradecirlo.** `profundidad` y `corrida` no son adornos del
+árbol: son **testigos independientes**. El apuntador dice *«mi padre es t5»*; el contador dice
+*«yo estoy en el escalón 2»*. Si t5 está en el escalón 7, uno de los dos miente — **y no hace
+falta saber cuál para saber que algo se rompió.**
+
+⭐ **Y ahí está la respuesta a por qué `capa` no podía estar mal nunca:** estaba **sola** en su
+renglón. Un dato que nadie puede contradecir no es que sea correcto — es que **no es
+comprobable**, que es una cosa distinta y mucho peor, porque se parece a la primera.
+
+📌 Es la misma forma que `LM.10` (dos observadores independientes, dos redes, mismo `308`) y la
+misma que la prueba 3 de `profundidad.py` (auditar contra un total que se sabe de antemano).
+**Aquí se aplica a un campo del registro y no a una medición**, y por eso vale la pena
+anotarlo: la regla era más general de lo que parecía.
+
+##### ⚠️ El sospechoso de estar ciego — cuarta sesión seguida nombrándolo
+
+Las dos veces anteriores, nombrarlo lo desarmó. El candidato de hoy es distinto y más difícil:
+
+🚨 **El que elige las cinco torceduras es el mismo que sabe cuáles su auditor puede cazar.**
+
+No hay peligro de que el árbol salga bonito —eso lo cerró el paso 2— sino de que **la lista de
+mentiras esté escrita a la medida del detector**. Cuatro de cinco cazadas es un resultado
+sospechosamente cómodo si yo elegí las cinco.
+
+→ **La defensa, y se sella como obligación, no como intención:** la torcedura 5 **entra en la
+lista con su rojo esperado en blanco**, y su prueba se escribe exigiendo que el auditor **la
+deje pasar**. Una prueba que exige que el instrumento **falle** es la única que no se puede
+escribir a la medida del instrumento. 🔑 Si mañana alguien enseña a cazar la 5, esa prueba se
+pondrá roja y habrá que venir aquí a tacharla — **y eso es exactamente lo que tiene que pasar.**
+
+---
+
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
