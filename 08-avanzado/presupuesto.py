@@ -288,6 +288,98 @@ class RepartoDeEntrada:
         }
 
 
+
+
+# ---------------------------------------------------------------------------
+# 2.b) EL ENCARGO DESIGUAL — la obligación del sobre, y se diseña CON UN NÚMERO
+# ---------------------------------------------------------------------------
+# 🚨 EL MODO DE FALLO VA NOMBRADO ANTES DE CORRER, que es la mitad que se olvida:
+#    **que el encargo «desigual» no lo sea de verdad.** Si el worker caro cuesta
+#    un 20 % más, la corrida no distingue nada, y el resultado no será «apuesta
+#    fallada»: será **instrumento ciego otra vez**, que es lo que pasó ayer.
+#    Por eso la desigualdad no se pide con un adjetivo. Se construye.
+#
+#    ⭐ Y LA PALANCA NO ES «MÁS TRABAJO»: ES «TRABAJO QUE DEPENDE DEL ANTERIOR».
+#       Pedirle cuatro conversiones a la vez NO encarece casi nada — el modelo
+#       puede pedir las cuatro herramientas en la MISMA vuelta, y lo que se paga
+#       son vueltas, no herramientas. Para forzar vueltas hace falta que el
+#       segundo paso **necesite el resultado del primero**. Una cadena.
+#    🔑 Es una lección de coste que sólo se ve al intentar encarecer algo a
+#       propósito: en un agente, el precio lo pone la PROFUNDIDAD de la cadena
+#       de dependencias, no la cantidad de trabajo.
+
+# --- Los baratos: la frase de siempre. 3 vueltas -> tasa, convertir, redactar.
+_ENCARGO_BARATO = "Convierte {monto} {moneda} a pesos colombianos."
+
+# --- El caro: una CADENA de tres eslabones, cada uno atado al anterior.
+#     Vuelta 1: tasa(CAD)      · vuelta 2: convertir a pesos
+#     Vuelta 3: tasa(USD)      · vuelta 4: convertir esos pesos a dólares
+#     Vuelta 5: tasa(EUR)      · vuelta 6: convertir esos dólares a euros
+#     Vuelta 7: redactar
+_ENCARGO_CARO = (
+    "Convierte {monto} {moneda} a pesos colombianos. "
+    "Después convierte ESE resultado en pesos a dólares estadounidenses. "
+    "Y después convierte ESE resultado en dólares a euros. "
+    "Hazlo paso a paso, en ese orden, usando el resultado de cada paso como "
+    "entrada del siguiente. Dime las tres cifras."
+)
+
+ENCARGOS_DESIGUALES = {
+    "USD": _ENCARGO_BARATO,
+    "EUR": _ENCARGO_BARATO,
+    "CAD": _ENCARGO_CARO,      # el caro, y se elige el CAD a propósito: es la
+                               # moneda cuya fuente ya dio guerra en A.2
+}
+
+# --- EL NÚMERO CON EL QUE SE DISEÑÓ, escrito antes de correr nada -----------
+# Vueltas esperadas: 3 los baratos, ~7 el caro. Con el p90 de $0,004546 por
+# llamada, eso es ~$0,0136 contra ~$0,0136/3... o sea una razón de **~2,3x**.
+# 📌 Se declara un mínimo, no una predicción exacta: si al medir la razón sale
+#    por debajo de 1,8x, EL INSTRUMENTO NO SIRVE y hay que alargar la cadena
+#    antes de gastar en la corrida buena. Ese umbral está puesto ahora, no
+#    después de ver el resultado.
+RAZON_MINIMA_UTIL = 1.8
+VUELTAS_ESPERADAS_BARATO = 3
+VUELTAS_ESPERADAS_CARO = 7
+
+
+def presupuesto_desigual(n_workers=N_WORKERS_ESPERADOS,
+                         reserva_arriba=RESERVA_ARRIBA):
+    """El techo para la corrida desigual: lo que costaría si TODOS fueran caros.
+
+    ⭐ Y ESTA ES LA TRAMPA QUE SE EVITA A PROPÓSITO. Lo fácil sería poner un
+       techo pequeño para que el caro corte seguro. Eso demostraría que el freno
+       muerde —que ya se sabe desde ayer— y **no diría nada del reparto**.
+       Lo que hay que mirar es otra cosa: con un techo que da de sobra para el
+       encargo ENTERO, ¿basta que el reparto sea CIEGO para que el caro se
+       ahogue mientras a los baratos les sobra?
+    🔑 Si el caro corta con este techo, el culpable no es el número: **es el
+       reparto a partes iguales.** Y ése es exactamente el defecto del
+       candidato 2 que la tarea gemela no podía enseñar.
+
+    ⚠️ ESTE TECHO VA SIN HOLGURA, Y ES LA ÚNICA VEZ EN TODO C.2 QUE ESO ESTÁ
+       BIEN. Los presupuestos de operación llevan holgura porque un freno que
+       muerde en un día normal es una avería. Éste **no es un presupuesto de
+       operación: es un instrumento de medida**, y la holgura le quitaría filo —
+       con un 50 % de más el trozo casi alcanza al caro y el resultado se
+       volvería ambiguo (¿cortó por el reparto o porque el techo iba justo?).
+       Aquí se pone **exactamente el dinero que el encargo necesita**, para que
+       la frase que salga sea la más afilada posible:
+       **«había justo lo necesario, y el que lo necesitaba no pudo tocarlo».**
+
+    📌 Y el número que se aprende del otro lado: para que un reparto CIEGO a
+       tercios no ahogue nunca al caro, el encargo tendría que llevar
+       `3 × coste_del_caro` — o sea **pagar tres veces el peor worker**. Eso es
+       lo que cuesta no saber, a la entrada, cuál de los tres va a ser el caro.
+    """
+    coste_esperado = (2 * VUELTAS_ESPERADAS_BARATO + VUELTAS_ESPERADAS_CARO)
+    total_abajo = coste_esperado * worker.COSTE_ESTIMADO_LLAMADA_USD
+    return round(total_abajo / (1.0 - reserva_arriba), 6)
+
+
+PRESUPUESTO_DESIGUAL_USD = presupuesto_desigual()
+
+
 # ---------------------------------------------------------------------------
 # 3) LAS PRUEBAS — y las dos primeras son las OBLIGACIONES DEL SOBRE
 # ---------------------------------------------------------------------------
@@ -637,6 +729,77 @@ def _pruebas():
     finally:
         orquestador.worker.correr_worker = real2
 
+
+    # --- P15/P16/P17: EL ENCARGO DESIGUAL, COMPROBADO ANTES DE PAGARLO ----
+    # 🚨 Estas tres no comprueban el freno: comprueban **que el instrumento sirve
+    #    para la pregunta**. Ayer se pagó una corrida que no podía distinguir los
+    #    dos esquemas, y eso se supo DESPUÉS. Hoy se sabe antes, y es gratis.
+    coste_barato = VUELTAS_ESPERADAS_BARATO * w.COSTE_ESTIMADO_LLAMADA_USD
+    coste_caro = VUELTAS_ESPERADAS_CARO * w.COSTE_ESTIMADO_LLAMADA_USD
+    rd = RepartoDeEntrada(total_usd=PRESUPUESTO_DESIGUAL_USD)
+
+    # P15 · el techo NO está apretado. Si lo estuviera, el corte no probaría nada
+    #       del reparto: probaría que un techo pequeño corta, que ya se sabe.
+    abajo = PRESUPUESTO_DESIGUAL_USD * (1.0 - RESERVA_ARRIBA)
+    # ⚠️ Y la tolerancia es de UNA MILLONÉSIMA, no de cero, porque el techo se
+    #    redondea a seis decimales al declararse: comparar dos caminos hasta el
+    #    mismo número con `>=` exacto es el bicho de `P4` de ayer, en pequeño.
+    check("P15 · el techo DESIGUAL cubre el encargo entero (no se apretó a mano)",
+          abajo >= 2 * coste_barato + coste_caro - 1e-6,
+          "abajo $%.6f >= necesario $%.6f (cubre JUSTO, y a proposito)"
+          % (abajo, 2 * coste_barato + coste_caro))
+
+    # P16 · Y AUN ASÍ EL CARO NO CABE EN SU TROZO. Aquí está el defecto entero
+    #       del candidato 2, en dos números: hay dinero de sobra en el encargo y
+    #       el que lo necesita no puede tocarlo, porque se repartió a ciegas.
+    check("P16 · pero el trozo NO cubre al caro: el culpable es el REPARTO",
+          rd.trozo_nominal() < coste_caro,
+          "trozo $%.6f < caro $%.6f" % (rd.trozo_nominal(), coste_caro))
+
+    # P17 · EL NÚMERO QUE C.2 LLEVA DOS SESIONES SIN PODER ENSEÑAR: el dinero
+    #       que se queda quieto en el bolsillo del que no lo necesita.
+    sobrante = 2 * (rd.trozo_nominal() - coste_barato)
+    check("P17 · y el desperdicio es CONTABLE: sobra en los baratos lo que le "
+          "falta al caro",
+          sobrante > 0 and sobrante > (coste_caro - rd.trozo_nominal()) * 0.5,
+          "sobra $%.6f en los dos baratos - al caro le faltan $%.6f"
+          % (sobrante, coste_caro - rd.trozo_nominal()))
+
+    # P17b · LA RAZÓN DE DESIGUALDAD, CONTRA EL UMBRAL PUESTO DE ANTEMANO.
+    #        Si el caro no es al menos 1,8x el barato, el instrumento es ciego
+    #        otra vez y no hay que gastar en la corrida.
+    razon = VUELTAS_ESPERADAS_CARO / VUELTAS_ESPERADAS_BARATO
+    check("P17b · la desigualdad DISEÑADA pasa el umbral puesto de antemano",
+          razon >= RAZON_MINIMA_UTIL,
+          "%.2fx esperada >= %.2fx minima util" % (razon, RAZON_MINIMA_UTIL))
+
+    # P18 · EL CABLE: que el encargo desigual LLEGUE al worker. Es P8 otra vez,
+    #       y por el mismo motivo: una tabla correcta que nadie enchufa no hace
+    #       nada, y esta vez el fallo sería invisible (los tres correrían con la
+    #       frase de siempre y la corrida saldría gemela sin avisar).
+    encargos_vistos = []
+
+    def _worker_espia(encargo, nombre="x", presupuesto_usd=None, verboso=True, **kw):
+        encargos_vistos.append((nombre, encargo))
+        return _worker_cortado(encargo, nombre=nombre)
+
+    real3 = orquestador.worker.correr_worker
+    orquestador.worker.correr_worker = _worker_espia
+    try:
+        conta3 = {"capa": "orquestador", "workers": 0, "coste_workers_usd": 0.0,
+                  "llamadas_api_workers": 0, "entrada_workers": 0,
+                  "salida_workers": 0, "detalle": [], "reparto": None,
+                  "encargos": ENCARGOS_DESIGUALES}
+        for m in ("USD", "EUR", "CAD"):
+            orquestador.herramienta_consultar_moneda(1000, m, conta3, verboso=False)
+        largos = {n: len(e) for n, e in encargos_vistos}
+        check("P18 · el encargo DESIGUAL llega al worker (usd/eur cortos, cad largo)",
+              largos.get("cad", 0) > 2 * largos.get("usd", 1)
+              and largos.get("usd") == largos.get("eur"),
+              "largos=%s" % largos)
+    finally:
+        orquestador.worker.correr_worker = real3
+
     w.REGISTRO, orquestador.REGISTRO = _reg_w, _reg_o
 
     print()
@@ -755,6 +918,86 @@ def comprobar_normal(r, verboso=True):
     return dichos
 
 
+def comprobar_desigual(r, verboso=True):
+    """Las afirmaciones de la corrida DESIGUAL — la obligación del sobre.
+
+    🎯 Lo que se mira aquí NO es si el freno muerde. Eso ya se midió ayer y da
+       igual. Lo que se mira es **si el reparto ciego desperdicia**, y ésa es la
+       pregunta que la tarea gemela no podía responder.
+
+    ⚠️ Y la afirmación que decide es la 3, no la 1. Que el caro corte es la
+       mitad barata; lo que acusa al esquema es que corte **mientras hay dinero
+       parado en el bolsillo de los otros dos**.
+    """
+    dichos = []
+
+    def afirmar(n, texto, cond, detalle=""):
+        dichos.append((n, texto, bool(cond), detalle))
+
+    detalle = r.get("detalle_workers", [])
+    porw = {d.get("worker"): d for d in detalle}
+    caro = porw.get("cad", {})
+    baratos = [porw[k] for k in ("usd", "eur") if k in porw]
+    pres = r.get("presupuesto", {})
+    trozo = pres.get("trozo_usd", 0.0)
+
+    afirmar(1, "EL CARO (cad) corta por presupuesto",
+            caro.get("motivo") == "presupuesto",
+            "motivo=%s - %s llamadas" % (caro.get("motivo"), caro.get("llamadas_api")))
+
+    afirmar(2, "los DOS baratos (usd, eur) terminan bien",
+            len(baratos) == 2 and all(b.get("motivo") is None for b in baratos),
+            "motivos=%s" % [b.get("motivo") for b in baratos])
+
+    # 🚨 LA QUE IMPORTA. El desperdicio, en dólares y contable.
+    sobrante = sum(max(0.0, trozo - b.get("coste_usd", 0.0)) for b in baratos)
+    afirmar(3, "🚨 HAY DINERO PARADO EN LOS BARATOS MIENTRAS EL CARO SE AHOGA",
+            sobrante > 0,
+            "sin usar en usd+eur: $%.6f (el caro se paro en $%.6f de $%.6f)"
+            % (sobrante, caro.get("coste_usd", 0.0), trozo))
+
+    # Y la comparación que separa los dos esquemas de una vez:
+    # con TOPE POR PIEZA ($0,05 cada uno) el caro NO habría cortado.
+    afirmar(4, "y con el TOPE POR PIEZA de ayer el caro NO habría cortado",
+            caro.get("coste_usd", 0.0) < 0.05,
+            "el caro gasto $%.6f, muy por debajo del viejo tope $0,050000"
+            % caro.get("coste_usd", 0.0))
+
+    afirmar(5, "el total sigue DENTRO del techo del encargo",
+            r.get("dentro_del_presupuesto") is True,
+            "$%.6f de $%.6f" % (r.get("coste_total_usd", 0),
+                                pres.get("total_usd", 0)))
+
+    afirmar(6, "el reparto sigue cuadrando al final",
+            pres.get("cuadra") is True)
+
+    # ⚠️ INDICIO, no veredicto — declarado débil ANTES de correr, como ayer.
+    #    Es la apuesta 2: darle la causa al modelo debería quitarle la causa
+    #    inventada. Se comprueba por palabras, y buscar palabras ya dio un falso
+    #    rojo una vez.
+    texto = (r.get("texto") or "").lower()
+    culpas_ajenas = ("servicio", "proveedor", "api", "no disponible",
+                     "limitacion", "limitación")
+    palabras_dinero = ("presupuesto", "límite", "limite", "coste", "costo")
+    afirmar(7, "INDICIO: la respuesta NO culpa a un tercero del fallo",
+            not any(c in texto for c in culpas_ajenas),
+            "encontrado: %s" % ([c for c in culpas_ajenas if c in texto] or "nada"))
+    afirmar(8, "INDICIO: y SÍ nombra el dinero como causa",
+            any(pl in texto for pl in palabras_dinero),
+            "encontrado: %s" % ([pl for pl in palabras_dinero if pl in texto] or "nada"))
+
+    # La báscula del techo arreglado, en la corrida de verdad.
+    cortas = r.get("estimaciones_cortas", 0) + sum(
+        d.get("estimaciones_cortas", 0) for d in detalle)
+    afirmar(9, "el techo arreglado NO se pasó: ninguna estimación se quedó corta",
+            cortas == 0, "estimaciones cortas: %s" % cortas)
+
+    if verboso:
+        _imprimir_afirmaciones(
+            "CORRIDA DESIGUAL — el REPARTO tiene que enseñar su defecto", dichos)
+    return dichos
+
+
 def _imprimir_afirmaciones(titulo, dichos):
     print("\n" + "-" * 70)
     print(titulo)
@@ -777,24 +1020,46 @@ def informe_de_hoy():
     print(f"  arriba (orquestador):  ${r.arriba_usd:.6f}   ({int(RESERVA_ARRIBA*100)} %)")
     print(f"  cada worker:           ${r.trozo_nominal():.6f}   x {r.n_workers}")
     print(f"\n  ayer el techo era $0,200000 - y nadie lo había elegido.\n")
+    d = RepartoDeEntrada(total_usd=PRESUPUESTO_DESIGUAL_USD)
     print(f"  presupuesto APRETADO (el que muerde): ${a.total_usd:.6f}")
     print(f"     cada worker: ${a.trozo_nominal():.6f}  ~ "
           f"{a.trozo_nominal()/COSTE_LLAMADA_WORKER_USD:.2f} llamadas al modelo")
 
+    # --- Y la tercera, que es la que mide el REPARTO y no el freno.
+    caro = VUELTAS_ESPERADAS_CARO * worker.COSTE_ESTIMADO_LLAMADA_USD
+    barato = VUELTAS_ESPERADAS_BARATO * worker.COSTE_ESTIMADO_LLAMADA_USD
+    print()
+    print(f"  presupuesto DESIGUAL (el que mide el REPARTO): ${d.total_usd:.6f}")
+    print(f"     cada trozo: ${d.trozo_nominal():.6f}   (ciego, a partes iguales)")
+    print(f"     el caro (cad) necesita ${caro:.6f}  -> NO le cabe, corta")
+    print(f"     cada barato necesita   ${barato:.6f}  -> le sobran "
+          f"${d.trozo_nominal() - barato:.6f}")
+    print()
+    print(f"  🚨 hay ${2 * (d.trozo_nominal() - barato):.6f} parados en los "
+          f"baratos, y al caro le faltan ${caro - d.trozo_nominal():.6f}.")
+    print(f"     El encargo TIENE el dinero. El que lo necesita no puede tocarlo.")
+    print(f"     Eso es el reparto ciego, y con tres encargos gemelos era invisible.")
 
-def correr_pagado(apretado, verboso=True):
+
+def correr_pagado(apretado, verboso=True, desigual=False):
     """LANZA UNA CORRIDA DE VERDAD. Cuesta dinero. Se pide a mano.
 
-    `apretado=True`  -> el presupuesto que tiene que morder  (~$0,014 de techo)
-    `apretado=False` -> el presupuesto normal                (~$0,040 de techo)
+    `apretado=True`   -> el presupuesto que tiene que morder (~$0,014 de techo)
+    `apretado=False`  -> el presupuesto normal               (~$0,040 de techo)
+    `desigual=True`   -> la obligación del sobre: encargos DISTINTOS entre
+                         workers y un techo que cubre el encargo ENTERO
+                         (~$0,079). Aquí no se mide el freno: se mide el REPARTO.
     """
     import orquestador
     import fan_out
 
-    total = PRESUPUESTO_APRETADO_USD if apretado else PRESUPUESTO_ENCARGO_USD
+    if desigual:
+        total = PRESUPUESTO_DESIGUAL_USD
+    else:
+        total = PRESUPUESTO_APRETADO_USD if apretado else PRESUPUESTO_ENCARGO_USD
     rep = orquestador.presupuesto.RepartoDeEntrada(total_usd=total)
 
-    etiqueta = "APRETADO" if apretado else "NORMAL"
+    etiqueta = "DESIGUAL" if desigual else ("APRETADO" if apretado else "NORMAL")
     print("\n" + "=" * 70)
     print(f"CORRIDA PAGADA · presupuesto {etiqueta} · techo ${rep.total_usd:.6f}")
     print(f"  arriba ${rep.arriba_usd:.6f} · cada worker ${rep.trozo_nominal():.6f}")
@@ -807,7 +1072,9 @@ def correr_pagado(apretado, verboso=True):
     r = orquestador.correr_orquestador(orquestador.TAREA_DEMO,
                                        verboso=verboso,
                                        reparto=fan_out.reparto_en_paralelo,
-                                       presupuesto_encargo=rep)
+                                       presupuesto_encargo=rep,
+                                       encargos=(ENCARGOS_DESIGUALES
+                                                 if desigual else None))
 
     print("\n" + "-" * 70)
     print(f"RESPUESTA FINAL ({etiqueta})")
@@ -820,12 +1087,27 @@ def correr_pagado(apretado, verboso=True):
         f"{d['worker']}={d['motivo'] or 'terminó'}({d['llamadas_api']} llamadas)"
         for d in r["detalle_workers"]))
 
-    (comprobar_apretada if apretado else comprobar_normal)(r)
+    if desigual:
+        comprobar_desigual(r)
+    else:
+        (comprobar_apretada if apretado else comprobar_normal)(r)
     return r
 
 
 if __name__ == "__main__":
     import sys
+
+    if "--pagar-desigual" in sys.argv:
+        # 💸 LA OBLIGACIÓN DEL SOBRE. UNA sola corrida, y mide el REPARTO — no
+        #    el freno. Va aparte de `--pagar` a propósito: son dos preguntas
+        #    distintas y se pagan por separado, para poder decidir una sin la
+        #    otra.
+        d = correr_pagado(apretado=False, desigual=True)
+        print()
+        print("=" * 70)
+        print(f"GASTO DE LA CORRIDA DESIGUAL: ${d['coste_total_usd']:.6f}")
+        print("=" * 70)
+        sys.exit(0)
 
     if "--pagar" in sys.argv:
         # 💸 Las DOS corridas, en el orden que importa: primero la apretada
@@ -839,6 +1121,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     informe_de_hoy()
-    print("\n💸 Las dos corridas pagadas NO corrieron. Para correrlas:")
-    print("   python presupuesto.py --pagar")
+    print("\n💸 Las TRES corridas pagadas NO corrieron. Para correrlas:")
+    print("   python presupuesto.py --pagar             (apretada + normal)")
+    print("   python presupuesto.py --pagar-desigual    (la del REPARTO)")
     sys.exit(1 if _pruebas() else 0)

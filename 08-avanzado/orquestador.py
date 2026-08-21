@@ -308,6 +308,21 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
     # tres monedas son comparables entre sí.
     encargo = f"Convierte {monto} {moneda} a pesos colombianos."
 
+    # ⭐ C.2 · CIERRE — EL ENCARGO DESIGUAL, Y ES LA OBLIGACIÓN QUE LLEVABA DOS
+    #    SESIONES SIN PAGARSE.
+    #    Hasta hoy los tres workers recibían EXACTAMENTE la misma frase con otra
+    #    moneda, y por eso costaban lo mismo hasta la tercera cifra (dispersión
+    #    medida: 1,00x-1,02x en cinco corridas). Con encargos gemelos, el reparto
+    #    a tercios y el tope por pieza dan el mismo resultado: **la tarea no podía
+    #    distinguir los dos esquemas.** No es una tarea fácil, es un instrumento
+    #    ciego para esta pregunta.
+    # 🔑 Si no hay `encargos`, no cambia nada: A.2 y todo el bloque B siguen con
+    #    la frase de siempre. La desigualdad es un instrumento que se enchufa,
+    #    no una conducta nueva del orquestador.
+    encargos = contabilidad.get("encargos")
+    if encargos and moneda.upper() in encargos:
+        encargo = encargos[moneda.upper()].format(monto=monto, moneda=moneda.upper())
+
     # ⭐ C.2 — AQUÍ SE ENTREGA EL TROZO, Y ES EL SITIO EXACTO DONDE EL DINERO
     #    CRUZA LA FRONTERA. Si no hay reparto —A.2 y todo el bloque B— el worker
     #    usa su tope de siempre y nada cambia de conducta.
@@ -369,6 +384,10 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
             #    mano, que es exactamente lo que C.1 acaba de quitar de en medio.
             "motivo": resultado["motivo"],
             "llamadas_api": resultado["llamadas_api"],
+            # C.2 · cierre — la báscula del techo arreglado también tiene que
+            # cruzar: si se queda arriba, el informe no puede decir si el techo
+            # se respetó. Es `motivo` otra vez, un día después.
+            "estimaciones_cortas": resultado.get("estimaciones_cortas", 0),
         })
 
     # --- LO QUE CRUZA. Seis campos y, si hace falta, la lista de lo que no se
@@ -518,7 +537,8 @@ def reparto_en_serie(bloques, contabilidad, verboso=True, funciones=None):
 def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                        presupuesto_usd=PRESUPUESTO_ORQ_USD, verboso=True,
                        reparto=None, sistema=None, tools=None, funciones=None,
-                       nombre="orquestador", presupuesto_encargo=None):
+                       nombre="orquestador", presupuesto_encargo=None,
+                       encargos=None):
     """Corre la capa de arriba y devuelve un diccionario con LAS DOS capas.
 
     Si comparas este bucle con el de `worker.correr_worker`, verás que son el
@@ -579,6 +599,10 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
         # herramienta. Al modelo no le sube: no es asunto suyo cuánto le queda a
         # nadie, y decírselo sólo le daría con qué negociar.
         "reparto": reparto_presupuesto,
+        # C.2 · cierre — el encargo POR WORKER, para poder hacerlos desiguales.
+        # Vacío por defecto: sin esto, los tres reciben la misma frase y la
+        # corrida no puede distinguir un reparto de otro.
+        "encargos": encargos,
     }
 
     arranque = time.monotonic()
