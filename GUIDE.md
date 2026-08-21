@@ -378,11 +378,32 @@ Anthropic para que encuentren tu petición exacta. Regístralo cuando falle algo
 ### 4 — Presupuesto y tope de vueltas (se revisan ANTES)
 
 ```python
-if gastado_usd >= PRESUPUESTO_USD:      # antes de llamar, no después
+# 🚨 CORREGIDO EN LA SESIÓN 99, Y LA VERSIÓN VIEJA ESTABA AQUÍ COMO PLANTILLA:
+#        if gastado_usd >= PRESUPUESTO_USD:   # <- esto NO acota
+#    Suena bien y no frena en el techo, porque **nadie sabe cuánto va a costar la
+#    llamada que está autorizando**. Un freno así acota en
+#    `techo + N × coste_de_una_llamada`. Medido en el nivel 8: una corrida se
+#    pasó un **27,5 %** del techo, y se pasaron los CUATRO participantes.
+estimado = max(COSTE_P90_MEDIDO, peor_llamada_ya_pagada * CRECIMIENTO)
+if gastado_usd + estimado > PRESUPUESTO_USD:      # antes de llamar, no después
     raise PresupuestoAgotado(...)
 
 costo = (u.input_tokens * 5.00 + u.output_tokens * 25.00) / 1_000_000  # opus-5
 ```
+
+⚠️ **Y el arreglo tiene su propio precio, dicho para que no sorprenda.** Un `>=`
+ciego deja pasar de más (**falsos negativos**); un `+ estimado` puede cortar a
+quien **sí cabía** (**falsos positivos**). Ningún freno que decida antes de
+conocer el precio se libra de los dos. Por eso el freno **cuenta cuántas veces su
+estimación se quedó corta**: un arreglo que no trae cómo comprobarse a sí mismo
+es una nota, no un freno.
+
+🔑 **Y el número con el que estimas tiene DOS papeles distintos, que se confunden
+con facilidad.** Para un **freno** usa el precio malo (p90): prefiere sobrar.
+Para un **instrumento de medida** usa el coste **esperado**: una medición que se
+equivoca hacia arriba **se anula sola** — paga un techo demasiado grande y luego
+no ve el corte que fue a buscar. Sesión 99: el mismo p90 usado en los dos papeles
+sobredimensionó un experimento **1,93×** y le arruinó el resultado.
 
 ⚠️ **Recalcula el presupuesto para CADA agente. No lo copies del anterior.**
 `PRESUPUESTO_USD = 0.10` servía para el agente del nivel 4 (3 herramientas). El

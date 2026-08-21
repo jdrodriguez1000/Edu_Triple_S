@@ -4039,6 +4039,20 @@
 #     arriba las paga de paso si el techo aprieta de verdad.
 # 🔲 **PENDIENTE VIEJO, arrastrado de C.1:** el detector de un mismo `id` con dos
 #   padres distintos. **Entra con su torcedura al lado o no entra.**
+# 🔎 **HALLAZGO DE LA REVISIÓN DE CIERRE — importancia MEDIA · no bloqueante.**
+#   El `if gastado_usd >= PRESUPUESTO_USD` que hoy se demostró que **no acota**
+#   está en **otros seis sitios del curso**: `04-harness-real/03_harness.py`,
+#   `05b/agente.py`, `05b/juez.py`, `06b/agente.py`, `06b/juez.py` y
+#   `08-avanzado/juez_duelo.py`. ✅ **`GUIDE.md` ya se corrigió** —era el peor
+#   sitio, porque ahí vivía como **plantilla a copiar**—.
+#   📌 **Los seis NO se tocaron, y es una decisión, no un olvido:** son niveles
+#   ya cerrados y reescribir su código cambia la lección que él leyó. Además el
+#   defecto **no muerde ahí**: sus topes van de $0,10 a $1,50 contra corridas
+#   medidas muy por debajo, o sea el mismo patrón de `LM.13` —un freno que nunca
+#   ha mordido—. **Si algún día muerden, se pasarán del techo lo que cueste una
+#   llamada, y ahora está escrito dónde mirar.**
+#   ⚠️ El único que puede importar pronto es **`juez_duelo.py`** ($0,50), porque
+#   **F.3 lo va a usar de verdad** y es la pieza más cara del nivel.
 # 🎲 **Y LA PRIMERA COSA DE LA SESIÓN 100 ES SELLAR LA APUESTA Y COMMITEARLA.**
 #   Van SIETE sesiones con ese orden. Hoy cobró de una forma nueva: **dos apuestas
 #   quedaron sin poder evaluarse, y decirlo en vez de darlas por ganadas es lo
