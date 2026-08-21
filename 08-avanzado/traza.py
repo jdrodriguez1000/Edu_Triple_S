@@ -596,7 +596,138 @@ def experimento_padre(verboso=True):
 
 
 # ---------------------------------------------------------------------------
-# 6) EL PORTERO — ninguna prueba gratis puede escribir en el registro pagado
+# 6) C.1 · PASO 4 — LA FORMA ESPERADA, ESCRITA ANTES DE PAGAR
+# ---------------------------------------------------------------------------
+#
+# 🚨 EL SOSPECHOSO DE ESTAR CIEGO, NOMBRADO EN EL SOBRE ANTES DE CORRER NADA, Y
+#    ES EL PRIMERO QUE NO ES UN INSTRUMENTO SINO YO MIRANDO:
+#
+#        «la demo y la corrida real comparten casi todo el camino, así que voy a
+#         mirar el árbol de verdad buscando confirmar la forma que ya vi»
+#
+#    Un árbol de once llamadas es lo bastante bonito como para asentir con la
+#    cabeza, y «se ve bien» no es una medición.
+#
+#    → LA DEFENSA, Y ESTÁ EN EL ORDEN DE LOS COMMITS, NO EN LA INTENCIÓN: este
+#      apartado se escribió y se commiteó **antes** de gastar el primer centavo.
+#      La forma esperada son SEIS afirmaciones falsables por separado, y las
+#      comprueba la máquina. Lo que yo opine del dibujo no entra.
+
+def corrida_mas_reciente(lineas):
+    """Se queda con las líneas de la ÚLTIMA corrida que aparece en el registro.
+
+    🔑 Y fíjate en que esto **antes de hoy no se podía hacer**. Es el campo
+       `corrida` ganándose el sueldo: en el mismo archivo conviven las líneas
+       pagadas de cinco sesiones y las de la corrida de ahora, y hasta el paso 2
+       no había **nada** que las separara. Es el bicho de esta sesión, resuelto
+       por el campo que se añadió para otra cosa.
+    """
+    con_marca = [d for d in lineas if d.get("corrida")]
+    if not con_marca:
+        return []
+    ultima = con_marca[-1]["corrida"]
+    return [d for d in con_marca if d["corrida"] == ultima]
+
+
+def comprobar_forma(lineas, verboso=True):
+    """Las SEIS afirmaciones del sobre, comprobadas a máquina. Devuelve la lista
+    de `(nº, texto, cumple, lo_que_salió)`.
+    """
+    a = arbol(lineas, verboso=False)
+    quejas = auditar_arbol(lineas)
+
+    # Gasto propio y profundidad por tramo, para no rehacerlos tres veces.
+    propio, prof, nombre, apis = {}, {}, {}, {}
+    for d in lineas:
+        tid = d.get("id")
+        if tid is None:
+            continue
+        nombre.setdefault(tid, d.get("tramo", "?"))
+        prof.setdefault(tid, d.get("profundidad"))
+        propio[tid] = round(propio.get(tid, 0.0) + d.get("costo_usd", 0.0), 6)
+        if d.get("evento") == "llamada_api":
+            apis[tid] = apis.get(tid, 0) + 1
+
+    tools = [t for t in nombre if nombre[t].startswith("tool:")]
+    workers = [t for t in nombre if nombre[t].startswith("worker:")]
+
+    # 5) EL CRUCE, y es el que de verdad se apuesta: el árbol suma HACIA ARRIBA
+    #    desde `padre`; `auditar()` suma en plano y no mira el parentesco. Dos
+    #    caminos independientes hasta el mismo número. Es `LM.66` aplicado al
+    #    propio instrumento.
+    total_arbol = round(sum(a.get("total", {}).values()), 6)
+    total_plano = round(sum(d.get("costo_usd", 0.0) for d in lineas
+                            if d.get("evento") == "llamada_api"), 6)
+
+    afirmaciones = [
+        (1, "exactamente 1 raíz y profundidad máxima 2",
+         len(a.get("raices", [])) == 1 and max(
+             [v for v in prof.values() if v is not None] or [-1]) == 2,
+         f"raíces={a.get('raices')}, profundidad máx="
+         f"{max([v for v in prof.values() if v is not None] or [-1])}"),
+
+        (2, "3 tramos `tool:` y todos con propio $0,000000",
+         len(tools) == 3 and all(propio[t] == 0.0 for t in tools),
+         {nombre[t]: propio[t] for t in tools}),
+
+        (3, "3 tramos `worker:` y todos con propio > 0",
+         len(workers) == 3 and all(propio[w] > 0 for w in workers),
+         {nombre[w]: propio[w] for w in workers}),
+
+        (4, "el auditor no tiene ni una queja sobre el registro sin torcer",
+         not quejas, quejas),
+
+        (5, "🔑 la suma del ÁRBOL cuadra con la factura PLANA",
+         total_arbol == total_plano,
+         f"árbol ${total_arbol:.6f} · plano ${total_plano:.6f}"),
+
+        (6, "al menos un tramo con VARIAS `llamada_api` dentro (el bucle)",
+         any(n > 1 for n in apis.values()),
+         {nombre[k]: v for k, v in apis.items()}),
+    ]
+
+    if verboso:
+        print("\n" + "=" * 72)
+        print("  C.1 · PASO 4 — LA FORMA ESPERADA CONTRA LA QUE SALIÓ")
+        print("=" * 72)
+        for n, texto, cumple, salio in afirmaciones:
+            print(f"  {'✅' if cumple else '❌'} {n}. {texto}")
+            print(f"       → {salio}")
+        rojas = [n for n, _, c, _ in afirmaciones if not c]
+        print("-" * 72)
+        if rojas:
+            print(f"  ❌ {len(rojas)} afirmación(es) del sobre NO se cumplieron: {rojas}")
+            print("     📌 No es un fracaso del paso 4: es la primera vez que este")
+            print("        parentesco se mira fuera del laboratorio, y avisó.")
+        else:
+            print("  ✅ las 6 afirmaciones del sobre, cumplidas.")
+        print("=" * 72)
+
+    return afirmaciones
+
+
+def paso4(verboso=True):
+    """Lee los registros PAGADOS, se queda con la última corrida, dibuja su árbol
+    y comprueba las seis afirmaciones. **No corre nada ni paga nada**: la corrida
+    se lanza aparte con `python fan_out.py --paralelo`.
+
+    📌 Se separa a propósito. Lo que cuesta dinero se pide con todas las letras y
+       se hace una sola vez; leer el resultado es gratis y se puede repetir.
+    """
+    lineas = [d for v in leer(REGISTROS).values() for d in v]
+    corrida = corrida_mas_reciente(lineas)
+    if not corrida:
+        print("  ⚠️ no hay ninguna corrida con parentesco en los registros pagados.")
+        print("     Lánzala con:  python fan_out.py --paralelo")
+        return None
+    if verboso:
+        print(f"\n  Corrida leída: «{corrida[0]['corrida']}» — {len(corrida)} líneas")
+        arbol(corrida, verboso=True)
+    return comprobar_forma(corrida, verboso=verboso)
+
+
+# ---------------------------------------------------------------------------
+# 7) EL PORTERO — ninguna prueba gratis puede escribir en el registro pagado
 # ---------------------------------------------------------------------------
 
 def portero(verboso=True):
@@ -664,7 +795,7 @@ def portero(verboso=True):
 
 
 # ---------------------------------------------------------------------------
-# 7) LAS PRUEBAS — $0,00
+# 8) LAS PRUEBAS — $0,00
 # ---------------------------------------------------------------------------
 
 def _pruebas():
@@ -947,6 +1078,9 @@ def main(argv):
     if "--demo" in argv:
         demo()
         return 0
+    if "--paso4" in argv:
+        r = paso4()
+        return 0 if r and all(c for _, _, c, _ in r) else 1
     if "--padre" in argv:
         experimento_padre()
         return 0
