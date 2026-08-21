@@ -71,9 +71,17 @@ EDITAR `05b-proyecto/agente.py`.
 
     CÓMO SE CORRE
 
-    python worker.py                 # una demo: el worker del dólar, una vez
+    python worker.py                 # GRATIS: dice qué haría y qué ha costado
+    python worker.py --pagar         # la demo de verdad: el worker del dólar
 
-💰 CUESTA DINERO. Poco (centavos), pero cuesta: llama al modelo de verdad.
+💰 La segunda CUESTA DINERO. Poco (centavos), pero cuesta: llama al modelo.
+
+🚨 Y LA BANDERA SE PUSO PORQUE ESTE ARCHIVO COBRÓ SIN QUE NADIE QUISIERA PAGAR
+   (sesión 101, $0,007130). El comando fue `python worker.py --pruebas`, escrito
+   para comprobar que un cambio no había roto nada. **Este archivo no tenía
+   `--pruebas`** — y una bandera que un programa no conoce **no da error**: se
+   ignora en silencio y el programa hace lo suyo. En pantalla se ve igual que
+   una suite de pruebas. → `GUIDE.md` §6.e y `LM.76`.
 """
 
 import json
@@ -807,15 +815,83 @@ def correr_worker(encargo,
 #      "puede ser herramienta de otro"  -> A.2
 #      "pueden ser varios"              -> final del bloque A
 #      "pueden correr a la vez"         -> bloque B, y es otra historia
+# ---------------------------------------------------------------------------
+# 💸 EL FRENO DE LA PUERTA — §6.e de `GUIDE.md`, puesto en la sesión 101
+# ---------------------------------------------------------------------------
+# 🚨 ESTE BLOQUE EXISTE PORQUE ESTE ARCHIVO COBRÓ DOS VECES SIN QUE NADIE
+#    QUISIERA PAGAR. La segunda fue `python worker.py --pruebas`, escrito para
+#    comprobar que C.4 no había roto nada: **este archivo no tenía `--pruebas`**,
+#    así que ignoró la bandera y corrió la demo. $0,007130.
+#
+# 🔑 Y AHÍ ESTÁ LO QUE HAY QUE ENTENDER, PORQUE NO ES OBVIO: **una bandera que
+#    el programa no conoce NO da error.** `sys.argv` se ignora en silencio y el
+#    programa hace lo suyo. En pantalla, `python X.py --loquesea` se ve
+#    exactamente igual que una suite de pruebas… hasta que llega la factura.
+#    → La regla no es «acuérdate de la bandera»: es **que en pelado no se pague
+#      nunca**, porque en pelado es como se comprueba que un archivo compila.
+#
+# ⚠️ LA DEMO NO CAMBIA NI UNA LÍNEA. Lo único que cambia es que ahora hay que
+#    pedirla. La lección de A.1 se lee igual; lo que ya no pasa es que se pague
+#    por leerla.
+
+
+def _precio_medido():
+    """Lo que han costado las corridas de este archivo, según su registro.
+
+    ⭐ SE LEE DEL REGISTRO Y NO SE ESCRIBE A MANO, y es la diferencia entre un
+       aviso que envejece y uno que no. Un número copiado aquí sería verdad hoy
+       y mentira el día que cambie el modelo — y nadie vuelve a mirar un aviso.
+    """
+    costes = []
+    try:
+        with open(REGISTRO, encoding="utf-8") as f:
+            for renglon in f:
+                try:
+                    d = json.loads(renglon)
+                except ValueError:
+                    continue
+                if d.get("evento") == "worker_fin" and d.get("coste_usd"):
+                    costes.append(d["coste_usd"])
+    except OSError:
+        return None
+    if not costes:
+        return None
+    costes.sort()
+    return {"n": len(costes), "mediana": costes[len(costes) // 2],
+            "peor": costes[-1]}
+
+
 if __name__ == "__main__":
     print("=" * 70)
     print("A.1 — UN WORKER. Un agente de una capa, llamado como función.")
     print("=" * 70)
 
+    if "--pagar" not in sys.argv:
+        # 💸 EN PELADO NO SE PAGA. Se dice qué haría y cuánto ha costado.
+        print()
+        print("La demo corre un worker DE VERDAD: llama a la API y a la red.")
+        print("Por eso no arranca sola.")
+        print()
+        precio = _precio_medido()
+        if precio:
+            print(f"  Lo que costaron los {precio['n']} workers ya registrados:")
+            print(f"    mediana ${precio['mediana']:.6f}  ·  "
+                  f"el peor ${precio['peor']:.6f}")
+        else:
+            print("  (aún no hay corridas registradas de las que sacar el precio)")
+        print()
+        print("  Para correrla de verdad:")
+        print("      python worker.py --pagar")
+        print()
+        print("  📌 Y si venías a comprobar que el archivo sigue sano, esto ya")
+        print("     lo hizo: importó, compiló y leyó su registro. Gratis.")
+        raise SystemExit(0)
+
     resultado = correr_worker("Convierte 1000 USD a pesos colombianos.",
                               nombre="usd")
 
-    print("\n" + "-" * 70)
+    print()
+    print("-" * 70)
     print("LO QUE DEVOLVIÓ, tal cual. Esto es un DATO, no una pantalla:")
     print("-" * 70)
     print(json.dumps(resultado, ensure_ascii=False, indent=2))

@@ -62,11 +62,18 @@ Su caja tiene UNA cosa: `consultar_moneda`. No lleva `tasa`, ni `trm`, ni
 
     CÓMO SE CORRE
 
-    python orquestador.py
+    python orquestador.py            # GRATIS: dice qué haría y qué ha costado
+    python orquestador.py --pagar    # la demo de verdad, con sus tres workers
 
-💰 CUESTA DINERO, y más que `worker.py`: paga las vueltas del de arriba MÁS las
-   de los tres de abajo. La factura de las dos capas se imprime al final,
-   separada por capa, que es la única forma de ver dónde se fue.
+💰 La segunda CUESTA DINERO, y más que `worker.py`: paga las vueltas del de
+   arriba MÁS las de los tres de abajo. La factura de las dos capas se imprime
+   al final, separada por capa, que es la única forma de ver dónde se fue.
+
+🚨 La bandera se puso en la sesión 101, después de que `worker.py` cobrara sin
+   que nadie quisiera pagar. Aquí no había pasado todavía, y se pone igual: **la
+   lista de §6.e nombraba dos archivos de cuatro, y el que faltaba fue el que
+   cobró.** Esperar a que muerda para arreglarlo es lo que ya salió mal una vez.
+   → `GUIDE.md` §6.e y `LM.76`.
 """
 
 import json
@@ -873,12 +880,62 @@ TAREA_DEMO = (
     "Dime cuánto es cada uno en pesos hoy, con la fuente y la fecha de cada cifra."
 )
 
+def _precio_medido():
+    """Lo que han costado las corridas de este archivo, según su registro.
+
+    ⭐ SE LEE DEL REGISTRO Y NO SE ESCRIBE A MANO. Un número copiado aquí sería
+       verdad hoy y mentira el día que cambie el modelo — y a un aviso nadie
+       vuelve a mirarlo para actualizarlo.
+    """
+    costes = []
+    try:
+        with open(REGISTRO, encoding="utf-8") as f:
+            for renglon in f:
+                try:
+                    d = json.loads(renglon)
+                except ValueError:
+                    continue
+                if d.get("evento") == "orquestador_fin" and d.get("coste_total_usd"):
+                    costes.append(d["coste_total_usd"])
+    except OSError:
+        return None
+    if not costes:
+        return None
+    costes.sort()
+    return {"n": len(costes), "mediana": costes[len(costes) // 2],
+            "peor": costes[-1]}
+
+
 if __name__ == "__main__":
     print("=" * 70)
     print("A.2 — UN ORQUESTADOR. Sus herramientas son otros agentes.")
     print("A.3 — Y lo que cruza entre las dos capas es un CONTRATO, no una frase.")
     print("=" * 70)
     print("⚠️  Esto es una DEMO, no el duelo. El duelo se corre y se juzga en F.3.")
+
+    if "--pagar" not in sys.argv:
+        # 💸 EN PELADO NO SE PAGA — §6.e de `GUIDE.md`, sesión 101.
+        #    Aquí muerde MÁS que en `worker.py`: la demo de A.2 arranca TRES
+        #    workers, así que la factura de un despiste sale al triple.
+        print()
+        print("La demo llama al modelo de verdad y arranca TRES workers.")
+        print("Por eso no arranca sola.")
+        print()
+        precio = _precio_medido()
+        if precio:
+            print(f"  Lo que costaron las {precio['n']} corridas registradas:")
+            print(f"    mediana ${precio['mediana']:.6f}  ·  "
+                  f"la peor ${precio['peor']:.6f}")
+        else:
+            print("  (aún no hay corridas registradas de las que sacar el precio)")
+        print()
+        print("  Para correrla de verdad:")
+        print("      python orquestador.py --pagar")
+        print()
+        print("  📌 Si venías a comprobar que el archivo sigue sano, esto ya lo")
+        print("     hizo. Y si buscabas pruebas, están en `presupuesto.py`,")
+        print("     `traza.py`, `profundidad.py` y `fallos.py` — todas gratis.")
+        raise SystemExit(0)
 
     r = correr_orquestador(TAREA_DEMO)
 

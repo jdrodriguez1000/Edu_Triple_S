@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 101 — NIVEL 8: **C.4 COMPLETO Y LAS CINCO APUESTAS GANADAS — y lo que más enseñó no fue ninguna de las cinco.** El worker ahora **siempre cierra**: se caiga, se demore o no conteste. 🔑 El crash no tumbaba a nadie —eso ya funcionaba— pero **`correr_worker` que lanza nunca devuelve, y su gasto no entraba en la factura**: $0,004000 gastados, $0,000000 en el libro (`LM.73`). El árbol gana `nodo_abierto`, porque **la ausencia no contradice a nadie** (`LM.74`); el plazo pasa de un residuo de 8,2 min a 90 s **decididos con un dato** (`LM.75`). 🚨 Y `max_vueltas` **nunca había mordido: 0 de 102 cierres registrados** — el archivo que venía a decirlo lo dio por resuelto en su tercer renglón. 💸 Corrida pagada $0,027482: el modelo repitió **la causa que le dio el harness**, sin inventar. 🚨 Hallazgo del día, anotado y NO arreglado a decisión suya: **teníamos la respuesta del CAD y la tiramos** — un `or` que trata `ok` (el proceso) y `pesos` (el resultado) como una sola pregunta. 📊 `fallos.py` nuevo con 26 pruebas · `traza.py` 41→**46** · `LESSONS.md` 72→**76**. 💸 Gasto **$0,034612**, de los que **$0,007130 fueron un error mío** — con la regla de ayer escrita y su lista a medias (`LM.76`).)
+**Última actualización:** 2026-08-21 (sesión 101 — NIVEL 8: **C.4 COMPLETO Y LAS CINCO APUESTAS GANADAS — y lo que más enseñó no fue ninguna de las cinco.** El worker ahora **siempre cierra**: se caiga, se demore o no conteste. 🔑 El crash no tumbaba a nadie —eso ya funcionaba— pero **`correr_worker` que lanza nunca devuelve, y su gasto no entraba en la factura**: $0,004000 gastados, $0,000000 en el libro (`LM.73`). El árbol gana `nodo_abierto`, porque **la ausencia no contradice a nadie** (`LM.74`); el plazo pasa de un residuo de 8,2 min a 90 s **decididos con un dato** (`LM.75`). 🚨 Y `max_vueltas` **nunca había mordido: 0 de 102 cierres registrados** — el archivo que venía a decirlo lo dio por resuelto en su tercer renglón. 💸 Corrida pagada $0,027482: el modelo repitió **la causa que le dio el harness**, sin inventar. 🚨 Hallazgo del día, anotado y NO arreglado a decisión suya: **teníamos la respuesta del CAD y la tiramos** — un `or` que trata `ok` (el proceso) y `pesos` (el resultado) como una sola pregunta. 📊 `fallos.py` nuevo con 26 pruebas · `traza.py` 41→**46** · `LESSONS.md` 72→**76**. 💸 Gasto **$0,034612**, de los que **$0,007130 fueron un error mío** — con la regla de ayer escrita y su lista a medias (`LM.76`). ✅ Y al cierre, a decisión suya, **`worker.py` y `orquestador.py` dejaron de pagar en pelado**: `--pagar` obligatoria y el aviso con el precio LEÍDO de su registro.)
 
 ---
 
@@ -4478,9 +4478,22 @@
 #     propia torcedura, o la necesita pasando?* **Es suya, no mía.**
 #   · 🔲 **C.3 NUNCA TUVO SU BLOQUE EN EL README del nivel.** El código está y la
 #     lección no. **Lo que no está escrito, no se enseñó.**
-#   · 🔲 **La bandera `--pagar` en `worker.py` y `orquestador.py`** — decisión
-#     suya, con el argumento de ayer en contra (*reescribir lecciones ya dadas
-#     cambia lo que él leyó*) y dos facturas a favor.
+#   · ✅ **HECHO EN LA MISMA 101, a decisión suya: la bandera `--pagar` en
+#     `worker.py` y `orquestador.py`.** Ganaron las dos facturas al argumento de
+#     ayer (*reescribir lecciones ya dadas cambia lo que él leyó*), y el
+#     argumento se respetó igual: **la demo no cambia ni una línea, sólo hay que
+#     pedirla.** En pelado cada uno informa de qué haría y **de lo que ha
+#     costado, leído de su propio registro** —57 workers, mediana $0,007240 · 19
+#     corridas de orquestador, mediana $0,024920—. 🔑 El precio se LEE y no se
+#     escribe: un número copiado en un aviso es verdad el día que se escribe y
+#     mentira el día que cambia el modelo, y a un aviso nadie vuelve.
+#     📌 Comprobado con el comando exacto que costó los $0,007130:
+#     `python worker.py --pruebas` ahora cuesta **$0,00**.
+#     ⚠️ Y `GUIDE.md` §6.e se corrigió OTRA VEZ, ahora en el otro sentido: dos
+#     de los cuatro quedan tachados y **`pipeline.py` y `linea_base.py` siguen
+#     pagando en pelado**. Dejar la tabla sin actualizar habría sido `LM.76` con
+#     el signo cambiado — una lista que dice que algo es peligroso cuando ya no
+#     lo es se deja de leer entera.
 # 🎲 **Y LA PRIMERA COSA DE LA SESIÓN 102 ES SELLAR LA APUESTA Y COMMITEARLA.**
 #   Van NUEVE. Hoy las cinco se ganaron, **y aun así el saldo del día no fueron
 #   las apuestas**: fueron el `or` de la frontera y el `max_vueltas` que nunca

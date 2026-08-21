@@ -996,15 +996,21 @@ python X.py --pagar    -> lo que cuesta dinero, y sólo con la bandera puesta.
 En pelado imprime su informe, corre sus pruebas gratis y **te dice con todas las
 letras** qué bandera hace falta para pagar. Termina con `sys.exit(1 if fallos else 0)`.
 
-⚠️ **Los que NO lo cumplen, y hay que mirarlos antes de correrlos. La lista
-son CUATRO, y el 2026-08-21 decía dos:**
+⚠️ **Los que NO lo cumplen, y hay que mirarlos antes de correrlos. Eran CUATRO
+el 2026-08-21, la lista decía DOS, y esa misma tarde se arreglaron dos:**
 
 | Archivo | Qué hace en pelado |
 |---|---|
-| `08-avanzado/worker.py` | corre un worker de verdad — **paga** |
-| `08-avanzado/orquestador.py` | corre la demo de A.2 entera — **paga** |
-| `08-avanzado/pipeline.py` | corre los tres eslabones — **paga** |
-| `08-avanzado/linea_base.py` | corre el duelo y **sobrescribe su medición** |
+| `08-avanzado/worker.py` | ✅ **arreglado (sesión 101)** — en pelado informa; paga con `--pagar` |
+| `08-avanzado/orquestador.py` | ✅ **arreglado (sesión 101)** — igual |
+| `08-avanzado/pipeline.py` | 🔲 corre los tres eslabones — **paga** |
+| `08-avanzado/linea_base.py` | 🔲 corre el duelo y **sobrescribe su medición** |
+
+📌 **Los dos arreglados llevan el aviso con un precio MEDIDO, leído de su propio
+registro y no escrito a mano.** Un número copiado en un aviso es verdad el día
+que se escribe y mentira el día que cambia el modelo — y a un aviso nadie vuelve
+para actualizarlo. `worker.py` dice la mediana y el peor de sus 57 corridas;
+`orquestador.py`, de sus 19.
 
 🚨 **LA LISTA SE COMPLETÓ PORQUE ESTABA INCOMPLETA Y SE COBRÓ AL DÍA SIGUIENTE
 DE ESCRIBIRLA.** En la sesión 101, comprobando que C.4 no había roto nada, se
