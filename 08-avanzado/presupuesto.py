@@ -421,6 +421,126 @@ def _pruebas():
     return fallos
 
 
+# ---------------------------------------------------------------------------
+# 4) LA FORMA ESPERADA DE LA CORRIDA PAGADA — escrita y commiteada ANTES de pagar
+# ---------------------------------------------------------------------------
+# 🚨 EL ORDEN ES LA DEFENSA, NO LA BUENA INTENCIÓN. Contra un sesgo de
+#    confirmación no vale prometer que se mirará con cuidado: vale que la
+#    comprobación sea ANTERIOR al dato y que se pueda ver en el orden de los
+#    commits. Es lo que hizo el paso 4 de C.1 y volvió a cobrar.
+#
+# ⚠️ Y estas funciones NO lanzan nada. Lo que cuesta dinero se pide con todas las
+#    letras y se hace una vez; leer el resultado es gratis y se repite.
+
+def comprobar_apretada(r, verboso=True):
+    """Las afirmaciones de la corrida CON el presupuesto que tiene que morder.
+
+    Traduce a máquina la apuesta 1 del sobre: *«cuando el freno muerda, el
+    encargo no fallará: volverá a medias»*.
+    """
+    dichos = []
+
+    def afirmar(n, texto, cond, detalle=""):
+        dichos.append((n, texto, bool(cond), detalle))
+
+    cortados = [d for d in r.get("detalle_workers", [])
+                if d.get("motivo") == "presupuesto"]
+    detalle = r.get("detalle_workers", [])
+
+    afirmar(1, "AL MENOS UN WORKER CORTA POR PRESUPUESTO (el freno muerde)",
+            len(cortados) >= 1,
+            f"{len(cortados)} de {len(detalle)} cortados")
+
+    afirmar(2, "el orquestador NO revienta: entrega un texto",
+            bool((r.get("texto") or "").strip()),
+            f"{len((r.get('texto') or '').strip())} caracteres")
+
+    afirmar(3, "el total se queda DENTRO del techo del encargo",
+            r.get("dentro_del_presupuesto") is True,
+            f"${r.get('coste_total_usd', 0):.6f} de "
+            f"${r.get('presupuesto', {}).get('total_usd', 0):.6f}")
+
+    # El corte estaba predicho en la llamada 3, porque el trozo da para 1,5.
+    afirmar(4, "el corte cae DESPUÉS de la 1ª llamada, no en la puerta",
+            all(d.get("llamadas_api", 0) >= 1 for d in cortados),
+            f"llamadas de los cortados: {[d.get('llamadas_api') for d in cortados]}")
+
+    afirmar(5, "el reparto sigue cuadrando al final de la corrida",
+            r.get("presupuesto", {}).get("cuadra") is True)
+
+    # ⚠️ LA 6 ES LA QUE DE VERDAD SE QUIERE MIRAR, Y ES LA MÁS DÉBIL DE LAS SEIS.
+    #    «¿avisa de que está incompleta?» no es un campo: es prosa. Se comprueba
+    #    por palabras, y eso puede dar un falso verde (dice "no se pudo" por otra
+    #    cosa) o un falso rojo (avisa con otras palabras). **Queda declarado como
+    #    indicio, no como veredicto**, y el veredicto lo pone la lectura a ojo.
+    texto = (r.get("texto") or "").lower()
+    avisos = ("no se pudo", "no pude", "no fue posible", "incompleto",
+              "incompleta", "falta", "no se obtuvo", "sin dato", "no disponible")
+    afirmar(6, "INDICIO (no veredicto): la respuesta AVISA de que va incompleta",
+            any(a in texto for a in avisos),
+            f"encontrado: {[a for a in avisos if a in texto] or 'ninguno'}")
+
+    if verboso:
+        _imprimir_afirmaciones("CORRIDA APRETADA — el freno tiene que MORDER", dichos)
+    return dichos
+
+
+def comprobar_normal(r, verboso=True):
+    """Las afirmaciones de la corrida con presupuesto NORMAL.
+
+    Es `P1` en el mundo real, y es la obligación sellada esta mañana: **el freno
+    tiene que callarse**. Sin esta corrida, "no muerde en operación normal" es
+    una prueba de aritmética, no un hecho.
+    """
+    dichos = []
+
+    def afirmar(n, texto, cond, detalle=""):
+        dichos.append((n, texto, bool(cond), detalle))
+
+    detalle = r.get("detalle_workers", [])
+    cortados = [d for d in detalle if d.get("motivo") == "presupuesto"]
+
+    afirmar(1, "NINGÚN worker corta por presupuesto (el freno SE CALLA)",
+            len(cortados) == 0,
+            f"{len(cortados)} cortados de {len(detalle)}")
+
+    afirmar(2, "el orquestador tampoco corta",
+            r.get("motivo") != "presupuesto",
+            f"motivo={r.get('motivo')}")
+
+    afirmar(3, "el total se queda DENTRO del techo del encargo",
+            r.get("dentro_del_presupuesto") is True,
+            f"${r.get('coste_total_usd', 0):.6f} de "
+            f"${r.get('presupuesto', {}).get('total_usd', 0):.6f}")
+
+    afirmar(4, "los TRES workers arrancaron y ninguno se quedó sin trozo",
+            len(detalle) == N_WORKERS_ESPERADOS
+            and not r.get("presupuesto", {}).get("rechazados"),
+            f"{len(detalle)} workers · rechazados="
+            f"{r.get('presupuesto', {}).get('rechazados')}")
+
+    afirmar(5, "y sobra dinero: el techo NO estaba pegado al gasto",
+            r.get("coste_total_usd", 1e9)
+            < r.get("presupuesto", {}).get("total_usd", 0),
+            f"margen ${r.get('presupuesto', {}).get('total_usd', 0) - r.get('coste_total_usd', 0):.6f}")
+
+    if verboso:
+        _imprimir_afirmaciones("CORRIDA NORMAL — el freno tiene que CALLARSE", dichos)
+    return dichos
+
+
+def _imprimir_afirmaciones(titulo, dichos):
+    print("\n" + "-" * 70)
+    print(titulo)
+    print("-" * 70)
+    for n, texto, ok, detalle in dichos:
+        print(("  OK  " if ok else "  XX  ") + f"{n}. {texto}"
+              + (f"  -> {detalle}" if detalle else ""))
+    rojas = [n for n, _, ok, _ in dichos if not ok]
+    print(f"\n  {len(dichos) - len(rojas)} de {len(dichos)} cumplidas"
+          + (f" · en rojo: {rojas}" if rojas else ""))
+
+
 def informe_de_hoy():
     """Lo que C.2 puede decir en voz alta, y ayer no."""
     r = RepartoDeEntrada()
@@ -436,7 +556,63 @@ def informe_de_hoy():
           f"{a.trozo_nominal()/COSTE_LLAMADA_WORKER_USD:.2f} llamadas al modelo")
 
 
+def correr_pagado(apretado, verboso=True):
+    """LANZA UNA CORRIDA DE VERDAD. Cuesta dinero. Se pide a mano.
+
+    `apretado=True`  -> el presupuesto que tiene que morder  (~$0,014 de techo)
+    `apretado=False` -> el presupuesto normal                (~$0,040 de techo)
+    """
+    import orquestador
+    import fan_out
+
+    total = PRESUPUESTO_APRETADO_USD if apretado else PRESUPUESTO_ENCARGO_USD
+    rep = orquestador.presupuesto.RepartoDeEntrada(total_usd=total)
+
+    etiqueta = "APRETADO" if apretado else "NORMAL"
+    print("\n" + "=" * 70)
+    print(f"CORRIDA PAGADA · presupuesto {etiqueta} · techo ${rep.total_usd:.6f}")
+    print(f"  arriba ${rep.arriba_usd:.6f} · cada worker ${rep.trozo_nominal():.6f}")
+    print("=" * 70)
+
+    # Se corre en PARALELO a propósito: es la topología donde el reparto tiene
+    # que entregar tres trozos a tres hilos a la vez, y donde el candado del
+    # reparto se gana el sueldo o no se lo gana.
+    fan_out.reiniciar_linea_de_tiempo()
+    r = orquestador.correr_orquestador(orquestador.TAREA_DEMO,
+                                       verboso=verboso,
+                                       reparto=fan_out.reparto_en_paralelo,
+                                       presupuesto_encargo=rep)
+
+    print("\n" + "-" * 70)
+    print(f"RESPUESTA FINAL ({etiqueta})")
+    print("-" * 70)
+    print(r["texto"])
+    print(f"\n  arriba: ${r['coste_orquestador_usd']:.6f} · "
+          f"abajo: ${r['coste_workers_usd']:.6f} · "
+          f"TOTAL: ${r['coste_total_usd']:.6f}  (techo ${rep.total_usd:.6f})")
+    print("  workers: " + " · ".join(
+        f"{d['worker']}={d['motivo'] or 'terminó'}({d['llamadas_api']} llamadas)"
+        for d in r["detalle_workers"]))
+
+    (comprobar_apretada if apretado else comprobar_normal)(r)
+    return r
+
+
 if __name__ == "__main__":
-    informe_de_hoy()
     import sys
+
+    if "--pagar" in sys.argv:
+        # 💸 Las DOS corridas, en el orden que importa: primero la apretada
+        #    —la barata y la que puede fallar— y después la normal.
+        a = correr_pagado(apretado=True)
+        n = correr_pagado(apretado=False)
+        print("\n" + "=" * 70)
+        print(f"GASTO DE LAS DOS CORRIDAS: "
+              f"${a['coste_total_usd'] + n['coste_total_usd']:.6f}")
+        print("=" * 70)
+        sys.exit(0)
+
+    informe_de_hoy()
+    print("\n💸 Las dos corridas pagadas NO corrieron. Para correrlas:")
+    print("   python presupuesto.py --pagar")
     sys.exit(1 if _pruebas() else 0)

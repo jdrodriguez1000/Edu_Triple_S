@@ -339,6 +339,15 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
             "segundos": resultado["segundos"],
             "coste_usd": resultado["coste_usd"],
             "herramientas": resultado["herramientas"],
+            # 🐛 C.2 — ESTOS DOS FALTABAN, Y SE NOTÓ AL ESCRIBIR LAS
+            #    COMPROBACIONES DE LA CORRIDA PAGADA, NO ANTES.
+            #    El worker sabía por qué se paró —`motivo`: presupuesto,
+            #    max_vueltas o `None`— y **ese dato moría en la frontera**.
+            #    Arriba llegaba `ok=False` a secas, que dice que salió mal y no
+            #    dice de qué. 🔑 Un `ok` sin causa obliga a mirar el registro a
+            #    mano, que es exactamente lo que C.1 acaba de quitar de en medio.
+            "motivo": resultado["motivo"],
+            "llamadas_api": resultado["llamadas_api"],
         })
 
     # --- LO QUE CRUZA. Seis campos y, si hace falta, la lista de lo que no se
