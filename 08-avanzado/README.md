@@ -2714,6 +2714,140 @@ primera vez que este parentesco se mira fuera del laboratorio.
 
 ---
 
+##### 📊 C.1 · PASO 4 — LO QUE SALIÓ, el 2026-08-21. **$0,026390 · las 6 afirmaciones cumplidas · y un hallazgo BLOQUEANTE que ninguna miraba**
+
+`python fan_out.py --paralelo` (pagado, una vez) · `python traza.py --paso4` (gratis, repetible).
+
+**El coste, contra la horquilla sellada:** $0,026390 · 11 llamadas · 8,34 s. Se apostó
+**$0,024 – $0,030**. Dentro, y la horquilla venía de un dato medido, no de una intuición.
+
+##### ✅ Las seis afirmaciones del sobre, cumplidas
+
+```
+capa:orquestador       t2   total $0.026390   propio $0.004604
+   tool:consultar_moneda  t5   total $0.007289   propio $0.000000
+      worker:eur          t6   total $0.007289   propio $0.007289
+   tool:consultar_moneda  t7   total $0.007257   propio $0.000000
+      worker:cad          t8   total $0.007257   propio $0.007257
+   tool:consultar_moneda  t3   total $0.007240   propio $0.000000
+      worker:usd          t4   total $0.007240   propio $0.007240
+```
+
+| # | Lo que se pedía | Lo que salió |
+|---|---|---|
+| 1 | 1 raíz, profundidad máx. 2 | ✅ `[('c1','t2')]`, prof. 2 |
+| 2 | 3 tramos `tool:` con propio $0,000000 | ✅ los tres a cero |
+| 3 | 3 tramos `worker:` con propio > 0 | ✅ 0,007240 · 0,007289 · 0,007257 |
+| 4 | cero quejas del auditor | ✅ `[]` |
+| 5 | 🔑 la suma del árbol == la factura plana | ✅ **$0,026390 == $0,026390** |
+| 6 | algún tramo con varias `llamada_api` | ✅ orquestador 2 · cada worker 3 |
+
+🔑 **La 5 es la que valía, y cuadró.** El árbol suma **hacia arriba desde `padre`**; `auditar()`
+suma **en plano y sin mirar el parentesco**. Dos caminos independientes hasta el mismo número.
+Es `LM.66` aplicado al propio instrumento, y esta vez el segundo testigo confirmó en vez de
+desmentir — que es el otro trabajo de un testigo.
+
+📌 **La 6 tenía permiso para fallar sola y no falló:** el agente de verdad da **tres vueltas por
+worker** donde la demo daba una. El árbol lo absorbió sin cambiar de forma, y eso responde algo
+que la demo no podía: **el parentesco no depende de cuántas veces hable el modelo.**
+
+---
+
+##### 🚨 EL HALLAZGO DEL DÍA — y es lo que las seis afirmaciones NO miraban
+
+> **Importancia: alta · Urgencia: BLOQUEANTE.**
+> **Qué bloquea y qué se rompe:** bloquea el **paso 5**. Al correr `fan_out.py --paralelo` una
+> segunda vez, el árbol declara que **una sola corrida costó el doble**, sin una queja. Y el
+> paso 5 consiste exactamente en comparar ramas de corridas distintas.
+
+**El identificador de corrida no era único.** El contador de `contexto.py` vive en el proceso, y
+al arrancar Python vuelve a 1:
+
+```
+proceso A -> c1
+proceso B -> c1
+```
+
+Las dos corridas se llaman `c1` **y sus tramos se llaman `t2`…`t8`, los mismos**. No es que se
+parezcan: son **indistinguibles**. Medido, con las líneas reales duplicadas:
+
+```
+capa:orquestador   t2   total $0.052780   propio $0.009208     ← dos corridas de $0,026390
+quejas del auditor: []
+```
+
+⭐ **Es la SEXTA mentira, y es la primera que no escribí yo.** Las cinco del paso 3 las inventé;
+esta **la escribe el harness solo**, cada vez que se corre dos veces. 🔑 Y no se parece a la
+quinta: **la quinta pasa porque describe un mundo posible; esta describía un mundo que no
+ocurrió.**
+
+##### 💀 Y lo que de verdad duele: el comentario que lo justificaba nombró el riesgo equivocado
+
+Esto estaba en `contexto.py`, escrito **esa misma mañana**:
+
+> *«Se prefiere a un `uuid` a propósito: los ids salen cortos y en orden … este archivo no sale
+> de una máquina.»*
+
+**El razonamiento nombró el riesgo que asumía —irse a otra máquina— y se equivocó en cuál era.**
+El peligro nunca fue otra máquina: era **el mismo archivo, mañana**. 🔑 Un «a propósito» escrito
+en un comentario **se lee como si alguien lo hubiera medido**, y aquí no se había medido nada.
+→ `LM.67`.
+
+📌 **Y es el bicho de esta misma mañana por tercera vez en un día.** `corrida` se añadió en el
+paso 2 para cerrarlo, y el README lo llamó *«cerrado por diseño»*. Estaba cerrado **a medias**:
+separaba una corrida de las de otro día, no de la de mañana.
+
+##### 🔧 Cómo se mató — en el origen, y son DOS arreglos porque son DOS fallos
+
+| | |
+|---|---|
+| **El que escribe** | `contexto._corrida_nueva()` — fecha legible + 6 caracteres de azar. Los **tramos siguen con contador**: solo tienen que ser únicos dentro de su corrida. |
+| **El que lee** | `arbol()` y `auditar_arbol()` indexan por **`(corrida, id)`**, no por `id`. Aunque mañana llegue un registro con ids repetidos, no se funden. |
+
+🔑 **Hacían falta los dos, y saber por qué separa un parche de un arreglo.** Arreglar solo al que
+escribe deja ciego al lector ante todos los registros **ya grabados**; arreglar solo al lector
+deja el archivo lleno de nombres repetidos. Es la sesión 49 de TEAPP otra vez: **origen y
+portero**.
+
+##### 🎁 Un regalo del arreglo, y va en contra de la intuición
+
+Al pasar la clave a `(corrida, id)`, **la comprobación de `corrida` del auditor se quedó sin
+forma de dispararse**: padre e hijo son de la misma corrida por construcción. Un detector
+correcto quedó **muerto por un arreglo correcto**.
+
+🚨 **Y no lo vi yo: lo cazó la prueba 25 poniéndose roja en el acto.** El caso no desapareció —
+subió un nivel, donde ahora se distinguen dos cosas que antes eran una: *«tu padre se perdió»* y
+*«tu padre es de otra corrida»*. **El diagnóstico salió mejor que antes del arreglo.**
+
+⚠️ **Y esto obliga a corregir un número del paso 3, aquí y no en silencio:** se escribió que *«de
+las cuatro cazadas, dos las caza `padre` solo y dos necesitan un segundo testigo»*. Con la clave
+arreglada, **`corrida` dejó de ser un testigo y pasó a ser parte de la identidad.** El único
+segundo testigo que queda es **`profundidad`**. `LM.66` no cambia —sigue haciendo falta un campo
+que pueda desmentir— pero **el recuento sí, y era mío.**
+
+##### 🧾 Lo que el paso 4 dejó
+
+| | |
+|---|---|
+| Pagado | **$0,026390**, una sola corrida, dentro de la horquilla |
+| `comprobar_forma()` | las 6 afirmaciones a máquina, **commiteada antes de pagar** (`f2c30f4`) |
+| Arreglos | `_corrida_nueva()` en el que escribe · clave `(corrida, id)` en el que lee |
+| Pruebas | **31 en verde** (29, 30 y 31 son del arreglo), y los otros cinco módulos verdes |
+| Reescritas | la **20** (se puso roja porque ya HAY una corrida pagada con parentesco) y la **18** |
+
+📌 **La defensa contra el sospechoso se puede señalar, y esta vez sirvió de verdad.** El sobre
+avisó: *«voy a mirar el árbol buscando confirmar la forma que ya vi»*. Y eso es exactamente lo
+que habría pasado: **las seis salieron verdes a la primera.** Lo que encontró el fallo no fue
+mirar el dibujo — fue que el dibujo decía `c1` y `c1` es un nombre demasiado corto para ser
+único. 🔑 **Una lista de comprobaciones que se cumple entera no dice que no haya nada roto: dice
+que no hay nada roto EN LA LISTA.**
+
+➡️ **Lo que esto le cambia al paso 5:** estaba bloqueado y ya no lo está. Y hereda una pieza que
+no existía esta mañana: **dos corridas se pueden comparar en el mismo archivo sin mezclarse**,
+que es justo lo que el paso 5 necesita para llevarle el árbol al defecto de la sesión 95.
+
+---
+
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |

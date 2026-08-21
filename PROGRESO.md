@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 97 — NIVEL 8: **BLOQUE C, C.1 pasos 1, 2 y 3 HECHOS, $0,00 en toda la sesión**. ✅ **La obligación del sobre, PAGADA:** torcer `padre` en un registro grabado pone rojo — `padre` no es otro adjetivo. 🎯 **La apuesta 4 sale exacta: 4 de 5 mentiras cazadas y la 5ª pasa**, y la 5ª es la del paso 1 palabra por palabra → **añadir estructura sube el listón de la mentira, no lo cierra.** ⭐ **La mitad de la vigilancia no la pone `padre`: la ponen `profundidad` y `corrida` como testigos que pueden desmentirlo** → `LM.66`. 28 pruebas en verde.)
+**Última actualización:** 2026-08-21 (sesión 97 — NIVEL 8: **BLOQUE C, C.1 pasos 1, 2, 3 y 4 HECHOS. $0,026390 en toda la sesión**, todo en una sola corrida del paso 4. 🔴 **La apuesta 2 ($0,00) se declaró FALLADA antes de gastar**, con el modo de fallo que ella misma predijo. ✅ **Las 6 afirmaciones del sobre del paso 4, cumplidas** — incluida la que valía: el árbol y la factura plana dan el mismo total por caminos independientes. 🚨 **Y el hallazgo del día es lo que las seis NO miraban: el id de corrida no era único entre procesos**, y dos corridas se fundían en un árbol que declaraba el doble sin una queja → `LM.67`. 31 pruebas en verde.)
 
 ---
 
@@ -3866,8 +3866,34 @@
 # 🔑 **`LM.66` — un dato se vuelve comprobable el día que hay otro que puede desmentirlo.**
 # 💰 **La apuesta 2 ($0,00) SIGUE VIVA:** tres pasos de C.1 y ni una llamada a la API.
 #
-# ➡️ **SIGUIENTE PASO CONCRETO — C.1 · PASO 4: EL ÁRBOL DE UNA CORRIDA NUEVA, y esta vez CON
-#   MODELO.** Es donde la apuesta 2 se juega de verdad: `grabar_demo()` usa workers falsos, y el
+# ============================================================================
+# SESIÓN 97 · PASO 4 — LO QUE SALIÓ
+# ============================================================================
+# 💰 **$0,026390**, una sola corrida, dentro de la horquilla sellada ($0,024–$0,030).
+# 🔴 **La apuesta 2 ($0,00) queda FALLADA**, declarada antes de gastar y con el modo de fallo
+#   que ella misma predijo: cinco estimaciones infladas y la sexta corta.
+# ✅ **Las 6 afirmaciones del sobre, cumplidas**, incluida la 5: árbol $0,026390 == plano
+#   $0,026390, por dos caminos independientes.
+# 🚨 **Y el hallazgo es lo que las seis NO miraban: el id de corrida no era único entre
+#   procesos.** Dos corridas se fundían en un árbol que declaraba el doble, sin una queja.
+#   Muerto con dos arreglos (el que escribe y el que lee) → `LM.67`.
+# 🔑 **Una lista de comprobaciones que se cumple entera no dice que no haya nada roto: dice que
+#   no hay nada roto EN LA LISTA.**
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — C.1 · PASO 5: LLEVARLE EL ÁRBOL AL DEFECTO DE LA SESIÓN 95.**
+#   Es lo que resuelve la **apuesta 1** (*«el árbol no cambiará ninguna conclusión ya pagada del
+#   bloque B, pero habría abaratado la de la 95»*, ~80 %). Estaba **bloqueado** por el id de
+#   corrida y **ya no lo está**: dos corridas conviven ahora en el mismo archivo sin mezclarse,
+#   que es exactamente lo que el paso 5 necesita para comparar.
+# ⚠️ **Lo que el paso 5 hereda ya medido, y conviene no olvidarlo:** el árbol es fiable como
+#   **relato de lo que pasó** y NO es juez de si lo que pasó era lo correcto (paso 3). Si el
+#   defecto de la 95 fue un enrutado torcido **bien anotado**, el árbol saldrá impecable — y eso
+#   sería la apuesta 1 fallada por el lado interesante.
+# 📌 **Sigue pendiente y con dueño:** el detector de un mismo `id` con dos padres distintos.
+#   Entra **con su torcedura al lado** o no entra (`LM.13`).
+#
+# *(enunciado original del paso 4, conservado)* **C.1 · PASO 4: EL ÁRBOL DE UNA CORRIDA NUEVA,
+#   y esta vez CON MODELO.** Es donde la apuesta 2 se juega de verdad: `grabar_demo()` usa workers falsos, y el
 #   paso 4 pide el camino entero de punta a punta. ⚠️ **Si el paso 4 exige pagar, la apuesta 2
 #   está FALLADA y se anota como fallada, no se redefine** (`LM.21`).
 # 📌 **Lo que el paso 4 hereda ya medido:** (1) el árbol es fiable como relato de lo que pasó y
@@ -14690,6 +14716,63 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   árbol.** 📌 Y los workers de la demo son falsos a propósito —se mide el parentesco, no el
   modelo— pero **el camino es el de verdad**: un árbol dibujado por un camino de mentira
   mediría al camino de mentira.
+- **🔴 LA APUESTA 2 ($0,00) SE DECLARÓ FALLADA ANTES DE GASTAR EL PRIMER CENTAVO** (sesión 97,
+  paso 4). El paso 4 exige pagar y no hay forma honesta de esquivarlo: la demo tiene workers
+  falsos, y `correr_orquestador` y `correr_worker` —los bucles de agente de verdad— no se habían
+  ejecutado nunca bajo el árbol. 🔑 **El modo de fallo estaba predicho palabra por palabra en la
+  propia apuesta 2:** cinco sesiones estimando de más y la sexta corta. ⭐ **Y el error no fue el
+  número: fue contar el coste de lo que se iba a escribir y no el de lo que haría falta para
+  creérselo.** Los pasos 1, 2 y 3 costaron $0,00 de verdad; el que cuesta es el que **valida**
+  los otros tres.
+- **✅ Las 6 afirmaciones del sobre del paso 4, cumplidas — y la corrida costó $0,026390**
+  (sesión 97), dentro de la horquilla sellada de $0,024–$0,030, que venía de un dato medido en
+  la sesión 93 y no de una intuición. 🔑 **La que valía es la 5, y cuadró: $0,026390 == $0,026390.**
+  El árbol suma **hacia arriba desde `padre`** y `auditar()` suma **en plano sin mirar el
+  parentesco** — dos caminos independientes hasta el mismo número. Es `LM.66` aplicado al propio
+  instrumento, con el segundo testigo **confirmando** en vez de desmentir. 📌 Y la 6 tenía
+  permiso para fallar sola y no falló: el agente real da **tres vueltas por worker** donde la
+  demo daba una, y el árbol no cambió de forma. **El parentesco no depende de cuántas veces
+  hable el modelo.**
+- **🚨 EL HALLAZGO DEL DÍA ES LO QUE LAS SEIS AFIRMACIONES NO MIRABAN: el id de corrida no era
+  único entre procesos** (sesión 97, paso 4). **Importancia: alta · Urgencia: BLOQUEANTE** —
+  bloqueaba el paso 5, porque al correr el fan-out una segunda vez el árbol declaraba que **una
+  sola corrida costó el doble** ($0,052780 en vez de $0,026390) **sin una sola queja**, y el paso
+  5 consiste en comparar ramas de corridas distintas. El contador de `contexto.py` vive en el
+  proceso: `proceso A -> c1`, `proceso B -> c1`, y los tramos `t2`…`t8` **los mismos**.
+  ⭐ **Es la SEXTA mentira y la primera que no escribí yo:** las cinco del paso 3 las inventé, y
+  esta **la escribe el harness solo** cada vez que se corre dos veces. 🔑 **Y no es como la
+  quinta: la quinta pasa porque describe un mundo posible; esta describía un mundo que no
+  ocurrió.**
+- **💀 Y el comentario que lo justificaba nombró el riesgo EQUIVOCADO** (sesión 97 → `LM.67`).
+  En `contexto.py`, escrito esa misma mañana: *«se prefiere a un `uuid` **a propósito** … este
+  archivo no sale de una máquina»*. Pensó en el **espacio**; el peligro estaba en el **tiempo**:
+  el mismo archivo, mañana. 🔑 **Un «a propósito» se lee como si alguien lo hubiera medido, y
+  blinda la decisión contra el siguiente lector** —incluido yo dos horas después—. Un motivo
+  medido puede decir qué observación lo respalda y cuál lo tumbaría; si no puede, es una
+  suposición con la ropa de una conclusión. 📌 Y es el bicho de esa misma mañana por **tercera
+  vez en un día**: `corrida` se añadió en el paso 2 para cerrarlo y se llamó *«cerrado por
+  diseño»* — estaba cerrado **a medias**.
+- **Se mató con DOS arreglos, porque eran dos fallos** (sesión 97). El que **escribe**:
+  `_corrida_nueva()`, fecha legible más azar —y los tramos siguen con contador, porque solo
+  tienen que ser únicos dentro de su corrida—. El que **lee**: `arbol()` y `auditar_arbol()`
+  indexan por **`(corrida, id)`**. 🔑 **Hacían falta los dos, y eso separa un parche de un
+  arreglo:** arreglar solo al que escribe deja ciego al lector ante todo lo **ya grabado**;
+  arreglar solo al lector deja el archivo lleno de nombres repetidos.
+- **🎁 Un arreglo correcto dejó MUERTO a un detector correcto, y lo cazó una prueba en rojo**
+  (sesión 97). Al pasar la clave a `(corrida, id)`, la comprobación de `corrida` del auditor se
+  quedó sin forma de dispararse: padre e hijo son de la misma corrida por construcción. **No lo
+  vi yo: la prueba 25 se puso roja en el acto.** El caso subió un nivel, y ahora se distinguen
+  dos cosas que antes eran una: *«tu padre se perdió»* y *«tu padre es de otra corrida»* — **el
+  diagnóstico salió mejor que antes del arreglo.** ⚠️ Y obliga a corregir un número del paso 3:
+  se escribió *«dos de las cuatro necesitan un segundo testigo»*, y con la clave arreglada
+  **`corrida` dejó de ser testigo y pasó a ser identidad**. El único que queda es `profundidad`.
+  `LM.66` no cambia; **el recuento sí, y era mío.**
+- **🔑 Una lista de comprobaciones que se cumple entera no dice que no haya nada roto: dice que
+  no hay nada roto EN LA LISTA** (sesión 97, y es el resumen del paso 4). Las seis afirmaciones
+  salieron verdes **a la primera**. El fallo no lo encontró ninguna: lo encontró mirar la salida
+  y pensar *«`c1` es un nombre demasiado corto para ser único»*. ⭐ **La defensa contra el
+  sospechoso funcionó, pero no como se esperaba:** evitó que el dibujo bonito me convenciera, y
+  el fallo apareció **al lado** de la lista, no dentro.
 - **✅ LA OBLIGACIÓN DEL SOBRE, PAGADA: torcer `padre` SÍ pone algo rojo** (sesión 97, paso 3
   de C.1, $0,00, 28 pruebas). Hubo que **fabricar** el registro que se iba a torcer —no existía
   ninguno con parentesco, y los pagados no lo tendrán nunca (`LM.65`)—: `grabar_demo()` vuelca

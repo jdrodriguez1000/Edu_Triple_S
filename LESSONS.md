@@ -5632,3 +5632,41 @@ mira si hay algo con qué contrastarlo — y si no lo hay, **el trabajo no es la
 el segundo dato.** Y el corolario incómodo para cualquier tablero: un número que cuadra
 (la suma total, el balance, el conteo) puede estar **contestando una pregunta más pequeña de la
 que parece**. Cuadrar la suma no es haber atribuido nada.
+
+
+### LM.67 — Un «a propósito» en un comentario se lee como si alguien lo hubiera medido
+
+Un identificador se generaba con un contador en vez de con azar, y al lado había un comentario
+que decía *«se prefiere a un uuid **a propósito**: los ids salen cortos y en orden, y este
+archivo no sale de una máquina»*. Unas horas después se midió que dos ejecuciones del mismo
+programa producían **el mismo identificador**, porque el contador arranca de cero en cada
+proceso. Dos corridas de $0,026390 se fundían en una que declaraba $0,052780, **sin un solo
+error**.
+
+🔑 **Lo interesante no es el fallo: es que el comentario nombró el riesgo que estaba asumiendo
+y se equivocó en cuál era.** Dijo *«no sale de una máquina»* — o sea, pensó en el espacio. El
+peligro estaba en el tiempo: **el mismo archivo, mañana.** Un razonamiento escrito no es más
+correcto por estar escrito; lo que gana es **autoridad**, que es otra cosa.
+
+⚠️ **Y ahí está el veneno.** Un «a propósito» le dice al siguiente lector —incluido tú dentro de
+dos horas— *«esto ya se pensó, sigue adelante»*. Una decisión sin comentario invita a mirarla;
+una decisión con un motivo escrito **la blinda**. El comentario no era mentira: era una
+suposición con la ropa de una conclusión.
+
+📌 **Cómo se distingue una de otra, y es barato:** un motivo medido puede decir **qué observación
+lo respalda** y **qué observación lo tumbaría**. Si no puede, es una suposición y hay que
+escribirla como tal — *«se supone que…»*, *«no se ha comprobado que…»*. Escribir «a propósito»
+sin eso es cobrar por adelantado un trabajo que no se hizo.
+
+⭐ **Y el corolario que ordena el resto de esta lista: una batería de comprobaciones que se
+cumple entera no dice que no haya nada roto. Dice que no hay nada roto EN LA LISTA.** El día que
+esto se midió, seis afirmaciones escritas de antemano salieron verdes a la primera. El fallo no
+lo encontró ninguna: lo encontró mirar un nombre en la salida y pensar *«ese nombre es demasiado
+corto para ser único»*. 🔑 **Una lista de comprobación protege contra los fallos que ya
+imaginaste. No sustituye a mirar.**
+
+**Dónde muerde fuera de aquí:** cualquier identificador que se genera en casa —claves de
+idempotencia, nombres de archivo, ids de sesión, sufijos de reintento—. Y más allá de los ids,
+cualquier comentario que empiece por *«a propósito»*, *«deliberadamente»* o *«se prefiere X
+porque»*. Cuando encuentres uno, la pregunta no es si el motivo suena bien: es **qué medición lo
+respalda, y si esa medición sigue siendo cierta hoy**.

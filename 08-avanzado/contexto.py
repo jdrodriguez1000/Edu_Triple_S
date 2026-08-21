@@ -34,14 +34,33 @@ import functools
 import inspect
 import itertools
 import threading
+import uuid
+from datetime import datetime, timezone
 
 # El tramo actual: un diccionario con corrida / id / padre / profundidad, o
 # `None` si todavía no se ha abierto ninguno.
 _ACTUAL = contextvars.ContextVar("tramo_actual", default=None)
 
-# Un contador con candado. Se prefiere a un `uuid` a propósito: los ids salen
-# cortos y en orden, y en un registro que se lee a ojo eso vale más que la
-# unicidad global — este archivo no sale de una máquina.
+# Un contador con candado para los TRAMOS. Los ids salen cortos y en orden, y en
+# un registro que se lee a ojo eso vale más que la unicidad global.
+#
+# 🚨 Y ESTE COMENTARIO ANTES DECÍA MÁS DE LA CUENTA, ASÍ QUE SE DEJA LO QUE DIJO:
+#
+#      «se prefiere a un `uuid` a propósito … este archivo no sale de una
+#       máquina»
+#
+#    El razonamiento nombró el riesgo que asumía —irse a otra máquina— y **se
+#    equivocó en cuál era**. El peligro nunca fue otra máquina: era **el mismo
+#    archivo, mañana**. Al arrancar un proceso nuevo el contador vuelve a 1, así
+#    que dos corridas del mismo programa salían las dos llamadas `c1`, con los
+#    tramos `t2`…`t8` idénticos. No es que se parecieran: eran indistinguibles.
+#    Medido en la sesión 97, paso 4: dos corridas de $0,026390 se funden en un
+#    árbol que declara $0,052780, **sin una sola queja del auditor**.
+#
+# 🔑 Por eso los tramos siguen con contador y **la corrida NO**. Son dos trabajos
+#    distintos y por eso llevan dos mecanismos distintos:
+#      · el `id` de tramo solo tiene que ser único DENTRO de su corrida → contador
+#      · la `corrida` tiene que ser única ENTRE archivos, procesos y días → azar
 _CONTADOR = itertools.count(1)
 _CANDADO = threading.Lock()
 
@@ -49,6 +68,18 @@ _CANDADO = threading.Lock()
 def _siguiente(prefijo):
     with _CANDADO:
         return f"{prefijo}{next(_CONTADOR)}"
+
+
+def _corrida_nueva():
+    """Un identificador de corrida que no se repite aunque se corra dos veces.
+
+    Lleva la fecha delante para que siga leyéndose a ojo y ordenándose solo, y
+    seis caracteres de azar detrás para que la unicidad no dependa del reloj
+    —dos corridas pueden arrancar en el mismo segundo, y en el fan-out ya se
+    midió que arrancan tres a la vez—.
+    """
+    sello = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+    return f"c{sello}-{uuid.uuid4().hex[:6]}"
 
 
 class _Tramo:
@@ -72,7 +103,7 @@ class _Tramo:
             # 🚨 ESTE CAMPO ES EL BICHO DE LA SESIÓN 97 CERRADO POR DISEÑO: sin
             #    él, una línea de prueba y una línea pagada viven en el mismo
             #    archivo sin nada que las separe.
-            "corrida": padre["corrida"] if padre else _siguiente("c"),
+            "corrida": padre["corrida"] if padre else _corrida_nueva(),
             "id": _siguiente("t"),
             "padre": padre["id"] if padre else None,
             "profundidad": (padre["profundidad"] + 1) if padre else 0,

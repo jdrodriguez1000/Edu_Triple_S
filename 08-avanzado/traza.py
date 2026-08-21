@@ -174,22 +174,33 @@ def arbol(lineas, verboso=True):
     if not lineas:
         return {}
 
+    # 🚨 UN NODO ES (corrida, id), NO `id` — Y ESTO ES UN ARREGLO, NO UN DETALLE.
+    #    El contador de tramos arranca de cero en cada proceso, así que dos
+    #    corridas del mismo programa traen los mismos `t2`…`t8`. Cuando conviven
+    #    en un archivo y el árbol las indexa solo por `id`, **se funden en una
+    #    sola corrida que declara el doble de gasto y no da ni un error**
+    #    (medido en el paso 4). La corrida ya es única; el par, también.
+    def clave(d, tid):
+        return (d.get("corrida"), tid)
+
     gasto = {}
     hijos, raices, nombre = {}, [], {}
     for d in lineas:
         tid = d.get("id")
         if tid is None:
             continue
-        nombre.setdefault(tid, d.get("tramo", "?"))
-        gasto[tid] = round(gasto.get(tid, 0.0) + d.get("costo_usd", 0.0), 6)
+        k = clave(d, tid)
+        nombre.setdefault(k, d.get("tramo", "?"))
+        gasto[k] = round(gasto.get(k, 0.0) + d.get("costo_usd", 0.0), 6)
         padre = d.get("padre")
         if padre is None:
-            if tid not in raices:
-                raices.append(tid)
+            if k not in raices:
+                raices.append(k)
         else:
-            hijos.setdefault(padre, [])
-            if tid not in hijos[padre]:
-                hijos[padre].append(tid)
+            kp = clave(d, padre)
+            hijos.setdefault(kp, [])
+            if k not in hijos[kp]:
+                hijos[kp].append(k)
 
     def total(tid):
         """El gasto de un tramo Y de todo lo que cuelga de él."""
@@ -200,11 +211,11 @@ def arbol(lineas, verboso=True):
         print("  EL ÁRBOL DE LA CORRIDA — reconstruido de `id` y `padre`")
         print("=" * 72)
 
-        def dibujar(tid, sangria=""):
-            propio = gasto.get(tid, 0.0)
-            print(f"  {sangria}{nombre[tid]:28} {tid:5} "
-                  f"total ${total(tid):.6f}   propio ${propio:.6f}")
-            for h in hijos.get(tid, []):
+        def dibujar(k, sangria=""):
+            propio = gasto.get(k, 0.0)
+            print(f"  {sangria}{nombre[k]:28} {k[1]:5} "
+                  f"total ${total(k):.6f}   propio ${propio:.6f}")
+            for h in hijos.get(k, []):
                 dibujar(h, sangria + "   ")
 
         for r in raices:
@@ -331,12 +342,14 @@ def auditar_arbol(lineas):
     """
     # Un nodo por `id`. Las líneas viejas sin marca se ignoran: no son un error
     # del árbol, son de antes de que el árbol existiera (prueba 19).
+    # Mismo arreglo que en `arbol()`: la clave es (corrida, id). Sin esto, dos
+    # corridas con los mismos `t2`…`t8` se auditan como una y salen limpias.
     nodos = {}
     for d in lineas:
         tid = d.get("id")
         if tid is None:
             continue
-        nodos.setdefault(tid, {
+        nodos.setdefault((d.get("corrida"), tid), {
             "padre": d.get("padre"),
             "profundidad": d.get("profundidad"),
             "corrida": d.get("corrida"),
@@ -348,13 +361,31 @@ def auditar_arbol(lineas):
     def quejarse(tipo, tid, detalle):
         quejas.append({"tipo": tipo, "id": tid, "detalle": detalle})
 
-    for tid, n in nodos.items():
+    for (corr, tid), n in nodos.items():
         padre = n["padre"]
+        kp = (corr, padre)
 
         # 1) El padre tiene que existir. Una raíz (padre None) es legítima.
-        if padre is not None and padre not in nodos:
-            quejarse("padre_inexistente", tid,
-                     f"apunta a «{padre}», que no está en el registro")
+        #    📌 Se busca DENTRO de la misma corrida: un padre que solo existe en
+        #       otra corrida es un padre inexistente, no un padre de otra
+        #       corrida. Esa distinción es la que hace falsable la mentira 4.
+        if padre is not None and kp not in nodos:
+            # 🔑 DOS DIAGNÓSTICOS DISTINTOS, Y LA DIFERENCIA IMPORTA. Si el
+            #    padre no está en NINGUNA corrida, se perdió. Si está pero en
+            #    OTRA, alguien cruzó dos corridas — que no es lo mismo y no se
+            #    arregla igual.
+            #    📌 Este `else` nació de una prueba en rojo: al hacer que la
+            #       clave fuera (corrida, id), la queja `corrida` se quedó sin
+            #       forma de dispararse y la prueba 25 lo cazó en el acto. Un
+            #       arreglo correcto puede dejar muerto a un detector correcto.
+            otras = sorted({c for (c, i) in nodos if i == padre and c != corr})
+            if otras:
+                quejarse("corrida", tid,
+                         f"su padre «{padre}» no está en su corrida «{corr}», "
+                         f"sino en {otras}")
+            else:
+                quejarse("padre_inexistente", tid,
+                         f"apunta a «{padre}», que no está en el registro")
             continue
 
         # 2) Y la raíz tiene que estar en el escalón 0. Si no, es que alguien le
@@ -366,7 +397,7 @@ def auditar_arbol(lineas):
                          f"{n['profundidad']}")
             continue
 
-        p = nodos[padre]
+        p = nodos[kp]
 
         # 3) El contador contra el apuntador. Aquí es donde `profundidad` deja
         #    de ser decoración del dibujo y se vuelve testigo.
@@ -376,27 +407,28 @@ def auditar_arbol(lineas):
                      f"dice escalón {n['profundidad']}, pero su padre «{padre}» "
                      f"está en el {p['profundidad']}")
 
-        # 4) Padre e hijo tienen que ser de la misma corrida. Sin este campo, una
-        #    línea de prueba podría colgar de una línea pagada y el árbol saldría
-        #    creíble — que es el bicho de esta misma sesión, un escalón más
-        #    arriba.
-        if None not in (n["corrida"], p["corrida"]) and n["corrida"] != p["corrida"]:
-            quejarse("corrida", tid,
-                     f"es de la corrida «{n['corrida']}» y su padre «{padre}» "
-                     f"de la «{p['corrida']}»")
+        # 4) ⚠️ AQUÍ HABÍA UNA COMPROBACIÓN Y SE RETIRÓ, CON SU MOTIVO:
+        #    «padre e hijo tienen que ser de la misma corrida». Al pasar la clave
+        #    de `id` a `(corrida, id)`, padre e hijo son de la misma corrida
+        #    **por construcción** y la comprobación no podía fallar nunca. El
+        #    caso que cazaba no desapareció: subió al `if` de arriba, donde
+        #    ahora se distingue «tu padre se perdió» de «tu padre es de otra
+        #    corrida». 🔑 Se anota porque es lo contrario de lo que uno espera:
+        #    **arreglar la clave dejó muerto a un detector que funcionaba.**
 
     # 5) Ciclos. Se busca subiendo desde cada nodo: si se vuelve a pisar un id ya
     #    pisado en ESTE camino, la rama se muerde la cola. Sin esto, `arbol()`
     #    entraría en recursión infinita y el síntoma sería un `RecursionError`,
     #    que no dice nada de lo que pasó.
-    for tid in nodos:
-        visto, actual_id = [], tid
-        while actual_id is not None and actual_id in nodos:
-            if actual_id in visto:
-                quejarse("ciclo", tid, " → ".join(visto + [actual_id]))
+    for k in nodos:
+        visto, actual_k = [], k
+        while actual_k is not None and actual_k in nodos:
+            if actual_k in visto:
+                quejarse("ciclo", k[1], " → ".join(v[1] for v in visto + [actual_k]))
                 break
-            visto.append(actual_id)
-            actual_id = nodos[actual_id]["padre"]
+            visto.append(actual_k)
+            siguiente = nodos[actual_k]["padre"]
+            actual_k = None if siguiente is None else (actual_k[0], siguiente)
 
     return quejas
 
@@ -668,11 +700,11 @@ def comprobar_forma(lineas, verboso=True):
 
         (2, "3 tramos `tool:` y todos con propio $0,000000",
          len(tools) == 3 and all(propio[t] == 0.0 for t in tools),
-         {nombre[t]: propio[t] for t in tools}),
+         {f"{nombre[x]} ({x})": propio[x] for x in tools}),
 
         (3, "3 tramos `worker:` y todos con propio > 0",
          len(workers) == 3 and all(propio[w] > 0 for w in workers),
-         {nombre[w]: propio[w] for w in workers}),
+         {f"{nombre[x]} ({x})": propio[x] for x in workers}),
 
         (4, "el auditor no tiene ni una queja sobre el registro sin torcer",
          not quejas, quejas),
@@ -968,15 +1000,15 @@ def _pruebas():
     #     escrito esta sesión, o sea el sospechoso de estar ciego. Si sumara mal,
     #     inventaría un reparto que nadie contradice.
     falsas = [
-        {"id": "t1", "padre": None, "tramo": "raiz", "costo_usd": 1.0},
-        {"id": "t2", "padre": "t1", "tramo": "hijo-a", "costo_usd": 0.0},
-        {"id": "t3", "padre": "t2", "tramo": "nieto", "costo_usd": 2.0},
-        {"id": "t4", "padre": "t1", "tramo": "hijo-b", "costo_usd": 4.0},
+        {"corrida": "cX", "id": "t1", "padre": None, "tramo": "raiz", "costo_usd": 1.0},
+        {"corrida": "cX", "id": "t2", "padre": "t1", "tramo": "hijo-a", "costo_usd": 0.0},
+        {"corrida": "cX", "id": "t3", "padre": "t2", "tramo": "nieto", "costo_usd": 2.0},
+        {"corrida": "cX", "id": "t4", "padre": "t1", "tramo": "hijo-b", "costo_usd": 4.0},
         {"evento": "sin marca"},                       # línea vieja, sin traza
     ]
     a = arbol(falsas, verboso=False)
     check("18. el árbol suma hacia arriba: el padre incluye a sus nietos",
-          a["raices"] == ["t1"] and a["total"]["t1"] == 7.0, a)
+          a["raices"] == [("cX", "t1")] and a["total"][("cX", "t1")] == 7.0, a)
     check("19. y una línea SIN marca no inventa una raíz nueva",
           len(a["raices"]) == 1, a["raices"])
 
@@ -985,10 +1017,18 @@ def _pruebas():
     #     y por eso NO se pueden convertir en árbol. No es caro: es imposible.
     #     🔑 La traza es la única pieza del harness que no se puede añadir hacia
     #        atrás. Lo que no se instrumentó, no ocurrió.
+    #    📌 ESTA PRUEBA SE REESCRIBIÓ EN EL PASO 4, Y EL MOTIVO ES BUENO: se
+    #       puso roja porque el paso 4 pagó una corrida NUEVA, que sí tiene
+    #       parentesco. Decía «ninguna línea pagada tiene padre» y eso dejó de
+    #       ser cierto ese mismo día. Lo que NO cambió es la lección: las líneas
+    #       de las sesiones 92-96 siguen sin parentesco y **siguen sin poder
+    #       tenerlo**. Se afirma eso, que es lo que `LM.65` dice de verdad.
     viejas = [d for v in leer(REGISTROS).values() for d in v]
-    check("20. ⚠️ las corridas ya pagadas NO tienen parentesco y nunca lo tendrán",
-          not any("padre" in d for d in viejas),
-          f"{sum('padre' in d for d in viejas)} líneas viejas con padre")
+    sin_traza = [d for d in viejas if "id" not in d]
+    a_viejas = arbol(sin_traza, verboso=False)
+    check("20. ⚠️ las líneas pagadas de las sesiones 92-96 no dan NINGÚN árbol",
+          len(sin_traza) > 0 and not a_viejas.get("raices"),
+          f"{len(sin_traza)} líneas sin traza → raíces={a_viejas.get('raices')}")
 
     # --- C.1 · PASO 3: torcer el parentesco y exigir rojo ------------------
     #
@@ -1062,6 +1102,60 @@ def _pruebas():
     despues = {r: sum(1 for _ in open(r, encoding="utf-8")) for r in REGISTROS}
     check("28. grabar la demo NO escribe ni una línea en el registro pagado",
           antes == despues, f"{antes} → {despues}")
+
+    # --- C.1 · PASO 4: la SEXTA mentira, la que no escribí yo ---------------
+    #
+    # 🚨 LAS CINCO DEL PASO 3 LAS INVENTÉ YO. ESTA LA ESCRIBE EL HARNESS SOLO,
+    #    cada vez que se corre dos veces. Y hasta el paso 4 la dejaba pasar:
+    #    dos corridas de $0,026390 se fundían en un árbol que declaraba
+    #    $0,052780, sin una sola queja.
+    #    🔑 Y no es como la quinta. La quinta pasa porque describe un mundo
+    #       posible. Esta describía **un mundo que no ocurrió.**
+
+    def _corrida(nombre_corrida):
+        return [
+            {"corrida": nombre_corrida, "id": "t2", "padre": None,
+             "profundidad": 0, "tramo": "capa:orq", "evento": "llamada_api",
+             "costo_usd": 1.0},
+            {"corrida": nombre_corrida, "id": "t3", "padre": "t2",
+             "profundidad": 1, "tramo": "worker:usd", "evento": "llamada_api",
+             "costo_usd": 2.0},
+        ]
+
+    # 29) Dos corridas DISTINTAS con los MISMOS ids de tramo. Es exactamente lo
+    #     que escribe el programa al correrlo dos veces, porque el contador de
+    #     tramos arranca de cero en cada proceso.
+    dos = _corrida("cA") + _corrida("cB")
+    a_dos = arbol(dos, verboso=False)
+    check("29. 🚨 dos corridas con los mismos ids NO se funden (la sexta mentira)",
+          len(a_dos["raices"]) == 2
+          and set(a_dos["total"].values()) == {3.0},
+          f"raíces={a_dos['raices']}, totales={a_dos['total']}")
+
+    # 30) Y el arreglo del ORIGEN: dos procesos distintos ya no dan la misma
+    #     corrida. Se comprueba lanzando Python de verdad dos veces, porque el
+    #     bicho vivía justo en el arranque del proceso y dentro de UNO solo no
+    #     se puede ver. Es la lección de la sesión 50 de TEAPP: el experimento
+    #     tiene que poder observar el sitio donde falla.
+    import subprocess
+    guion = ("import contexto\n"
+             "with contexto.tramo('x') as a: print(a['corrida'])")
+    salidas = [subprocess.run([sys.executable, "-c", guion], cwd=AQUI,
+                              capture_output=True, text=True).stdout.strip()
+               for _ in range(2)]
+    check("30. 🚨 dos PROCESOS distintos ya no dan la misma corrida (visto morder)",
+          len(set(salidas)) == 2 and all(s.startswith("c2") for s in salidas),
+          salidas)
+
+    # 31) Y los tramos siguen siendo cortos y en orden dentro de su corrida: el
+    #     arreglo no se llevó por delante lo que el contador hacía bien.
+    with contexto.tramo("a") as uno:
+        with contexto.tramo("b") as dos_t:
+            pass
+    check("31. los ids de tramo siguen cortos y en orden (`t` + número)",
+          uno["id"][0] == "t" and uno["id"][1:].isdigit()
+          and int(dos_t["id"][1:]) > int(uno["id"][1:]),
+          f"{uno['id']} → {dos_t['id']}")
 
     print()
     if fallos:
