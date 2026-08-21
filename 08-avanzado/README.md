@@ -3279,6 +3279,105 @@ el worker y la contabilidad, **una frontera más arriba**.
 
 ---
 
+#### 🎲 C.2 · CIERRE — LA APUESTA, sellada el **2026-08-21** (sesión 99) **antes de la primera línea de código**
+
+> Van **siete** sesiones sellando antes de teclear y las seis anteriores han cobrado. Hoy la
+> sesión no abre una pieza nueva: **cierra los tres pendientes con dueño que la 98 dejó**, y
+> por eso la apuesta es más incómoda — dos de las tres predicciones dicen que **arreglar algo
+> va a empeorar otra cosa**, y eso sólo se puede apostar antes de verlo.
+
+##### 📏 LO QUE YA SE SABE, y por tanto NO se apuesta
+
+Estos tres números salen de la corrida pagada de ayer y del código que está en el repositorio.
+No cuestan nada y no son predicciones:
+
+| dato | valor | de dónde |
+|---|---:|---|
+| trozo del presupuesto apretado | **$0,003606** | `$0,014424 × 0,75 ÷ 3` |
+| coste medido de una llamada de worker | **$0,002404** | media de la demo C.1 |
+| llamadas que cabían con el freno viejo | **3** | autoriza si `gastado ≥ techo`, y en la 3ª `gastado` ya iba $0,0048 |
+
+🔑 Con el freno arreglado —`gastado + estimado > techo`— la aritmética cambia sola y **no hace
+falta correr nada para verla**: la llamada 2 pide $0,0024 + $0,0024 = **$0,0048 > $0,003606**,
+así que **se bloquea la 2, no la 3**. Eso es una consecuencia, no una apuesta.
+
+---
+
+**1️⃣ ARREGLAR EL TECHO VA A EMPEORAR EL HALLAZGO 2, Y ESE ES EL PRECIO. Se apuesta con ~70 %.**
+
+Ayer el worker murió **con la respuesta en la mano**: ya tenía `tasa` y `convertir`, y el corte
+cayó en la llamada que sólo servía para redactar. Con el freno acotando de verdad, el corte se
+adelanta una llamada entera.
+
+Predicción concreta y falsable, sobre la corrida apretada de hoy: **los workers cortados
+habrán ejecutado MENOS herramientas que ayer** — cero o una, no las dos. En particular
+**`convertir` no aparecerá** en la lista de herramientas de al menos un worker cortado.
+
+⭐ Si se cumple, la lección no es que el arreglo esté mal: es que **un techo honesto compra
+exactitud pagando con trabajo desperdiciado antes.** Un freno que autoriza a ciegas se pasa del
+techo pero llega más lejos; uno que estima corta a tiempo y tira más. **No hay una tercera
+opción sin cambiar de esquema**, y por eso el candidato 3 vuelve a asomar aquí.
+
+---
+
+**2️⃣ DARLE LA CAUSA AL MODELO LE QUITARÁ LA CAUSA INVENTADA. Se apuesta con ~65 %, y es la
+más floja de las tres.**
+
+Ayer la respuesta dijo *«debido a limitaciones en el servicio»* con el servicio perfecto.
+Hoy sube `motivo` por la frontera.
+
+Predicción concreta y falsable, sobre el texto final de la corrida apretada:
+
+- ✅ **NO** aparecerá ninguna atribución a un tercero — ni *servicio*, ni *proveedor*, ni
+  *API*, ni *no disponible*, como causa del fallo.
+- ✅ **SÍ** aparecerá una palabra de la familia del dinero: *presupuesto*, *límite*, *coste*.
+
+⚠️ **Se apuesta al 65 % y no más alto por un motivo que ya cobró ayer:** esto se comprueba
+buscando palabras, y buscar palabras dio un falso rojo en la afirmación 6. **La afirmación
+queda declarada INDICIO otra vez**, y el veredicto lo pone la lectura a ojo. Declarar débil un
+instrumento por adelantado costó diez segundos ayer; defenderlo después habría costado la
+sesión.
+
+---
+
+**3️⃣ CON UN ENCARGO DESIGUAL, EL REPARTO CIEGO ENSEÑARÁ SU DEFECTO: DINERO SIN GASTAR AL LADO
+DE UN WORKER MUERTO DE HAMBRE. Se apuesta con ~80 %.**
+
+Es la obligación del sobre, la que lleva dos sesiones sin pagarse. Ayer no se pudo medir el
+reparto porque los tres encargos eran gemelos (dispersión **1,00×–1,02×**) y **todos los
+esquemas dan lo mismo sobre tareas gemelas**.
+
+Predicción concreta y falsable: con un encargo donde **un worker necesite claramente más que
+su trozo y los otros claramente menos**, en la misma corrida se verán **las dos cosas a la
+vez**:
+
+- el worker caro cerrará con `motivo="presupuesto"`, **y**
+- los baratos cerrarán bien dejando **sobrante sin usar en sus trozos**.
+
+🔑 **Ese sobrante es el número que C.2 lleva dos sesiones sin poder enseñar**, y es la
+diferencia entera entre el candidato 1 y el 2: con tope por pieza el desperdicio es invisible
+porque no hay total; con reparto a la entrada el total existe, **y por eso el desperdicio se
+puede contar**. 📌 La predicción no dice cuánto sobrará — decirlo sería inventar un número —,
+dice que **sobrará y será contable**.
+
+⚠️ **Y el modo de fallo de esta apuesta está nombrado antes de correr:** que el encargo
+«desigual» no lo sea de verdad. Si el worker caro cuesta sólo un 20 % más, la corrida no
+distingue nada y **el resultado no será «apuesta fallada», será «instrumento ciego otra vez»**.
+Por eso la desigualdad se diseña **con un número delante**, no con un adjetivo.
+
+---
+
+##### 🚧 LO QUE ESTA SESIÓN NO VA A HACER, dicho ahora
+
+- **No se toca C.3.** Los tres pendientes primero, que es la línea con la que abrió el día.
+- **No se afloja ninguna vara de ayer.** Si `P2b` se pone roja porque el corte se adelantó,
+  **se corrige la regla y se dice**, no se ajusta el umbral hasta que vuelva a verde: eso es
+  mover la portería (`LM.21`).
+- **El pendiente viejo de C.1** —un mismo `id` con dos padres— sigue con dueño y **entra con
+  su torcedura al lado o no entra**.
+
+---
+
 
 ### 🧠 BLOQUE D — Lo compartido
 
