@@ -2133,6 +2133,100 @@ se le pone forma.
 
 ---
 
+#### 🎲 C.1 — LA APUESTA, sellada el **2026-08-21** (sesión 97) **antes de la primera línea de código**
+
+> **El estudiante:** *«sello con la tuya»* — se sella la de esta terminal tal cual.
+> Lo que se cuenta abajo se contó **antes** de escribir las apuestas, sobre registros que
+> ya existían: es gratis, no hace falta correr nada y no contamina lo apostado.
+
+##### 📏 LO QUE SE CONTÓ ANTES DE APOSTAR — $0,00, y no era una apuesta
+
+📌 **Se cuenta a propósito, y el motivo es un vicio propio:** van **cuatro estimaciones de
+coste infladas seguidas** en el bloque B, y las cuatro eran **contables antes de correr**.
+La corrección no es estimar mejor. Es contar lo que se puede contar y apostar solo lo demás.
+
+**1. Las dos capas escriben en ARCHIVOS DISTINTOS.** `registro_orquestador_{MODELO}.jsonl`
+(82 líneas) y `registro_workers_{MODELO}.jsonl` (225 líneas). **Ni un solo campo los une.**
+🔑 El árbol de la traza no está aplastado en una lista: está **partido en dos**, y la costura
+no se guardó en ningún sitio.
+
+**2. El campo que dice *quién* se llama distinto en cada lado.** Arriba `capa`; abajo
+`worker`. Lo mismo con dos nombres, y ninguno apunta al otro. **No existe `id`, ni `padre`,
+ni `profundidad`, ni identificador de corrida** en ningún registro del nivel 8.
+
+**3. El reloj está a SEGUNDOS** (`isoformat(timespec="seconds")`), y este es el número:
+
+| | |
+|---|---|
+| Arranques de worker grabados | **35** |
+| Segundos con más de un arranque | **1** → `2026-08-20T19:21:11`, con **3 workers** |
+
+🔑 **Y dice dos cosas opuestas a la vez.** El pegamento pobre —*«los uno por la hora»*—
+acertaría **32 de 35** veces. Y falla **exactamente en el fan-out paralelo**, que es la
+pieza de la que el bloque B está más orgulloso. ⭐ **La traza plana no se rompe al azar: se
+rompe en el sitio que se construyó para presumir.** Es `LM.15` con otra cara — el
+instrumento no da un dato falso el 91 % del tiempo, y por eso el 9 % restante se lee como
+ruido en vez de como avería.
+
+**4. Los 35 arranques son de corridas DISTINTAS** —B.1 a B.5— apiladas en el mismo archivo,
+y **tampoco hay campo que diga a cuál pertenece cada línea**.
+
+##### 🎯 QUÉ MIDE C.1, entonces
+
+Ya no es *«construir una traza anidada»* a ciegas: es **ponerle al registro `id`, `padre` y
+`profundidad`, reconstruir el árbol de una corrida real, y ver si dice algo que la traza
+plana no decía.** El criterio de éxito **no** es que el árbol se dibuje: es
+**¿habría cazado antes alguno de los bichos que YA se pagaron?**
+
+---
+
+**1️⃣ EL ÁRBOL NO CAMBIARÁ NINGUNA CONCLUSIÓN YA PAGADA DEL BLOQUE B — pero habría abaratado
+la de la sesión 95. Se apuesta con ~80 %.**
+
+Aquel defecto se cazó mirando una tabla de gasto y viendo **dos líneas `usd` y ninguna
+`eur`**: eso es un árbol leído a mano, sin árbol. Con `padre` grabado, el mismo defecto salta
+**sin tener que sospechar nada**, porque la rama `eur` sencillamente **no existe**.
+⭐ Sirve en las dos direcciones: si el árbol **sí** cambia una conclusión pagada, eso es peor
+noticia y mejor dato — querría decir que algo del bloque B se cerró sobre un número mal
+atribuido.
+
+**2️⃣ C.1 CUESTA $0,00.** Todo sale de releer registros que ya existen y de pruebas
+deterministas.
+
+📌 **Esta apuesta está puesta para poder fallar, y se anota que se sabía.** Si al final hace
+falta una corrida nueva para validar el parentesco de punta a punta, **está fallada** — y
+entonces la quinta estimación seguida no habrá sido inflada sino corta, que es un vicio
+nuevo y también cuenta.
+
+**3️⃣ LA `capa` DE HOY ES UNA ETIQUETA DECORATIVA: AL TORCERLA NO SE ROMPE NADA.**
+
+Predicción concreta y falsable: si se cambia a mano el `capa=` de una línea del registro,
+**ninguna prueba se pone roja, ninguna suma cambia, ningún informe protesta.**
+🔑 **Es literalmente el bicho de la sesión 95** —`nombre=` era solo una etiqueta y torcerla
+no enrutó nada mal— **y se apuesta a que sigue vivo, en otro campo, sin que nadie lo haya
+tocado.** ⚠️ Si esta apuesta gana, el hallazgo no es *«hay que añadir `padre`»*: es que
+**el nivel 8 lleva cinco piezas creyendo que sabe quién hizo qué, y lo que tiene son
+adjetivos.**
+
+##### ⚠️ El sospechoso de estar ciego, nombrado antes de escribirlo
+
+Van **siete sesiones** en que el instrumento ciego ha sido lo escrito **ese mismo día**.
+Nombrarlo antes lo desarmó las dos últimas veces. El candidato de hoy:
+
+🚨 **El que escribe `padre=` es el mismo que ya sabe quién es el padre.**
+
+Esa línea va a ir justo donde el código tiene la respuesta delante. **El árbol va a salir
+perfecto — y eso no probará que el harness conozca el parentesco: probará que lo dibujé yo.**
+Un árbol bonito escrito por quien ya lo conocía **mide al que lo escribió**, igual que un
+cebo redactado por quien monta el experimento (B.4).
+
+→ **La defensa, y se sella como obligación, no como intención:** una prueba que **tuerce el
+parentesco a propósito** y exige que algo se ponga **rojo**. 🔑 **Si esa prueba no se puede
+escribir, `padre` es una etiqueta más y C.1 no midió nada** — y entonces la apuesta 3 se
+habría cumplido dos veces: en el campo viejo y en el que se escribió hoy para arreglarlo.
+
+---
+
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
