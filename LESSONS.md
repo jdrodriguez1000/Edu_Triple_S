@@ -5670,3 +5670,47 @@ idempotencia, nombres de archivo, ids de sesión, sufijos de reintento—. Y má
 cualquier comentario que empiece por *«a propósito»*, *«deliberadamente»* o *«se prefiere X
 porque»*. Cuando encuentres uno, la pregunta no es si el motivo suena bien: es **qué medición lo
 respalda, y si esa medición sigue siendo cierta hoy**.
+
+
+### LM.68 — El segundo testigo suele estar ya grabado; lo que falta es alguien que le pregunte
+
+Un experimento salió con un síntoma que tenía **dos causas posibles** y ninguna forma de
+distinguirlas: una tabla mostraba dos trabajos hechos por el mismo especialista y ninguno por el
+otro. Podía ser que el trabajo se hubiera enviado al sitio equivocado, o que solo mintiera la
+etiqueta. Se resolvió **leyendo el encargo a mano**, y quedó anotado que *«el harness no sabe
+distinguirlas»*.
+
+Dos sesiones después, la conclusión razonable parecía ser *«hay que grabar un dato más»*. Al ir a
+añadirlo apareció que **ya estaba grabado**, y desde antes del experimento. Cada línea llevaba el
+nombre de quien trabajó —una etiqueta que alguien escribió— **y** el resultado estructurado de lo
+que hizo, que venía de la herramienta. Dos campos, en la misma línea, hablando de lo mismo por
+caminos que no se pueden coordinar. Al compararlos, la contradicción salió en un segundo, gratis,
+sobre datos que llevaban un día en el repositorio.
+
+🔑 **La instrumentación no faltaba. Faltaba la pregunta.** Y esa asimetría no es casual: **añadir
+un campo se parece a progreso y cruzar dos que ya tienes no.** Lo primero se ve en el diff, tiene
+nombre, se puede anunciar. Lo segundo es releer lo que ya escribiste, que se siente como no
+avanzar. Por eso los registros crecen y las comprobaciones no.
+
+📌 **La consecuencia práctica, y es una pregunta que se hace antes de tocar el código:** cuando
+detectes que un dato no es comprobable (`LM.66`), **antes de añadir el testigo, busca si ya lo
+estás escribiendo.** Un registro maduro casi siempre tiene, en algún campo puesto para otra cosa,
+la sombra del dato que necesitas: un resultado estructurado al lado de un nombre libre, un código
+de error al lado de un mensaje, un `id` al lado de una descripción. **La redundancia útil suele
+llegar por accidente, y por eso nadie la mira.**
+
+⚠️ **Y hay un coste que se paga en silencio mientras no se mira.** El dato estuvo ahí desde el
+principio: eso significa que la investigación a mano que costó una sesión **era evitable el día
+que se hizo**. No se pagó por falta de información — se pagó por no haberla consultado. Un
+registro que nadie interroga no es observabilidad: **es almacenamiento.**
+
+⭐ **Corolario sobre los rótulos, que es donde se coló la mentira:** si el mismo nombre que se
+usa para etiquetar una línea se usa además para dibujar el informe —un árbol, un panel, un
+gráfico—, **el informe hereda la mentira del rótulo**. La estructura puede ser honesta y la
+lectura falsa al mismo tiempo, y lo que un humano mira primero son los rótulos. Un dibujo
+bautizado con adjetivos no es más fiable que sus adjetivos.
+
+**Dónde muerde fuera de aquí:** cualquier incidencia que acabe en *«nos falta telemetría»*. Antes
+de aceptarlo, exporta lo que ya se guarda y crúzalo. Muy a menudo la respuesta lleva semanas
+escrita en dos columnas que nunca se compararon — y añadir la tercera columna habría tapado, con
+una tarea nueva y visible, un trabajo de diez minutos que nadie quería hacer.

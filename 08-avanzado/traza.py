@@ -759,7 +759,104 @@ def paso4(verboso=True):
 
 
 # ---------------------------------------------------------------------------
-# 7) EL PORTERO — ninguna prueba gratis puede escribir en el registro pagado
+# 7) C.1 · PASO 5 — EL ADJETIVO CONTRA EL HECHO
+# ---------------------------------------------------------------------------
+#
+# 🔑 LA IDEA, Y ES LA DEL PASO 3 UN CAMPO MÁS ALLÁ.
+#    Cada línea `worker_fin` del registro lleva DOS cosas que hablan de la misma
+#    moneda por caminos que no se pueden coordinar:
+#
+#      · `worker` (y su `tramo`) → **el adjetivo**: cómo se llamó a quien trabajó.
+#        Sale del argumento `nombre=`, y el paso 1 midió que es decorativo.
+#      · `datos.moneda`          → **el hecho**: qué moneda salió del contrato de
+#        A.3, producida por la herramienta que de verdad hizo la cuenta.
+#
+#    Si no coinciden, alguien miente. Es `LM.66` exactamente: **un dato se vuelve
+#    comprobable el día que hay otro que puede desmentirlo.**
+#
+# 🚨 Y AQUÍ VIENE LO QUE HACE ESTO DISTINTO DE LOS PASOS 2, 3 Y 4: no hay que
+#    grabar nada nuevo. **Los dos testigos llevan en el registro desde la sesión
+#    93.** No faltaba un campo — faltaba alguien que le preguntara.
+
+MONEDAS = ("usd", "eur", "cad")
+
+
+def auditar_etiquetas(lineas):
+    """Compara el NOMBRE de quien trabajó contra la moneda de su contrato.
+
+    Devuelve `(contradicciones, comprobadas, no_comprobables)`.
+
+    📌 LA REGLA, ESCRITA EN GENERAL Y NO A LA MEDIDA DE LO QUE ENCONTRÓ:
+       si el nombre del worker menciona una moneda conocida y su contrato trae
+       otra, es una contradicción. Si el nombre no menciona ninguna moneda
+       (`1-recolector`, `divisa`, `2-redactor`), **no se puede comprobar y se
+       dice** — un auditor que calla lo que no sabe mirar miente por omisión.
+
+    ⚠️ EL SOSPECHOSO, NOMBRADO EN EL SOBRE: quien escribe esta regla ya vio el
+       registro. Por eso la regla se aplica a TODAS las líneas y el informe
+       publica también **cuántas pasó y cuántas no supo mirar**. Un detector que
+       solo enseña lo que cazó no se distingue de uno escrito para cazar eso.
+    """
+    contradicciones, comprobadas, no_comprobables = [], 0, []
+    for d in lineas:
+        if d.get("evento") != "worker_fin":
+            continue
+        nombre = str(d.get("worker") or "")
+        real = ((d.get("datos") or {}).get("moneda") or "").lower()
+        dicha = next((m for m in MONEDAS if m in nombre.lower()), None)
+
+        if not real or dicha is None:
+            no_comprobables.append((nombre, d.get("hora"), "sin contrato"
+                                    if not real else "el nombre no dice moneda"))
+            continue
+        comprobadas += 1
+        if dicha != real:
+            contradicciones.append({
+                "hora": d.get("hora"),
+                "se_llama": nombre,
+                "hizo": real.upper(),
+                "encargo": str(d.get("encargo", "")).splitlines()[0][:60],
+                "tramo": d.get("tramo"),
+                "id": d.get("id"),
+            })
+    return contradicciones, comprobadas, no_comprobables
+
+
+def paso5(verboso=True):
+    """C.1 · PASO 5 — le lleva el árbol (y el tercer testigo) al defecto de la
+    sesión 95. **$0,00: solo lee lo que ya se pagó.**
+    """
+    lineas = [d for v in leer(REGISTROS).values() for d in v]
+    contra, ok, mudas = auditar_etiquetas(lineas)
+
+    if not verboso:
+        return contra, ok, mudas
+
+    print("\n" + "=" * 72)
+    print("  C.1 · PASO 5 — EL ADJETIVO CONTRA EL HECHO, sobre el registro PAGADO")
+    print("=" * 72)
+    print(f"  Líneas `worker_fin` comprobadas ..... {ok}")
+    print(f"  No comprobables (y se dice) ......... {len(mudas)}")
+    print(f"  🚨 Contradicciones .................. {len(contra)}")
+    for c in contra:
+        print()
+        print(f"    {c['hora']}")
+        print(f"      se llama ....... worker «{c['se_llama']}»")
+        print(f"      pero hizo ...... {c['hizo']}")
+        print(f"      encargo ........ {c['encargo']}")
+    print()
+    print("  Por qué no se pudieron comprobar las otras:")
+    razones = {}
+    for _, _, r in mudas:
+        razones[r] = razones.get(r, 0) + 1
+    for r, n in sorted(razones.items()):
+        print(f"    {n:3} × {r}")
+    print("=" * 72)
+    return contra, ok, mudas
+
+
+# ---------------------------------------------------------------------------
+# 8) EL PORTERO — ninguna prueba gratis puede escribir en el registro pagado
 # ---------------------------------------------------------------------------
 
 def portero(verboso=True):
@@ -827,7 +924,7 @@ def portero(verboso=True):
 
 
 # ---------------------------------------------------------------------------
-# 8) LAS PRUEBAS — $0,00
+# 9) LAS PRUEBAS — $0,00
 # ---------------------------------------------------------------------------
 
 def _pruebas():
@@ -1157,6 +1254,60 @@ def _pruebas():
           and int(dos_t["id"][1:]) > int(uno["id"][1:]),
           f"{uno['id']} → {dos_t['id']}")
 
+    # --- C.1 · PASO 5: el adjetivo contra el hecho --------------------------
+
+    contra, comprobadas, mudas = auditar_etiquetas(
+        [d for v in leer(REGISTROS).values() for d in v])
+
+    # 32) 🚨 LA LÍNEA DE LA SESIÓN 95, CAZADA SOBRE EL REGISTRO PAGADO DE VERDAD.
+    #     No es una reproducción ni un cebo nuevo: es la línea que se escribió el
+    #     2026-08-20 a las 20:32:23, que costó dinero y lleva en el repo desde
+    #     entonces. El worker se llama `usd` y su contrato dice `EUR`.
+    check("32. 🚨 la contradicción de la sesión 95, cazada en el registro PAGADO",
+          any(c["se_llama"] == "usd" and c["hizo"] == "EUR"
+              and c["hora"].startswith("2026-08-20T20:32") for c in contra),
+          contra)
+
+    # 33) Y NO caza nada más. Es lo que separa un auditor de un detector escrito
+    #     para encontrar la línea que ya habías visto: 22 líneas sanas pasan.
+    check("33. y las demás comprobables pasan limpias (no es un detector de una)",
+          len(contra) == 1 and comprobadas >= 20,
+          f"{len(contra)} contradicción(es) de {comprobadas} comprobadas")
+
+    # 34) 🚨 VISTO MORDER, con las dos mitades en la misma corrida: la misma
+    #     forma de línea, una torcida y otra sana.
+    sana = [{"evento": "worker_fin", "worker": "cad",
+             "datos": {"moneda": "CAD"}, "encargo": "x"}]
+    torcida = [{"evento": "worker_fin", "worker": "cad",
+                "datos": {"moneda": "USD"}, "encargo": "x"}]
+    check("34. 🚨 el auditor de etiquetas MUERDE: sana en verde, torcida en rojo",
+          not auditar_etiquetas(sana)[0] and len(auditar_etiquetas(torcida)[0]) == 1,
+          (auditar_etiquetas(sana)[0], auditar_etiquetas(torcida)[0]))
+
+    # 35) Y lo que NO puede este auditor, dicho con su número: 15 líneas del
+    #     registro pagado no traen contrato y **no se pueden comprobar**. Un
+    #     auditor que callara eso mentiría por omisión.
+    check("35. las líneas sin contrato se declaran NO comprobables, no verdes",
+          len(mudas) > 0 and all(r for _, _, r in mudas), len(mudas))
+
+    # 36) 🚨 EL VEREDICTO DE LA APUESTA 1, EN CÓDIGO Y NO EN PROSA.
+    #     El árbol bautiza sus nodos con `envuelto("nombre")`, que es el MISMO
+    #     argumento que la inyección de la sesión 95 torcía. Así que un árbol
+    #     dibujado sobre esa corrida habría enseñado dos ramas `worker:usd` y
+    #     ninguna `eur` — el mismo síntoma ambiguo que costó la 95.
+    #     🔑 Un árbol cuyos nodos se bautizan con un adjetivo HEREDA la mentira
+    #        del adjetivo. La segunda mitad de la apuesta 1 queda FALLADA, y se
+    #        queda aquí escrita para que no se pueda contar de otra manera.
+    @contexto.envuelto("nombre", prefijo="worker:")
+    def _worker_de_mentira(encargo, nombre="divisa"):
+        return contexto.marca()["tramo"]
+
+    honesto = _worker_de_mentira("Convierte 400 EUR a pesos", nombre="eur")
+    mentiroso = _worker_de_mentira("Convierte 400 EUR a pesos", nombre="usd")
+    check("36. 🚨 el árbol HEREDA la mentira de la etiqueta (apuesta 1, 2ª mitad: FALLADA)",
+          honesto == "worker:eur" and mentiroso == "worker:usd",
+          f"mismo encargo → «{honesto}» y «{mentiroso}»")
+
     print()
     if fallos:
         print(f"  ❌ {len(fallos)} prueba(s) en rojo: {', '.join(fallos)}")
@@ -1171,6 +1322,9 @@ def main(argv):
         return 0
     if "--demo" in argv:
         demo()
+        return 0
+    if "--paso5" in argv:
+        paso5()
         return 0
     if "--paso4" in argv:
         r = paso4()

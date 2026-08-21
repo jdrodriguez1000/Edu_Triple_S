@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 97 — NIVEL 8: **BLOQUE C, C.1 pasos 1, 2, 3 y 4 HECHOS. $0,026390 en toda la sesión**, todo en una sola corrida del paso 4. 🔴 **La apuesta 2 ($0,00) se declaró FALLADA antes de gastar**, con el modo de fallo que ella misma predijo. ✅ **Las 6 afirmaciones del sobre del paso 4, cumplidas** — incluida la que valía: el árbol y la factura plana dan el mismo total por caminos independientes. 🚨 **Y el hallazgo del día es lo que las seis NO miraban: el id de corrida no era único entre procesos**, y dos corridas se fundían en un árbol que declaraba el doble sin una queja → `LM.67`. 31 pruebas en verde.)
+**Última actualización:** 2026-08-21 (sesión 97 — NIVEL 8: **C.1 COMPLETA, los cinco pasos. $0,026390 en toda la sesión.** 🔴 Apuesta 2 ($0,00) fallada y declarada antes de gastar; 🅰️ **apuesta 1 partida por la mitad: se paga la primera y FALLA la segunda** — el árbol bautiza sus nodos con el mismo adjetivo que la sesión 95 torcía, así que **hereda la mentira del adjetivo** (prueba 36). ⭐ **Y el hallazgo mayor: el tercer testigo YA ESTABA GRABADO** — la contradicción de la 95 (`worker usd` / contrato `EUR`) llevaba un día en el repo, comprobable por máquina y gratis → `LM.68`. 🚨 Y en el paso 4, el id de corrida no era único entre procesos → `LM.67`. **36 pruebas en verde.**)
 
 ---
 
@@ -3880,7 +3880,30 @@
 # 🔑 **Una lista de comprobaciones que se cumple entera no dice que no haya nada roto: dice que
 #   no hay nada roto EN LA LISTA.**
 #
-# ➡️ **SIGUIENTE PASO CONCRETO — C.1 · PASO 5: LLEVARLE EL ÁRBOL AL DEFECTO DE LA SESIÓN 95.**
+# ============================================================================
+# SESIÓN 97 · PASO 5 — LO QUE SALIÓ. **C.1 QUEDA COMPLETA**
+# ============================================================================
+# 💰 **$0,00.** La apuesta de coste del paso 5 se cumple: solo se leyó lo ya pagado.
+# 🅰️ **Apuesta 1: primera mitad PAGADA, segunda mitad FALLADA**, con la prueba 36 de veredicto.
+#   El árbol hereda la mentira del adjetivo con el que bautiza sus nodos.
+# ⭐ **El tercer testigo ya estaba grabado desde la sesión 93.** La contradicción de la 95
+#   —worker «usd» con contrato `EUR`— se cazó sobre el registro PAGADO, gratis. **Lo que faltaba
+#   no era un campo: era un lector.** → `LM.68`.
+# ✅ **Cerrado el agujero que el paso 1 dejó sin dueño:** el harness ya distingue *«el enrutado
+#   está torcido»* de *«solo la etiqueta miente»*.
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — C.2, la siguiente pieza del BLOQUE C.** C.1 (la traza anidada)
+#   queda **completa: los cinco pasos hechos**, con las tres apuestas resueltas —la 1 partida por
+#   la mitad, la 2 fallada, la 3 ganada— y ninguna redefinida después de conocer el resultado.
+#   📌 El detalle de C.2 se escribe el día que se llegue a él, que es la regla del nivel.
+# 🔲 **PENDIENTE CON DUEÑO, arrastrado del paso 3:** el detector de un mismo `id` con dos padres
+#   distintos. **Entra con su torcedura al lado o no entra** (`LM.13`).
+# 🔑 **Y lo que C.1 deja para el resto del nivel, en una línea:** el harness ya sabe **de quién
+#   es hija cada línea** y **si el nombre de quien la escribió es verdad**. Lo que sigue sin
+#   saber es **si lo que pasó era lo que se pedía** — y eso no es observabilidad, es F.1.
+#
+# *(enunciado original del paso 5, conservado)* **C.1 · PASO 5: LLEVARLE EL ÁRBOL AL DEFECTO DE
+#   LA SESIÓN 95.**
 #   Es lo que resuelve la **apuesta 1** (*«el árbol no cambiará ninguna conclusión ya pagada del
 #   bloque B, pero habría abaratado la de la 95»*, ~80 %). Estaba **bloqueado** por el id de
 #   corrida y **ya no lo está**: dos corridas conviven ahora en el mismo archivo sin mezclarse,
@@ -14716,6 +14739,34 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   árbol.** 📌 Y los workers de la demo son falsos a propósito —se mide el parentesco, no el
   modelo— pero **el camino es el de verdad**: un árbol dibujado por un camino de mentira
   mediría al camino de mentira.
+- **🅰️ LA APUESTA 1 SE PARTE POR LA MITAD, Y LA SEGUNDA MITAD FALLA** (sesión 97, paso 5,
+  $0,00). Decía *«el árbol no cambiará ninguna conclusión ya pagada del bloque B — pero habría
+  abaratado la de la sesión 95»*. La primera mitad **se paga**: ninguna cifra del bloque B se
+  movió. La segunda **falla**, y está demostrada en código (prueba 36), no en prosa: el mismo
+  encargo por el decorador **real** del worker da `nombre="eur" → worker:eur` y
+  `nombre="usd" → worker:usd`. 🔑 **El árbol bautiza sus nodos con `envuelto("nombre")`, que es
+  exactamente el argumento que la inyección de la 95 torcía**, así que habría enseñado dos ramas
+  `worker:usd` y ninguna `eur` — el mismo síntoma ambiguo. ⭐ **Un árbol cuyos nodos se bautizan
+  con un adjetivo hereda la mentira del adjetivo:** es honesto en su forma y mentiroso en sus
+  rótulos, **y lo que un humano mira primero son los rótulos.** Aquí se cobró la decisión del
+  paso 2 de incluir `tramo` sabiendo que era etiqueta.
+- **⭐ EL HALLAZGO DEL PASO 5 ES OTRO Y ES MEJOR QUE LA APUESTA: EL TERCER TESTIGO YA ESTABA
+  GRABADO** (sesión 97 → `LM.68`). Se sellaba *«habría que añadir un tercer testigo»* y **no hubo
+  que añadir nada**: cada línea `worker_fin` lleva desde la **sesión 93** el adjetivo (`worker`,
+  de `nombre=`) **y** el hecho (`datos.moneda`, salida del contrato de A.3). Al preguntarles
+  sobre el registro pagado: **23 comprobadas · 15 no comprobables · 1 contradicción.**
+  🚨 Y la contradicción es **la línea de la sesión 95 en persona** —`2026-08-20T20:32:23`, worker
+  «usd», contrato `EUR`, encargo *«Convierte 400 EUR»*—: **no es una reproducción, es la línea
+  pagada que lleva un día en el repositorio.** 🔑 **Lo que faltaba no era un campo: era un
+  lector.** Aquel día se leyó el encargo **a mano** y el registro ya tenía la respuesta.
+  📌 Y las **22 líneas sanas pasaron limpias**, que es lo que separa un auditor de un detector
+  escrito para encontrar la línea que ya habías visto. Las **15 no comprobables se declaran como
+  tales, no como verdes**: un auditor que calla lo que no sabe mirar miente por omisión.
+- **✅ Y con eso se cierra el agujero que el paso 1 había dejado SIN DUEÑO** (sesión 97). El paso
+  1 midió que *«dos líneas `usd` y ninguna `eur»`* tiene **dos causas** —enrutado torcido o
+  etiqueta mentirosa— y que **el harness no sabía distinguirlas**. Ya sabe: si el contrato dice
+  EUR bajo un worker llamado `usd`, es la etiqueta; si dice USD y el encargo pedía euros, es el
+  enrutado. 🔑 **Y no hizo falta instrumentar más: hizo falta cruzar dos campos que ya estaban.**
 - **🔴 LA APUESTA 2 ($0,00) SE DECLARÓ FALLADA ANTES DE GASTAR EL PRIMER CENTAVO** (sesión 97,
   paso 4). El paso 4 exige pagar y no hay forma honesta de esquivarlo: la demo tiene workers
   falsos, y `correr_orquestador` y `correr_worker` —los bucles de agente de verdad— no se habían

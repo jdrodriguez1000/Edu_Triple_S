@@ -2933,6 +2933,100 @@ trae dentro** (`moneda: USD`, `monto: 400`), que nadie puede retocar sin que se 
 
 ---
 
+##### 📊 C.1 · PASO 5 — LO QUE SALIÓ, el 2026-08-21. **$0,00 · 36 pruebas · la apuesta 1 se parte por la mitad, y el hallazgo es MEJOR que la apuesta**
+
+`traza.auditar_etiquetas()` · `python traza.py --paso5`. No se llamó a la API.
+
+##### 🅰️ EL VEREDICTO DE LA APUESTA 1 — primera mitad PAGADA, segunda mitad FALLADA
+
+La apuesta 1 decía: *«el árbol no cambiará ninguna conclusión ya pagada del bloque B — pero
+habría abaratado la de la sesión 95»*.
+
+| mitad | veredicto |
+|---|---|
+| *«no cambia ninguna conclusión ya pagada»* | ✅ **se paga** — ninguna cifra del bloque B se movió |
+| *«habría abaratado la caza de la 95»* | ❌ **FALLADA** |
+
+🚨 **Y está demostrado en código, no en prosa** (prueba 36). El mismo encargo, `«Convierte 400
+EUR a pesos»`, pasado por el decorador **real** del worker:
+
+```
+nombre="eur"  →  tramo «worker:eur»
+nombre="usd"  →  tramo «worker:usd»      ← el mismo trabajo, otro rótulo
+```
+
+🔑 **El árbol bautiza sus nodos con `envuelto("nombre")`, que es EXACTAMENTE el argumento que la
+inyección de la 95 torcía.** Un árbol dibujado sobre aquella corrida habría enseñado **dos ramas
+`worker:usd` y ninguna `eur`** — el mismo síntoma ambiguo, las mismas dos causas, el mismo
+trabajo a mano.
+
+⭐ **Un árbol cuyos nodos se bautizan con un adjetivo hereda la mentira del adjetivo.** El paso 2
+dejó escrito que `tramo` *«es una etiqueta, de la misma clase que `capa`»*, y se incluyó igual
+porque sin nombre legible el árbol no se lee. **Aquí se cobró esa decisión:** el árbol es honesto
+en su **forma** y mentiroso en sus **rótulos** — y lo que un humano mira primero son los rótulos.
+
+---
+
+##### 🥇 Y EL HALLAZGO DEL PASO 5 ES OTRO, Y ES MEJOR: EL TERCER TESTIGO YA ESTABA GRABADO
+
+Se sellaba *«habría que añadir un tercer testigo»*. **No hubo que añadir nada.** Cada línea
+`worker_fin` lleva desde la **sesión 93** dos cosas que hablan de la misma moneda por caminos que
+no se pueden coordinar:
+
+- **`worker` / `tramo`** → *el adjetivo*: cómo se llamó a quien trabajó. Sale de `nombre=`.
+- **`datos.moneda`** → *el hecho*: qué moneda salió del contrato de A.3, producida por la
+  herramienta que hizo la cuenta.
+
+Y esto es lo que salió al preguntarles, sobre el registro **pagado**, sin correr nada:
+
+```
+Líneas `worker_fin` comprobadas ..... 23
+No comprobables (y se dice) ......... 15
+🚨 Contradicciones .................. 1
+
+  2026-08-20T20:32:23+00:00
+    se llama ....... worker «usd»
+    pero hizo ...... EUR
+    encargo ........ Convierte 400 EUR a pesos colombianos.
+```
+
+🚨 **Esa línea es la sesión 95. No es una reproducción, no es un cebo nuevo: es la línea que se
+escribió el 20 de agosto a las 20:32:23, que costó dinero, y que lleva en el repositorio desde
+entonces.** La contradicción estuvo ahí todo el tiempo, y era comprobable **por una máquina, en
+un segundo, gratis**.
+
+> ⭐ **Lo que faltaba no era un campo. Era un lector.** → `LM.68`.
+>
+> 🔑 Y eso le pone precio a la sesión 95: aquel día se leyó el encargo **a mano** para decidir
+> cuál de las dos causas era. El registro ya contenía la respuesta.
+
+📌 **Y las 22 líneas sanas pasaron limpias** (prueba 33). Eso es lo que separa un auditor de un
+detector escrito para encontrar la línea que ya habías visto — el sospechoso que el sobre nombró.
+📌 **Las 15 no comprobables se declaran como tales**, no como verdes (prueba 35): son líneas sin
+contrato —los workers del pipeline, que devuelven prosa—. **Un auditor que calla lo que no sabe
+mirar miente por omisión.**
+
+##### 🧾 Lo que el paso 5 dejó, y qué le hace al paso 1
+
+| | |
+|---|---|
+| `auditar_etiquetas()` | el adjetivo contra el hecho, sobre cualquier registro ya grabado |
+| Coste | **$0,00** — la apuesta de coste del paso 5 se cumple |
+| Pruebas | **36 en verde** (32-36 son de hoy), los cinco módulos verdes |
+| Apuesta 1 | mitad pagada, mitad fallada, **con la prueba 36 como veredicto** |
+
+⭐ **Y cierra el agujero que el paso 1 dejó sin dueño.** El paso 1 midió que el síntoma *«dos
+líneas `usd` y ninguna `eur`»* tiene **dos causas posibles** —enrutado torcido o etiqueta
+mentirosa— y que *«el harness no sabe distinguirlas»*. **Ya sabe.** Si el contrato dice EUR bajo
+un worker llamado `usd`, es la etiqueta; si el contrato dice USD y el encargo pedía euros, es el
+enrutado. 🔑 Y no hizo falta instrumentar más: **hizo falta cruzar dos campos que ya estaban.**
+
+➡️ **Lo que queda de C.1:** nada. Los cinco pasos están hechos. Lo que sigue abierto y con dueño
+es el detector de un mismo `id` con dos padres distintos, que **entra con su torcedura al lado o
+no entra** (`LM.13`).
+
+---
+
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
