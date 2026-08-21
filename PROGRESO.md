@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 101 — NIVEL 8: **APUESTA SELLADA Y COMMITEADA ANTES DE TECLEAR**, novena sesión seguida. ⚠️ **Escrita por Claude a petición del estudiante**, que prefirió avanzar a C.4 — se dice porque el sospechoso *«apuesta y evalúa el mismo»* hoy está en su forma más pura, y la única defensa es que las cinco se falsifican con un comando. Arranca **C.4 — los fallos del worker**: se cae, se demora, no contesta. Lo apostado: el crash ya no tumba al orquestador **pero se lleva su gasto del libro**; el árbol no ve un nodo abierto; el mensaje de la frontera miente para los reintentables; «se demora» no tiene freno propio; y la desigual con todo arreglado (~$0,03) por fin sube la causa limpia. Orden sellado: las cuatro de $0,00 primero, la de dinero al final.)
+**Última actualización:** 2026-08-21 (sesión 101 — NIVEL 8: **C.4 COMPLETO Y LAS CINCO APUESTAS GANADAS — y lo que más enseñó no fue ninguna de las cinco.** El worker ahora **siempre cierra**: se caiga, se demore o no conteste. 🔑 El crash no tumbaba a nadie —eso ya funcionaba— pero **`correr_worker` que lanza nunca devuelve, y su gasto no entraba en la factura**: $0,004000 gastados, $0,000000 en el libro (`LM.73`). El árbol gana `nodo_abierto`, porque **la ausencia no contradice a nadie** (`LM.74`); el plazo pasa de un residuo de 8,2 min a 90 s **decididos con un dato** (`LM.75`). 🚨 Y `max_vueltas` **nunca había mordido: 0 de 102 cierres registrados** — el archivo que venía a decirlo lo dio por resuelto en su tercer renglón. 💸 Corrida pagada $0,027482: el modelo repitió **la causa que le dio el harness**, sin inventar. 🚨 Hallazgo del día, anotado y NO arreglado a decisión suya: **teníamos la respuesta del CAD y la tiramos** — un `or` que trata `ok` (el proceso) y `pesos` (el resultado) como una sola pregunta. 📊 `fallos.py` nuevo con 26 pruebas · `traza.py` 41→**46** · `LESSONS.md` 72→**76**. 💸 Gasto **$0,034612**, de los que **$0,007130 fueron un error mío** — con la regla de ayer escrita y su lista a medias (`LM.76`).)
 
 ---
 
@@ -4343,6 +4343,150 @@
 #   dinero al final. Si la 1 o la 3 son ciertas, la corrida pagada mediría un
 #   harness que ya se sabe roto — y ayer costó $0,087297 aprender a no pagar
 #   por una medición que iba a haber que repetir.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ✅ **CIERRE DE LA 101 — C.4 COMPLETO. LAS CINCO APUESTAS GANADAS, Y LO QUE
+# MÁS ENSEÑÓ NO FUE NINGUNA DE LAS CINCO.** Gasto del día: **$0,034612**
+# ($0,027482 de la corrida legítima + **$0,007130 de un error mío**).
+#
+# 🎲 **LAS CINCO, GANADAS — y la apuesta la escribí YO a petición suya**
+#   («no me interesa mucho la apuesta, voy a tomar la tuya»). Queda dicho en el
+#   sello y aquí: el sospechoso de las últimas seis sesiones —*el que apuesta es
+#   el mismo que evalúa*— hoy estuvo en su forma más pura. La única defensa fue
+#   que **las cinco se falsifican con un comando**, y cuatro costaban $0,00.
+#
+# 📏 **LOS CUATRO AGUJEROS, MEDIDOS ANTES DE TOCARLOS** (`fallos.py`, nuevo,
+#   $0,00 — modelo de mentira, harness de verdad):
+#   · el crash gastó **$0,004000** y en la factura había **$0,000000**
+#   · 1 `worker_inicio`, 0 `worker_fin`, y el auditor del árbol: **0 quejas**
+#   · el fallo pasajero y el defecto nuestro recibían **la misma frase**
+#   · el techo de un worker era **490 s = 8,2 min**, y nadie lo había calculado
+#
+# 🔑 **EL AGUJERO 1 NO ESTABA DONDE SE MIRA.** El `except` de la frontera SÍ
+#   atrapaba el crash y el orquestador SÍ seguía vivo — eso funciona desde B.2.
+#   El daño era otro: `correr_worker` que **lanza** nunca devuelve, así que las
+#   seis sumas de `contabilidad[...] +=` no llegan a correr. ⭐ **El gasto no se
+#   pierde por gastarse mal: se pierde por no volver por donde se cuenta.**
+#   → `LM.73`. Y el comentario de encima llevaba dos versiones diciendo *«un
+#   worker devuelve su fracaso COMO DATO»*: era verdad **sólo para el
+#   presupuesto**, y el comentario no distinguía.
+#
+# ✅ **LOS CUATRO ARREGLOS, Y EL ROJO QUE LOS PRUEBA.** El worker cierra
+#   siempre (`crash`, `crash_temporal`); la frontera distingue reintentable de
+#   permanente; `LIMITE_WORKER_SEGUNDOS = 90` —**sacado de un dato**: 99 workers
+#   pagados dan mediana 2,28 s, p90 5,73 s, peor caso 17,94 s, o sea **5× el
+#   peor visto**—; y el árbol gana la queja `nodo_abierto`.
+#   🚨 **Las pruebas 7 a 13 de `fallos.py` existieron EN VERDE describiendo el
+#   daño, y los arreglos las pusieron ROJAS LAS SEIS de golpe.** Sólo entonces
+#   se reescribieron para vigilar lo arreglado. 🔑 **Un arreglo que no pone roja
+#   ninguna prueba vieja no arregla nada medido.**
+#
+# ⭐ **`LM.74` — LA AUSENCIA NO CONTRADICE A NADIE.** Las cinco quejas del
+#   auditor cazan **contradicciones**; un tramo que se abre y no cierra no
+#   contradice nada — padre real, escalón cuadrado, misma corrida, sin ciclo.
+#   Es `LM.66` girado y es peor: allá el dato no era desmentible, aquí **no hay
+#   dato**. 🎁 Y el detector nuevo cazó **dos montajes descuidados el día que
+#   nació, los dos míos, en `fallos.py`**: una raíz sin anotar y un cierre que
+#   faltaba. **Un instrumento mal montado no da silencio: da una queja creíble
+#   sobre otra cosa.**
+#
+# ⭐ **`LM.75` — UN PLAZO QUE NADIE DECIDIÓ ES UN RESIDUO.** Los 490 s eran
+#   ciertos y eran el tope real, pero salían de multiplicar tres constantes
+#   escogidas en tres momentos por motivos que no tenían que ver con el tiempo.
+#   ⚠️ Y el precio del plazo nuevo, dicho entero: **corta ENTRE vueltas, no
+#   dentro de una.** Lo que mata es la SUMA, que era lo que no tenía dueño.
+#
+# 🚨 **EL FRENO COMPLETO QUE NUNCA HABÍA MORDIDO: en 102 cierres de worker
+#   registrados en todo el curso, `max_vueltas` había cortado CERO veces.**
+#   28 por presupuesto, 74 terminaron bien. Existía desde A.1, con su motivo, su
+#   frase y su paso por la frontera. ⭐ **Y el docstring de `fallos.py`, escrito
+#   esa misma mañana, decía de esa pata «esta ya está»** — el archivo que venía
+#   a decir que un freno sin morder es una nota lo dio por resuelto en su tercer
+#   renglón. **Se da por resuelto lo que está escrito, no lo que está probado.**
+#   Hoy muerde, y se dejó escrito el error en vez de borrarlo.
+#
+# ⭐ **EL CRASH EN PARALELO, QUE ERA LA TOPOLOGÍA QUE IMPORTABA.** Todo lo demás
+#   se midió con UN worker en serie. Con tres hilos y el CAD reventando: los
+#   otros dos entregan, los TRES entran en la factura, y el árbol sale con 3
+#   tramos y **ninguno huérfano** (`atado()` cumpliendo con un hilo muerto
+#   dentro). 🚨 Y eso solo no probaba nada, así que se corrió el contrafactual:
+#   **con la red, 3 de 3; sin la red (`pool.map` pelado), 0 de 3.**
+#   🔑 **La excepción no mata al que falló: mata a los que iban bien** — el USD
+#   y el EUR terminaron, gastaron su dinero y su resultado se pierde al recoger
+#   la tanda. Por eso el `except` vive en el sitio que no sabe de hilos.
+#
+# 💸 **LA CORRIDA PAGADA — $0,027482, 8 de 9 afirmaciones.** El caro cortó por
+#   presupuesto en **$0,008207** de $0,012172, con **$0,009781 parados en los
+#   baratos**. ✅ **Apuesta 5 ganada:** el modelo dijo *«se quedó sin presupuesto
+#   para esta consulta»* — **la causa que le dio el harness, sin adornos**. La
+#   afirmación 8 cobró después de dos sesiones sin poder evaluarse.
+#   ✅ Y `LM.72` aguantó con dinero delante: el contrato del CAD salió
+#   `{'moneda': 'CAD', 'monto': 1000}` con `discrepa: []` — ayer, en el mismo
+#   sitio, decía `{'moneda': 'COP', 'monto': 2219774}`.
+#   ❌ **La afirmación 7, roja, y el culpable es EL MEDIDOR:** buscaba palabras
+#   de culpar a un tercero y encontró **`api`** dentro de **`open.er-api.com`**,
+#   la *fuente* de los dos que terminaron bien. 📌 El archivo había declarado ese
+#   indicio débil **antes** de correr (*«buscar palabras ya dio un falso rojo una
+#   vez»*): segunda vez, mismo modo. **El número NO se toca** — moverlo con el
+#   resultado delante es mover la portería.
+#
+# 🚨 **EL HALLAZGO DEL DÍA NO LO MIRABA NINGUNA AFIRMACIÓN: TENÍAMOS LA
+#   RESPUESTA DEL CAD Y LA TIRAMOS.** *Importancia: alta · Urgencia: no
+#   bloqueante.* El worker cortó a media cadena pero su contrato salió completo
+#   y correcto —`pesos: 2.219.774`, `faltan: []`, `discrepa: []`—. La pregunta
+#   del usuario era «1.000 CAD, ¿cuánto es en pesos?»: **eso lo teníamos**. Lo
+#   que faltaba eran los eslabones del encargo artificial que lo hacía caro.
+#   🔑 La frontera lo descarta en un `if not resultado["ok"] or datos.get("pesos")
+#   is None` — **es un `or`**, y basta con que el worker no TERMINARA para tirar
+#   un contrato lleno. **`ok` es una pregunta sobre el PROCESO; `pesos` lo es
+#   sobre el RESULTADO**, y el harness se queda con la más pesimista.
+#   ⚠️ **Anotado y NO arreglado, a decisión suya**, y con razón: entregar un
+#   parcial puede ser peor que no entregar nada si el de arriba no sabe que es
+#   parcial. Arreglarlo sin resolver eso cambia una pérdida silenciosa por una
+#   **mentira** silenciosa. Queda escrito en `orquestador.py`, en la línea.
+#
+# 💸 **Y UN ERROR MÍO CON DINERO, UN DÍA DESPUÉS DE ESCRIBIR LA REGLA QUE LO
+#   PROHIBÍA** → `LM.76`. Corrí `python worker.py --pruebas` para comprobar que
+#   C.4 no había roto nada. **`worker.py` no tiene `--pruebas`**: ignoró la
+#   bandera y corrió la demo. **$0,007130.**
+#   🔑 Lo caro no es el gasto: `GUIDE.md` §6.e estaba escrita, la leí esa misma
+#   mañana, y **no protegió** — porque su lista nombraba `pipeline.py` y
+#   `linea_base.py`, y los que pagan en pelado son **CUATRO**: faltaban
+#   `worker.py` y `orquestador.py`, justo el que corrí. ⭐ **Una advertencia con
+#   la lista incompleta no avisa a medias: TRANQUILIZA.** El que mira la lista y
+#   no encuentra su archivo concluye que el suyo es de los seguros. **Es peor que
+#   no tener lista.** 📌 Y el mecanismo: una bandera que el script no conoce **no
+#   da error**, y en pantalla se ve igual que una suite. `GUIDE.md` §6.e
+#   corregida con los cuatro y con los moldes buenos al lado.
+#
+# 📊 **NÚMEROS DEL DÍA:** `fallos.py` **nuevo, 26 pruebas** · `traza.py` 41 →
+#   **46** · `README.md` del nivel 8 con el bloque C.4 entero · `LESSONS.md`
+#   72 → **76** (`LM.73`–`LM.76`).
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — C.5, el TOPE DE RECURSIÓN** (el bucle
+#   orquestador ↔ worker: dos agentes pueden pasarse la pelota para siempre).
+#   Con cinco deudas encima, todas con dueño:
+#   · 🔲 **El `or` de la frontera** (el hallazgo de hoy). Es una decisión de
+#     diseño sin tomar, no un bug: decidir **qué significa un resultado parcial**
+#     antes de tocar la línea.
+#   · 🔲 **El contrato de una CADENA** (`LM.72`), arrastrado de C.3: hoy es un
+#     renglón y una cadena necesita una lista. **Entra o se declara fuera de
+#     alcance** — arrastrarla otra sesión es lo que la vuelve invisible.
+#   · 🔲 **`profundidad.py:213`** sigue con la copia ciega del corte, y su
+#     pregunta sin contestar: *¿el experimento quiere que el harness cace su
+#     propia torcedura, o la necesita pasando?* **Es suya, no mía.**
+#   · 🔲 **C.3 NUNCA TUVO SU BLOQUE EN EL README del nivel.** El código está y la
+#     lección no. **Lo que no está escrito, no se enseñó.**
+#   · 🔲 **La bandera `--pagar` en `worker.py` y `orquestador.py`** — decisión
+#     suya, con el argumento de ayer en contra (*reescribir lecciones ya dadas
+#     cambia lo que él leyó*) y dos facturas a favor.
+# 🎲 **Y LA PRIMERA COSA DE LA SESIÓN 102 ES SELLAR LA APUESTA Y COMMITEARLA.**
+#   Van NUEVE. Hoy las cinco se ganaron, **y aun así el saldo del día no fueron
+#   las apuestas**: fueron el `or` de la frontera y el `max_vueltas` que nunca
+#   había mordido — **dos cosas que ninguna de las cinco miraba.**
+#   ⭐ Una apuesta bien escrita no sirve para acertar: sirve para tener dónde
+#   mirar mientras aparece lo otro.
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ➡️ **SIGUIENTE PASO CONCRETO — cerrar los TRES pendientes de C.2 antes de pasar a C.3.**

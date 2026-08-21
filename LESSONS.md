@@ -5848,3 +5848,107 @@ otra forma — una lista, no un renglón.
 estado» de un pedido, de un despliegue, de un flujo de trabajo. La pregunta que hay que hacerle a
 ese objeto es **«¿esto describe la petición o lo último que pasó?»**, y muy a menudo describe
 lo segundo mientras todo el mundo lo lee como lo primero.
+
+---
+
+### LM.73 — El gasto no se pierde por gastarse mal: se pierde por no volver por donde se cuenta
+
+Un especialista que revienta a media faena ya no tumbaba al programa que lo llamó: había un
+`except` en la costura y hacía su trabajo. Lo que nadie miró es que la función que revienta **no
+devuelve**, y que todo el apunte contable —lo gastado, las llamadas, los tokens, la ficha en el
+detalle— estaba escrito **después** de esa devolución. Medido: **$0,004000 gastados de verdad,
+$0,000000 en el libro.**
+
+🔑 El dinero ya había salido. Las llamadas se hicieron y se cobraron. Lo que faltaba no era
+controlar el gasto: era **volver a pasar por la caja**. Un fallo que sale por una puerta distinta a
+la del éxito se lleva consigo todo lo que se apuntaba en la puerta del éxito, y no deja rastro de
+haberlo hecho — porque el rastro también se apuntaba ahí.
+
+⭐ La corrección es la misma que ya existía para un caso y no se había generalizado: **el fracaso
+vuelve con la misma forma que el éxito**, un valor de retorno y no una excepción. Y el comentario
+que había encima de la única excepción contemplada llevaba dos versiones diciendo *«esto devuelve
+su fracaso como dato»* — era verdad **para ese caso y para ningún otro**, y el comentario no lo
+distinguía.
+
+**Dónde muerde fuera de aquí:** cualquier métrica, factura, contador o traza que se escriba después
+de la llamada que puede fallar. La pregunta que lo destapa es **«si esto revienta a la mitad, ¿qué
+línea de contabilidad no llega a correr?»** — y se responde leyendo, no midiendo.
+
+---
+
+### LM.74 — La ausencia no contradice a nadie
+
+Un auditor de estructura caza mentiras **cruzando dos datos que no pueden ser ciertos a la vez**:
+este apunta a un padre que no existe, este dice estar en el escalón 2 y su padre en el 7, esta rama
+se muerde la cola. Cinco comprobaciones, todas de la misma familia, todas correctas.
+
+Ninguna podía ver un tramo que **se abrió y no cerró**. El registro que deja un proceso que muere a
+media faena es impecable para las cinco: el padre existe, el escalón cuadra, la corrida es la
+misma, no hay ciclo. Medido antes de escribir la comprobación: **1 apertura, 0 cierres, 0 quejas.**
+
+🔑 Es `LM.66` girado del revés, y es peor. Aquella decía que un dato que nadie puede desmentir no es
+correcto, es **no comprobable**. Aquí no hay dato ninguno: **lo que falta no puede contradecir a
+nada**, y un auditor construido entero sobre contradicciones es estructuralmente ciego a las
+ausencias. No es un olvido del que lo escribió — es una consecuencia de cómo caza.
+
+📌 Y la comprobación que lo tapa se escribe **en una sola dirección**: una apertura sin cierre es un
+defecto; un cierre sin apertura, muy a menudo, es legítimo. Denunciar los dos lados por simetría es
+inventarse un defecto, que es exactamente el falso positivo de `LM.72`.
+
+**Dónde muerde fuera de aquí:** todo *health check*, validador o reconciliación que compare campos
+entre sí. Pregúntale **«¿qué le pasa a esto cuando el dato simplemente no está?»**, y muy a menudo
+la respuesta es: nada, y sale verde.
+
+---
+
+### LM.75 — Un plazo que nadie decidió no es un plazo: es un residuo
+
+Un especialista que se demora tenía un tope. Era cierto y era comprobable: 5 vueltas × 3 intentos ×
+30 s de timeout, más las esperas del reintento, daban **490 segundos — 8,2 minutos**. Nadie lo
+había escrito nunca, porque no era una decisión: era la **consecuencia aritmética** de tres
+constantes elegidas en tres momentos distintos por tres motivos que no tenían nada que ver con el
+tiempo total.
+
+🔑 Un límite que sale de multiplicar otras cosas **no se puede discutir, ni ajustar, ni defender**,
+porque nadie sabe que existe. El día que hace falta cambiarlo, se cambia una de las tres constantes
+por otro motivo y el tope se mueve solo, sin que nadie lo note.
+
+⭐ Y al ponerle un plazo de verdad, el número salió **de un dato y no de una intuición**: 99
+ejecuciones ya pagadas daban mediana 2,28 s, p90 5,73 s y peor caso 17,94 s. El plazo se puso en
+**5× el peor caso jamás visto** — o sea, un freno que no puede morder a uno legítimo — y aun así
+5,4 veces por debajo del residuo. ⚠️ **Aquí sí se elige por arriba a propósito**, y es la otra cara de lo que
+costó la sesión anterior: allí un techo dimensionado con el p90 era el precio equivocado **para un
+instrumento de medida**, porque le perdonaba la vida justo al que se quería ver ahogarse. Un freno
+no es un instrumento: **equivocarse por arriba en un freno sólo cuesta espera.** El mismo número es
+correcto en un papel y ciego en el otro, y lo que hay que saber es en cuál de los dos estás.
+
+📌 Y su límite se dice entero: ese plazo corta **entre pasos**, no dentro de uno. Lo que mata es la
+**suma** — que era justo lo que no tenía dueño.
+
+**Dónde muerde fuera de aquí:** todo tiempo de espera que sea el producto de reintentos ×
+*timeouts* × pasos. Escríbelo como número una vez y casi siempre asusta.
+
+---
+
+### LM.76 — Una advertencia con la lista incompleta no avisa a medias: tranquiliza
+
+Se escribió una regla —*«un script que gasta no puede gastar por defecto»*— después de tirar
+$0,087297 por correrlos en pelado. La regla venía con la lista de los archivos que la incumplían.
+La lista nombraba **dos** de **cuatro**.
+
+Al día siguiente, comprobando otra cosa, se corrió uno de los dos que faltaban y la factura volvió a
+llegar. La regla estaba escrita, se había leído esa misma mañana, y **no protegió** — porque el que
+la leyó buscó su archivo en la lista, no lo encontró, y concluyó lo razonable: que el suyo era de
+los seguros.
+
+🔑 Una lista de excepciones se lee **como si fuera exhaustiva**, siempre, aunque nadie lo prometa.
+Media lista no protege la mitad de los casos: protege esos y **desprotege activamente el resto**,
+porque convierte la duda en una falsa tranquilidad. **Es peor que no tener lista.**
+
+📌 Y el mecanismo concreto que lo hizo invisible merece decirse: una bandera que el programa no
+conoce **no da error**. `python X.py --pruebas` en un archivo sin lector de argumentos ignora la
+bandera y hace lo suyo — y en pantalla se ve exactamente igual que una suite de pruebas.
+
+**Dónde muerde fuera de aquí:** listas de excepciones, de comandos peligrosos, de rutas sensibles,
+de entornos donde no se despliega. O la lista se genera desde la fuente de verdad, o llevará escrito
+al lado **cómo comprobar si tu caso está en ella** — nunca sólo los ejemplos que alguien recordó.

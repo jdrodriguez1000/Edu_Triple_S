@@ -462,6 +462,47 @@ def auditar_arbol(lineas):
         #    corrida». 🔑 Se anota porque es lo contrario de lo que uno espera:
         #    **arreglar la clave dejó muerto a un detector que funcionaba.**
 
+    # 4.b) 🚨 C.4 — EL TRAMO QUE SE ABRIÓ Y NO CERRÓ.
+    #
+    #    Las cinco quejas de arriba se disparan porque **dos datos se
+    #    contradicen**. Esta no: se dispara porque **falta uno**, y por eso hubo
+    #    que escribirla aparte. Un worker que revienta anota su `worker_inicio`
+    #    y muere antes del `worker_fin`. El árbol que sale es impecable: el
+    #    `padre` existe, la `profundidad` cuadra, la `corrida` es la misma.
+    # 🔑 `LM.66` al revés. Aquella decía que un dato que nadie puede desmentir
+    #    no es correcto, es **no comprobable**. Esto es peor: no hay dato
+    #    ninguno, y **la ausencia no contradice a nadie**. Medido en `fallos.py`
+    #    antes de escribir esta comprobación: 1 `worker_inicio`, 0 `worker_fin`,
+    #    **0 quejas del auditor**.
+    #
+    # 📌 SE MIRA POR EL SUFIJO DEL EVENTO, no por el nombre del tramo. Los 5
+    #    pares del repo —`worker`, `orquestador`, `duelo`, `pipeline`,
+    #    `corrida`— usan todos `_inicio`/`_fin`, y así la comprobación cubre
+    #    también a los que se escriban mañana sin tener que acordarse de ella.
+    # ⚠️ Y SOLO SE MIRA EN UNA DIRECCIÓN, a propósito: un `_fin` huérfano NO se
+    #    denuncia. Existen de verdad y son legítimos (`exp1_fin`… de los
+    #    experimentos de C.1, que nunca abrieron nada). Denunciarlos sería un
+    #    falso positivo del mismo tipo que el de ayer.
+    aperturas = {}
+    cierres = {}
+    for d in lineas:
+        tid = d.get("id")
+        evento = d.get("evento") or ""
+        if tid is None:
+            continue
+        clave = (d.get("corrida"), tid)
+        if evento.endswith("_inicio"):
+            aperturas.setdefault(clave, evento)
+        elif evento.endswith("_fin"):
+            cierres.setdefault(clave, evento)
+
+    for clave, evento in aperturas.items():
+        if clave not in cierres:
+            quejarse("nodo_abierto", clave[1],
+                     f"anotó «{evento}» y nunca su cierre: el tramo "
+                     f"«{nodos.get(clave, {}).get('tramo', '?')}» se abrió y "
+                     f"no se sabe cómo terminó")
+
     # 5) Ciclos. Se busca subiendo desde cada nodo: si se vuelve a pisar un id ya
     #    pisado en ESTE camino, la rama se muerde la cola. Sin esto, `arbol()`
     #    entraría en recursión infinita y el síntoma sería un `RecursionError`,
@@ -1436,6 +1477,63 @@ def _pruebas():
     check("41. 🎲 apuesta 5: sobre los registros REALES no muerde (GANADA)",
           dobles_reales == [],
           f"{len(dobles_reales)} caso(s): {dobles_reales}")
+
+    # --- 42-45 · `nodo_abierto`: LA QUEJA DE C.4 ----------------------------
+    # 🚨 Entra con su torcedura al lado, como manda `LM.13`. Y la torcedura de
+    #    esta es rara: **no se tuerce nada, se BORRA**. Un worker que revienta
+    #    no escribe un dato falso — deja de escribir.
+
+    ABIERTO = [
+        {"corrida": "cY", "id": "t1", "padre": None, "profundidad": 0,
+         "evento": "orquestador_inicio", "tramo": "capa:orquestador"},
+        {"corrida": "cY", "id": "t1", "padre": None, "profundidad": 0,
+         "evento": "orquestador_fin", "tramo": "capa:orquestador"},
+        {"corrida": "cY", "id": "t2", "padre": "t1", "profundidad": 1,
+         "evento": "worker_inicio", "tramo": "worker:usd"},
+        {"corrida": "cY", "id": "t2", "padre": "t1", "profundidad": 1,
+         "evento": "llamada_api", "tramo": "worker:usd", "costo_usd": 0.002},
+        # ⚠️ AQUÍ NO HAY `worker_fin`. Eso es todo el defecto.
+    ]
+    quejas_a = auditar_arbol(ABIERTO)
+    check("42. 🚨 MUERDE: un `worker_inicio` sin su `worker_fin` se caza",
+          any(q["tipo"] == "nodo_abierto" and q["id"] == "t2" for q in quejas_a),
+          quejas_a)
+
+    # 43) ⭐ Y ESTA ES LA QUE DE VERDAD SE APUESTA: el árbol de arriba es
+    #     IMPECABLE para las otras cinco quejas. Padre real, escalón cuadrado,
+    #     misma corrida, sin ciclo, un solo padre por tramo. **Antes de C.4 este
+    #     registro salía verde entero.** Si mañana alguien encuentra otra queja
+    #     que también lo cace, esta prueba lo dirá.
+    check("43. ⭐ y es la ÚNICA que lo caza: las otras cinco lo dan por sano",
+          [q["tipo"] for q in quejas_a] == ["nodo_abierto"],
+          [q["tipo"] for q in quejas_a])
+
+    # 44) El otro lado, que es lo que separa un detector de una alarma que
+    #     siempre suena: cerrado el tramo, se calla.
+    CERRADO = ABIERTO + [{"corrida": "cY", "id": "t2", "padre": "t1",
+                          "profundidad": 1, "evento": "worker_fin",
+                          "tramo": "worker:usd"}]
+    check("44. y con el `worker_fin` puesto, se calla",
+          not [q for q in auditar_arbol(CERRADO) if q["tipo"] == "nodo_abierto"],
+          auditar_arbol(CERRADO))
+
+    # 45) 🚨 EL FALSO POSITIVO QUE SE DECIDIÓ NO COMETER. Un `_fin` sin `_inicio`
+    #     existe de verdad en el repo —`exp1_fin`… de los experimentos de C.1—
+    #     y es legítimo. Denunciarlo sería inventarse un defecto, que es
+    #     exactamente lo que hizo el detector nuevo de ayer (`LM.72`).
+    SOLO_FIN = [{"corrida": "cZ", "id": "t1", "padre": None, "profundidad": 0,
+                 "evento": "exp1_fin", "tramo": "exp"}]
+    check("45. un `_fin` huérfano NO se denuncia (decisión, no descuido)",
+          auditar_arbol(SOLO_FIN) == [], auditar_arbol(SOLO_FIN))
+
+    # 46) 🎲 Vigilancia sobre los registros PAGADOS, igual que la 41. Hoy sale
+    #     limpio —99 `worker_inicio` y 99 `worker_fin`, contados— y si un día
+    #     una corrida real deja un tramo abierto, esta se pone roja.
+    abiertos_reales = [q for q in auditar_arbol(reales)
+                       if q["tipo"] == "nodo_abierto"]
+    check("46. sobre los registros REALES tampoco muerde (99 pares completos)",
+          abiertos_reales == [],
+          f"{len(abiertos_reales)} caso(s): {abiertos_reales}")
 
     print()
     if fallos:

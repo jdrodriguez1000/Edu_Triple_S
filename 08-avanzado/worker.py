@@ -121,6 +121,26 @@ MAX_VUELTAS_WORKER = 5
 #    problema que no era suyo. Un tope por worker AÍSLA EL DAÑO.
 PRESUPUESTO_WORKER_USD = 0.05
 
+# ⭐ C.4 — EL PLAZO. La tercera cosa que se le puede acabar a un worker, después
+#    del dinero y de las vueltas: EL TIEMPO DE QUIEN LO ESPERA.
+#
+# 🚨 ANTES DE ESTA LÍNEA EL PLAZO EXISTÍA, PERO NADIE LO HABÍA DECIDIDO. Salía
+#    de multiplicar tres constantes escogidas por otros motivos —5 vueltas × 3
+#    intentos × 30 s de timeout, más las esperas del reintento— y daba **490
+#    segundos: 8,2 minutos por worker**, medido en `fallos.py`. Un plazo que
+#    nadie eligió no es un plazo: es un residuo.
+#
+# 📌 Y EL NÚMERO SALE DE UN DATO, NO DE UNA INTUICIÓN. Los 99 workers pagados
+#    del curso: mediana **2,28 s**, p90 **5,73 s**, el peor de todos **17,94 s**.
+#    90 s son **5 veces el peor caso jamás visto** — o sea, un freno que no
+#    puede morder a uno legítimo — y a la vez **5,4 veces menos** que el residuo
+#    que había.
+# 🔑 Aquí sí se elige por arriba a propósito, y es la lección de ayer al revés:
+#    el p90 era el precio equivocado para un instrumento porque le perdonaba la
+#    vida al que se quería ver ahogarse. **Esto no es un instrumento, es un
+#    freno**, y en un freno equivocarse por arriba solo cuesta espera.
+LIMITE_WORKER_SEGUNDOS = 90.0
+
 # ---------------------------------------------------------------------------
 # 🚨 C.2 · CIERRE — EL PRECIO DE LA PRÓXIMA LLAMADA, Y POR QUÉ HAY QUE ADIVINARLO
 # ---------------------------------------------------------------------------
@@ -462,6 +482,10 @@ def correr_worker(encargo,
                   permitidas=HERRAMIENTAS_DIVISA,
                   max_vueltas=MAX_VUELTAS_WORKER,
                   presupuesto_usd=PRESUPUESTO_WORKER_USD,
+                  # C.4 — el plazo de pared. `None` lo apaga, y eso es para las
+                  # pruebas: en una corrida de verdad un worker sin plazo es el
+                  # residuo de 8,2 minutos que este archivo acaba de matar.
+                  limite_segundos=LIMITE_WORKER_SEGUNDOS,
                   contrato=contrato_divisa,
                   # C.3 — LO QUE SE PREGUNTÓ, en Python y no en la prosa del
                   # encargo. El worker no lo usa para nada: lo pasa al contrato
@@ -660,6 +684,21 @@ def correr_worker(encargo,
         return resultado
 
     for vuelta in range(1, max_vueltas + 1):
+        # ⭐ C.4 — EL PLAZO, Y SE MIRA ANTES DE HABLAR. Es el mismo sitio y la
+        #    misma forma que el presupuesto: preguntar si alcanza ANTES de
+        #    gastar. Aquí lo que se gasta es tiempo de quien espera.
+        # ⚠️ Y su precio, dicho entero: este reloj corta ENTRE vueltas, no
+        #    dentro de una. Una llamada que se cuelga sigue acotada solo por el
+        #    timeout del SDK — que es de verdad, pero no es este freno. Lo que
+        #    este plazo mata es la SUMA, que era lo que no tenía dueño.
+        if limite_segundos is not None:
+            llevado = time.monotonic() - arranque
+            if llevado > limite_segundos:
+                return cerrar(
+                    f"(me detuve: llevaba {llevado:.1f}s de un plazo de "
+                    f"{limite_segundos:.0f}s)",
+                    ok=False, motivo="plazo", vueltas=vuelta)
+
         try:
             respuesta = hablar_con_el_modelo(historial)
         except PresupuestoAgotado as fallo:
@@ -670,6 +709,28 @@ def correr_worker(encargo,
             #    llama decide qué hacer con un no.
             return cerrar(f"(me detuve: se acabó el presupuesto — {fallo})",
                           ok=False, motivo="presupuesto", vueltas=vuelta)
+
+        # 🚨 C.4 — EL CRASH TAMBIÉN VUELVE COMO DATO, Y ESTE `except` ES EL
+        #    ARREGLO ENTERO DEL PRIMER AGUJERO DE C.4.
+        #    El comentario de aquí arriba llevaba dos bloques diciendo *«un
+        #    worker devuelve su fracaso como dato»* — y solo era verdad para el
+        #    presupuesto. Cualquier otra excepción SÍ se lanzaba hacia arriba.
+        # 🔑 Y el daño no era que tumbara al orquestador (la frontera ya lo
+        #    atrapaba desde B.2): era que `correr_worker` que LANZA nunca
+        #    devuelve, así que **el dinero ya gastado no llegaba a la
+        #    contabilidad**. Medido en `fallos.py`: $0,004000 gastados,
+        #    $0,000000 en el libro. El gasto no se pierde por gastarse mal: se
+        #    pierde por no volver por donde se cuenta.
+        # ⭐ Y se distinguen DOS motivos, no uno. Es la diferencia entre «no
+        #    insistas» y «esto se arreglaba solo reintentando»:
+        except agente.REINTENTABLES as fallo:
+            traceback.print_exc()
+            return cerrar(f"(me caí: {type(fallo).__name__} — {fallo})",
+                          ok=False, motivo="crash_temporal", vueltas=vuelta)
+        except Exception as fallo:
+            traceback.print_exc()
+            return cerrar(f"(me caí: {type(fallo).__name__} — {fallo})",
+                          ok=False, motivo="crash", vueltas=vuelta)
 
         # -- CASO A: terminó.
         if respuesta.stop_reason != "tool_use":

@@ -267,6 +267,26 @@ _CAUSAS = {
                     "coste. No lo reintentes."),
     "max_vueltas": ("El especialista de {moneda} agotó su número máximo de "
                     "vueltas sin llegar a una respuesta. No lo reintentes."),
+    # 🚨 C.4 — LAS DOS CARAS DEL CRASH, Y SON DOS FRASES PORQUE SON DOS
+    #    CONSEJOS CONTRARIOS. Hasta hoy las dos caían en el `except Exception`
+    #    de `ejecutar_un_bloque` y al modelo le llegaba **la misma frase**:
+    #    *«falló por un defecto interno del programa. No lo llames otra vez
+    #    igual»*. Medido en `fallos.py`: idénticas, carácter por carácter.
+    # 🔑 Y para el reintentable esa frase no es imprecisa, es **dañina**: le
+    #    prohíbe justo lo único que lo arreglaba. Es `LM.71` con otra ropa —
+    #    el mensaje que llega primero entierra la causa real.
+    "crash_temporal": ("El especialista de {moneda} se cayó por un problema "
+                       "PASAJERO de conexión con el servicio, y ya reintentó "
+                       "por su cuenta sin suerte. Si te queda margen, esta es "
+                       "de las que sí puede salir bien al segundo intento."),
+    "crash": ("El especialista de {moneda} se cayó por un defecto interno de "
+              "nuestro programa, no del servicio de tasas. Volver a llamarlo "
+              "igual daría el mismo fallo. No lo reintentes."),
+    # C.4 — el plazo. Se parece al presupuesto y no es el mismo: allí se acabó
+    # el dinero, aquí el tiempo de quien espera.
+    "plazo": ("El especialista de {moneda} tardó más del plazo que se le dio y "
+              "se le cortó a medias. No es un fallo del servicio: es nuestro "
+              "límite de tiempo. No lo reintentes."),
     None: ("El especialista de {moneda} terminó sin el dato de la conversión. "
            "No lo reintentes."),
     # 🚨 C.3 — la causa MÁS RARA de todas, y la que más falta hacía: el
@@ -462,6 +482,27 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
 
     # `pesos` es el campo sin el cual la consulta no sirvió de nada. Que no esté
     # NO es "un campo vacío más": es que esta moneda no se resolvió.
+    #
+    # 🔲 C.4 — PENDIENTE CON DUEÑO, ANOTADO Y **NO ARREGLADO A PROPÓSITO**
+    #    (decisión del estudiante, sesión 101). Míralo antes de tocarlo:
+    #
+    #    🚨 EN LA CORRIDA PAGADA DE HOY TENÍAMOS LA RESPUESTA DEL CAD Y LA
+    #       TIRAMOS. El worker cortó por presupuesto a media cadena, pero su
+    #       contrato salió **completo y correcto**: `pesos: 2.219.774`,
+    #       `faltan: []`, `discrepa: []`. La pregunta del usuario era «1.000 CAD,
+    #       ¿cuánto es en pesos?» — **eso lo teníamos**. Lo que faltaba eran los
+    #       eslabones siguientes, que son del encargo artificial que lo hacía caro.
+    #
+    # 🔑 FÍJATE EN QUE ES UN `or`: basta con que el worker no TERMINARA para
+    #    tirar un contrato lleno. `ok` es una pregunta sobre el PROCESO;
+    #    `pesos` es una pregunta sobre el RESULTADO. Aquí se tratan como una
+    #    sola y se gana la más pesimista de las dos.
+    #
+    # ⚠️ Y NO ES UN BUG OBVIO, ES UNA DECISIÓN DE DISEÑO SIN TOMAR: entregar un
+    #    resultado parcial puede ser PEOR que no entregar nada si el de arriba
+    #    no sabe que es parcial. Arreglarlo sin resolver eso cambia una pérdida
+    #    silenciosa por una mentira silenciosa. → README del nivel, «lo que C.4
+    #    deja abierto».
     if not resultado["ok"] or datos.get("pesos") is None:
         # 🚨 C.2 · CIERRE — LA CAUSA CRUZA LA FRONTERA, Y ES UN ARREGLO QUE
         #    COSTÓ UNA MENTIRA VERLO.

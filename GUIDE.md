@@ -996,11 +996,33 @@ python X.py --pagar    -> lo que cuesta dinero, y sólo con la bandera puesta.
 En pelado imprime su informe, corre sus pruebas gratis y **te dice con todas las
 letras** qué bandera hace falta para pagar. Termina con `sys.exit(1 if fallos else 0)`.
 
-⚠️ **Los que NO lo cumplen, y hay que mirarlos antes de correrlos:**
-`08-avanzado/pipeline.py` y `08-avanzado/linea_base.py` **pagan en pelado**.
-Queda escrito aquí en vez de arreglarlo, por lo mismo de siempre: son piezas de
-lecciones ya dadas y reescribirlas cambia lo que él leyó. **Pero ahora está dicho
-dónde mirar.**
+⚠️ **Los que NO lo cumplen, y hay que mirarlos antes de correrlos. La lista
+son CUATRO, y el 2026-08-21 decía dos:**
+
+| Archivo | Qué hace en pelado |
+|---|---|
+| `08-avanzado/worker.py` | corre un worker de verdad — **paga** |
+| `08-avanzado/orquestador.py` | corre la demo de A.2 entera — **paga** |
+| `08-avanzado/pipeline.py` | corre los tres eslabones — **paga** |
+| `08-avanzado/linea_base.py` | corre el duelo y **sobrescribe su medición** |
+
+🚨 **LA LISTA SE COMPLETÓ PORQUE ESTABA INCOMPLETA Y SE COBRÓ AL DÍA SIGUIENTE
+DE ESCRIBIRLA.** En la sesión 101, comprobando que C.4 no había roto nada, se
+corrió `python worker.py --pruebas` — **`worker.py` no tiene `--pruebas`**, así
+que ignoró la bandera y corrió la demo: **$0,007130**. La regla de §6.e estaba
+escrita, se había leído esa misma mañana, y **aun así no protegió**, porque el
+que la leyó buscó su archivo en la lista y no estaba.
+🔑 **Una advertencia con lista incompleta no avisa a medias: tranquiliza.** El
+que mira la lista y no encuentra su archivo concluye que el suyo es de los
+seguros. **Es peor que no tener lista.**
+
+📌 Y una bandera que el script no conoce **no da error**: `sys.argv` se ignora y
+el programa hace lo suyo. `python X.py --pruebas` en un archivo sin argparse se
+ve exactamente igual que una suite… hasta que llega la factura.
+
+**Los que SÍ están bien y sirven de molde:** `presupuesto.py`, `traza.py`,
+`fan_out.py` (sin banderas corre las pruebas, no la demo), `router.py`,
+`supervisor.py`, `profundidad.py`, `verificador.py`, `fallos.py`.
 
 📌 **Y el daño caro no fue el dinero:** `linea_base.py` **reescribió su propio
 archivo de medición sellada** —la línea base contra la que compara el duelo—.

@@ -3502,6 +3502,224 @@ los dos sin darme cuenta de que había cambiado de papel.
 ---
 
 
+#### 🎲 C.4 — LA APUESTA, sellada el **2026-08-21** (sesión 101) **antes de la primera línea de código**
+
+⚠️ **Y esta la escribió Claude, no el estudiante.** Se dice arriba del todo porque cambia lo
+que vale: el sospechoso que llevaba cinco sesiones nombrado —*«el que apuesta es el mismo que
+evalúa»*— aquí está en su forma más pura. La única defensa es que **las cinco se falsifican
+con un comando y no con una opinión**, y que cuatro de las cinco cuestan **$0,00**.
+
+Lo apostado, en corto:
+
+1. el crash ya no tumba al orquestador, **pero se lleva su gasto del libro**
+2. el árbol no ve un tramo que se abrió y no cerró
+3. el mensaje que sube al modelo **miente para los fallos pasajeros**
+4. *«se demora»* no tiene freno propio, y su tope real nadie lo ha calculado
+5. 💸 la corrida desigual con todo arreglado (~$0,03) sube la causa limpia
+
+**Resultado: las cinco ganadas.** Y la que más enseñó no fue ninguna de las cinco.
+
+---
+
+##### La pregunta de C.4, y por qué las tres patas *parecen* resueltas
+
+Un worker es un agente dentro de otro. Hasta aquí siempre terminó — bien, sin presupuesto o
+sin vueltas, pero terminó. **C.4 es el día en que no termina**, y son tres cosas distintas:
+
+```
+SE CAE      -> revienta a mitad. Excepción, traceback, adiós.
+SE DEMORA   -> no revienta: se queda ahí. El que espera no sabe si sigue.
+NO CONTESTA -> da vueltas y nunca llega a una respuesta.
+```
+
+🚨 **La trampa es que las tres tenían ya su freno escrito**: un `except Exception` en la
+frontera desde B.2, un `motivo="max_vueltas"` desde A.1, y un timeout del SDK desde el nivel
+5b. `fallos.py` no da por bueno nada de eso: **lo hace morder y mira qué queda en pie.**
+
+📌 **Y todo el paso cuesta $0,00**, porque el modelo es de mentira y el harness no. Un
+`ClienteDeMentira` devuelve respuestas con `usage` inventado y revienta cuando se le dice; el
+bucle del worker, la contabilidad, el registro y el árbol son los de verdad. 🔑 **Lo falso es
+el que habla, no el instrumento.** Si el instrumento fuera falso, mediríamos al instrumento.
+
+---
+
+##### Los cuatro agujeros, medidos antes de tocarlos
+
+| # | Lo apostado | Lo medido |
+|---|---|---|
+| 1 | el crash se lleva su gasto del libro | gastó **$0,004000**, en la factura **$0,000000** |
+| 2 | el árbol no ve el nodo abierto | 1 `worker_inicio`, 0 `worker_fin`, **0 quejas** |
+| 3 | el mensaje miente para los pasajeros | las dos frases, **idénticas carácter por carácter** |
+| 4 | «se demora» no tiene freno propio | techo real **490 s = 8,2 min**, nunca calculado |
+
+🔑 **El agujero 1 es el que hay que entender, porque no es donde se mira.** El `except
+Exception` de la frontera SÍ atrapaba el crash y el orquestador SÍ seguía vivo — eso funciona
+desde B.2 y nadie lo había roto. El daño estaba en otro sitio: `correr_worker` que **lanza**
+nunca devuelve, así que las seis líneas de `contabilidad[...] += resultado[...]` no llegan a
+correr. **El dinero se gastó y no está en ningún libro.**
+
+> ⭐ **El gasto no se pierde por gastarse mal: se pierde por no volver por donde se cuenta.**
+> Un fallo que sale por una puerta distinta a la del éxito se lleva consigo todo lo que se
+> apuntaba en la puerta del éxito. → `LM.73`
+
+📌 Y el comentario que había justo encima del `except` llevaba dos bloques diciendo *«un
+worker devuelve su fracaso COMO DATO»*. Era verdad **sólo para el presupuesto**. Cualquier
+otra excepción se lanzaba hacia arriba, y el comentario no distinguía.
+
+---
+
+##### Los cuatro arreglos, y el rojo que los prueba
+
+- **El worker cierra siempre.** `except agente.REINTENTABLES` y `except Exception` devuelven
+  `motivo="crash_temporal"` / `"crash"` como dato. El dinero cuadra al céntimo.
+- **La frontera distingue.** `_CAUSAS` gana tres entradas. Al fallo pasajero **se le deja
+  reintentar**; al defecto nuestro, no. Antes las dos recibían *«No lo llames otra vez
+  igual»* — que para el pasajero no era impreciso, era **dañino**: le prohibía justo lo
+  único que lo arreglaba. Es `LM.71` con otra ropa.
+- **El plazo se decide.** `LIMITE_WORKER_SEGUNDOS = 90`, mirado antes de cada vuelta, igual
+  que el presupuesto. Y el número **sale de un dato**: los 99 workers pagados del curso dan
+  mediana 2,28 s, p90 5,73 s y peor caso 17,94 s. **90 s son 5× el peor visto** — un freno
+  que no puede morder a uno legítimo — y 5,4× menos que el residuo que había.
+- **El árbol gana una queja**: `nodo_abierto`, con su torcedura al lado (`traza.py` 41 → 46).
+
+> ⭐ **Un plazo que nadie decidió no es un plazo: es un residuo.** Los 490 segundos existían
+> —eran ciertos, eran el tope real— pero salían de multiplicar tres constantes escogidas por
+> otros motivos. Nadie los había escrito nunca. → `LM.75`
+
+⚠️ **Y el precio del plazo se dice entero:** corta **entre vueltas**, no dentro de una. Una
+llamada colgada sigue acotada sólo por el timeout del SDK. Lo que este freno mata es la
+**suma**, que era lo que no tenía dueño.
+
+🚨 **CÓMO SE SABE QUE LOS ARREGLOS ARREGLAN LO QUE SE MIDIÓ.** Las pruebas 7 a 13 de
+`fallos.py` existieron **en verde describiendo el daño**: *«el dinero NO llega a la
+factura»*, *«el auditor no se queja»*, *«las dos frases son la misma»*. Al meter los
+arreglos **se pusieron rojas las seis de golpe**, y sólo entonces se reescribieron para
+vigilar lo arreglado. 🔑 **Un arreglo que no pone roja ninguna prueba vieja no está
+arreglando nada medido: está arreglando algo que nadie vio romperse.**
+
+---
+
+##### La queja que no se parece a las otras cinco
+
+Las cinco quejas del auditor del árbol se disparan porque **dos datos se contradicen**.
+`nodo_abierto` no: se dispara porque **falta uno**. Un worker que revienta anota su
+`worker_inicio` y muere antes del `worker_fin`, y el árbol que sale es impecable — el
+`padre` existe, la `profundidad` cuadra, la `corrida` es la misma, no hay ciclo.
+
+> ⭐ **`LM.66` al revés, y es peor.** Aquella decía que un dato que nadie puede desmentir no
+> es correcto, es **no comprobable**. Aquí no hay dato ninguno, y **la ausencia no contradice
+> a nadie**. Medido antes de escribir la comprobación: 1 inicio, 0 fines, **0 quejas**.
+> → `LM.74`
+
+📌 **Se mira por el sufijo del evento, no por el nombre del tramo** —los cinco pares del repo
+usan `_inicio`/`_fin`—, y **sólo en una dirección**: un `_fin` huérfano NO se denuncia,
+porque los hay legítimos. Denunciarlos sería el falso positivo de `LM.72` otra vez.
+
+🎁 **Y el detector cazó dos montajes descuidados el día que nació — los dos míos**, en el
+propio `fallos.py`: una raíz que abría tramo sin anotar, y un cierre que faltaba. **Un
+instrumento mal montado no da silencio: da una queja creíble sobre otra cosa.**
+
+---
+
+##### «No contesta»: el freno completo que nunca había mordido
+
+`max_vueltas` existe desde A.1. Tiene su motivo, tiene su frase para el modelo, cruza la
+frontera. Contados los cierres de worker de **todos** los registros del curso:
+
+```
+102 cierres:  28 por presupuesto  ·  74 terminaron bien  ·  max_vueltas: CERO
+```
+
+🚨 **Y el docstring de `fallos.py`, escrito esa misma mañana, decía de esta pata: «esta ya
+está».** El archivo que venía a decir que un freno sin morder es una nota lo dio por resuelto
+en su tercer renglón. **Se da por resuelto lo que está escrito, no lo que está probado.**
+Hoy muerde: 5 vueltas, `motivo="max_vueltas"`, causa en prosa arriba y gasto cuadrado.
+
+---
+
+##### El crash en PARALELO, que es la topología que importa
+
+Todo lo anterior se midió con **un** worker, **en serie**. `orquestador.py` lleva escrito
+desde B.2 que atrapar la excepción **en el sitio que no sabe de hilos** hace que dé igual — y
+nadie lo había visto. Tres workers, tres hilos, el CAD revienta a media faena:
+
+- **USD y EUR entregan su dato.** El CAD sube `motivo="crash"` con su causa.
+- **Los tres entran en la factura** ($0,016000 de registro = $0,016000 de libro).
+- **El árbol aguanta**: 3 tramos `worker:`, **ninguno huérfano**, 0 quejas. Eso es `atado()`
+  cumpliendo con un hilo muerto dentro.
+
+⚠️ Pero eso solo **no prueba que la red sirva de algo** — podría ser que en paralelo un crash
+nunca fuera peligroso. Así que se corrió el contrafactual, mismos bloques, misma excepción:
+
+| | Resultados que llegan |
+|---|---|
+| **Con** la red (`ejecutar_un_bloque`) | **3 de 3** |
+| **Sin** la red (`pool.map` pelado) | **0 de 3**, `RuntimeError` al recoger |
+
+> ⭐ **Sin red no llega ninguno — ni los dos que iban bien.** Terminaron su trabajo, gastaron
+> su dinero, y su resultado se pierde al recoger la tanda. **La excepción no mata al que
+> falló: mata a los que iban bien.** Por eso el `except` está en el sitio que no sabe de
+> hilos: así el paralelo no tiene que acordarse de nada.
+
+---
+
+##### 💸 La corrida pagada — $0,027482
+
+| | |
+|---|---|
+| Total | $0,027482 de un techo de $0,048689 |
+| El caro (`cad`) | cortó por presupuesto en **$0,008207** de $0,012172 |
+| Parado en los baratos | **$0,009781** mientras el que lo necesitaba se ahogaba |
+
+✅ **La apuesta 5, ganada.** El modelo dijo: *«No se pudo consultar. El especialista se quedó
+sin presupuesto para esta consulta.»* — **la causa que le dio el harness, repetida sin
+adornos.** Ninguna causa inventada. Las afirmaciones 7 y 8 llevaban dos sesiones sin poder
+cobrarse; la 8 cobró.
+
+✅ Y `LM.72` aguantó con dinero delante: el contrato del CAD salió `{'moneda': 'CAD',
+'monto': 1000}` con `discrepa: []`. Ayer, en este mismo sitio, decía `{'moneda': 'COP',
+'monto': 2219774}`.
+
+❌ **La afirmación 7 salió roja, y el culpable es el medidor.** Buscaba palabras que
+indicaran culpar a un tercero y encontró **`api`** — dentro de **`open.er-api.com`**, que es
+la *fuente* de los dos workers que terminaron bien. 📌 El propio archivo había declarado ese
+indicio débil **antes** de correr, con la frase *«buscar palabras ya dio un falso rojo una
+vez»*. Segunda vez, mismo modo. **El número no se toca** —moverlo con el resultado delante es
+mover la portería—, pero queda dicho por qué está rojo.
+
+---
+
+##### ✅ Lo que C.4 deja cerrado, y lo que deja abierto
+
+**Cerrado:**
+- El worker **siempre cierra**: se caiga, se demore o no conteste. Cuatro motivos nuevos
+  (`crash`, `crash_temporal`, `plazo`) y la contabilidad cuadra en los cuatro.
+- Las tres patas **vistas morder**, y las tres con su contrafactual al lado.
+- El crash en paralelo, medido: la tanda sobrevive y el árbol también.
+- `nodo_abierto` en el auditor, con torcedura y con vigilancia sobre los registros reales.
+- La corrida pagada: la causa sube limpia y el modelo la repite.
+
+**Abierto, con dueño:**
+- 🔲 🚨 **Teníamos la respuesta del CAD y la tiramos.** El worker cortó a media cadena, pero
+  su contrato salió completo y correcto: `pesos: 2.219.774`, `faltan: []`, `discrepa: []`. La
+  pregunta del usuario era *«1.000 CAD, ¿cuánto es en pesos?»* — **eso lo teníamos**. Lo que
+  faltaba eran los eslabones siguientes, que son del encargo artificial. La frontera lo
+  descarta en un `if not resultado["ok"] or datos.get("pesos") is None`: **es un `or`**, y
+  basta con que el worker no terminara para tirar un contrato lleno. 🔑 **`ok` es una
+  pregunta sobre el PROCESO; `pesos` es una pregunta sobre el RESULTADO** — el harness las
+  trata como una sola y se queda con la más pesimista. ⚠️ **Es una decisión de diseño, no un
+  bug obvio:** entregar un resultado parcial puede ser peor que no entregar nada si el de
+  arriba no sabe que es parcial. **Anotado a decisión del estudiante, no arreglado.**
+- 🔲 **El contrato de una CADENA** (`LM.72`), arrastrado de C.3: hoy es un renglón y una
+  cadena necesita una lista. Entra o se declara fuera de alcance.
+- 🔲 **`profundidad.py:213`** sigue con la copia ciega del corte, y su pregunta sin
+  contestar: *¿el experimento quiere que el harness cace su propia torcedura, o la necesita
+  pasando?*
+- 🔲 **C.3 nunca tuvo su bloque en este README.** El código está y la lección no. Se anota
+  aquí para que no se pierda: lo que no está escrito, no se enseñó.
+- 🔲 **La bandera `--pagar` en `worker.py` y `orquestador.py`** (ver `GUIDE.md` §6.e).
+
+---
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
