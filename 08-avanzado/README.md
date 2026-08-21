@@ -3027,6 +3027,137 @@ no entra** (`LM.13`).
 
 ---
 
+#### 🎲 C.2 — LA APUESTA, sellada el **2026-08-21** (sesión 98) **antes de la primera línea de código**
+
+> **El estudiante:** eligió el **candidato 2 — bolsa común repartida a la entrada** entre tres
+> esquemas propuestos, y *«voy con el sello de tu apuesta»*. Se sella la de esta terminal.
+> Lo que se cuenta abajo se contó **antes** de escribir las apuestas, sobre los registros que
+> ya estaban pagados: es $0,00 y no contamina lo apostado.
+
+##### 📏 LO QUE SE CONTÓ ANTES DE APOSTAR — $0,00, y no era una apuesta
+
+**1. C.2 no arranca de cero: está MEDIO CONSTRUIDO desde el bloque A, y el propio código lo
+dice.** En `orquestador.py:109`, escrito en la sesión 91: *«⭐ **Y esto ya es media pieza
+C.2**: en dos capas no hay "un" presupuesto. Hay uno por capa»*. Existe
+`PRESUPUESTO_ORQ_USD = 0.05`, existe `PRESUPUESTO_WORKER_USD = 0.05`, existe una excepción
+`PresupuestoAgotado` **en las dos capas**, y existe un `motivo="presupuesto"` que sale en el
+informe de cierre. **El esquema de hoy es el candidato 1, y lleva siete sesiones puesto.**
+
+**2. Y NUNCA HA MORDIDO. Ni una vez.** Sobre los seis registros pagados del nivel:
+
+| registro | cierres | `motivo="presupuesto"` | `motivo="max_vueltas"` |
+|---|---:|---:|---:|
+| workers | 38 | **0** | 0 |
+| orquestador | 14 | **0** | 0 |
+| línea base · pipeline · router · supervisor | 13 | **0** | 0 |
+| **total** | **65** | **0** | **0** |
+
+🔑 **65 cierres pagados y el campo `motivo` vale `None` en los 65.** Es `LM.13` con el número
+delante: no es que el freno esté mal — es que **nadie lo ha visto morder**, así que es una
+nota.
+
+**3. Y no podía morder, porque el tope está fuera de alcance.** `acumulado_usd` es lo que el
+freno vigila de verdad. El máximo jamás alcanzado en todo el nivel:
+
+| capa | tope puesto | máximo real alcanzado | veces cubierto |
+|---|---:|---:|---:|
+| worker (monedas) | $0,05 | $0,007960 | **6,3×** |
+| worker (cualquiera) | $0,05 | $0,010568 | **4,7×** |
+| orquestador | $0,05 | $0,005233 | **9,6×** |
+
+Es el patrón de la sesión 74 de TEAPP — *«el presupuesto va 112 veces cubierto y mudo»*—
+repetido aquí sin que nadie lo trajera.
+
+**4. El total no está acotado por nada, y nadie decidió el número que sale.** Tres workers y
+un orquestador a $0,05 cada uno son **$0,20 de techo**. La corrida real del paso 4 costó
+**$0,026390**. 🔑 **El que paga la factura no puede nombrar su límite**, porque no existe un
+límite del encargo: solo existen los límites de las piezas, y el techo sale de multiplicar.
+
+**5. 🚨 Y AQUÍ SE MURIÓ UNA APUESTA ANTES DE ESCRIBIRLA.** Iba a apostar que el reparto ciego
+a tercios **desperdicia** —un worker se para mientras sobra dinero en el trozo del vecino—.
+Se contó, y en esta tarea **no desperdicia casi nada**. Las cinco corridas con los tres
+workers de moneda:
+
+| corrida | usd | eur | cad | dispersión |
+|---|---:|---:|---:|---:|
+| 2026-08-20T14:58 | 0,007199 | 0,007267 | 0,007181 | **1,01×** |
+| 2026-08-20T15:03 | 0,007219 | 0,007231 | 0,007196 | **1,00×** |
+| 2026-08-20T19:21 | 0,007315 | 0,007200 | 0,007236 | **1,02×** |
+| 2026-08-21 (`c1`) | 0,007240 | 0,007289 | 0,007257 | **1,01×** |
+
+⭐ **Los tres workers cuestan lo mismo hasta la tercera cifra.** El reparto a tercios no es un
+compromiso en esta tarea: es **casi óptimo**. 🔑 **Y eso NO absuelve al candidato 2 — dice que
+la tarea del duelo no puede medir su defecto.** Tres encargos gemelos hacen que *todos* los
+repartos se parezcan. **Una tarea que no puede distinguir dos esquemas no es una tarea fácil:
+es un instrumento ciego**, y esta vez se vio antes de pagar.
+
+##### 🎯 QUÉ MIDE C.2, entonces
+
+Ya no es *«construir un presupuesto»*: eso está construido y mudo. Es **pasar del tope por
+pieza al presupuesto DEL ENCARGO repartido a la entrada, y verlo morder** — con el criterio de
+éxito puesto no en que corte, sino en **qué queda encima de la mesa cuando corta**.
+
+---
+
+**1️⃣ CUANDO EL FRENO MUERDA, EL ENCARGO NO FALLARÁ: VOLVERÁ A MEDIAS. Se apuesta con ~75 %.**
+
+Predicción concreta y falsable: con un presupuesto de encargo repartido en tres trozos por
+debajo de lo que un worker gasta, **al menos un worker cerrará con `motivo="presupuesto"`, el
+orquestador NO reventará, y entregará una respuesta con las monedas que sí llegaron.**
+
+⚠️ **Y lo que de verdad se mide es la línea siguiente: ¿la respuesta AVISA de que está
+incompleta?** El system prompt del orquestador dice *«si un especialista no te dio el dato, di
+que esa moneda no se pudo consultar»* — o sea, **hay una instrucción escrita que debería
+salvarlo, y nunca se ha ejercitado**. Se apuesta a que **sí avisa** (esa frase se escribió
+para esto), y si no aviso, el hallazgo es mucho peor que el freno: es una respuesta
+**parcial disfrazada de completa**, que es la forma más cara de fallar de un agente.
+
+**2️⃣ EL REPARTO A TERCIOS NO SE PODRÁ DISTINGUIR DEL TOPE POR PIEZA EN ESTA TAREA, y por eso
+hace falta un encargo DESIGUAL. Se apuesta con ~85 %, y es una apuesta contra mí mismo.**
+
+Ya está contado arriba: dispersión 1,00×–1,02×. Con encargos gemelos, el candidato 1 y el
+candidato 2 dan **el mismo resultado**, y elegir entre ellos sería una preferencia estética.
+🔑 **Para que la diferencia exista tiene que haber un worker que necesite más que su trozo
+mientras a otro le sobra** — y en la tarea del duelo eso no ocurre nunca.
+
+📌 **Se apuesta a que la diferencia aparece si un worker recibe trabajo más pesado**, y **eso
+es una obligación sellada, no una intención**: C.2 no se da por hecha sin una corrida con
+encargos desiguales. Si no se puede construir, se **tacha con la razón escrita** (regla del
+nivel) y C.2 admite que midió el freno pero no el reparto.
+
+**3️⃣ EL TOTAL DEL ENCARGO SERÁ UN NÚMERO DECIDIDO, Y AL SUMARLO DARÁ MENOS QUE EL TECHO DE
+HOY.** Falsable en una línea: hoy el techo son **$0,20** y nadie lo eligió; al cerrar C.2
+tiene que existir **una sola constante** que se pueda leer en voz alta como *«este encargo no
+puede costar más de X»*, con X **medido** contra los $0,026390 de la corrida real, no
+inventado.
+
+##### ⚠️ El sospechoso de estar ciego, nombrado antes de escribirlo
+
+Van **cinco sesiones** nombrándolo, y las cinco lo desarmaron. El candidato de hoy:
+
+🚨 **El que elige el número del presupuesto es el mismo que ya sabe lo que cuesta una
+corrida.**
+
+Acabo de contar que un worker gasta $0,0073. Si ahora pongo el tope en $0,005, **el freno va a
+morder — y no habrá medido nada, porque lo afiné para que mordiera.** Un freno ajustado
+contra el dato que ya tenía delante es una **demostración**, no una medición. Es el mismo
+bicho que el árbol dibujado por quien conocía el parentesco (C.1) y el cebo redactado por
+quien monta el experimento (B.4).
+
+→ **La defensa, y se sella como obligación, no como intención — son DOS y hacen falta las
+dos:**
+
+1. **El número sale de una REGLA escrita antes de mirar**, no de un dedo: el presupuesto del
+   encargo se calcula como una fracción declarada del coste medido, y **la fracción se escribe
+   en el código con su motivo** antes de correr nada.
+2. **Tiene que existir una prueba que exija que el freno NO muerda con un presupuesto normal.**
+   🔑 Es la única que **no se puede escribir a la medida del instrumento, porque pide que el
+   instrumento se calle** — el papel que en C.1 hizo la prueba 26. Un freno que muerde siempre
+   es tan inútil como uno que no muerde nunca, y **solo la segunda mitad se estaba vigilando**.
+
+---
+
+
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
