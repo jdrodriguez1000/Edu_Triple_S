@@ -141,8 +141,36 @@ PRESUPUESTO_WORKER_USD = 0.05
 #    autorizar, que es donde no se ve**. 🔑 Un defecto que sabes nombrar en la
 #    opción que descartas puede estar entero en la que elegiste.
 #
-# → Así que se estima, y la estimación se declara con sus dos partes:
-COSTE_ESTIMADO_LLAMADA_USD = 0.002404   # MEDIDO: media de las dos llamadas C.1
+# → Así que se estima, y la estimación se declara con sus dos partes, LAS DOS
+#   MEDIDAS sobre las 170 llamadas pagadas que hay en los registros del nivel:
+#
+# 🚨 Y LA PRIMERA VERSIÓN DE ESTA CONSTANTE ESTABA MAL, con el motivo escrito
+#    tres líneas más abajo en el archivo de al lado. Se puso $0,002404 — *la
+#    MEDIA de las dos llamadas de la demo C.1*. Al contarlas todas:
+#
+#        170 llamadas pagadas · min $0,000991 · mediana $0,002432 · max $0,007066
+#        **96 de las 170 (el 56 %) costaron MÁS que $0,002404**
+#
+#    Una estimación que se queda corta más de la mitad de las veces no es una
+#    estimación: es la media disfrazada de tope. Y `presupuesto.py` ya lo tenía
+#    escrito desde ayer —*«un presupuesto se calcula con el precio malo, no con
+#    el medio»*— sobre la holgura, sin que nadie lo aplicara aquí.
+# 🔑 `LM.68` otra vez: **lo que faltaba no era un dato, era un lector.**
+COSTE_ESTIMADO_LLAMADA_USD = 0.004546   # MEDIDO: p90 de las 170 llamadas pagadas
+#
+# ⚠️ Se toma el **p90 y no el máximo** ($0,007066), y la razón va escrita porque
+#    es una decisión, no un descuido: con el máximo el freno de operación normal
+#    empezaría a morder por una llamada rara que se vio UNA vez. Un tope que
+#    cubre el peor caso imaginable **es una avería con buena intención**. El p90
+#    cubre nueve de cada diez y deja el resto a la holgura.
+
+# El segundo dato: dentro de una misma corrida, ¿cuánto crece una llamada
+# respecto de la anterior? Medido sobre 108 pares consecutivos:
+#     min 0,51x · mediana 1,08x · p90 1,22x · max 1,51x
+# ⭐ Que la mediana sea >1 no es casualidad ni ruido: cada vuelta reenvía todo el
+#    historial, así que la entrada SÓLO CRECE. Por eso la peor llamada ya pagada
+#    sirve de suelo para la siguiente — pero hay que **subirla**, no copiarla.
+CRECIMIENTO_POR_VUELTA = 1.22           # MEDIDO: p90 de 108 pares consecutivos
 
 
 def estimar_proxima_llamada(peor_vista_usd=0.0):
@@ -150,13 +178,14 @@ def estimar_proxima_llamada(peor_vista_usd=0.0):
 
     Dos fuentes, y se toma **la mayor de las dos** a propósito:
 
-      · la constante medida, que es lo único que hay antes de la 1ª llamada;
-      · la peor llamada que ESTE worker ya ha pagado hoy.
+      · el p90 medido, que es lo único que hay antes de la 1ª llamada;
+      · la peor llamada que ESTE worker ya pagó hoy, **multiplicada por el
+        crecimiento medido**.
 
-    ⭐ La segunda no es un adorno: dentro de un worker el historial **sólo
-       crece**, así que cada llamada manda más tokens de entrada que la
-       anterior. La peor vista no es una media — es un **suelo** razonado para
-       la siguiente.
+    ⭐ La segunda no es un adorno: dentro de un worker el historial sólo crece,
+       así que cada llamada manda más tokens de entrada que la anterior. La peor
+       vista no es una media — es un **suelo** para la siguiente, y el 1,22x es
+       lo que hace que sea un suelo de la SIGUIENTE y no de la anterior.
 
     ⚠️ Y AQUÍ VA LA HONESTIDAD DEL ARREGLO, ESCRITA ANTES DE MEDIRLO: una
        estimación puede quedarse corta. Si la llamada real cuesta más de lo
@@ -164,9 +193,10 @@ def estimar_proxima_llamada(peor_vista_usd=0.0):
        acota en `techo + error_de_estimación`, no en `techo`.
        🔑 Por eso el worker **cuenta cuántas veces se quedó corto** y lo devuelve
           en `estimaciones_cortas`. Un arreglo que no trae cómo se comprueba a sí
-          mismo es la nota que `LM.13` prohíbe.
+          mismo es la nota que `LM.13` prohíbe. Ese contador es lo que puso `P12`
+          en rojo y destapó que la constante era una media.
     """
-    return max(COSTE_ESTIMADO_LLAMADA_USD, peor_vista_usd)
+    return max(COSTE_ESTIMADO_LLAMADA_USD, peor_vista_usd * CRECIMIENTO_POR_VUELTA)
 
 # --- El registro, y vive AQUÍ a propósito ----------------------------------
 # 🚨 ES LA LECCIÓN DE LA SESIÓN 50 DE TEAPP, APLICADA ANTES DE QUE MUERDA: allá

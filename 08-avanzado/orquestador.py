@@ -563,6 +563,9 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
     entrada_tokens = 0
     salida_tokens = 0
     llamadas_api = 0
+    # C.2 · cierre — las dos cifras del techo arreglado, iguales que en el worker.
+    peor_llamada_usd = 0.0      # suelo de la próxima estimación
+    estimaciones_cortas = 0     # veces que la real costó MÁS que la estimada
 
     contabilidad = {
         "capa": nombre,
@@ -588,10 +591,36 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
 
     def hablar_con_el_modelo(mensajes):
         nonlocal gastado_usd, entrada_tokens, salida_tokens, llamadas_api
+        nonlocal peor_llamada_usd, estimaciones_cortas
 
-        if gastado_usd >= presupuesto_usd:
+        # ⭐ C.2 · CIERRE — EL MISMO ARREGLO QUE EL WORKER, Y AQUÍ HACE MÁS FALTA.
+        #    Ayer se pasaron del techo LOS CUATRO participantes, y arreglar sólo
+        #    al worker habría dejado la mitad del defecto en pie: el orquestador
+        #    tenía el `>=` ciego idéntico, tres capas más arriba.
+        # 🐛 AQUÍ SE ESCRIBIÓ UNA AFIRMACIÓN FALSA Y SE CAZÓ EL MISMO DÍA, POR
+        #    IR A CONTARLA. Decía: «las llamadas del orquestador son LAS CARAS,
+        #    porque lleva la tarea entera más los contratos de los tres
+        #    especialistas». Suena mecánico y es mentira. Los registros pagados:
+        #
+        #        orquestador   32 llamadas · mediana $0,001844 · max $0,003145
+        #        worker       115 llamadas · mediana $0,002438 · max $0,005480
+        #
+        # ⭐ El orquestador es el MÁS BARATO de los dos, y no por casualidad: es
+        #    A.3 cobrando. Lo que le sube de los workers son SEIS CAMPOS, no la
+        #    conversación de cada uno. El worker, en cambio, se traga su propio
+        #    historial completo vuelta tras vuelta.
+        # 🔑 El contrato no sólo evitó perder la fuente del CAD: **abarató la capa
+        #    de arriba**, y eso no estaba escrito en ningún sitio hasta hoy.
+        # 📌 La lección de método es la de siempre: nombrar un mecanismo
+        #    plausible no es haberlo medido. Costó una consulta de $0,00.
+        # 🔑 La función de estimar vive en `worker.py` y se usa desde los dos
+        #    sitios. Copiarla aquí habría sido el bicho de siempre: dos copias del
+        #    precio de una llamada, y una de las dos se queda vieja.
+        estimado_usd = worker.estimar_proxima_llamada(peor_llamada_usd)
+        if gastado_usd + estimado_usd > presupuesto_usd:
             raise PresupuestoAgotado(
-                f"llevas ${gastado_usd:.4f} de ${presupuesto_usd:.2f}")
+                f"llevas ${gastado_usd:.6f} de ${presupuesto_usd:.6f} y la "
+                f"siguiente llamada cuesta ~${estimado_usd:.6f}: no cabe")
 
         for intento in range(1, agente.REINTENTOS_PROPIOS + 1):
             try:
@@ -604,6 +633,13 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                 )
                 este_costo = agente.costo(respuesta.usage)
                 gastado_usd += este_costo
+                # La báscula del arreglo, igual que en el worker: la estimación
+                # se compara con la realidad y las veces que se queda corta se
+                # cuentan. Es gratis —el dato ya está pagado— y sin ella el
+                # arreglo sería una promesa.
+                if este_costo > estimado_usd:
+                    estimaciones_cortas += 1
+                peor_llamada_usd = max(peor_llamada_usd, este_costo)
                 entrada_tokens += respuesta.usage.input_tokens
                 salida_tokens += respuesta.usage.output_tokens
                 llamadas_api += 1
@@ -642,6 +678,9 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
             #     un total solo dice cuánto; el reparto dice DÓNDE, que es lo
             #     único con lo que se puede hacer algo.
             "coste_orquestador_usd": round(gastado_usd, 6),
+            # C.2 · cierre — la báscula del techo arreglado, también arriba.
+            "peor_llamada_usd": round(peor_llamada_usd, 6),
+            "estimaciones_cortas": estimaciones_cortas,
             "coste_workers_usd":     round(contabilidad["coste_workers_usd"], 6),
             "coste_total_usd":       round(gastado_usd
                                            + contabilidad["coste_workers_usd"], 6),

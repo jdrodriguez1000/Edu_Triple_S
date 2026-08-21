@@ -60,6 +60,11 @@ workers se lanzan es EL MODELO de arriba, en tiempo de ejecución.
 import threading
 from pathlib import Path
 
+# La cadena es limpia y en un solo sentido: presupuesto -> worker -> agente.
+# `orquestador` NO se importa aquí arriba (él nos importa a nosotros); se pide
+# dentro de las funciones que lo necesitan.
+import worker
+
 AQUI = Path(__file__).resolve().parent
 
 
@@ -86,7 +91,16 @@ AQUI = Path(__file__).resolve().parent
 COSTE_MEDIDO_ENCARGO_USD = 0.026390   # corrida real completa, sesión 97 paso 4
 COSTE_MEDIDO_WORKER_USD = 0.007960    # el PEOR worker de moneda visto, no la media
 COSTE_MEDIDO_ORQ_USD = 0.005233       # el peor `acumulado_usd` del orquestador
-COSTE_LLAMADA_WORKER_USD = 0.002404   # media de las dos llamadas de la demo C.1
+# 🚨 ESTE NÚMERO ERA UNA MEDIA Y SE USABA COMO TOPE, y lo destapó `P12`.
+#    Era $0,002404 —la media de las dos llamadas de la demo C.1— y al contar las
+#    170 llamadas pagadas del nivel resultó que **96 de ellas (el 56 %) costaron
+#    más**. La regla de abajo se construía sobre un precio que fallaba más de la
+#    mitad de las veces.
+# → Ahora sale del mismo sitio que la estimación del freno: el p90 medido. Un
+#   solo número, un solo dueño (`worker.py`), y el archivo que decide el
+#   presupuesto usa **exactamente** el que usa el que frena. Dos copias del
+#   precio de una llamada era el bicho esperando.
+COSTE_LLAMADA_WORKER_USD = worker.COSTE_ESTIMADO_LLAMADA_USD    # p90: $0,004546
 
 # --- La HOLGURA. Es el único número de juicio, y va con su motivo.
 # Un presupuesto se calcula con el precio malo, no con el medio (lección del
@@ -129,12 +143,33 @@ def presupuesto_apretado(llamadas_permitidas=1.5,
     No se elige un número bonito: se elige cuántas llamadas al modelo caben en un
     trozo, y el dinero se deduce del coste medido de una llamada.
 
-    Con `llamadas_permitidas=1.5` la predicción es mecánica y falsable:
-      · llamada 1 -> gastado ~ $0,0024, por debajo del trozo -> pasa
-      · llamada 2 -> gastado ~ $0,0048, por encima del trozo -> LA 3 SE BLOQUEA
+    🚨 Y LA PREDICCIÓN CAMBIÓ AL ARREGLAR EL TECHO — se deja escrito el cambio en
+       vez de reescribir la vieja, porque lo que enseña es el ANTES y el DESPUÉS.
 
-    🔑 Por eso el corte cae DESPUÉS de tener la tasa y ANTES de redactar: el
-       worker vuelve a medias, que es justo lo que la apuesta 1 quiere mirar.
+       Con el freno CIEGO (`gastado >= techo`), `llamadas_permitidas=1.5` daba:
+         · llamada 1 -> gastado $0 < trozo            -> pasa
+         · llamada 2 -> gastado ~$0,0023 < trozo      -> pasa (¡y no cabía!)
+         · llamada 3 -> gastado ~$0,0049 > trozo      -> LA 3 SE BLOQUEA
+       O sea: el trozo pagaba 1,5 llamadas y se hacían 2. Ese medio de más,
+       multiplicado por los cuatro participantes, es el 27,5 % que se pasó.
+
+       Con el freno que ESTIMA (`gastado + estimado > techo`), el 1,5 se cumple
+       literalmente:
+         · llamada 1 -> 0 + $0,004546 <= trozo $0,006819   -> pasa
+         · llamada 2 -> ya no cabe                          -> LA 2 SE BLOQUEA
+
+    ⭐ EL CORTE SE ADELANTA UNA LLAMADA ENTERA, Y ESE ES EL PRECIO DEL ARREGLO.
+       Con el freno viejo el worker moría **con la respuesta en la mano** —tenía
+       `tasa` y `convertir` hechas y sólo le faltaba redactar—. Con este muere
+       antes de `convertir`. 🔑 Un freno ciego llega más lejos y se pasa del
+       techo; uno que estima corta a tiempo y tira menos trabajo pagado.
+       **No hay una tercera opción sin cambiar de esquema.**
+
+    📌 Y el número del trozo se movió de $0,003606 a $0,006819 **sin tocar la
+       regla**: `llamadas_permitidas` sigue siendo 1,5. Lo que cambió fue el
+       precio de una llamada, que estaba mal medido. Cambiar el precio no es
+       mover la portería; aflojar el 1,5 hasta que la prueba se pusiera verde
+       sí lo habría sido (`LM.21`).
     """
     trozo = COSTE_LLAMADA_WORKER_USD * llamadas_permitidas
     return round(trozo * n_workers / (1.0 - reserva_arriba), 6)
@@ -287,7 +322,7 @@ def _pruebas():
           a.trozo_nominal() < 2 * COSTE_LLAMADA_WORKER_USD,
           f"trozo ${a.trozo_nominal():.6f} < 2 llamadas "
           f"${2 * COSTE_LLAMADA_WORKER_USD:.6f}")
-    check("P2b · pero SÍ llega a una: el corte cae en la 3a, no en la 1a",
+    check("P2b · pero SÍ llega a una: el corte cae en la 2a, no en la puerta",
           a.trozo_nominal() > COSTE_LLAMADA_WORKER_USD,
           f"trozo ${a.trozo_nominal():.6f} > 1 llamada "
           f"${COSTE_LLAMADA_WORKER_USD:.6f}")
@@ -543,6 +578,33 @@ def _pruebas():
           rn["motivo"] is None and rn["ok"] and rn["llamadas_api"] == 3,
           "motivo=%s - %d llamadas - $%.6f de $%.6f"
           % (rn["motivo"], rn["llamadas_api"], rn["coste_usd"], trozo_no))
+
+    # P13b · EL MARGEN QUE QUEDA EN OPERACIÓN NORMAL, Y ES EL HALLAZGO DE HOY.
+    # 🚨 Importancia: ALTA · Urgencia: NO bloqueante (nada se rompe hoy).
+    #    El arreglo del techo tiene un modo de fallo NUEVO, que es el espejo del
+    #    de ayer: si la estimación se pasa POR ARRIBA, el freno corta a un worker
+    #    que **sí cabía**. Ayer el freno dejaba pasar de más; hoy puede cortar de
+    #    más. Un `>=` ciego tenía falsos negativos; un `+ estimado` tiene falsos
+    #    positivos. **Ningún freno que decida antes de conocer el precio se libra
+    #    de los dos.**
+    #
+    #    El número, sobre el peor worker que se ha visto pagar en todo el nivel:
+    #      trozo normal            $0,009896
+    #      peor worker medido      $0,007960
+    #      margen                  $0,001936  <- MENOS DE MEDIA LLAMADA ESTIMADA
+    #
+    # 🔑 Con el freno viejo ese margen era irrelevante: no miraba el precio, así
+    #    que un worker caro llegaba hasta el final igual (pasándose). Con este,
+    #    **una vuelta de más del modelo en operación normal ya corta.** El techo
+    #    dejó de ser holgado sin que nadie moviera el techo.
+    # 📌 No se toca `HOLGURA` para arreglarlo. Subirla ahora, con este número
+    #    delante, sería moverla contra un resultado ya visto (`LM.21`). Queda
+    #    dicho, medido, y lo decide la corrida pagada.
+    margen = trozo_no - COSTE_MEDIDO_WORKER_USD
+    check("P13b · queda margen sobre el PEOR worker medido... pero es fino",
+          margen > 0,
+          "margen $%.6f = %.2f llamadas estimadas (una vuelta de mas ya corta)"
+          % (margen, margen / w.COSTE_ESTIMADO_LLAMADA_USD))
 
     # P14 · LA CAUSA CRUZA LA FRONTERA HACIA ARRIBA (2º pendiente de C.2).
     #       Ayer subía `{"error": "No se pudo consultar USD."}` sin causa, y el
