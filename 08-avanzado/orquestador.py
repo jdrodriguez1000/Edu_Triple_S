@@ -89,6 +89,7 @@ sys.path.insert(0, str(AQUI.parent / "05b-proyecto"))
 
 import agente          # noqa: E402
 import contexto        # noqa: E402
+import presupuesto     # noqa: E402
 import worker          # noqa: E402
 
 
@@ -286,7 +287,34 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
     # tres monedas son comparables entre sí.
     encargo = f"Convierte {monto} {moneda} a pesos colombianos."
 
+    # ⭐ C.2 — AQUÍ SE ENTREGA EL TROZO, Y ES EL SITIO EXACTO DONDE EL DINERO
+    #    CRUZA LA FRONTERA. Si no hay reparto —A.2 y todo el bloque B— el worker
+    #    usa su tope de siempre y nada cambia de conducta.
+    #    🔑 Fíjate en que el trozo se pide JUSTO ANTES de arrancar al worker y no
+    #       al principio de la corrida: es el único momento en que ya se sabe
+    #       CUÁNTOS especialistas pidió el modelo. El reparto se calculó a la
+    #       entrada; la entrega ocurre cuando aparece cada uno.
+    reparto = contabilidad.get("reparto")
+    presupuesto_worker = worker.PRESUPUESTO_WORKER_USD
+    if reparto is not None:
+        try:
+            presupuesto_worker = reparto.tomar(moneda.lower())
+        except presupuesto.SinTrozo as fallo:
+            # ⚠️ El modo de fallo que el tope-por-pieza NO tenía: no es que se
+            #    acabara el dinero, es que este worker no estaba en el reparto.
+            #    Se le dice al modelo con todas las letras, porque es él quien
+            #    pidió uno de más y es el único que puede no volver a pedirlo.
+            anotar("sin_trozo", capa=contabilidad.get("capa", "orquestador"),
+                   worker=moneda.lower(), detalle=str(fallo))
+            return {
+                "error": f"No hay presupuesto para '{moneda}': el encargo se "
+                         f"repartió para {reparto.n_workers} especialistas y "
+                         f"este es uno de más. No lo reintentes.",
+                "sin_trozo": True,
+            }
+
     resultado = worker.correr_worker(encargo, nombre=moneda.lower(),
+                                     presupuesto_usd=presupuesto_worker,
                                      verboso=verboso)
 
     # --- La contabilidad de la capa de abajo. Se suma aquí y no dentro del
@@ -442,7 +470,7 @@ def reparto_en_serie(bloques, contabilidad, verboso=True, funciones=None):
 def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                        presupuesto_usd=PRESUPUESTO_ORQ_USD, verboso=True,
                        reparto=None, sistema=None, tools=None, funciones=None,
-                       nombre="orquestador"):
+                       nombre="orquestador", presupuesto_encargo=None):
     """Corre la capa de arriba y devuelve un diccionario con LAS DOS capas.
 
     Si comparas este bucle con el de `worker.correr_worker`, verás que son el
@@ -467,6 +495,22 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
     sistema = sistema or SISTEMA_ORQ
     tools = tools if tools is not None else TOOLS_ORQ
 
+    # ⭐ C.2 — EL PRESUPUESTO DEL ENCARGO. Entra por la puerta como `reparto` y
+    #    `funciones`, y por el mismo motivo: si fuera un `if` aquí dentro, el
+    #    esquema viejo y el nuevo convivirían como dos ramas.
+    #    📌 Por defecto es `None`, así que A.2 y todo el bloque B siguen con su
+    #       tope por pieza y sus números siguen valiendo.
+    # 🔑 Y esta es la línea que resume C.2: cuando hay presupuesto de encargo, el
+    #    orquestador DEJA DE TENER TOPE PROPIO y pasa a tener una RESERVA — un
+    #    trozo del mismo dinero que reparte, no una bolsa aparte.
+    reparto_presupuesto = None
+    if presupuesto_encargo is not None:
+        reparto_presupuesto = (
+            presupuesto_encargo
+            if isinstance(presupuesto_encargo, presupuesto.RepartoDeEntrada)
+            else presupuesto.RepartoDeEntrada(total_usd=presupuesto_encargo))
+        presupuesto_usd = reparto_presupuesto.arriba_usd
+
     gastado_usd = 0.0
     entrada_tokens = 0
     salida_tokens = 0
@@ -480,6 +524,10 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
         "entrada_workers": 0,
         "salida_workers": 0,
         "detalle": [],
+        # C.2 — viaja en la contabilidad porque es NUESTRA y ya llega a la
+        # herramienta. Al modelo no le sube: no es asunto suyo cuánto le queda a
+        # nadie, y decírselo sólo le daría con qué negociar.
+        "reparto": reparto_presupuesto,
     }
 
     arranque = time.monotonic()
@@ -558,6 +606,15 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
             "workers_usados":           contabilidad["workers"],
             "detalle_workers":          contabilidad["detalle"],
         }
+
+        # ⭐ C.2 — LA PREGUNTA QUE ANTES NO SE PODÍA HACER: ¿se pasó del techo?
+        #    Hasta hoy no había techo del encargo contra el que comparar, así que
+        #    el total era un dato sin veredicto. Ahora tiene uno.
+        if reparto_presupuesto is not None:
+            resultado["presupuesto"] = reparto_presupuesto.informe()
+            resultado["dentro_del_presupuesto"] = (
+                resultado["coste_total_usd"] <= reparto_presupuesto.total_usd)
+
         anotar("orquestador_fin", capa=nombre, **resultado)
         return resultado
 
