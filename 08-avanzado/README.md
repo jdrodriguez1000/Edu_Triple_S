@@ -3157,6 +3157,128 @@ dos:**
 
 ---
 
+##### 📊 C.2 — LO QUE SALIÓ, el 2026-08-21. **$0,045113 · 15 pruebas gratis + 2 corridas pagadas**
+
+`presupuesto.py` · las once afirmaciones estaban commiteadas **antes** de lanzar nada
+(`f770838`), y **dos salieron rojas**. Las dos rojas son el día entero.
+
+**La corrida NORMAL: 5 de 5 cumplidas.** El freno **se calló**, que era la obligación sellada
+por la mañana. Ningún worker cortó, el orquestador tampoco, las tres monedas salieron con su
+fuente y su fecha, y el total fue **$0,026725 contra un techo de $0,039585** — margen
+$0,012860. 🔑 **Y esto es lo que convierte `P1` de aritmética en hecho:** hasta hoy *«no
+muerde en operación normal»* era una comparación de constantes.
+
+**La corrida APRETADA: el freno mordió a los tres, y el resultado fue peor de lo apostado.**
+
+| | |
+|---|---|
+| workers cortados | **3 de 3**, todos por `motivo="presupuesto"` |
+| dónde cayó el corte | tras la **2ª** llamada, con `tasa` y `convertir` **ya ejecutadas** |
+| monedas entregadas | **cero** |
+| gasto | **$0,018388** contra un techo de **$0,014424** |
+
+---
+
+**🚨 HALLAZGO 1 — EL TECHO NO ERA UN TECHO. Se pasó un 27,5 % y el harness lo dijo solo.**
+**Importancia: alta · Urgencia: no bloqueante** (nada se rompe hoy; C.2 no se puede cerrar sin
+esto).
+
+`dentro_del_presupuesto` salió **`False`**, y esa afirmación —la 3— estaba escrita antes de
+correr. El mecanismo es de una línea y estaba a la vista desde el bloque A:
+
+```python
+if gastado_usd >= presupuesto_usd:      # se comprueba ANTES de llamar
+    raise PresupuestoAgotado(...)       # pero no se sabe cuánto costará la llamada
+```
+
+⭐ **Un freno que autoriza sin saber el precio sólo puede acotar el gasto en
+`techo + N × coste_de_una_llamada`.** Aquí los cuatro participantes se pasaron: cada worker
+llevaba $0,00484 con un trozo de $0,003606, y el orquestador $0,003936 con una reserva de
+$0,003606. **Cuatro de cuatro.**
+
+🔑 **Y aquí está lo que más enseña, porque me lo comí al elegir el esquema.** En este mismo
+archivo escribí que el defecto del **candidato 3** (bolsa común) era *«hay que ESTIMAR lo que
+va a costar una llamada antes de hacerla»*, y lo usé como motivo para descartarlo.
+**El candidato 2 tiene exactamente el mismo problema — sólo que lo escondía.** Repartir a la
+entrada no libra de estimar: aplaza la estimación al momento de autorizar, donde no se ve.
+⚠️ **Descarté un esquema por un defecto que el elegido también tenía, y no lo vi hasta pagar.**
+
+---
+
+**🚨 HALLAZGO 2, Y ES EL MAYOR — EL WORKER TENÍA LA RESPUESTA Y MURIÓ ANTES DE PODER DECIRLA.**
+
+Los tres cortados habían ejecutado **`tasa` y `convertir`**. La tasa estaba consultada, la
+cifra en pesos calculada, el dato **dentro del harness**. El corte cayó en la llamada que
+sólo servía para **redactar** lo que ya se sabía.
+
+⭐ **El corte no ahorró el trabajo: lo pagó y lo tiró.** $0,014452 gastados abajo compraron
+tres datos correctos que nadie llegó a leer, porque el contrato de A.3 se llena con lo que el
+worker **dice**, no con lo que el harness **tiene**.
+
+🔑 **De aquí sale la pregunta que C.2 no sabía que tenía que hacerse:** un presupuesto no sólo
+decide *cuánto*, decide **dónde puede caer el corte** — y hay sitios donde cortar convierte
+todo lo ya pagado en cero. Cortar antes de empezar cuesta $0. Cortar al final cuesta todo.
+**El peor momento posible para quedarse sin dinero es el penúltimo paso.**
+
+---
+
+**🅰️ LA APUESTA 1 DEL SOBRE: FALLADA en su predicción central, y el motivo estaba MEDIDO ESA
+MISMA MAÑANA.**
+
+Se apostó *«volverá a medias, con las monedas que sí llegaron»*. **Volvió vacía: cero
+monedas.** Y no fue mala suerte:
+
+> por la mañana se contó que los tres workers de moneda cuestan lo mismo hasta la tercera
+> cifra (dispersión **1,00×–1,02×**), y se usó ese dato para decir que el reparto ciego era
+> casi óptimo.
+
+⭐ **El mismo dato predecía esto y no lo leí en esa dirección: workers idénticos + trozos
+iguales = mueren todos en el mismo sitio.** Un reparto ciego y simétrico sobre tareas gemelas
+**no produce resultados parciales — produce todo o nada.** El dato estaba contado, escrito y
+commiteado, y le hice una sola pregunta de las dos que respondía. Es `LM.68` otra vez: **lo
+que faltaba no era un dato, era un lector.**
+
+📌 Y la mitad de la apuesta que **sí** se paga: el orquestador **no reventó** (377 caracteres
+de respuesta) y **avisó** de que no había datos, en vez de inventarse tres cifras. La frase
+*«no tienes forma de averiguar tasas por tu cuenta»* del system prompt se ganó el sueldo por
+primera vez.
+
+---
+
+**⚠️ LA AFIRMACIÓN 6 DIO UN FALSO ROJO, Y ESTABA DECLARADA DÉBIL ANTES DE CORRER.**
+
+El indicio buscaba palabras como *«no se pudo»* y no encontró ninguna. La respuesta real
+decía: *«no puedo completar tu solicitud… no logró consultar ninguna de las tres monedas»*.
+**Avisa perfectamente, con otras palabras.** 🔑 Que estuviera marcada como **indicio y no como
+veredicto antes de pagar** es lo que hizo que el rojo costara diez segundos en vez de una
+discusión: **declarar débil un instrumento por adelantado es más barato que defenderlo
+después.**
+
+🚨 **Y al leerla a ojo apareció lo que ningún campo cazaba: la respuesta inventó la CAUSA.**
+Dijo que las monedas fallaron *«debido a limitaciones en el servicio»*. **El servicio estaba
+perfecto — el que se quedó sin dinero fui yo.** El modelo no mintió sobre el *qué*: mintió
+sobre el *por qué*, y lo hizo porque **el harness no le dijo el porqué**: arriba llegaba
+`{"error": "No se pudo consultar USD"}`, sin causa. ⚠️ **Un agente al que no le das la causa
+se la inventa, y suena razonable.** Es el mismo agujero que `motivo` acababa de tapar entre
+el worker y la contabilidad, **una frontera más arriba**.
+
+---
+
+##### ⏭️ LO QUE C.2 DEJA ABIERTO, con dueño
+
+- 🔲 **El techo tiene que acotar de verdad**: comprobar `gastado + coste_estimado > techo`
+  antes de autorizar. Exige una estimación —la que se le echó en cara al candidato 3— y con
+  ella el esquema 2 deja de ser *«sin estimar»* y pasa a ser *«estimando una vez por
+  llamada»*. **Entra con su medición al lado o no entra** (`LM.13`).
+- 🔲 **La causa tiene que cruzar la frontera hacia arriba**: `{"error": ..., "motivo":
+  "presupuesto"}` en vez de un error mudo, para que el orquestador no tenga que inventarse por
+  qué falló su especialista.
+- 🔲 **Y sigue en pie la obligación del sobre:** sin un encargo **desigual**, C.2 midió el
+  freno y no midió el reparto. Con tareas gemelas, el esquema 1 y el 2 son indistinguibles —
+  y ahora, además, se sabe que producen **todo o nada**.
+
+---
+
 
 ### 🧠 BLOQUE D — Lo compartido
 

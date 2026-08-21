@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 97 — NIVEL 8: **C.1 COMPLETA, los cinco pasos. $0,026390 en toda la sesión.** 🔴 Apuesta 2 ($0,00) fallada y declarada antes de gastar; 🅰️ **apuesta 1 partida por la mitad: se paga la primera y FALLA la segunda** — el árbol bautiza sus nodos con el mismo adjetivo que la sesión 95 torcía, así que **hereda la mentira del adjetivo** (prueba 36). ⭐ **Y el hallazgo mayor: el tercer testigo YA ESTABA GRABADO** — la contradicción de la 95 (`worker usd` / contrato `EUR`) llevaba un día en el repo, comprobable por máquina y gratis → `LM.68`. 🚨 Y en el paso 4, el id de corrida no era único entre procesos → `LM.67`. **36 pruebas en verde.**)
+**Última actualización:** 2026-08-21 (sesión 98 — NIVEL 8: **C.2 COMPLETA, el presupuesto repartido. $0,045113: 15 pruebas gratis y DOS corridas pagadas**, con las once afirmaciones commiteadas antes de lanzar nada. ✅ La corrida NORMAL 5/5 —**el freno se calló**, que era la obligación sellada— y la APRETADA 4/6. 🚨 **El techo NO era un techo: se pasó un 27,5 %**, porque el freno autoriza sin saber el precio de la llamada — **el defecto por el que descarté el otro esquema lo tenía también el elegido, escondido**. ⭐ Y el hallazgo mayor: **el worker tenía la respuesta y murió antes de decirla** — `tasa` y `convertir` ya ejecutadas; el corte pagó el trabajo y lo tiró. 🅰️ Apuesta 1 **fallada**: volvió vacía, no a medias, y **el motivo estaba medido esa misma mañana**.)
 
 ---
 
@@ -3892,7 +3892,100 @@
 # ✅ **Cerrado el agujero que el paso 1 dejó sin dueño:** el harness ya distingue *«el enrutado
 #   está torcido»* de *«solo la etiqueta miente»*.
 #
-# ➡️ **SIGUIENTE PASO CONCRETO — C.2, la siguiente pieza del BLOQUE C.** C.1 (la traza anidada)
+# 💰 **LA 98 HIZO C.2 ENTERA: el presupuesto repartido. $0,045113 — 15 pruebas gratis y DOS
+# corridas pagadas, con las once afirmaciones commiteadas antes de lanzar nada.**
+# La corrida NORMAL cumplió **5 de 5** —el freno **se calló**, que era la obligación sellada
+# por la mañana— y la APRETADA salió **4 de 6**, con las dos rojas siendo el día entero.
+#
+# 🎲 **LA APUESTA SE SELLÓ PRIMERO, Y CONTAR MATÓ UNA ANTES DE ESCRIBIRLA** (sesión 98).
+#   Van SEIS sesiones con ese orden y las seis han cobrado. Se contó, gratis, sobre registros
+#   ya pagados: **65 cierres y `motivo=None` en los 65** — el freno de presupuesto existía
+#   desde la sesión 91 y **no había mordido nunca**, porque el tope estaba **6,3× por encima**
+#   del máximo que un worker ha gastado jamás. Y la apuesta que se cayó al contarla era la
+#   mejor que tenía contra el reparto a tercios —el desperdicio—: los tres workers de moneda
+#   cuestan lo mismo **hasta la tercera cifra** (dispersión **1,00×–1,02×** en cinco corridas).
+#   ⭐ **Eso no absuelve al esquema: dice que la tarea del duelo no puede distinguirlo del tope
+#   por pieza.** Una tarea que no separa dos esquemas es un instrumento ciego, y **esta vez se
+#   vio antes de pagar, no después.**
+#
+# 🚨 **HALLAZGO 1 — EL TECHO NO ERA UN TECHO: se pasó un 27,5 % y el harness lo dijo solo.**
+#   **Importancia: alta · Urgencia: no bloqueante.** Gasto $0,018388 contra un techo de
+#   $0,014424, y la afirmación que lo cazó estaba escrita **antes** de correr. El mecanismo es
+#   de una línea: `if gastado >= presupuesto` se comprueba **antes** de llamar, y **nadie sabe
+#   cuánto va a costar la llamada que autoriza**. ⭐ Un freno así sólo acota en
+#   **`techo + N × coste_de_una_llamada`** — aquí se pasaron **los cuatro participantes**.
+#   🔑 **Y lo que más enseña es que me lo comí al elegir:** descarté el candidato 3 (bolsa
+#   común) escribiendo que su defecto era *«hay que estimar lo que costará una llamada»*.
+#   **El candidato 2 tiene el mismo problema — sólo que lo escondía.** Repartir a la entrada no
+#   libra de estimar: **aplaza la estimación al momento de autorizar, donde no se ve.**
+#
+# 🚨 **HALLAZGO 2, Y ES EL MAYOR — EL WORKER TENÍA LA RESPUESTA Y MURIÓ ANTES DE DECIRLA.**
+#   Los tres cortados habían ejecutado **`tasa` y `convertir`**: la tasa consultada, los pesos
+#   calculados, el dato **dentro del harness**. El corte cayó en la llamada que sólo servía
+#   para **redactar lo que ya se sabía**. ⭐ **El corte no ahorró el trabajo: lo pagó y lo
+#   tiró** — $0,014452 compraron tres datos correctos que nadie llegó a leer, porque el
+#   contrato de A.3 se llena con lo que el worker **dice**, no con lo que el harness **tiene**.
+#   🔑 **Un presupuesto no sólo decide cuánto: decide DÓNDE puede caer el corte, y hay sitios
+#   donde cortar convierte en cero todo lo ya pagado. El peor momento para quedarse sin dinero
+#   es el penúltimo paso.**
+#
+# 🅰️ **LA APUESTA 1 DEL SOBRE: FALLADA en su predicción central, y el motivo estaba MEDIDO ESA
+#   MISMA MAÑANA.** Se apostó *«volverá a medias, con las monedas que sí llegaron»*: **volvió
+#   vacía, cero monedas.** ⭐ Y el dato que lo predecía era el de la dispersión **1,01×** que
+#   yo mismo conté al amanecer: **workers idénticos + trozos iguales = mueren todos en el mismo
+#   sitio.** Un reparto ciego y simétrico sobre tareas gemelas **no produce resultados
+#   parciales: produce todo o nada.** 🔑 El dato estaba contado, escrito y commiteado, y le hice
+#   **una sola** de las dos preguntas que respondía. Es `LM.68` otra vez: **lo que faltaba no
+#   era un dato, era un lector.** 📌 Y la mitad que **sí** se paga: el orquestador no reventó y
+#   **avisó** en vez de inventarse tres cifras — la frase *«no tienes forma de averiguar tasas
+#   por tu cuenta»* del system prompt se ganó el sueldo por primera vez.
+#
+# ⚠️ **LA AFIRMACIÓN 6 DIO UN FALSO ROJO, Y ESTABA DECLARADA DÉBIL ANTES DE CORRER.** Buscaba
+#   palabras y la respuesta avisaba con otras. 🔑 Que estuviera marcada como **indicio y no como
+#   veredicto antes de pagar** hizo que el rojo costara diez segundos: **declarar débil un
+#   instrumento por adelantado es más barato que defenderlo después.**
+#   🚨 **Y al leerla a ojo salió lo que ningún campo cazaba: la respuesta inventó la CAUSA** —
+#   *«debido a limitaciones en el servicio»*. **El servicio estaba perfecto; el que se quedó
+#   sin dinero fui yo.** No mintió sobre el *qué*, mintió sobre el *por qué*, y lo hizo porque
+#   **el harness no le dijo el porqué**: arriba llegaba un error mudo. ⚠️ **A un agente al que
+#   no le das la causa se la inventa, y suena razonable.**
+#
+# 🐛 **DOS BICHOS DE CASA, cazados por pruebas que se pusieron rojas solas:**
+#   · **`P4`**: redondear los dos lados por separado hacía que el reparto sumara **$0,039584**
+#     contra un total de **$0,039585**. Una millonésima, en silencio, **y escalando con el
+#     número de trozos**. El resto se queda arriba: **el que responde de la factura es el único
+#     que no se puede quedar corto por un redondeo.**
+#   · **La identidad de una clase es `(módulo, nombre)`**: correr `presupuesto.py` como
+#     `__main__` carga una **segunda copia** del módulo, así que `SinTrozo` eran **dos clases
+#     distintas** y el `except` del orquestador no atrapaba nada. **Un `except` puede fallar
+#     ante una excepción que se llama igual y parece la misma.**
+#   · Y al escribir la afirmación 1 **no se pudo escribir**: `detalle_workers` no llevaba
+#     `motivo`. El worker sabía por qué se paró y **ese dato moría en la frontera**; arriba
+#     llegaba `ok=False` a secas. **Un `ok` sin causa obliga a mirar el registro a mano**, que
+#     es justo lo que C.1 acababa de quitar de en medio.
+#
+# ✅ **Y lo que C.2 sí compró, en una línea:** ahora se puede decir en voz alta **«este encargo
+#   no puede costar más de $0,039585»**, con el número saliendo de una regla —$0,026390 medidos
+#   × 1,5 de holgura— y no de un dedo. Ayer el techo eran **$0,20** y **nadie lo había
+#   elegido**: salía de multiplicar cuatro topes sueltos.
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — cerrar los TRES pendientes de C.2 antes de pasar a C.3.**
+#   · 🔲 **El techo tiene que acotar de verdad:** comprobar `gastado + coste_estimado > techo`
+#     **antes** de autorizar. Exige la estimación que se le echó en cara al candidato 3, y con
+#     ella el esquema 2 pasa a ser *«estimando una vez por llamada»*. **Entra con su medición
+#     al lado o no entra** (`LM.13`).
+#   · 🔲 **La causa tiene que cruzar hacia arriba:** `{"error": ..., "motivo": "presupuesto"}`,
+#     para que el orquestador no tenga que inventarse por qué falló su especialista.
+#   · 🔲 **La obligación del sobre, sin pagar todavía:** sin un encargo **desigual**, C.2 midió
+#     el freno y **no midió el reparto**.
+# 🔲 **PENDIENTE VIEJO, arrastrado de C.1:** el detector de un mismo `id` con dos padres
+#   distintos. **Entra con su torcedura al lado o no entra.**
+# 🎲 **Y LA PRIMERA COSA DE LA SESIÓN 99 ES SELLAR LA APUESTA Y COMMITEARLA.** Van SEIS
+#   sesiones con ese orden y las seis han cobrado — hoy incluso **antes** de teclear, matando
+#   una apuesta con un conteo gratis.
+#
+# ➡️ *(el siguiente paso de la 97 era C.2 — se hizo entera en la 98, arriba)*
+# ➡️ **SIGUIENTE PASO CONCRETO de la 97 — C.2, la siguiente pieza del BLOQUE C.** C.1 (la traza anidada)
 #   queda **completa: los cinco pasos hechos**, con las tres apuestas resueltas —la 1 partida por
 #   la mitad, la 2 fallada, la 3 ganada— y ninguna redefinida después de conocer el resultado.
 #   📌 El detalle de C.2 se escribe el día que se llegue a él, que es la regla del nivel.
