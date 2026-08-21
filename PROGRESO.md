@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 99 — NIVEL 8: **C.2: LOS TRES PENDIENTES PAGADOS, y el hallazgo mayor del bloque C salió de la corrida que los cerraba ($0,035567).** ⚠️ No dice «C.2 completa»: **queda un pendiente NUEVO con dueño**, nacido hoy, y ayer un rótulo generoso ya fue una pista falsa. ✅ El techo **acota** en las dos capas (`gastado + estimado > techo`, 0 estimaciones cortas de 11 llamadas), la causa **cruza**, y el encargo desigual midió **2,29× contra 2,33× diseñado**, con **$0,024999 reales de desperdicio** parados en los baratos. 🚨 **EL CONTRATO SE LLENÓ ENTERO CON LOS NÚMEROS DE OTRA PREGUNTA**: se pidió CAD y subió USD, con `faltan: []` — **un contrato completo no es un contrato correcto**, y lo cazó el modelo leyendo, no el harness. 🎲 Apuestas 1 y 2 **sin poder evaluarse** —nadie cortó— y **no se cuentan como ganadas**; la 3 fallada en su mitad central porque **el p90 es el precio correcto para un freno y el equivocado para un instrumento**: sobreestimé 1,93× y esa generosidad salvó al worker que quería ver ahogarse.)
+**Última actualización:** 2026-08-21 (sesión 100 — NIVEL 8: **APUESTA SELLADA Y COMMITEADA ANTES DE TECLEAR**, octava sesión seguida con ese orden. Cinco apuestas, cada una con la frase que la falsifica escrita debajo. Arranca C.3 por el pendiente que C.2 dejó abierto: **el contrato tiene que comprobar que responde a LO QUE SE PREGUNTÓ** —hoy `contrato_divisa` no recibe la moneda pedida, y por eso pidió CAD, subió USD y dijo `faltan: []`—. Orden sellado: contrato primero, corrida desigual (~$0,03) después, porque medir el techo con el contrato aún ciego no dejaría saber cuál resultado creer.)
 
 ---
 
@@ -4057,6 +4057,56 @@
 #   Van SIETE sesiones con ese orden. Hoy cobró de una forma nueva: **dos apuestas
 #   quedaron sin poder evaluarse, y decirlo en vez de darlas por ganadas es lo
 #   que las hace valer algo.**
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🎲 **APUESTA SELLADA DE LA SESIÓN 100 — escrita ANTES de tocar una línea, y
+#   commiteada antes de teclear.** Van OCHO sesiones con este orden. Se sella
+#   tal cual salió, sin redefinir ninguna, y se evalúa al cierre. Una apuesta
+#   que no se puede perder no vale: cada una lleva debajo **qué la falsifica**.
+#
+#   **APUESTA 1 — la firma del contrato se rompe, y ESO es el hallazgo.**
+#   Para comparar contra lo pedido, `contrato_divisa` necesita un segundo
+#   argumento (la moneda pedida). Predigo que **`worker.py` no es el único sitio
+#   que hay que tocar**: hoy lo llama como `contrato(llamadas)` a secas, y el
+#   BLOQUE B pasa `contrato=contrato_divisa` sin saber de monedas pedidas.
+#   ⇒ *La pierdo si al cambiar la firma las 26 siguen verdes y nada más se queja.*
+#
+#   **APUESTA 2 — la discrepancia NO cabe en `faltan`, y meterla ahí NO frena
+#   nada.** `faltan` significa **hueco**; «pediste CAD y traigo USD» es una
+#   **contradicción con dato dentro**. El corte del orquestador
+#   (`orquestador.py`, ~línea 407) es `datos.get("pesos") is None`, y con la
+#   respuesta equivocada **`pesos` SÍ está lleno** — con el número de otra
+#   pregunta. Predigo que hacen falta un campo aparte y un corte aparte.
+#   ⇒ *La pierdo si basta con meterlo en `faltan` para que la respuesta
+#     equivocada deje de subir.*
+#
+#   **APUESTA 3 — la desigual con techo por coste ESPERADO: el caro corta, y
+#   corta ANTES de gastarse su techo.** El caro está medido en **$0,016504**.
+#   Con el techo puesto ahí (no en el p90), predigo `motivo="presupuesto"` en el
+#   worker caro **y** un `coste_usd` final **por debajo** de su techo, no encima
+#   — porque el `+ estimado` adelanta el corte. Es el modo de fallo espejo que
+#   la 99 dejó anotado **sin verlo morder**.
+#   ⇒ *La pierdo si el caro se pasa del techo: entonces el arreglo de ayer no acota.*
+#   💸 Es la única que cuesta dinero: ~$0,03.
+#
+#   **APUESTA 4 — las apuestas 1 y 2 de AYER se pagan de paso, y la causa llega
+#   arriba limpia.** Cuando el caro corte, `causa` cruza y el modelo de arriba
+#   **dirá presupuesto**, no *«limitaciones en el servicio»*. Primera vez que el
+#   arreglo de la 99 se ejercita con dinero: ayer nadie cortó y por eso aquellas
+#   dos **no se contaron como ganadas**.
+#   ⇒ *La pierdo si vuelve a inventarse una causa teniendo `causa` delante.*
+#
+#   **APUESTA 5 — el detector de un `id` con dos padres nace SIN MORDER.**
+#   *(importancia alta, **sin medir**)* Predigo que al correrlo sobre los
+#   `.jsonl` reales que ya hay en `08-avanzado/` **no encuentra ni un caso**.
+#   Sería `LM.13` otra vez ⇒ entra con su torcedura fabricada al lado o no entra.
+#   ⇒ *La pierdo si algún registro ya grabado lo dispara.*
+#
+#   📌 **ORDEN QUE IMPORTA, y es parte de lo sellado:** la 1 y la 2 (contrato)
+#   van ANTES que la 3. Si se paga la desigual con el contrato aún ciego, la
+#   corrida puede volver a mentir sobre la moneda **mientras se mide el techo**,
+#   y entonces no se sabría cuál de los dos resultados creer.
+# ═══════════════════════════════════════════════════════════════════════════
 
 # ➡️ **SIGUIENTE PASO CONCRETO — cerrar los TRES pendientes de C.2 antes de pasar a C.3.**
 #   · 🔲 **El techo tiene que acotar de verdad:** comprobar `gastado + coste_estimado > techo`
