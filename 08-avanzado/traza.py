@@ -343,22 +343,43 @@ def auditar_arbol(lineas):
        renglón.** Un dato que nadie puede contradecir no es que sea correcto: es
        que **no es comprobable**, que es otra cosa y peor, porque se le parece.
 
-    ⚠️ LO QUE ESTE AUDITOR **NO** COMPRUEBA, DICHO AQUÍ Y NO ESCONDIDO:
-       que dos líneas con el mismo `id` declaren el mismo padre. Es integridad
-       de verdad y falta. Se deja fuera **a propósito**: ninguna de las cinco
-       torceduras del sobre la ejercita, y un detector que nunca se ve morder es
-       una nota, no un detector (`LM.13`). Queda apuntado para el paso 4.
+    ✅ **LA QUINTA QUEJA, PAGADA EN LA SESIÓN 100** (`padre_doble`): que dos
+       líneas con el mismo `id` declaren padres distintos. Llevaba dos sesiones
+       apuntada como deuda y entra hoy con su torcedura al lado (`LM.13`).
+
+    🚨 Y AL IR A ESCRIBIRLA APARECIÓ POR QUÉ NO SE PODÍA: **la estructura ya
+       había tirado la prueba del delito.** Este cuerpo construía los nodos con
+       `nodos.setdefault(...)`, que **se queda con la primera línea de cada `id`
+       y descarta las demás en silencio**. Sobre los registros reales del curso
+       eso son **134 líneas con `id` reducidas a 31**: 103 tiradas antes de
+       auditar nada. Un desacuerdo entre la línea 1 y la línea 4 del mismo
+       tramo era **invisible por construcción**, no por olvido.
+       🔑 Antes de dar por difícil una comprobación que falta, mira si el dato
+       que necesita sigue estando cuando llega el momento de comprobarlo. Aquí
+       el auditor leía un resumen y creía leer el registro.
     """
     # Un nodo por `id`. Las líneas viejas sin marca se ignoran: no son un error
     # del árbol, son de antes de que el árbol existiera (prueba 19).
     # Mismo arreglo que en `arbol()`: la clave es (corrida, id). Sin esto, dos
     # corridas con los mismos `t2`…`t8` se auditan como una y salen limpias.
+    #
+    # ⭐ SE GUARDAN TODAS LAS DECLARACIONES, NO LA PRIMERA. Un tramo escribe
+    #    varias líneas (inicio, llamadas, fin) y **todas dicen quién es su
+    #    padre**. Que digan lo mismo no es un detalle: es la única forma de
+    #    saber que nadie reescribió el parentesco a mitad de camino.
+    declaraciones = {}
     nodos = {}
     for d in lineas:
         tid = d.get("id")
         if tid is None:
             continue
-        nodos.setdefault((d.get("corrida"), tid), {
+        clave = (d.get("corrida"), tid)
+        declaraciones.setdefault(clave, []).append({
+            "padre": d.get("padre"),
+            "evento": d.get("evento", "?"),
+            "hora": d.get("hora", "?"),
+        })
+        nodos.setdefault(clave, {
             "padre": d.get("padre"),
             "profundidad": d.get("profundidad"),
             "corrida": d.get("corrida"),
@@ -369,6 +390,22 @@ def auditar_arbol(lineas):
 
     def quejarse(tipo, tid, detalle):
         quejas.append({"tipo": tipo, "id": tid, "detalle": detalle})
+
+    # 0) 🚨 `padre_doble` — EL MISMO `id` DECLARANDO DOS PADRES DISTINTOS.
+    #    Va la PRIMERA a propósito: si el parentesco de un tramo no está de
+    #    acuerdo consigo mismo, las cuatro quejas de abajo están auditando **una
+    #    de las dos versiones**, la que salió primero, y su veredicto no vale.
+    #    ⚠️ Un `padre` ausente (`None`) en una línea y presente en otra también
+    #    cuenta: «no tengo padre» y «mi padre es t3» son afirmaciones distintas,
+    #    y tratar la ausencia como «no dijo nada» es justo cómo se cuela una
+    #    raíz falsa en mitad de una rama.
+    for (corr, tid), decls in declaraciones.items():
+        distintos = {d["padre"] for d in decls}
+        if len(distintos) > 1:
+            quejarse("padre_doble", tid,
+                     f"declara {len(distintos)} padres distintos en "
+                     f"{len(decls)} líneas: "
+                     + ", ".join(f"{d['evento']}→{d['padre']!r}" for d in decls))
 
     for (corr, tid), n in nodos.items():
         padre = n["padre"]
@@ -1299,7 +1336,15 @@ def _pruebas():
     #    mentira de verdad para que la prueba se pusiera roja sin que nada se
     #    hubiera roto. Nombrándolas, una TERCERA contradicción sí la pondría
     #    roja — que es lo que se quería vigilar.
-    CONOCIDAS = ("2026-08-20T20:32", "2026-08-21T19:41")
+    # 🎁 LA TERCERA ES DE LA CORRIDA PAGADA DE C.3 ($0,028745), Y SALIÓ PORQUE
+    #    ESTA VEZ SE CORRIÓ `traza.py` DESPUÉS DE PAGAR. Es `LM.70` cobrando a
+    #    la sesión siguiente de haberse aprendido.
+    # ⚠️ Y es una contradicción REAL de una conducta que ya está arreglada: el
+    #    worker `cad` guardó `COP` porque el contrato de entonces se quedaba con
+    #    el ÚLTIMO paso de la cadena. Con «el primero gana» esa línea saldría
+    #    hoy como `CAD`. **Se deja en la lista porque el registro no se reescribe:
+    #    es la huella del defecto, y borrarla sería borrar la evidencia.**
+    CONOCIDAS = ("2026-08-20T20:32", "2026-08-21T19:41", "2026-08-21T20:25")
     check("33. y las demás comprobables pasan limpias (no es un detector de una)",
           all(c["hora"].startswith(CONOCIDAS) for c in contra)
           and comprobadas >= 20,
@@ -1339,6 +1384,58 @@ def _pruebas():
     check("36. 🚨 el árbol HEREDA la mentira de la etiqueta (apuesta 1, 2ª mitad: FALLADA)",
           honesto == "worker:eur" and mentiroso == "worker:usd",
           f"mismo encargo → «{honesto}» y «{mentiroso}»")
+
+    # --- 37-41 · `padre_doble`: LA DEUDA DE C.1, PAGADA EN LA SESIÓN 100 ------
+    # 🚨 Llevaba dos sesiones escrita como «lo que este auditor NO comprueba».
+    #    Entra hoy, y entra con su torcedura al lado: `LM.13`.
+
+    # La forma sana: un tramo escribe VARIAS líneas y todas dicen el mismo padre.
+    SANO = [
+        {"corrida": "cX", "id": "t1", "padre": None, "profundidad": 0, "evento": "inicio"},
+        {"corrida": "cX", "id": "t2", "padre": "t1", "profundidad": 1, "evento": "inicio"},
+        {"corrida": "cX", "id": "t2", "padre": "t1", "profundidad": 1, "evento": "llamada_api"},
+        {"corrida": "cX", "id": "t2", "padre": "t1", "profundidad": 1, "evento": "fin"},
+    ]
+    check("37. el árbol sano NO dispara `padre_doble` (varias líneas, un padre)",
+          not [q for q in auditar_arbol(SANO) if q["tipo"] == "padre_doble"],
+          auditar_arbol(SANO))
+
+    # 🚨 LA TORCEDURA: la misma corrida, el mismo `id`, y a mitad de camino el
+    #    tramo cambia de padre. Es la mentira que `setdefault` hacía invisible.
+    TORCIDO = [dict(d) for d in SANO]
+    TORCIDO[3]["padre"] = "t9"
+    quejas_t = auditar_arbol(TORCIDO)
+    check("38. 🚨 MUERDE: el mismo `id` con dos padres distintos se caza",
+          any(q["tipo"] == "padre_doble" and q["id"] == "t2" for q in quejas_t),
+          quejas_t)
+
+    # 39) La ausencia TAMBIÉN es una declaración. «no tengo padre» y «mi padre es
+    #     t1» son afirmaciones distintas, y tratar el `None` como «no dijo nada»
+    #     es justo cómo se cuela una raíz falsa en mitad de una rama.
+    HUERFANO = [dict(d) for d in SANO]
+    HUERFANO[2]["padre"] = None
+    check("39. y un `padre` que DESAPARECE en una línea también cuenta",
+          any(q["tipo"] == "padre_doble" for q in auditar_arbol(HUERFANO)),
+          auditar_arbol(HUERFANO))
+
+    # 40) ⭐ EL MOTIVO DE QUE VAYA LA PRIMERA, HECHO PRUEBA. Con el parentesco en
+    #     desacuerdo consigo mismo, las otras cuatro quejas están auditando UNA
+    #     de las dos versiones —la que salió primero— y su veredicto no vale.
+    #     Que `padre_doble` aparezca es lo que avisa de que el resto es dudoso.
+    check("40. `padre_doble` sale ANTES que las demás quejas del mismo árbol",
+          quejas_t[0]["tipo"] == "padre_doble",
+          [q["tipo"] for q in quejas_t])
+
+    # 41) 🎲 LA APUESTA 5 DE LA SESIÓN 100, EVALUADA SOBRE LOS REGISTROS REALES.
+    #     Sellada esta mañana: *«el detector nace SIN MORDER: no encuentra ni un
+    #     caso en los `.jsonl` que ya hay»*. Se comprueba aquí, gratis, y queda
+    #     como vigilancia: si algún día un registro real lo dispara, esta se pone
+    #     roja y hay que ir a mirar.
+    reales = [d for v in leer(REGISTROS).values() for d in v]
+    dobles_reales = [q for q in auditar_arbol(reales) if q["tipo"] == "padre_doble"]
+    check("41. 🎲 apuesta 5: sobre los registros REALES no muerde (GANADA)",
+          dobles_reales == [],
+          f"{len(dobles_reales)} caso(s): {dobles_reales}")
 
     print()
     if fallos:

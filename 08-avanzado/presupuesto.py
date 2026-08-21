@@ -342,6 +342,24 @@ RAZON_MINIMA_UTIL = 1.8
 VUELTAS_ESPERADAS_BARATO = 3
 VUELTAS_ESPERADAS_CARO = 7
 
+# --- 🚨 C.3 · EL PRECIO CON EL QUE SE DIMENSIONA EL INSTRUMENTO -------------
+# **El p90 es el precio correcto para un FRENO y el equivocado para un
+# INSTRUMENTO DE MEDIDA**, y esa frase costó la corrida de la sesión 99.
+#
+# Un freno se dimensiona con el precio malo: equivocarse por arriba sólo cuesta
+# dinero, equivocarse por abajo corta a quien sí cabía. Un instrumento se
+# dimensiona con el precio ESPERADO: si le pones el precio malo, el trozo sale
+# generoso, **y la generosidad salvó justo al worker que se quería ver ahogarse**.
+# Con el p90 el trozo fue $0,019699 contra un caro de $0,016504: le sobraba.
+#
+# 📌 El número sale de la corrida pagada de la 99, no de un dedo: los tres
+#    workers gastaron $0,007198 + $0,007201 + $0,016504 = $0,030903 en 11
+#    llamadas. Media: **$0,002809**. El p90 lo sobreestima **1,62x**.
+# ⚠️ Y va SÓLO en el techo del instrumento. `COSTE_LLAMADA_WORKER_USD` (el p90)
+#    se queda donde está, porque el que frena tiene que seguir usando el precio
+#    malo. **Dos precios, dos usos, y cada uno dice cuál es el suyo.**
+COSTE_ESPERADO_LLAMADA_USD = 0.002809
+
 
 def presupuesto_desigual(n_workers=N_WORKERS_ESPERADOS,
                          reserva_arriba=RESERVA_ARRIBA):
@@ -372,8 +390,10 @@ def presupuesto_desigual(n_workers=N_WORKERS_ESPERADOS,
        `3 × coste_del_caro` — o sea **pagar tres veces el peor worker**. Eso es
        lo que cuesta no saber, a la entrada, cuál de los tres va a ser el caro.
     """
-    coste_esperado = (2 * VUELTAS_ESPERADAS_BARATO + VUELTAS_ESPERADAS_CARO)
-    total_abajo = coste_esperado * worker.COSTE_ESTIMADO_LLAMADA_USD
+    llamadas_esperadas = (2 * VUELTAS_ESPERADAS_BARATO + VUELTAS_ESPERADAS_CARO)
+    # C.3 — el precio ESPERADO, no el p90. Ver el bloque de
+    # `COSTE_ESPERADO_LLAMADA_USD`: con el p90 este instrumento no medía.
+    total_abajo = llamadas_esperadas * COSTE_ESPERADO_LLAMADA_USD
     return round(total_abajo / (1.0 - reserva_arriba), 6)
 
 
@@ -734,8 +754,16 @@ def _pruebas():
     # 🚨 Estas tres no comprueban el freno: comprueban **que el instrumento sirve
     #    para la pregunta**. Ayer se pagó una corrida que no podía distinguir los
     #    dos esquemas, y eso se supo DESPUÉS. Hoy se sabe antes, y es gratis.
-    coste_barato = VUELTAS_ESPERADAS_BARATO * w.COSTE_ESTIMADO_LLAMADA_USD
-    coste_caro = VUELTAS_ESPERADAS_CARO * w.COSTE_ESTIMADO_LLAMADA_USD
+    # 🐛 C.3 — AQUÍ SE COLÓ EL BICHO QUE ESTE ARCHIVO YA TENÍA ESCRITO ARRIBA:
+    #    *«dos copias del precio de una llamada era el bicho esperando»*. Al
+    #    redimensionar el techo con el precio ESPERADO se cambió UNA copia y
+    #    quedó la otra: estas dos líneas seguían prediciendo el coste con el p90,
+    #    así que `P15` comparaba un techo en un precio contra un encargo en otro
+    #    y se puso roja. **Se pusieron rojas ANTES de pagar, que es para lo que
+    #    están.** Predecir lo que algo VA A COSTAR se hace con el precio
+    #    esperado; el p90 es para el que FRENA.
+    coste_barato = VUELTAS_ESPERADAS_BARATO * COSTE_ESPERADO_LLAMADA_USD
+    coste_caro = VUELTAS_ESPERADAS_CARO * COSTE_ESPERADO_LLAMADA_USD
     rd = RepartoDeEntrada(total_usd=PRESUPUESTO_DESIGUAL_USD)
 
     # P15 · el techo NO está apretado. Si lo estuviera, el corte no probaría nada
@@ -899,6 +927,100 @@ def _pruebas():
               "descartado=%s" % subio4.get("descartado"))
     finally:
         orquestador.worker.correr_worker = real4
+
+    # =====================================================================
+    # P27-P29 · LO QUE ENSEÑÓ LA CORRIDA PAGADA DE C.3 ($0,028745)
+    # =====================================================================
+    # 🚨 Las tres nacen de un resultado con dinero delante, no de una idea.
+
+    # --- P27 · UNA CONSECUENCIA NO PUEDE IR DELANTE DE SU CAUSA -----------
+    # En la corrida pagada, el worker `cad` se quedó sin presupuesto a mitad de
+    # una cadena de tres conversiones. Su contrato quedó a medias y POR ESO
+    # discrepaba. Como el corte de discrepancia iba primero, arriba subió
+    # `motivo="discrepancia"` y el modelo lo repitió: «no se pudo consultar por
+    # discrepancia en los datos del especialista». **Falso: se quedó sin dinero.**
+    def _worker_cortado_y_discrepante(encargo, nombre="x", presupuesto_usd=None,
+                                      verboso=True, pedido=None, **kw):
+        parciales = [
+            {"nombre": "tasa", "entrada": {}, "salida": {
+                "de": "COP", "tasa": 0.000327, "fuente": "mercado",
+                "actualizado": "2026-08-21"}},
+        ]
+        datos, faltan, disc = w.contrato_divisa(parciales, pedido)
+        return {"ok": False, "texto": "(me detuve: se acabo el presupuesto)",
+                "coste_usd": 0.009423, "vueltas": 3, "llamadas_api": 3,
+                "entrada_tokens": 0, "salida_tokens": 0, "segundos": 0.0,
+                "herramientas": ["tasa"], "motivo": "presupuesto",
+                "worker": nombre, "datos": datos, "faltan": faltan,
+                "discrepa": disc}
+
+    real5 = orquestador.worker.correr_worker
+    orquestador.worker.correr_worker = _worker_cortado_y_discrepante
+    try:
+        conta5 = {"capa": "orquestador", "workers": 0, "coste_workers_usd": 0.0,
+                  "llamadas_api_workers": 0, "entrada_workers": 0,
+                  "salida_workers": 0, "detalle": [], "reparto": None}
+        subio5 = orquestador.herramienta_consultar_moneda(1000, "CAD", conta5,
+                                                          verboso=False)
+        check("P27 · un worker CORTADO sube su motivo REAL, no `discrepancia`",
+              subio5.get("motivo") == "presupuesto",
+              "motivo=%s" % subio5.get("motivo"))
+        check("P27b · y la causa en espanol vuelve a nombrar el DINERO",
+              "presupuesto" in (subio5.get("causa") or "").lower(),
+              "<<%s>>" % subio5.get("causa"))
+    finally:
+        orquestador.worker.correr_worker = real5
+
+    # --- P28 · EL CONTRATO GUARDA EL PRIMER PASO, NO EL ÚLTIMO -----------
+    # 🚨 ESTAS SON LAS LLAMADAS REALES DEL WORKER `cad` EN LA CORRIDA PAGADA,
+    #    copiadas del registro y en su orden. El encargo caro pide una cadena:
+    #    CAD→COP, ESE resultado a USD, ESE a EUR. Con la versión de ayer —cada
+    #    llamada sobrescribe— el contrato acababa diciendo `moneda: COP,
+    #    monto: 2219774`: **el final del camino en vez de la pregunta.**
+    CADENA_PAGADA = [
+        {"nombre": "tasa", "entrada": {}, "salida": {
+            "de": "CAD", "a": "COP", "tasa": 2219.7735941611263,
+            "fuente": "mercado (open.er-api.com)",
+            "actualizado": "Fri, 21 Aug 2026 00:02:31 +0000"}},
+        {"nombre": "tasa", "entrada": {}, "salida": {
+            "de": "COP", "a": "USD", "tasa": 0.00032690290517814187,
+            "fuente": "mercado (open.er-api.com)",
+            "actualizado": "Fri, 21 Aug 2026 00:02:31 +0000"}},
+        {"nombre": "tasa", "entrada": {}, "salida": {
+            "de": "USD", "a": "EUR", "tasa": 0.856037,
+            "fuente": "mercado (open.er-api.com)",
+            "actualizado": "Fri, 21 Aug 2026 00:02:31 +0000"}},
+        {"nombre": "convertir", "entrada": {}, "salida": {
+            "de": "CAD", "a": "COP", "monto": 1000, "resultado": 2219774}},
+        {"nombre": "convertir", "entrada": {}, "salida": {
+            "de": "COP", "a": "USD", "monto": 2219774, "resultado": 725.65}},
+    ]
+    d_c, f_c, disc_c = w.contrato_divisa(CADENA_PAGADA,
+                                         pedido={"moneda": "CAD", "monto": 1000})
+    check("P28 · en una cadena, el contrato guarda el PRIMER paso (CAD/1000)",
+          d_c["moneda"] == "CAD" and d_c["monto"] == 1000
+          and d_c["pesos"] == 2219774,
+          "moneda=%s monto=%s pesos=%s" % (d_c["moneda"], d_c["monto"], d_c["pesos"]))
+
+    # 🎁 P28b · Y POR ESO DESAPARECE EL FALSO POSITIVO. El detector de C.3 no
+    #    tenía que gritar aquí: el worker hizo exactamente lo que se le pidió.
+    check("P28b · y el detector de C.3 NO da falso positivo en la cadena",
+          disc_c == [] and f_c == [],
+          "discrepa=%s faltan=%s" % (disc_c, f_c))
+
+    # --- P29 · «el primero» ES EL PRIMER ACIERTO, no la primera línea ----
+    # Un worker que falla y reintiende sigue contando lo bueno. Era la conducta
+    # de A.3 y el arreglo de hoy no podía llevársela por delante.
+    CON_FALLO = [
+        {"nombre": "tasa", "entrada": {}, "salida": {"error": "timeout"}},
+        {"nombre": "tasa", "entrada": {}, "salida": {
+            "de": "CAD", "tasa": 2219.77, "fuente": "mercado",
+            "actualizado": "2026-08-21"}},
+    ]
+    d_r, _, _ = w.contrato_divisa(CON_FALLO, pedido={"moneda": "CAD"})
+    check("P29 · el primero es el primer ACIERTO: un fallo previo no lo bloquea",
+          d_r["moneda"] == "CAD" and d_r["tasa"] == 2219.77,
+          "moneda=%s tasa=%s" % (d_r["moneda"], d_r["tasa"]))
 
     w.REGISTRO, orquestador.REGISTRO = _reg_w, _reg_o
 

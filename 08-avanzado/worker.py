@@ -327,16 +327,38 @@ def contrato_divisa(llamadas, pedido=None):
         if not isinstance(salida, dict) or "error" in salida:
             continue
 
+        # ⭐ C.3 · SE GUARDA EL PRIMERO, NO EL ÚLTIMO — y esto cambió por una
+        #    corrida pagada, no por una idea.
+        # 🐛 Antes cada llamada SOBRESCRIBÍA. Con un encargo de un solo paso da
+        #    igual; con uno encadenado —«convierte CAD a pesos, ESE resultado a
+        #    dólares, y ESE a euros»— el contrato acababa guardando el ÚLTIMO
+        #    tramo: `moneda: COP, monto: 2219774`. El worker había hecho
+        #    exactamente lo que se le pidió, y el contrato describía **el final
+        #    del camino en vez de la pregunta**.
+        # 🔑 El primer paso es el que responde a lo que se preguntó; los demás
+        #    son trabajo derivado. Por eso gana el primero que llega con dato
+        #    bueno. Los errores ya se saltaron arriba, así que «el primero» es
+        #    **el primer acierto**: un worker que falla y reintenta sigue
+        #    contando lo bueno, como antes.
+        # ⚠️ Y el precio, dicho entero: esto describe bien la PRIMERA conversión
+        #    y **no describe la cadena**. Un contrato de un solo renglón no puede
+        #    contar una tarea de tres pasos, y fingir que sí es lo que hacía la
+        #    versión de ayer. Los pasos intermedios siguen en el registro.
+        def poner(campo, valor):
+            """Llena el campo sólo si está vacío: el primero gana."""
+            if datos[campo] is None and valor is not None:
+                datos[campo] = valor
+
         if llamada["nombre"] == "tasa":
-            datos["moneda"] = salida.get("de")
-            datos["tasa"] = salida.get("tasa")
-            datos["fuente"] = salida.get("fuente")
-            datos["fecha"] = salida.get("actualizado")
+            poner("moneda", salida.get("de"))
+            poner("tasa", salida.get("tasa"))
+            poner("fuente", salida.get("fuente"))
+            poner("fecha", salida.get("actualizado"))
 
         elif llamada["nombre"] == "convertir":
-            datos["monto"] = salida.get("monto")
-            datos["pesos"] = salida.get("resultado")
-            datos["moneda"] = salida.get("de") or datos["moneda"]
+            poner("monto", salida.get("monto"))
+            poner("pesos", salida.get("resultado"))
+            poner("moneda", salida.get("de"))
 
     faltan = [campo for campo, valor in datos.items() if valor is None]
     return datos, faltan, discrepancias_divisa(datos, pedido)

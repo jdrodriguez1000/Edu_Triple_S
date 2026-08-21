@@ -5784,3 +5784,67 @@ nocturna*. La pregunta útil no es «¿existe?» ni «¿pasa?», sino **«¿qui�
 pasa cuando sale rojo un martes?»**. Y si el disparador es *«después de que se generen datos
 nuevos»*, tiene que estar escrito en el protocolo — porque no coincide con el momento en que
 alguien corre las pruebas.
+
+---
+
+### LM.71 — Una consecuencia no puede ir delante de su causa: el detector nuevo enterró el motivo verdadero
+
+Un especialista se quedó sin presupuesto **a mitad** de una tarea encadenada de tres pasos. Se
+paró donde pudo, y su paquete de datos quedó incompleto y desalineado con lo que se le había
+pedido — **porque se había parado**. La capa de arriba tenía dos comprobaciones: una nueva, que
+miraba si la respuesta correspondía a la pregunta, y otra vieja, que miraba por qué había fallado.
+La nueva iba primero, con un razonamiento que parecía sólido: *«si la respuesta no corresponde a
+la pregunta, lo demás no vale»*.
+
+El resultado fue que arriba subió *«no corresponde»* cuando la verdad era *«se quedó sin dinero»*,
+y el modelo lo repitió palabra por palabra al usuario final. **La causa que llegó era falsa**, y
+era exactamente el agujero que se había tapado la sesión anterior — reabierto por el arreglo de la
+mañana siguiente.
+
+🔑 El razonamiento era correcto **para un trabajo terminado**. En uno interrumpido, la
+discrepancia no es la causa del fallo: **es el rastro de haberse interrumpido.** El orden de dos
+comprobaciones no es un detalle de estilo — decide **qué explicación se lleva el que pregunta**, y
+la primera que dispara se convierte en la versión oficial de lo ocurrido.
+
+⭐ **La regla que queda:** antes de poner una comprobación por delante de otra, pregúntate si puede
+dispararse *como efecto* de lo que la otra detecta. Si puede, va detrás. Un diagnóstico que se
+adelanta a su propia causa produce informes que suenan precisos y son mentira.
+
+📌 Y el corolario incómodo: **un arreglo puede reabrir el que tiene al lado.** El de ayer hacía que
+la causa cruzara la frontera; el de hoy la interceptó antes de que cruzara. Ninguna prueba de las
+existentes lo vio, porque cada una vigilaba su mitad. Sólo apareció al **pagar una corrida
+completa** y leer lo que el modelo dijo al final.
+
+**Dónde muerde fuera de aquí:** cualquier cadena de validadores, middlewares o *health checks*
+donde el primero que falla escribe el mensaje de error. Los fallos derivados suelen ser más fáciles
+de detectar que los originales —son más ruidosos— y por eso tienden a colocarse primero. Ordena por
+**causalidad**, no por facilidad de detección.
+
+---
+
+### LM.72 — Un verificador que sólo ve el último paso no puede juzgar una tarea de varios
+
+El paquete de datos de un especialista se llenaba recorriendo lo que había pasado por el harness, y
+cada herramienta **sobrescribía** lo anterior. Con una tarea de un solo paso el resultado es
+correcto y nadie lo nota. Con una tarea encadenada —*«convierte A a B, ese resultado a C, y ese a
+D»*— el paquete acababa describiendo **el último tramo**: el final del camino en vez de la pregunta.
+
+Lo caro es lo que vino después: el verificador que comprobaba *«¿responde a lo que se preguntó?»*
+—escrito esa misma mañana, y correcto— **gritó sobre un trabajo impecable**. El especialista había
+hecho exactamente lo que se le pidió. El falso positivo era del mismo tipo que el defecto que
+aquel verificador venía a cazar: uno decía «completo» sin ser correcto, el otro dice «incorrecto»
+sin que nadie haya mentido.
+
+🔑 La corrección fue elegir **el primero** en vez del último: el primer paso es el que responde a lo
+que se preguntó; los demás son trabajo derivado. Y «el primero» tiene que significar **el primer
+acierto**, no la primera línea, para que un intento fallido seguido de uno bueno siga contando.
+
+⚠️ **Y el precio se dice entero, no se esconde:** un paquete de un solo renglón describe bien la
+primera conversión y **sigue sin contar la cadena**. Fingir que sí es lo que hacía la versión
+anterior. Los pasos intermedios viven en el registro, y el día que haya que juzgarlos hará falta
+otra forma — una lista, no un renglón.
+
+**Dónde muerde fuera de aquí:** todo resumen de una traza multi-paso en un objeto plano —el «último
+estado» de un pedido, de un despliegue, de un flujo de trabajo. La pregunta que hay que hacerle a
+ese objeto es **«¿esto describe la petición o lo último que pasó?»**, y muy a menudo describe
+lo segundo mientras todo el mundo lo lee como lo primero.

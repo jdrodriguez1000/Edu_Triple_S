@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 100 — NIVEL 8: **C.3 · 1er pendiente PAGADO: el contrato ya comprueba que responde A LO QUE SE PREGUNTÓ** (`contrato_divisa(llamadas, pedido)`, de 26 a **34 pruebas**, todas gratis, con la mentira pagada de la 99 como torcedura). 🎲 Apuestas **1 y 2 GANADAS** —cambiar la firma se llevó por delante al bloque B, y `pesos` estaba LLENO con el número de otra moneda: un hueco y una contradicción se cortan en sitios distintos (`LM.69`)—; **3, 4 y 5 SIN EJERCITAR y se dicen sin ejercitar.** 🎁 **EL HALLAZGO NO LO APOSTÓ NADIE: `traza.py` llevaba una noche en ROJO** — el auditor de C.1 cazaba la mentira de ayer desde el segundo en que se grabó, y nadie lo corrió después de pagar (`LM.70`: un mordisco sin testigo da el mismo silencio que no morder). ⚠️ **ERROR MÍO, $0,087297 gastados sin querer** corriendo `pipeline.py` y `linea_base.py` en pelado — pagan sin preguntar — y `linea_base.py` **reescribió su medición sellada**, recuperada por Git → `GUIDE.md` §6.e.)
+**Última actualización:** 2026-08-21 (sesión 100 — NIVEL 8: **C.3 ENTERO Y LAS CINCO APUESTAS CERRADAS. 1, 2, 3 y 5 ganadas; la 4 FALLADA — y la que se perdió fue la que más valió.** El contrato ya comprueba que responde a lo que se preguntó, y el techo del instrumento pasó del p90 al coste ESPERADO: **el p90 es el precio correcto para un freno y el equivocado para un instrumento**. Con eso el caro por fin se ahogó ($0,009423 de $0,012172, cortando ANTES de gastarse lo suyo) con **$0,009817 parados en los baratos**. 🚨 **Pero el modelo dijo una causa FALSA** —«discrepancia» cuando fue presupuesto—: **el corte nuevo iba primero y enterró la causa real** (`LM.71`), y debajo apareció que el contrato guardaba **el último paso de la cadena en vez de la pregunta** (`LM.72`), dando un falso positivo del mismo tipo que el defecto que venía a cazar. Los dos arreglados. 📊 `presupuesto.py` 26→**40** pruebas, `traza.py` 36→**41**. 💸 Gasto del día **$0,116042**, de los que **$0,087297 fueron un error mío** corriendo scripts que pagan en pelado → `GUIDE.md` §6.e.)
 
 ---
 
@@ -4189,6 +4189,99 @@
 #   Van OCHO sesiones con ese orden. Hoy cobró dos veces: la 1 y la 2 se ganaron
 #   limpias, y **tres quedaron sin ejercitar y se dicen sin ejercitar** — que es
 #   exactamente lo que ayer se aprendió a no maquillar.
+#
+# ═══════════════════════════════════════════════════════════════════════════
+# 🚨 **CONTINUACIÓN DE LA 100 — LAS CINCO APUESTAS CERRADAS, C.3 PAGADO
+# ($0,028745), Y LA CORRIDA DESTAPÓ QUE EL ARREGLO DE LA MAÑANA ROMPIÓ EL DE AYER.**
+#
+# ✅ **APUESTA 5 — GANADA, y evaluada DENTRO de la suite** (`traza.py` 36 → **41**).
+#   `padre_doble` entra con su torcedura al lado, y la prueba 41 **es la apuesta
+#   hecha código**: corre el detector sobre los `.jsonl` reales y exige que no
+#   muerda. Queda de vigilancia — si algún día un registro real lo dispara, se
+#   pone roja. Es lo contrario de lo que pasó ayer, cuando el mordisco se quedó
+#   en un archivo cerrado.
+#   🎁 **Y el hallazgo salió AL IR A ESCRIBIRLO:** la deuda llevaba dos sesiones
+#   justificada con `LM.13` (*«ninguna torcedura la ejercita»*). **La razón real
+#   era otra y peor:** `auditar_arbol` construía los nodos con
+#   `nodos.setdefault(...)`, que **se queda con la primera línea y descarta las
+#   demás**. Sobre los registros del curso: **134 líneas con `id` reducidas a 31**,
+#   103 tiradas antes de auditar nada. 🔑 **El desacuerdo era invisible por
+#   construcción, no por olvido — el auditor leía un resumen y creía leer el
+#   registro.** Antes de dar por difícil una comprobación que falta, mira si el
+#   dato que necesita sigue estando cuando llega el momento de comprobarlo.
+#
+# ✅ **APUESTA 3 — GANADA EN SUS DOS MITADES**, y hubo que redimensionar antes.
+#   El techo pasó a salir del **coste ESPERADO** ($0,002809/llamada, media de las
+#   11 llamadas pagadas de la 99) en vez del **p90** ($0,004546). Trozo por worker:
+#   **$0,019699 → $0,012172**, que ya NO cubre al caro.
+#   🔑 **El p90 es el precio correcto para un FRENO y el equivocado para un
+#   INSTRUMENTO.** Equivocarse por arriba en un freno sólo cuesta dinero; en un
+#   instrumento **la generosidad salva justo al que querías ver ahogarse**.
+#   `COSTE_LLAMADA_WORKER_USD` (p90) se queda donde está: **dos precios, dos usos,
+#   y cada uno dice cuál es el suyo.**
+#   📊 Resultado: el caro **cortó por presupuesto gastando $0,009423 de un techo
+#   de $0,012172** — cortó ANTES de gastarse lo suyo, que era la 2ª mitad sellada.
+#   Y **$0,009817 parados en los baratos** mientras el que los necesitaba se
+#   ahogaba: el desperdicio del reparto ciego, por fin contable.
+#   🐛 **Y AL REDIMENSIONAR SE COLÓ EL BICHO QUE ESTE MISMO ARCHIVO YA TENÍA
+#   ESCRITO:** *«dos copias del precio de una llamada era el bicho esperando»*.
+#   Se cambió UNA copia (el techo) y quedó la otra (las afirmaciones seguían
+#   prediciendo con el p90). ⭐ **`P15` y `P17` se pusieron ROJAS ANTES DE PAGAR,
+#   que es exactamente para lo que están. El dinero no llegó a salir.**
+#
+# ❌ **APUESTA 4 — FALLADA, y la falla la escribí yo esa misma mañana.**
+#   El modelo dijo: *«no se pudo consultar por **discrepancia en los datos del
+#   especialista**»*. **Es falso: el worker cortó por PRESUPUESTO.** Afirmaciones
+#   7 y 8 en rojo. 🚨 **El corte de discrepancia de C.3 iba el PRIMERO y enterró
+#   la causa real.** El razonamiento («si no corresponde a la pregunta, lo demás
+#   no vale») es correcto para un worker que TERMINÓ; en uno que se paró a medias
+#   **la discrepancia no es la causa: es el rastro de haberse parado.**
+#   🔑 **Un arreglo puede reabrir el que tiene al lado** — el de la 99 hacía que
+#   la causa cruzara, el de hoy la interceptó antes de cruzar. Ninguna prueba lo
+#   vio porque cada una vigilaba su mitad: **sólo apareció al pagar una corrida
+#   entera y leer lo que el modelo dijo al final** → `LM.71`.
+#
+# 🎁 **Y DEBAJO HABÍA UN DEFECTO QUE NO ERA DE HOY** → `LM.72`. El encargo caro
+#   pide una CADENA (CAD→COP, ese resultado a USD, ese a EUR) y `contrato_divisa`
+#   **sobrescribía en cada llamada**: se quedaba con `moneda: COP, monto: 2219774`,
+#   **el final del camino en vez de la pregunta**. El worker había hecho justo lo
+#   que se le pidió. ⭐ **El detector nuevo daba un FALSO POSITIVO del mismo tipo
+#   que el defecto que venía a cazar:** ayer «completo» sin ser correcto, hoy
+#   «incorrecto» sin que nadie mienta.
+#   ✅ **Arreglado a decisión del estudiante: gana el PRIMERO**, y «el primero» es
+#   **el primer acierto**, no la primera línea (un fallo previo no lo bloquea).
+#   Comprobado sobre las llamadas REALES de la corrida pagada: el contrato sale
+#   `{'moneda': 'CAD', 'monto': 1000, 'pesos': 2219774}` con `discrepa: []`.
+#   ⚠️ **El precio, dicho entero y no escondido:** un contrato de un renglón
+#   describe bien el primer paso y **sigue sin contar la cadena**. Fingir que sí
+#   era lo que hacía la versión de ayer.
+#
+# 🎁 **`LM.70` COBRÓ AL DÍA SIGUIENTE DE ESCRIBIRSE.** Se corrió `traza.py`
+#   **después de pagar** —el paso que ayer faltaba y nadie había escrito— y cazó
+#   en el acto una TERCERA contradicción: `cad → COP`, la huella del contrato
+#   viejo en la corrida de hoy. **Se deja en la lista de conocidas: el registro no
+#   se reescribe, y borrarla sería borrar la evidencia.**
+#
+# 📊 **NÚMEROS DEL DÍA:** `presupuesto.py` de 26 a **40 pruebas**; `traza.py` de
+#   36 a **41**. Gasto total: **$0,116042** — $0,028745 de la corrida legítima y
+#   **$0,087297 tirados por correr `pipeline.py` y `linea_base.py` en pelado**.
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — C.4, con dos deudas de C.3 encima:**
+#   · 🔲 **Volver a correr la desigual con TODO arreglado** (~$0,03). La de hoy
+#     midió el reparto con el contrato aún roto y la causa aún enterrada. El
+#     reparto quedó medido; **la causa que sube al modelo NO se ha visto buena
+#     con dinero delante**. Las afirmaciones 7 y 8 siguen sin cobrar.
+#   · 🔲 **El contrato de una CADENA** (`LM.72`): hoy guarda el primer paso y los
+#     intermedios sólo viven en el registro. Si C.4 encadena de verdad, hace falta
+#     una lista, no un renglón. **Decidir si entra o se declara fuera de alcance.**
+#   · 🔲 **`profundidad.py:213`** sigue con la copia ciega del corte, y su pregunta
+#     sin contestar: *¿el experimento quiere que el harness cace su propia
+#     torcedura, o la necesita pasando?*
+# 🎲 **Y LA PRIMERA COSA DE LA SESIÓN 101 ES SELLAR LA APUESTA Y COMMITEARLA.**
+#   Van OCHO. Hoy cobró **cuatro veces**: dos ganadas limpias, una ganada tras
+#   redimensionar, y **una FALLADA que destapó los dos defectos mayores del día.**
+#   ⭐ La que más valió fue la que se perdió.
+# ═══════════════════════════════════════════════════════════════════════════
 
 # ➡️ **SIGUIENTE PASO CONCRETO — cerrar los TRES pendientes de C.2 antes de pasar a C.3.**
 #   · 🔲 **El techo tiene que acotar de verdad:** comprobar `gastado + coste_estimado > techo`

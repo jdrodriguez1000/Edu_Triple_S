@@ -417,7 +417,20 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
     #    forma obliga al que llama a tratarlo aparte, y ahí es donde se olvida.
     datos = resultado["datos"] or {}
     faltan = resultado["faltan"] or []
-    discrepa = resultado.get("discrepa") or []
+    # 🐛 C.3 · ARREGLO DE LA CORRIDA PAGADA — **UNA CONSECUENCIA NO PUEDE IR
+    #    DELANTE DE SU CAUSA.** Esta línea es el arreglo entero y hay que leerla
+    #    con lo que pasó al pagar:
+    #    El worker `cad` se quedó sin presupuesto a mitad de una cadena de tres
+    #    conversiones. Su contrato quedó a medias y **por eso** discrepaba. El
+    #    corte de abajo iba primero, así que arriba subió `motivo="discrepancia"`
+    #    y el modelo lo repitió tal cual: *«no se pudo consultar por discrepancia
+    #    en los datos del especialista»*. **Falso: se quedó sin dinero.**
+    # 🔑 La discrepancia sólo significa algo en un worker que TERMINÓ. En uno que
+    #    se paró a medias no es la causa: es el rastro de haberse parado. Poner
+    #    el detector nuevo delante enterró la causa verdadera — y era exactamente
+    #    el agujero que la sesión 99 acababa de tapar, reabierto por el arreglo
+    #    de la mañana siguiente. **Un arreglo puede reabrir el que está al lado.**
+    discrepa = (resultado.get("discrepa") or []) if resultado.get("ok") else []
 
     # 🚨 C.3 — EL CORTE DE LA DISCREPANCIA, Y VA **ANTES** Y **APARTE**.
     #    Aquí está lo que la corrida pagada de la 99 enseñó y costó una mentira:
