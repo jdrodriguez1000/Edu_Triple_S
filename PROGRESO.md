@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 98 — NIVEL 8: **C.2 COMPLETA, el presupuesto repartido. $0,045113: 15 pruebas gratis y DOS corridas pagadas**, con las once afirmaciones commiteadas antes de lanzar nada. ✅ La corrida NORMAL 5/5 —**el freno se calló**, que era la obligación sellada— y la APRETADA 4/6. 🚨 **El techo NO era un techo: se pasó un 27,5 %**, porque el freno autoriza sin saber el precio de la llamada — **el defecto por el que descarté el otro esquema lo tenía también el elegido, escondido**. ⭐ Y el hallazgo mayor: **el worker tenía la respuesta y murió antes de decirla** — `tasa` y `convertir` ya ejecutadas; el corte pagó el trabajo y lo tiró. 🅰️ Apuesta 1 **fallada**: volvió vacía, no a medias, y **el motivo estaba medido esa misma mañana**.)
+**Última actualización:** 2026-08-21 (sesión 98 — NIVEL 8: **C.2 A MEDIAS Y DICHO: midió el freno, NO midió el reparto.** El presupuesto repartido existe y muerde — $0,045113: 15 pruebas gratis y DOS corridas pagadas —, pero **quedan TRES pendientes con dueño y la obligación del sobre sin pagar**, con las once afirmaciones commiteadas antes de lanzar nada. ✅ La corrida NORMAL 5/5 —**el freno se calló**, que era la obligación sellada— y la APRETADA 4/6. 🚨 **El techo NO era un techo: se pasó un 27,5 %**, porque el freno autoriza sin saber el precio de la llamada — **el defecto por el que descarté el otro esquema lo tenía también el elegido, escondido**. ⭐ Y el hallazgo mayor: **el worker tenía la respuesta y murió antes de decirla** — `tasa` y `convertir` ya ejecutadas; el corte pagó el trabajo y lo tiró. 🅰️ Apuesta 1 **fallada**: volvió vacía, no a medias, y **el motivo estaba medido esa misma mañana**.)
 
 ---
 
@@ -3892,8 +3892,16 @@
 # ✅ **Cerrado el agujero que el paso 1 dejó sin dueño:** el harness ya distingue *«el enrutado
 #   está torcido»* de *«solo la etiqueta miente»*.
 #
-# 💰 **LA 98 HIZO C.2 ENTERA: el presupuesto repartido. $0,045113 — 15 pruebas gratis y DOS
-# corridas pagadas, con las once afirmaciones commiteadas antes de lanzar nada.**
+# 💰 **LA 98 CONSTRUYÓ C.2 Y LA DEJÓ A MEDIAS A PROPÓSITO: MIDIÓ EL FRENO, NO MIDIÓ EL
+# REPARTO.** El presupuesto del encargo existe, se reparte y muerde. $0,045113 — 15 pruebas
+# gratis y DOS corridas pagadas, con las once afirmaciones commiteadas antes de lanzar nada.
+# 🚨 **PERO C.2 NO ESTÁ CERRADA, y el rótulo se corrigió el mismo día que se escribió.**
+# Al cerrar se puso «C.2 COMPLETA» con **tres pendientes abiertos** y la obligación del sobre
+# sin pagar. Un rótulo generoso no es un adorno: **la sesión 99 abre leyendo esta línea, y
+# «completa» invita a saltar a C.3 y dejar los tres atrás.** Es el bicho de la 97 —un nombre
+# que cita algo que ya no es verdad— y es `LM.20`: *la corrección ya estaba escrita y nadie
+# la alcanzó*. 🔑 **Lo que decide si una pieza está cerrada no es cuánto se construyó: es si
+# queda algo con dueño.** Aquí quedan tres.
 # La corrida NORMAL cumplió **5 de 5** —el freno **se calló**, que era la obligación sellada
 # por la mañana— y la APRETADA salió **4 de 6**, con las dos rojas siendo el día entero.
 #
