@@ -3378,6 +3378,129 @@ Por eso la desigualdad se diseña **con un número delante**, no con un adjetivo
 
 ---
 
+##### 🏁 C.2 · CIERRE — EL RESULTADO DE LA CORRIDA DESIGUAL ($0,035567, sesión 99)
+
+**Se pagó UNA corrida y salió el hallazgo más grande del bloque C — y nadie lo había
+apostado.** Las tres apuestas de la mañana se resuelven abajo; ninguna se redefinió después
+de ver el resultado.
+
+###### 📊 Lo que pasó, en números
+
+| worker | encargo | llamadas | coste | de su trozo $0,019699 |
+|---|---|---:|---:|---:|
+| usd | barato | 3 | $0,007198 | 37 % |
+| eur | barato | 3 | $0,007201 | 37 % |
+| **cad** | **caro (cadena de 3)** | **5** | **$0,016504** | **84 %** |
+
+Total $0,035567 de un techo de $0,078797 · `estimaciones_cortas = 0` en las cuatro piezas.
+
+---
+
+###### 🚨 EL HALLAZGO: EL CONTRATO SE LLENÓ ENTERO, CON LOS NÚMEROS DE OTRA PREGUNTA
+
+**Importancia: alta · Urgencia: no bloqueante** (no rompe nada hoy; el modelo de arriba lo
+tapó por casualidad).
+
+El orquestador pidió CAD. Esto es lo que le subió, palabra por palabra del registro:
+
+```
+PIDIÓ:  {"moneda": "CAD", "monto": 1000}
+SUBIÓ:  {"moneda": "USD", "monto": 725.65, "pesos": 621.18,
+         "tasa": 0.856037, "fuente": "mercado (open.er-api.com)", ...}
+```
+
+**Los seis campos llenos. `faltan: []`. `ok: True`. `motivo: None`.** Y todo mal: la moneda
+no es la que se pidió, el monto no es el que se pidió, y `pesos: 621.18` **no son pesos —
+son euros**, el último eslabón de la cadena que el encargo caro pedía.
+
+⭐ **El worker hizo exactamente lo que se le mandó.** El encargo desigual decía *«convierte a
+pesos, luego ESE resultado a dólares, luego ESE a euros»*, y el contrato de A.3 se llena con
+**la última llamada a `convertir` que pasó por el harness**. La última era la de euros.
+
+🔑 **Y ésta es la frase que se lleva C.2 entera: `faltan` responde a «¿qué campo quedó
+vacío?» y nunca respondió a «¿este campo habla de lo que yo pregunté?». UN CONTRATO COMPLETO
+NO ES UN CONTRATO CORRECTO.** El harness lo dio por bueno —`datos["pesos"]` no era `None`, que
+es lo único que se comprobaba— y lo pasó hacia arriba como dato válido.
+
+🚨 **Lo único que lo cazó fue el modelo de arriba, leyendo.** Dijo: *«la respuesta que obtuve
+no tiene el formato esperado para una conversión de 1.000 CAD, por lo que no puedo darte una
+cifra confiable»*. ⚠️ **Un guardarraíl hecho de prosa atrapó lo que el contrato tipado dejó
+pasar**, y eso es exactamente al revés de por qué existe A.3. No se puede confiar en que
+vuelva a pasar: fue suerte de que los números fueran *absurdos* (621 «pesos» por 1.000 CAD).
+**Con una cifra verosímil habría subido a la respuesta final sin que nadie tosiera.**
+
+📌 Es el mismo defecto que la sesión 99 ya cazó dos veces en pequeño —las pruebas gratis
+ensuciando el registro pagado, y ahí también **lo que salvó fue que los números falsos eran
+reconocibles**. Tres veces el mismo mecanismo en un día: *lo que detecta el error no es el
+sistema, es que el error era llamativo.*
+
+🔲 **PENDIENTE CON DUEÑO, y es de C.3:** el contrato tiene que comprobar que **responde a lo
+que se preguntó** —al menos `datos["moneda"] == moneda_pedida`—, no sólo que no tiene huecos.
+**Entra con su torcedura al lado o no entra.**
+
+---
+
+###### 🎲 LAS TRES APUESTAS, resueltas
+
+**🅰️ APUESTA 1 — el techo arreglado adelantaría el corte: NO SE PUDO EVALUAR, y decirlo es
+el resultado.** Nadie cortó en esta corrida, así que la corrida pagada **no ejercitó la
+predicción**. ✅ Lo que sí está medido, y gratis, es `P11b`: con el trozo apretado el worker
+hace **1 llamada donde antes hacía 2**. La predicción tiene su número; lo que no tiene es el
+sello de haberse visto con dinero real. ⚠️ **No se cuenta como ganada.** Que una medición
+gratis diga lo mismo no convierte una apuesta no ejercitada en una apuesta cobrada.
+
+**🅱️ APUESTA 2 — la causa quitaría la causa inventada: TAMPOCO SE PUDO EVALUAR.** No hubo
+ningún fallo por presupuesto, así que `causa` **nunca se disparó**. Las dos afirmaciones
+salieron en rojo por motivos que no acusan al arreglo:
+
+- La 7 dio un **falso rojo de manual**: buscaba la palabra `api` como señal de culpar a un
+  tercero, y la encontró dentro de **`open.er-api.com`**, que es la fuente legítima de las
+  *otras dos* monedas. 🔑 Segundo día seguido en que buscar palabras da un rojo falso, y
+  segundo día en que **estaba declarada INDICIO antes de correr** y por eso costó diez
+  segundos en vez de una discusión.
+- La 8 salió roja por **ausencia de la condición**, no por fallo: no se nombra el dinero
+  porque el dinero no falló.
+
+**🅲 APUESTA 3 — el caro cortaría mientras sobra dinero al lado: FALLADA en su mitad central,
+y la mitad que se pagó salió CLAVADA.**
+
+- ❌ **El caro NO cortó.** Gastó $0,016504 de su trozo de $0,019699 — se quedó al 84 %.
+- ✅ **Pero la desigualdad diseñada funcionó con una precisión que no esperaba: 2,29× medido
+  contra 2,33× predicho.** El instrumento sirve; el umbral de 1,8× se cumplió de sobra.
+
+🚨 **Y EL MOTIVO DEL FALLO ES UNA LECCIÓN SOBRE MEDIR, NO SOBRE PRESUPUESTOS.** El techo se
+calculó con **7 vueltas × el p90 de $0,004546**. El caro hizo **5 llamadas** (el modelo pidió
+las tres tasas **en la misma vuelta**, que es justo el mecanismo de batching que yo mismo
+había escrito tres horas antes al diseñar la cadena) y costó $0,016504. **Sobreestimé el
+encargo caro en 1,93×, y esa generosidad es exactamente lo que salvó al worker que quería ver
+ahogarse.**
+
+🔑 **El p90 es el precio CORRECTO para un freno y el precio EQUIVOCADO para un instrumento.**
+Un freno se equivoca hacia arriba a propósito: prefiere sobrar. Una medición que se equivoca
+hacia arriba **se anula a sí misma**: paga un techo demasiado grande y luego no ve el corte
+que fue a buscar. **El mismo número, correcto en un papel y ciego en el otro** — y lo usé en
+los dos sin darme cuenta de que había cambiado de papel.
+
+---
+
+###### ✅ Lo que C.2 deja cerrado, y lo que deja abierto
+
+**Cerrado:**
+- El techo acota: `gastado + estimado > techo`, en las DOS capas, con `estimaciones_cortas`
+  como báscula propia. En la corrida real: **0 estimaciones cortas de 11 llamadas**.
+- La causa cruza la frontera (`motivo` + `causa` en español). Construido y probado en `P14`;
+  **sin ejercitar con dinero**.
+- El encargo desigual existe, está medido (2,29×) y **el reparto ciego desperdició $0,024999
+  reales** parados en los baratos — el número que C.2 llevaba dos sesiones sin poder enseñar.
+
+**Abierto, con dueño:**
+- 🔲 El contrato debe comprobar que **responde a lo que se preguntó** (el hallazgo de arriba).
+- 🔲 Volver a correr la desigual con el techo dimensionado con el **coste esperado**, no con
+  el p90, para ver por fin al caro ahogarse. Es barato y ahora se sabe con qué número.
+- 🔲 El detector de un mismo `id` con dos padres distintos, arrastrado de C.1.
+
+---
+
 
 ### 🧠 BLOQUE D — Lo compartido
 

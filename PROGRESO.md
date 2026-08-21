@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 98 — NIVEL 8: **C.2 A MEDIAS Y DICHO: midió el freno, NO midió el reparto.** El presupuesto repartido existe y muerde — $0,045113: 15 pruebas gratis y DOS corridas pagadas —, pero **quedan TRES pendientes con dueño y la obligación del sobre sin pagar**, con las once afirmaciones commiteadas antes de lanzar nada. ✅ La corrida NORMAL 5/5 —**el freno se calló**, que era la obligación sellada— y la APRETADA 4/6. 🚨 **El techo NO era un techo: se pasó un 27,5 %**, porque el freno autoriza sin saber el precio de la llamada — **el defecto por el que descarté el otro esquema lo tenía también el elegido, escondido**. ⭐ Y el hallazgo mayor: **el worker tenía la respuesta y murió antes de decirla** — `tasa` y `convertir` ya ejecutadas; el corte pagó el trabajo y lo tiró. 🅰️ Apuesta 1 **fallada**: volvió vacía, no a medias, y **el motivo estaba medido esa misma mañana**.)
+**Última actualización:** 2026-08-21 (sesión 99 — NIVEL 8: **C.2: LOS TRES PENDIENTES PAGADOS, y el hallazgo mayor del bloque C salió de la corrida que los cerraba ($0,035567).** ⚠️ No dice «C.2 completa»: **queda un pendiente NUEVO con dueño**, nacido hoy, y ayer un rótulo generoso ya fue una pista falsa. ✅ El techo **acota** en las dos capas (`gastado + estimado > techo`, 0 estimaciones cortas de 11 llamadas), la causa **cruza**, y el encargo desigual midió **2,29× contra 2,33× diseñado**, con **$0,024999 reales de desperdicio** parados en los baratos. 🚨 **EL CONTRATO SE LLENÓ ENTERO CON LOS NÚMEROS DE OTRA PREGUNTA**: se pidió CAD y subió USD, con `faltan: []` — **un contrato completo no es un contrato correcto**, y lo cazó el modelo leyendo, no el harness. 🎲 Apuestas 1 y 2 **sin poder evaluarse** —nadie cortó— y **no se cuentan como ganadas**; la 3 fallada en su mitad central porque **el p90 es el precio correcto para un freno y el equivocado para un instrumento**: sobreestimé 1,93× y esa generosidad salvó al worker que quería ver ahogarse.)
 
 ---
 
@@ -3977,6 +3977,73 @@
 #   × 1,5 de holgura— y no de un dedo. Ayer el techo eran **$0,20** y **nadie lo había
 #   elegido**: salía de multiplicar cuatro topes sueltos.
 #
+# 🚨 **La 99 CERRÓ LOS TRES PENDIENTES DE C.2 y pagó UNA corrida ($0,035567) que
+# destapó el hallazgo más grande del bloque C — y nadie lo había apostado.**
+# ✅ **El techo ACOTA**: `gastado >= techo` pasó a `gastado + estimado > techo`,
+# en las DOS capas (el orquestador tenía el mismo `>=` ciego), con
+# `estimaciones_cortas` como báscula propia: **0 de 11 llamadas en la corrida
+# real**. ✅ **La causa CRUZA** (`motivo` + `causa` en español, dos campos porque
+# son dos lectores). ✅ **El encargo DESIGUAL existe y midió 2,29× contra 2,33×
+# diseñado** — y el reparto ciego **desperdició $0,024999 reales** parados en los
+# baratos, que es el número que C.2 llevaba dos sesiones sin poder enseñar.
+# 🚨 **EL HALLAZGO: EL CONTRATO SE LLENÓ ENTERO CON LOS NÚMEROS DE OTRA
+# PREGUNTA.** Se pidió CAD y subió `{"moneda":"USD","monto":725.65,
+# "pesos":621.18}` con `faltan: []`, `ok: True` y `motivo: None`. Los seis campos
+# llenos y todos malos: esos «pesos» eran **euros**, el último eslabón de la
+# cadena. 🔑 **`faltan` responde a «¿qué campo quedó vacío?» y nunca respondió a
+# «¿este campo habla de lo que yo pregunté?». UN CONTRATO COMPLETO NO ES UN
+# CONTRATO CORRECTO.** ⚠️ Lo cazó **el modelo de arriba leyendo**, no el harness:
+# un guardarraíl de prosa atrapó lo que el contrato tipado dejó pasar, que es al
+# revés de por qué existe A.3. Y fue **suerte**: los números eran absurdos (621
+# «pesos» por 1.000 CAD). Con una cifra verosímil habría subido sin que nadie
+# tosiera.
+# 🐛 **Y el mismo mecanismo salió TRES veces el mismo día:** (1) las pruebas
+# gratis escribían **once líneas inventadas en el registro PAGADO** —la sesión 50
+# de TEAPP palabra por palabra, y venía desde ayer con `P9`—; (2) la constante
+# del freno era **la media usada como tope**: $0,002404, y **96 de 170 llamadas
+# pagadas (56 %) costaron más**; (3) el contrato de arriba. 🔑 **Las tres se
+# cazaron porque el error era LLAMATIVO, no porque el sistema lo detectara.**
+# 🎲 **LAS TRES APUESTAS, sin redefinir ninguna:** la 1 y la 2 **NO SE PUDIERON
+# EVALUAR** —nadie cortó, así que ni el corte adelantado ni `causa` se
+# ejercitaron— y **no se cuentan como ganadas** aunque `P11b` y `P14` digan lo
+# mismo gratis. La 3 **FALLADA en su mitad central** (el caro no cortó: gastó
+# $0,016504 de $0,019699) y **clavada en la otra** (2,29× vs 2,33×).
+# 🔑 **Y el motivo del fallo es una lección sobre MEDIR:** el techo se dimensionó
+# con el p90 ($0,004546 × 7 vueltas) y el caro hizo **5 llamadas** costando
+# $0,016504 — **sobreestimé 1,93×, y esa generosidad salvó al worker que quería
+# ver ahogarse.** ⭐ **El p90 es el precio correcto para un FRENO y el equivocado
+# para un INSTRUMENTO**: un freno prefiere sobrar; una medición que sobra se
+# anula sola. El mismo número cambió de papel y no me di cuenta.
+# 🐛 También se escribió una afirmación falsa y se cazó el mismo día: *«las
+# llamadas del orquestador son las caras»*. Son **las baratas** (mediana
+# $0,001844 contra $0,002438). Es **A.3 cobrando**: lo que sube son seis campos,
+# no la conversación. **El contrato abarató la capa de arriba**, y eso no estaba
+# escrito en ningún sitio.
+# 🚨 **HALLAZGO alta / no bloqueante que NO se tapó:** el techo arreglado trae un
+# modo de fallo **espejo del de ayer**. Un `>=` ciego tiene falsos negativos; un
+# `+ estimado` tiene **falsos positivos**: puede cortar a quien sí cabía. Margen
+# del trozo normal sobre el peor worker medido: **$0,001936 = 0,43 llamadas**.
+# Una vuelta de más en operación normal ya corta. **No se tocó `HOLGURA`** para
+# taparlo: moverla con ese número delante es moverla contra un resultado visto.
+# 📊 De 21 a **26 pruebas**, todas gratis y sobre el bucle de verdad.
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — C.3, pero arrancando por el pendiente que C.2
+#   dejó abierto y que es de C.3:**
+#   · 🔲 **El contrato tiene que comprobar que RESPONDE A LO QUE SE PREGUNTÓ**, al
+#     menos `datos["moneda"] == moneda_pedida`, no sólo que no tiene huecos.
+#     **Entra con su torcedura al lado o no entra** (`LM.13`).
+#   · 🔲 **Volver a correr la desigual con el techo dimensionado por el coste
+#     ESPERADO y no por el p90**, para ver por fin al caro ahogarse. Es barato
+#     (~$0,03) y ahora se sabe con qué número: el caro cuesta $0,016504.
+#   · 🔲 **Las apuestas 1 y 2 siguen SIN EJERCITAR con dinero.** La corrida de
+#     arriba las paga de paso si el techo aprieta de verdad.
+# 🔲 **PENDIENTE VIEJO, arrastrado de C.1:** el detector de un mismo `id` con dos
+#   padres distintos. **Entra con su torcedura al lado o no entra.**
+# 🎲 **Y LA PRIMERA COSA DE LA SESIÓN 100 ES SELLAR LA APUESTA Y COMMITEARLA.**
+#   Van SIETE sesiones con ese orden. Hoy cobró de una forma nueva: **dos apuestas
+#   quedaron sin poder evaluarse, y decirlo en vez de darlas por ganadas es lo
+#   que las hace valer algo.**
+
 # ➡️ **SIGUIENTE PASO CONCRETO — cerrar los TRES pendientes de C.2 antes de pasar a C.3.**
 #   · 🔲 **El techo tiene que acotar de verdad:** comprobar `gastado + coste_estimado > techo`
 #     **antes** de autorizar. Exige la estimación que se le echó en cara al candidato 3, y con
