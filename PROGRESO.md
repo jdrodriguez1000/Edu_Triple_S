@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-20 (sesión 96 — NIVEL 8: **`D-B5.1` PAGADA**, con la apuesta sellada y commiteada antes de correr. **3 de 3 acertadas**, una con el mecanismo a medias. ⭐ **La queja muere en el salto 2→1 y conserva la CONSECUENCIA tirando la CAUSA.** Y el hallazgo lo regaló una caída de red REAL: un bug propio y un hipo de la red llegaron arriba **indistinguibles**. $0,016262. **El bloque B queda cerrado sin apuestas en blanco.**)
+**Última actualización:** 2026-08-21 (sesión 97 — NIVEL 8: **ARRANCA EL BLOQUE C**. Apuesta de C.1 sellada y commiteada antes de teclear (5ª seguida), y esta vez se **CONTÓ** lo contable en vez de estimarlo. ⭐ **Apuesta 3 ganada y peor de lo apostado: $0,036617 cambiaron de dueño en el registro y el total no se movió ni una millonésima** → `LM.64`. 🐛 Y salió sin buscarlo un bicho: las pruebas *gratis* escribían en el registro **pagado** — muerto en el origen, con portero, y **visto morder**. **$0,00 en toda la sesión.**)
 
 ---
 
@@ -3795,7 +3795,39 @@
 # ✅ **`D-B5.1` PAGADA (sesión 96). EL BLOQUE B QUEDA CERRADO SIN APUESTAS EN BLANCO.**
 # $0,016262 · 9 llamadas · **3 de 3 acertadas**, una con el mecanismo solo a medias.
 #
-# ➡️ **SIGUIENTE PASO CONCRETO — ARRANCAR EL BLOQUE C, el harness a dos capas.**
+# ✅ **C.1 · PASO 1 HECHO (sesión 97). $0,00.** `traza.py` · 8 pruebas gratis · portero.
+# ⭐ **Apuesta 3 GANADA y peor de lo apostado:** se renombró el dueño de 35 renglones del
+#   registro sin tocar un número, y el auditor dio **el mismo total (0,278603) y las mismas
+#   117 llamadas**. Las 14 pruebas de `profundidad.py` contra el registro torcido: **14
+#   verdes, 0 rojas.** `capa` no es un dato: es un adjetivo que nadie vuelve a mirar.
+# 🚨 **Y el hallazgo incómodo: el experimento REPRODUJO gratis el síntoma con el que se cazó
+#   el hallazgo de la 95** —`eur` en cero, `usd` con el gasto de los dos—. Ese síntoma tiene
+#   DOS causas —enrutado torcido o etiqueta mal puesta— y el harness no las distingue.
+#   Aquella vez la causa era real, pero se comprobó **a mano y solo porque alguien sospechó**.
+# 🔑 *«La contabilidad cuadró al centavo»*, declarado tres sesiones seguidas, **es ciego a
+#   quién gastó.** → `LM.64`.
+# 🐛 **Bicho lateral, muerto el mismo día:** las pruebas gratis de `profundidad.py` escribían
+#   en el registro **PAGADO** (4 líneas dentro, 1 commiteada en `e3ee1ba`). El arreglo **ya
+#   estaba en el repo**, en `fan_out.py`, un archivo más allá — `LM.20` por cuarta vez.
+#   → Muerto en el ORIGEN (`orquestador.registro_desviado()`), con **portero** sobre los dos
+#   registros, y **visto morder** (prueba 7 le quita el arreglo y exige rojo). Las 4 líneas
+#   retiradas, con la medición de que no movieron ningún número (0,278603 antes y después).
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — C.1 · PASO 2: añadir `id`, `padre` y `profundidad` al
+#   registro.** ⚠️ **Y llega con una condición escrita antes de empezar:** añadir `padre` no
+#   arregla nada por sí solo. Si nace sin nadie que lo compruebe será el **tercer adjetivo**
+#   del registro, después de `capa` y `worker`. **La pieza no es el campo: es la prueba que
+#   tuerce el parentesco a propósito y exige rojo** — la obligación sellada en el sobre.
+# 📌 Los pasos 3, 4 y 5 quedan planificados: (3) esa prueba; (4) reconstruir el árbol de una
+#   corrida ya grabada; (5) pasarle el árbol al defecto de la 95 → resuelve la apuesta 1.
+# 📌 **La apuesta 2 ($0,00) sigue viva:** la sesión 97 no llamó a la API ni una vez.
+#
+# ➡️ *(el siguiente paso de la 96 era ARRANCAR EL BLOQUE C — se hizo en la 97, arriba)*
+# 🎲 **LA PRIMERA COSA DE LA SESIÓN ES SELLAR LA APUESTA Y COMMITEARLA.** Van CINCO
+#   sesiones con ese orden y las cinco han cobrado.
+#
+# --- lo que decía al cerrar la 96, se conserva ---
+# ➡️ **ARRANCAR EL BLOQUE C, el harness a dos capas.**
 #   C.1 traza anidada · C.2 presupuesto repartido · C.3 permisos · C.4 fallos del worker ·
 #   C.5 tope de recursión · C.6 modelo y esfuerzo por capa.
 # 📌 **Y ya tiene DOS deberes esperándolo, los dos medidos y no supuestos:**
@@ -14524,6 +14556,55 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   reloj**. 📌 Importa más que de costumbre porque en el nivel 8 **la fecha viaja DENTRO de
   los datos medidos**: un supervisor de B.4 ya rechazó un trabajo bueno alegando que *«20 de
   agosto de 2026 es una fecha futura»*.
+
+
+- **Se CONTÓ lo contable en vez de apostarlo, y lo contado era mejor que la apuesta**
+  (sesión 97, y corrige un vicio de cuatro sesiones). Antes de sellar C.1 se leyeron los
+  registros ya pagados: **las dos capas escriben en archivos DISTINTOS sin un solo campo que
+  los una**; el que dice *quién* se llama `capa` arriba y `worker` abajo y **ninguno apunta al
+  otro**; **no existe `id`, ni `padre`, ni `profundidad`, ni identificador de corrida** en
+  ningún registro del nivel 8. 🔑 Y el número que valía la sesión: de **35 arranques** de
+  worker grabados hay **UN segundo con tres arrancando a la vez**. Unir las dos capas por el
+  reloj acertaría **32 de 35** — y falla **exactamente en el fan-out paralelo**, la pieza de
+  la que el bloque B está más orgulloso. ⭐ **La traza plana no se rompe al azar: se rompe
+  donde se presume.**
+- **⭐ $0,036617 cambiaron de dueño y el total no se movió ni una millonésima** (sesión 97, y
+  es el hallazgo del día → `LM.64`). Se renombró el dueño de **35 renglones** del registro
+  —`eur` → `usd`— **sin tocar un número**: ni costo, ni tokens, ni horas, ni orden. El auditor
+  dio el mismo total (**0,278603**) y las mismas **117** llamadas; las **14 pruebas** de
+  `profundidad.py` contra el registro torcido salieron **14 verdes, 0 rojas**. 🔑 **`capa` no
+  es un dato del harness: es un adjetivo que se escribe una vez y nadie vuelve a mirar.**
+  📌 Y no es un defecto de `auditar()` —su trabajo es la aritmética y la hace bien—: es que
+  **la atribución no tiene dueño.** `por_capa` se calcula, se imprime, se usa para concluir, y
+  **ninguna prueba la comprueba**. Un instrumento al que nadie le pregunta si acertó.
+- **🚨 El experimento reprodujo GRATIS el síntoma con el que se cazó el hallazgo de la 95**
+  (sesión 97, y es lo incómodo). Aquel día se destapó al ver *dos líneas `usd` y ninguna
+  `eur`*. Hoy esa misma tabla se fabricó **solo renombrando etiquetas**, sin tocar el
+  enrutado y sin llamar a nadie. 🔑 **Ese síntoma tiene DOS causas —enrutado realmente
+  torcido, o etiqueta mal puesta— y el harness no las distingue.** Aquella vez la causa era
+  real; **se comprobó a mano, y solo porque alguien sospechó.** Es `D-B5.3` con otra ropa.
+- **«La contabilidad cuadró al centavo» contesta una pregunta más pequeña de la que parece**
+  (sesión 97). Se declaró **tres sesiones seguidas** (94, 95, 96) como prueba de cuentas
+  sanas. Queda medido que **es ciego a quién gastó**: sumar es conmutativo y a quién se le
+  apunte cada sumando no altera el total. **Cuadrar la suma no es haber atribuido nada.**
+- **🐛 Las pruebas GRATIS escribían en el registro PAGADO, y el arreglo ya estaba en el repo**
+  (sesión 97, bicho lateral, muerto el mismo día). La prueba 2 de `profundidad.py` llama a
+  `ejecutar_un_bloque` → `anotar` → **el archivo de las corridas pagadas**. Había **4 líneas**
+  inventadas dentro y **una commiteada en `e3ee1ba`**. 🔑 **Lo peor no es el bicho:
+  `fan_out.py` (sesión 93) hacía esa misma desviación a mano, con un comentario citando la
+  sesión 50 de TEAPP, y `profundidad.py` —escrito DOS sesiones después— no lo alcanzó.
+  `LM.20` por cuarta vez.** → Muerto en el **ORIGEN** (`orquestador.registro_desviado()`),
+  con **portero** que corre las pruebas de los 5 módulos y exige que los registros no crezcan
+  ni una línea, y **visto morder**: la prueba 7 le quita el arreglo y exige rojo, sobre copias.
+  📌 Las 4 líneas se retiraron **con la medición al lado**: 0,278603 y 117 llamadas antes y
+  después — ninguna era `llamada_api`. ⚠️ **Hoy no hacía daño por suerte, no por diseño:**
+  bastaba una prueba futura que registrara una `llamada_api` para meter dinero inventado en
+  la factura del bloque F. 🔑 Y es **C.1 puro**: pasa porque no hay identificador de corrida,
+  que era **el punto 4 de lo contado esa misma mañana**, mordiendo el día en que se escribió.
+- **El sospechoso de estar ciego, nombrado antes por tercera vez seguida** (sesión 97). Se
+  avisó en el sobre que *«el que escribe `padre=` es el mismo que ya sabe quién es el padre»*.
+  Todavía no ha disparado —el paso 2 no está escrito— pero **ya cambió el plan**: la pieza de
+  C.1 dejó de ser el campo y pasó a ser **la prueba que lo tuerce y exige rojo**.
 
 ---
 

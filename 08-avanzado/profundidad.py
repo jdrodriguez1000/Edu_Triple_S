@@ -577,8 +577,14 @@ def _pruebas():
         return {"ok": 1}
 
     conta = {"capa": "prueba"}
-    r = orquestador.ejecutar_un_bloque(_Bloque(), conta, verboso=False,
-                                       funciones={"solo_mia": _falsa})
+    # 🚨 EL DESVÍO NO ES UN ADORNO — SIN ÉL ESTA PRUEBA ENSUCIABA EL REGISTRO
+    #    REAL, Y LO HIZO CUATRO VECES ANTES DE QUE ALGUIEN LO MIRARA (sesión 97).
+    #    `ejecutar_un_bloque` llama a `anotar`, y `anotar` escribe donde diga
+    #    `orquestador.REGISTRO`. Que aquí sea el archivo de las corridas PAGADAS
+    #    es lo que convierte una prueba gratis en un dato inventado.
+    with orquestador.registro_desviado():
+        r = orquestador.ejecutar_un_bloque(_Bloque(), conta, verboso=False,
+                                           funciones={"solo_mia": _falsa})
     check("2. el puente que entra por la puerta manda sobre el global",
           llamada.get("si") and '"ok": 1' in r["content"], r["content"])
 

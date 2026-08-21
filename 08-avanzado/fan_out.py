@@ -354,6 +354,12 @@ def _pruebas():
     #    medida escribía en los datos de verdad. Unas pruebas que ensucian el
     #    `.jsonl` real convierten el registro de las corridas PAGADAS en una
     #    mezcla de corridas pagadas e inventadas — y eso no se nota nunca.
+    # 📌 ESTA DESVIACIÓN A MANO YA NO ES LA FORMA BUENA: desde la sesión 97 vive
+    #    en el origen, `orquestador.registro_desviado()`. Aquí se deja tal cual
+    #    a propósito —funciona y tocarla no aporta nada— pero el archivo que
+    #    venga usa el del origen. 🔑 Lo que costó no tenerla ahí: `profundidad.py`,
+    #    escrito DOS sesiones después de esto, no alcanzó esta copia y metió
+    #    cuatro líneas de prueba en el registro de verdad. Es `LM.20`.
     temporal = Path(tempfile.mkdtemp()) / "registro_de_pruebas.jsonl"
     registro_real = orquestador.REGISTRO
     funciones_reales = dict(orquestador.FUNCIONES_ORQ)

@@ -72,6 +72,8 @@ Su caja tiene UNA cosa: `consultar_moneda`. No lleva `tasa`, ni `trm`, ni
 import json
 import random
 import sys
+import contextlib
+import tempfile
 import threading
 import time
 import traceback
@@ -199,6 +201,43 @@ def anotar(evento, **datos):
     with _CANDADO_REGISTRO:
         with open(REGISTRO, "a", encoding="utf-8") as f:
             f.write(json.dumps(linea, ensure_ascii=False) + "\n")
+
+
+@contextlib.contextmanager
+def registro_desviado(modulos=None):
+    """Manda a un archivo temporal TODO lo que se anote aquí dentro.
+
+    🚨 EXISTE POR UN BICHO REAL, CAZADO EN LA SESIÓN 97, CON CUATRO LÍNEAS DE
+       PRUEBA YA COMMITEADAS DENTRO DEL REGISTRO DE VERDAD.
+       La prueba 2 de `profundidad.py` llama a `ejecutar_un_bloque`, que llama a
+       `anotar`, que escribía en `registro_orquestador_*.jsonl` — el archivo que
+       guarda las corridas PAGADAS. Unas pruebas gratis ensuciando el registro
+       convierten las corridas medidas en una mezcla de medidas e inventadas, y
+       eso no se nota nunca: la línea de prueba se parece a las demás.
+
+    🔑 Y LO PEOR NO ES EL BICHO: EL ARREGLO YA ESTABA ESCRITO EN EL REPO.
+       `fan_out.py` (sesión 93) hacía esta misma desviación a mano, con un
+       comentario citando la sesión 50 de TEAPP. `profundidad.py`, escrito DOS
+       sesiones después, no lo alcanzó. Es `LM.20` otra vez: la corrección
+       existía y nadie llegó a ella. Por eso ahora vive AQUÍ, en el origen, y no
+       en cada archivo que se acuerde de copiarla.
+
+    Desvía el registro de este módulo y el del worker — los dos que forman
+    `REGISTROS`. Devuelve la carpeta temporal, por si la prueba quiere leerla.
+    """
+    global REGISTRO
+    modulos = modulos if modulos is not None else [sys.modules[__name__], worker]
+    carpeta = Path(tempfile.mkdtemp())
+    reales = [(m, m.REGISTRO) for m in modulos]
+    try:
+        for m, _ in reales:
+            m.REGISTRO = carpeta / f"registro_de_pruebas_{m.__name__}.jsonl"
+        yield carpeta
+    finally:
+        # 🔒 En el `finally`, no al final del `try`. Un instrumento que se queda
+        #    encendido tras un fallo es peor que uno que nunca se usó.
+        for m, real in reales:
+            m.REGISTRO = real
 
 
 # ---------------------------------------------------------------------------

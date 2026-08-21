@@ -5508,3 +5508,39 @@ ordenándole explícitamente conservarlo. La instrucción estaba; no bastó.
 servicios, informes de agentes, alertas que un humano lee al final. Si arriba no puedes
 distinguir *«hay que arreglar algo»* de *«reintenta en un minuto»*, la cadena está
 funcionando **exactamente como se diseñó**, y esa es la mala noticia.
+
+### LM.64 — Cuadrar la suma no es haber atribuido nada
+
+Un registro de dos capas guardaba, en cada renglón, quién lo había hecho. Se renombró el
+dueño de **35 renglones** —el gasto de un worker pasó a figurar como de otro— **sin tocar un
+solo número**: ni un costo, ni un token, ni una hora, ni el orden. El auditor siguió dando
+**exactamente el mismo total** y **exactamente las mismas llamadas**. Ninguna de las catorce
+pruebas del nivel se puso roja. **$0,036617 cambiaron de dueño y nadie se enteró.**
+
+🔑 **El total es una pregunta más pequeña de la que parece.** *«La contabilidad cuadró al
+centavo»* se había declarado **tres sesiones seguidas** como prueba de que las cuentas
+estaban sanas. Lo que esa frase demuestra es que **la aritmética cierra**, y la aritmética
+cierra igual de bien con las etiquetas cambiadas: sumar es conmutativo, y a quién se le
+apunte cada sumando no altera el resultado.
+
+🚨 **Y el daño no es teórico: el mismo síntoma tiene dos causas y el harness no las
+distingue.** El mejor hallazgo de todo un bloque se destapó al ver una tabla de gasto con
+*dos líneas de una moneda y ninguna de la otra*. Esa tabla se puede fabricar idéntica
+**solo renombrando etiquetas**, sin que nada esté realmente mal. Aquella vez la causa era
+real — y se comprobó **a mano, y solo porque alguien sospechó**.
+
+📌 **El defecto no está en el que suma.** El auditor hace aritmética y la hace bien; tiene su
+propia prueba contra un registro cuyo total se conoce. El defecto es que **la atribución no
+tiene dueño**: el reparto por capa se calcula, se imprime, se usa para sacar conclusiones —
+y no hay una sola prueba que lo compruebe. Es un instrumento **al que nadie le pregunta
+nunca si acertó**, que es peor que uno que miente: el que miente acaba contradiciendo algo.
+
+⭐ **Y la consecuencia práctica, antes de escribir la siguiente línea:** añadir un campo
+`padre` al registro **no arregla esto por sí solo**. Un campo que nace sin nadie que lo
+compruebe es un adjetivo más. **La pieza no es el campo: es la prueba que lo tuerce a
+propósito y exige que algo se ponga rojo.**
+
+**Dónde muerde fuera de aquí:** cualquier sitio donde un total se reparte entre dueños —
+facturación por cliente, atribución de errores por servicio, uso de recursos por equipo,
+métricas por región. El total se audita siempre, porque salta a la vista cuando falla. **El
+reparto casi nunca**, porque cuando falla sigue sumando lo mismo.

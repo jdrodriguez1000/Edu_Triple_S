@@ -2227,6 +2227,119 @@ habría cumplido dos veces: en el campo viejo y en el que se escribió hoy para 
 
 ---
 
+##### 📊 C.1 · PASO 1 — LO QUE SALIÓ, el 2026-08-21. **$0,00 · apuesta 3 CONFIRMADA**
+
+`traza.py` · 6 pruebas gratis · el experimento no llamó a la API ni una vez.
+
+**Qué se hizo:** sobre los **307 renglones** de los dos registros reales, se renombró el
+dueño `eur` → `usd`. **35 renglones cambiaron de dueño y no se tocó ni un número:** ni un
+costo, ni un token, ni una hora, ni el orden.
+
+| Lo que el auditor ve | sano | torcido | ¿lo notó? |
+|---|---:|---:|:-:|
+| total en dólares | 0,278603 | 0,278603 | 🚨 **NO** |
+| llamadas a la API | 117 | 117 | 🚨 **NO** |
+| `eur` | 0,036617 | **0,000000** | *desapareció* |
+| `usd` | 0,105773 | **0,142390** | *se quedó con el gasto ajeno* |
+
+**Y las 14 pruebas de `profundidad.py`, corridas contra el registro torcido: 14 verdes, 0
+rojas, código de salida 0.** Nada se puso rojo en todo el nivel.
+
+🔑 **LA APUESTA 3 GANA, Y EL NÚMERO ES PEOR QUE LA APUESTA: $0,036617 cambiaron de dueño y
+el total no se movió ni una millonésima.** El campo `capa` no es un dato del harness: es
+un adjetivo que se escribe una vez y **nadie vuelve a mirar**. El único lector que tiene en
+todo el nivel 8 es `auditar()`, y lo usa para *imprimir* un reparto, no para comprobarlo.
+
+⭐ **PERO EL HALLAZGO DEL DÍA NO ES ESE, Y ES INCÓMODO: el experimento reprodujo, a mano y
+gratis, EXACTAMENTE el síntoma con el que se cazó el hallazgo de la sesión 95.**
+
+Aquel día el defecto se destapó porque la tabla de gasto tenía **dos líneas `usd` y ninguna
+`eur`**. Hoy, sin tocar el enrutado ni llamar a nadie, se ha fabricado esa misma tabla
+—`eur` en cero, `usd` con el gasto de los dos— **solo renombrando etiquetas**.
+
+🚨 **Es decir: el síntoma que produjo el mejor hallazgo del bloque B tiene DOS causas
+posibles —un enrutado realmente torcido, o un simple error de etiqueta— y el harness no
+sabe distinguirlas.** Aquella vez la causa era real, y se comprobó leyendo el texto del
+encargo. **Pero se comprobó a mano, y solo porque alguien sospechó.**
+
+🔑 **Y hay una tercera cosa, que es la que de verdad duele:** *«la contabilidad cuadró al
+centavo»* se ha declarado **tres sesiones seguidas** (94, 95, 96) como prueba de que las
+cuentas están sanas. Hoy queda medido que **ese número es ciego a quién gastó**. No está
+mal: está contestando una pregunta más pequeña de la que parecía. Cuadrar la suma **no es
+haber atribuido nada.**
+
+📌 **Y esto NO es un defecto de `auditar()`.** Su trabajo es la aritmética y la hace bien —
+la prueba 3 de `profundidad.py` lo vigila contra un registro cuyo total se sabe. El defecto
+es que **la atribución no tiene dueño**: `por_capa` se calcula, se imprime, se usa para
+sacar conclusiones, y **no hay una sola prueba en el nivel que la compruebe**.
+🔑 Es `LM.15` otra vez, y de la peor forma: no es un instrumento que dé un dato falso — es
+un instrumento **al que nadie le pregunta nunca si acertó**.
+
+➡️ **Lo que esto le cambia al paso 2, antes de escribirlo:** añadir `padre` no arregla
+nada por sí solo. Si `padre` nace sin nadie que lo compruebe, será el tercer adjetivo del
+registro —después de `capa` y `worker`— y C.1 habrá cambiado una etiqueta por otra más
+larga. **La obligación sellada en el sobre deja de ser una precaución y pasa a ser la
+pieza:** la prueba que tuerce el parentesco y exige rojo.
+
+---
+
+##### 🐛 EL BICHO LATERAL DE C.1, MUERTO EL MISMO DÍA — y salió sin buscarlo
+
+**Importancia: media · Urgencia: no bloqueante.** No rompía ningún número —queda medido más
+abajo— pero era una mina cebada.
+
+**Qué pasaba:** la prueba 2 de `profundidad.py` llama a `ejecutar_un_bloque`, que llama a
+`anotar`, que escribe **donde diga `orquestador.REGISTRO`** — o sea, en el archivo de las
+corridas **PAGADAS**. Cada vez que se corrían las pruebas *gratis*, el registro de verdad
+crecía una línea inventada. Había **cuatro** dentro, y **una está commiteada en `e3ee1ba`**.
+
+🔑 **Y lo peor no es el bicho: el arreglo ya estaba escrito en el repo, un archivo más allá.**
+`fan_out.py` (sesión 93) hacía exactamente esta desviación **a mano**, con un comentario
+citando la sesión 50 de TEAPP. `profundidad.py`, escrito **dos sesiones después**, no lo
+alcanzó. **Es `LM.20` por cuarta vez: la corrección existía y nadie llegó a ella.**
+
+##### 🔧 Cómo se mató — en el ORIGEN, y con portero encima
+
+| | |
+|---|---|
+| **El origen** | `orquestador.registro_desviado()` — un `with` que manda a un temporal todo lo que se anote dentro, y restaura en el `finally`. Vive donde vive `anotar`, no en cada archivo que se acuerde de copiarlo. |
+| **El uso** | `profundidad.py` prueba 2, envuelta. |
+| **El portero** | `traza.portero()` — corre las pruebas gratis de **los cinco módulos** del nivel y exige que los registros reales **no crezcan ni una línea**. |
+
+⭐ **El portero es el arreglo de verdad; el `with` solo arregla un archivo.** El portero
+arregla la **clase**: cualquier prueba de cualquier módulo —**incluidos los que todavía no
+existen**— que escriba en el registro pagado, lo pone rojo. Es la sesión 49 de TEAPP: se
+arregla en el origen **y encima** se pone un portero sobre los datos enteros.
+
+🚨 **Y SE VIO MORDER, que es lo que lo separa de una nota (`LM.13`).** La prueba 7 de
+`traza.py` **le quita el arreglo a `profundidad.py`** —anula el desviador— y exige que el
+portero **se ponga rojo**. Todo sobre **copias**: el experimento que comprueba que nadie
+ensucia los datos de verdad sería un chiste si ensuciara los datos de verdad.
+
+##### 🧹 Las cuatro líneas, retiradas — y por qué se puede afirmar que no movieron nada
+
+Se retiraron del registro `2026-08-20T20:31:14`, `20:36:17`, `20:43:45` y `2026-08-21T14:20:23`.
+**Las cuatro eran `evento: "herramienta"`, ninguna era `llamada_api`** — y `auditar()` solo
+suma `llamada_api`. Medido antes y después de quitarlas:
+
+| | antes | después |
+|---|---:|---:|
+| total auditado | 0,278603 | **0,278603** |
+| llamadas | 117 | **117** |
+| líneas del registro | 83 | **79** |
+
+📌 **No se borra historia: se retira basura del instrumento.** Y se anota aquí lo que se quitó,
+para que la retirada quede en el sitio donde sí es historia. ⚠️ **Lo que sí hay que decir:
+hoy no hacía daño por suerte, no por diseño.** Bastaba una prueba futura que registrara una
+`llamada_api` para meter dinero inventado en la factura del bloque F.
+
+🔑 **Y es C.1 puro, no una anécdota de higiene: esto pasa porque el registro no tiene
+identificador de corrida.** Una línea de prueba y una línea pagada viven en el mismo archivo
+sin nada que las separe — **el punto 4 de lo que se contó al abrir la sesión, mordiendo el
+mismo día en que se escribió.**
+
+---
+
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
