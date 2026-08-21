@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 97 — NIVEL 8: **ARRANCA EL BLOQUE C**. Apuesta de C.1 sellada y commiteada antes de teclear (5ª seguida), y esta vez se **CONTÓ** lo contable en vez de estimarlo. ⭐ **Apuesta 3 ganada y peor de lo apostado: $0,036617 cambiaron de dueño en el registro y el total no se movió ni una millonésima** → `LM.64`. 🐛 Y salió sin buscarlo un bicho: las pruebas *gratis* escribían en el registro **pagado** — muerto en el origen, con portero, y **visto morder**. **$0,00 en toda la sesión.**)
+**Última actualización:** 2026-08-21 (sesión 97 — NIVEL 8: **BLOQUE C ARRANCADO, C.1 pasos 1 y 2 HECHOS, $0,00 en toda la sesión**. Apuesta sellada antes de teclear (5ª seguida) y esta vez se **CONTÓ** lo contable. ⭐ **Apuesta 3 ganada: $0,036617 cambiaron de dueño y el total no se movió** → `LM.64`. 🌳 **El parentesco ya cruza los hilos y nadie escribe un `padre=`** — pero las corridas ya pagadas **no se pueden convertir en árbol nunca** → `LM.65`. 🐛 Y un bicho lateral muerto en el origen, con portero y visto morder: las pruebas *gratis* escribían en el registro **pagado**.)
 
 ---
 
@@ -3813,13 +3813,38 @@
 #   registros, y **visto morder** (prueba 7 le quita el arreglo y exige rojo). Las 4 líneas
 #   retiradas, con la medición de que no movieron ningún número (0,278603 antes y después).
 #
-# ➡️ **SIGUIENTE PASO CONCRETO — C.1 · PASO 2: añadir `id`, `padre` y `profundidad` al
-#   registro.** ⚠️ **Y llega con una condición escrita antes de empezar:** añadir `padre` no
-#   arregla nada por sí solo. Si nace sin nadie que lo compruebe será el **tercer adjetivo**
-#   del registro, después de `capa` y `worker`. **La pieza no es el campo: es la prueba que
-#   tuerce el parentesco a propósito y exige rojo** — la obligación sellada en el sobre.
-# 📌 Los pasos 3, 4 y 5 quedan planificados: (3) esa prueba; (4) reconstruir el árbol de una
-#   corrida ya grabada; (5) pasarle el árbol al defecto de la 95 → resuelve la apuesta 1.
+# ✅ **C.1 · PASO 2 HECHO (sesión 97). $0,00 · 20 pruebas en verde.** `contexto.py` nuevo.
+#   Al registro entran `corrida`, `id`, `padre`, `profundidad` y `tramo`.
+# ⭐ **El sospechoso del sobre quedó DESARMADO por diseño: no hay una sola línea en todo el
+#   nivel 8 que pase un `padre=`.** El parentesco se deduce de dónde está el programa cuando
+#   anota (`contextvars`), y quien lo deduce es la librería estándar, no yo. Una variable de
+#   contexto no es una carta que va de mano en mano: **es la luz de la habitación.**
+# 🚨 **Y la trampa muerde EXACTAMENTE donde ya mordía la traza plana: un hilo nuevo no hereda
+#   el contexto.** Sin `atado()`, los tres workers del fan-out anotan con `padre: null` y **el
+#   árbol sale plano y con pinta de correcto**, sin un solo error. Se ve morder en las pruebas
+#   12 y 13: sin atar exige huérfanos, con atar exige el padre correcto.
+# 🌳 **El árbol se dibuja** (`python traza.py --demo`, $0,00) y ya dice algo que la tabla plana
+#   no decía: **`propio $0,000000` en los tres escalones de en medio.** El «38,6 % del gasto en
+#   capas que no averiguan nada» de B.5 dejó de ser una cuenta a mano: es la FORMA del árbol.
+# ⚠️ **Y una limitación que CAMBIA EL PLAN DEL PASO 4, dicha en cuanto se supo:** los registros
+#   pagados de las sesiones 92-96 **no se pueden convertir en árbol. No es caro: es imposible.**
+#   → `LM.65`, y queda como **prueba 20** para que no se olvide.
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — C.1 · PASO 3: LA PRUEBA QUE TUERCE EL PARENTESCO Y EXIGE
+#   ROJO.** Es la obligación sellada en el sobre, y ahora tiene blanco concreto: las pruebas 12
+#   y 18 ya son media pieza —una tuerce el mecanismo, la otra el resultado—; **falta torcer el
+#   `padre` de un registro GRABADO**, que es la forma exacta en que el paso 1 mató a `capa`.
+# 🔑 **El criterio de si el paso 2 sirvió no es que el árbol se dibuje bonito:** es que torcer
+#   `padre` ponga algo rojo. Si no lo pone, `padre` es el tercer adjetivo del registro
+#   —después de `capa` y `worker`— y C.1 habrá cambiado una etiqueta por otra más larga.
+# 📌 **Y ya está decidido cuál de los cinco campos nuevos es estructura y cuál decoración:**
+#   `corrida`, `id`, `padre` y `profundidad` aguantan el peso; **`tramo` es una etiqueta**, de
+#   la misma clase que `capa`. Se incluyó igual porque sin nombre legible el árbol no se lee.
+#   🔑 **El paso 1 no enseñó que las etiquetas sobren: enseñó que hay que saber cuáles lo son.**
+# 📌 **Pasos 4 y 5, replanteados:** (4) el árbol de una corrida ya grabada **solo puede
+#   significar una corrida NUEVA** — ver `LM.65`; (5) pasarle el árbol al defecto de la 95, que
+#   es lo que resuelve la apuesta 1. ⚠️ Si el 4 exige pagar, **la apuesta 2 ($0,00) falla**, y
+#   se anota como fallada en vez de redefinirse.
 # 📌 **La apuesta 2 ($0,00) sigue viva:** la sesión 97 no llamó a la API ni una vez.
 #
 # ➡️ *(el siguiente paso de la 96 era ARRANCAR EL BLOQUE C — se hizo en la 97, arriba)*
@@ -14605,6 +14630,41 @@ _(Este historial vale oro: los mismos errores reaparecen. Anótalos aunque parez
   avisó en el sobre que *«el que escribe `padre=` es el mismo que ya sabe quién es el padre»*.
   Todavía no ha disparado —el paso 2 no está escrito— pero **ya cambió el plan**: la pieza de
   C.1 dejó de ser el campo y pasó a ser **la prueba que lo tuerce y exige rojo**.
+
+
+- **🌳 El parentesco ya cruza los hilos, y nadie escribe un `padre=`** (sesión 97, paso 2 de
+  C.1, $0,00). Al registro entran `corrida`, `id`, `padre`, `profundidad` y `tramo`, y el
+  sospechoso que el sobre nombró —*«el que escribe `padre=` es el mismo que ya sabe quién es
+  el padre»*— **quedó desarmado por diseño, no por promesa**: no hay una sola línea en todo el
+  nivel 8 que pase un padre como argumento. Se deduce de dónde está el programa cuando anota,
+  con `contextvars`, y quien lo deduce es la librería estándar. 🔑 Una variable de contexto no
+  es una carta que va de mano en mano: **es la luz de la habitación.** Quien entra la tiene.
+- **🚨 Y la trampa mordía exactamente donde ya mordía la traza plana: un hilo nuevo no hereda
+  el contexto** (sesión 97). Sin atarlo, los tres workers del fan-out anotarían con
+  `padre: null` y **el árbol saldría plano y con pinta de correcto**, sin un solo error.
+  ⭐ **Es el mismo sitio donde falla unir por el reloj**, contado esa misma mañana: **el
+  paralelo es el único lugar donde *lo que pasó justo antes* deja de significar *quien me
+  llamó*.** → Se ve morder en dos pruebas: sin atar exige huérfanos, con atar exige el padre
+  correcto. **El bicho y su arreglo, los dos en verde, en la misma corrida.**
+- **⚠️ Las corridas ya pagadas NO se pueden convertir en árbol, y nunca se van a poder**
+  (sesión 97, y cambia el plan del paso 4 → `LM.65`). Los registros de las sesiones 92-96 no
+  tienen `id` ni `padre` y no hay de dónde sacarlos. **No es caro: es imposible.** 🔑 **La
+  traza es la única pieza del harness que no se puede añadir hacia atrás.** Un test se escribe
+  después; un presupuesto se pone después; un árbol no — o la línea nació sabiendo de quién
+  era hija, o esa línea ya nunca lo va a saber. **Lo que no se instrumentó, no ocurrió.**
+  📌 Queda como **prueba 20** para que no se olvide, y obliga a que *«reconstruir una corrida
+  ya grabada»* pase a significar **una corrida nueva**.
+- **El árbol ya dice algo que la tabla plana no decía** (sesión 97). En el árbol dibujado,
+  los tres escalones de en medio salen con **`propio $0,000000`**. El *«38,6 % del gasto en
+  capas que no averiguan ni un dato»* de B.5 **dejó de ser una cuenta a mano: es la forma del
+  árbol.** 📌 Y los workers de la demo son falsos a propósito —se mide el parentesco, no el
+  modelo— pero **el camino es el de verdad**: un árbol dibujado por un camino de mentira
+  mediría al camino de mentira.
+- **Se decidió, y se dejó escrito, cuál de los campos nuevos es estructura y cuál decoración**
+  (sesión 97). `corrida`, `id`, `padre` y `profundidad` **aguantan el peso**; **`tramo` es una
+  etiqueta**, de la misma clase que la `capa` que el paso 1 mató esa mañana. Se incluyó igual,
+  porque sin nombre legible el árbol no se lee. 🔑 **El paso 1 no enseñó que las etiquetas
+  sobren: enseñó que hay que saber cuáles lo son.**
 
 ---
 

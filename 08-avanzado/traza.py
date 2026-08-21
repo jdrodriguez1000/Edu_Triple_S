@@ -154,7 +154,110 @@ def _informe(de, a, total_lineas, torcidas, limpio, sucio):
 
 
 # ---------------------------------------------------------------------------
-# 3) EL PORTERO — ninguna prueba gratis puede escribir en el registro pagado
+# 3) EL ÁRBOL — C.1 · PASO 2
+# ---------------------------------------------------------------------------
+
+def arbol(lineas, verboso=True):
+    """Reconstruye el árbol de una corrida a partir de `id` y `padre`.
+
+    ⚠️ Y AQUÍ HAY QUE DECIR ALGO INCÓMODO, PORQUE CAMBIA EL PLAN DEL PASO 4.
+       Los registros de las sesiones 92 a 96 **no se pueden convertir en árbol**.
+       No es que sea caro: es imposible. `id` y `padre` no están ahí y no hay de
+       dónde sacarlos — unir por el reloj falla justo en el paralelo (medido en
+       la 97: un segundo con tres arranques).
+
+    🔑 **La traza es la única pieza del harness que no se puede añadir hacia
+       atrás.** Un test se puede escribir después. Un presupuesto se puede poner
+       después. Un árbol, no: o la línea nació sabiendo de quién era hija, o esa
+       línea ya nunca lo va a saber. **Lo que no se instrumentó, no ocurrió.**
+    """
+    if not lineas:
+        return {}
+
+    gasto = {}
+    hijos, raices, nombre = {}, [], {}
+    for d in lineas:
+        tid = d.get("id")
+        if tid is None:
+            continue
+        nombre.setdefault(tid, d.get("tramo", "?"))
+        gasto[tid] = round(gasto.get(tid, 0.0) + d.get("costo_usd", 0.0), 6)
+        padre = d.get("padre")
+        if padre is None:
+            if tid not in raices:
+                raices.append(tid)
+        else:
+            hijos.setdefault(padre, [])
+            if tid not in hijos[padre]:
+                hijos[padre].append(tid)
+
+    def total(tid):
+        """El gasto de un tramo Y de todo lo que cuelga de él."""
+        return round(gasto.get(tid, 0.0) + sum(total(h) for h in hijos.get(tid, [])), 6)
+
+    if verboso:
+        print("\n" + "=" * 72)
+        print("  EL ÁRBOL DE LA CORRIDA — reconstruido de `id` y `padre`")
+        print("=" * 72)
+
+        def dibujar(tid, sangria=""):
+            propio = gasto.get(tid, 0.0)
+            print(f"  {sangria}{nombre[tid]:28} {tid:5} "
+                  f"total ${total(tid):.6f}   propio ${propio:.6f}")
+            for h in hijos.get(tid, []):
+                dibujar(h, sangria + "   ")
+
+        for r in raices:
+            dibujar(r)
+        print("=" * 72)
+
+    return {"raices": raices, "hijos": hijos, "total": {t: total(t) for t in raices}}
+
+
+def demo(verboso=True):
+    """Una corrida de dos capas SIN modelo y SIN red, para ver el árbol. $0,00.
+
+    📌 Los workers son falsos a propósito: lo que se está probando es el
+       parentesco, no el modelo. Y el camino que recorren es el DE VERDAD —
+       `reparto_en_paralelo`, `ejecutar_un_bloque`, los dos `anotar`— porque un
+       árbol dibujado por un camino de mentira mediría al camino de mentira.
+    """
+    import contexto
+    import fan_out
+    import orquestador
+    import worker
+
+    with orquestador.registro_desviado():
+        def worker_falso(monto, moneda, contabilidad, verboso=True):
+            with contexto.tramo(f"worker:{moneda.lower()}"):
+                worker.anotar("llamada_api", worker=moneda.lower(), costo_usd=0.002183)
+                worker.anotar("herramienta", worker=moneda.lower(), nombre="tasa")
+                worker.anotar("llamada_api", worker=moneda.lower(), costo_usd=0.002624)
+            return {"ok": True, "pesos": monto * 3099}
+
+        class _Bloque:
+            def __init__(self, m):
+                self.name = "consultar_moneda"
+                self.input = {"monto": 1000, "moneda": m}
+                self.id = "b" + m
+
+        conta = {"capa": "capa1"}
+        with contexto.tramo("capa:orquestador"):
+            orquestador.anotar("llamada_api", capa="orquestador", costo_usd=0.001989)
+            fan_out.reparto_en_paralelo(
+                [_Bloque("USD"), _Bloque("EUR"), _Bloque("CAD")], conta,
+                verboso=False, funciones={"consultar_moneda": worker_falso})
+
+        lineas = []
+        for r in (orquestador.REGISTRO, worker.REGISTRO):
+            if Path(r).exists():
+                lineas += [json.loads(l) for l in open(r, encoding="utf-8") if l.strip()]
+
+    return arbol(lineas, verboso=verboso), lineas
+
+
+# ---------------------------------------------------------------------------
+# 4) EL PORTERO — ninguna prueba gratis puede escribir en el registro pagado
 # ---------------------------------------------------------------------------
 
 def portero(verboso=True):
@@ -222,7 +325,7 @@ def portero(verboso=True):
 
 
 # ---------------------------------------------------------------------------
-# 4) LAS PRUEBAS — $0,00
+# 5) LAS PRUEBAS — $0,00
 # ---------------------------------------------------------------------------
 
 def _pruebas():
@@ -318,6 +421,105 @@ def _pruebas():
     check("8. y con el desvío puesto, el registro real no crece ni una línea",
           not sucios and len(corridos) == 5, f"corridos={corridos}, sucios={sucios}")
 
+    # --- C.1 · PASO 2: el parentesco ---------------------------------------
+    import contexto
+
+    # 8b) Sin tramo abierto, `marca()` devuelve vacío. Es deliberado: una línea
+    #     huérfana debe VERSE huérfana, no colgar de una raíz inventada que
+    #     parecería correcta.
+    check("9. sin tramo abierto, la marca va vacía (huérfana visible)",
+          contexto.marca() == {}, contexto.marca())
+
+    # 10) El parentesco se DEDUCE, no se pasa. En todo el nivel no hay una sola
+    #     llamada que reciba un `padre=`: es el sospechoso que el sobre nombró.
+    with contexto.tramo("a") as a:
+        m1 = contexto.marca()
+        with contexto.tramo("b"):
+            m2 = contexto.marca()
+    check("10. un tramo hijo hereda la corrida y apunta a su padre",
+          m2["padre"] == m1["id"] and m2["corrida"] == m1["corrida"]
+          and m2["profundidad"] == m1["profundidad"] + 1, f"{m1} / {m2}")
+    check("11. y al salir, el contexto queda apagado",
+          contexto.actual() is None, contexto.actual())
+
+    # 12) 🚨 LA PRUEBA DEL PARALELO, Y ES LA QUE JUSTIFICA `atado()`.
+    #     Un hilo nuevo NO hereda el contexto. Sin `atado` los tres workers
+    #     anotarían con `padre: null` y el árbol saldría PLANO y con pinta de
+    #     correcto — el mismo sitio donde unir por el reloj fallaba.
+    from concurrent.futures import ThreadPoolExecutor
+
+    def _marca_en_hilo():
+        with contexto.tramo("hijo"):
+            return contexto.marca()
+
+    with contexto.tramo("padre") as p:
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            sin_atar = list(pool.map(lambda _: _marca_en_hilo(), range(3)))
+            atadas = [contexto.atado(_marca_en_hilo) for _ in range(3)]
+        with ThreadPoolExecutor(max_workers=3) as pool:
+            con_atar = list(pool.map(lambda f: f(), atadas))
+        id_padre = p["id"]
+
+    check("12. 🚨 SIN `atado`, el hilo pierde el padre (el bicho, visto morder)",
+          all(m["padre"] is None and m["profundidad"] == 0 for m in sin_atar),
+          sin_atar)
+    check("13. CON `atado`, los tres hilos cuelgan del padre correcto",
+          all(m["padre"] == id_padre and m["profundidad"] == 1 for m in con_atar),
+          f"padre={id_padre} / {con_atar}")
+    check("14. y los tres hermanos tienen ids DISTINTOS",
+          len({m["id"] for m in con_atar}) == 3, con_atar)
+
+    # 15) La corrida sobrevive al salto de hilo. Es el campo que cierra por
+    #     diseño el bicho de la sesión 97: sin él, una línea de prueba y una
+    #     pagada viven en el mismo archivo sin nada que las separe.
+    check("15. la corrida es la MISMA en los tres hilos atados",
+          len({m["corrida"] for m in con_atar}) == 1, con_atar)
+
+    # 16) El decorador lee el nombre de la FIRMA, con sus valores por defecto.
+    #     Si lo escribiera dos veces, sería el bicho de la sesión 33.
+    @contexto.envuelto("nombre", prefijo="x:")
+    def _fn(nombre="porDefecto"):
+        return contexto.marca()["tramo"]
+    check("16. el decorador saca el nombre del tramo de la firma real",
+          _fn() == "x:porDefecto" and _fn(nombre="otro") == "x:otro", _fn())
+
+    # 17) 🔒 Y `functools.wraps` no es cosmética: sin él, la prueba 1 de
+    #     `profundidad.py` —la que vigila que A.2 siga siendo A.2— se pondría
+    #     roja por un motivo que no tiene nada que ver con lo que vigila.
+    import inspect
+    import orquestador
+    firma = inspect.signature(orquestador.correr_orquestador).parameters
+    check("17. envolver NO alteró la firma que vigila la prueba 1 de A.2",
+          all(firma[p].default is None for p in ("sistema", "tools", "funciones")),
+          [firma[p].default for p in ("sistema", "tools", "funciones")])
+
+    # 18) 🚨 EL ÁRBOL CONTRA UNO CUYO TOTAL SE SABE. Es la prueba 3 de
+    #     `profundidad.py` aplicada al instrumento de hoy: `arbol()` es lo
+    #     escrito esta sesión, o sea el sospechoso de estar ciego. Si sumara mal,
+    #     inventaría un reparto que nadie contradice.
+    falsas = [
+        {"id": "t1", "padre": None, "tramo": "raiz", "costo_usd": 1.0},
+        {"id": "t2", "padre": "t1", "tramo": "hijo-a", "costo_usd": 0.0},
+        {"id": "t3", "padre": "t2", "tramo": "nieto", "costo_usd": 2.0},
+        {"id": "t4", "padre": "t1", "tramo": "hijo-b", "costo_usd": 4.0},
+        {"evento": "sin marca"},                       # línea vieja, sin traza
+    ]
+    a = arbol(falsas, verboso=False)
+    check("18. el árbol suma hacia arriba: el padre incluye a sus nietos",
+          a["raices"] == ["t1"] and a["total"]["t1"] == 7.0, a)
+    check("19. y una línea SIN marca no inventa una raíz nueva",
+          len(a["raices"]) == 1, a["raices"])
+
+    # 20) ⚠️ LO QUE EL ÁRBOL NO PUEDE HACER, Y SE PRUEBA PARA QUE NO SE OLVIDE:
+    #     los registros pagados de las sesiones 92-96 NO tienen `id` ni `padre`,
+    #     y por eso NO se pueden convertir en árbol. No es caro: es imposible.
+    #     🔑 La traza es la única pieza del harness que no se puede añadir hacia
+    #        atrás. Lo que no se instrumentó, no ocurrió.
+    viejas = [d for v in leer(REGISTROS).values() for d in v]
+    check("20. ⚠️ las corridas ya pagadas NO tienen parentesco y nunca lo tendrán",
+          not any("padre" in d for d in viejas),
+          f"{sum('padre' in d for d in viejas)} líneas viejas con padre")
+
     print()
     if fallos:
         print(f"  ❌ {len(fallos)} prueba(s) en rojo: {', '.join(fallos)}")
@@ -329,6 +531,9 @@ def _pruebas():
 def main(argv):
     if "--experimento" in argv:
         experimento()
+        return 0
+    if "--demo" in argv:
+        demo()
         return 0
     if "--portero" in argv:
         sucios, _ = portero()

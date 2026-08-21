@@ -88,6 +88,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI.parent / "05b-proyecto"))
 
+import contexto
 import orquestador     # noqa: E402
 import worker          # noqa: E402
 
@@ -176,7 +177,17 @@ def reparto_en_paralelo(bloques, contabilidad, verboso=True, funciones=None):
     #    🔑 En paralelo, el orden de LLEGADA deja de ser el orden de SALIDA. Si
     #       tu código daba por hechas las dos cosas, ahora son dos cosas.
     with ThreadPoolExecutor(max_workers=min(MAX_EN_VUELO, len(bloques))) as pool:
-        resultados = list(pool.map(trabajo, bloques))
+        # 🚨 C.1 · PASO 2 — `atado` NO ES OPCIONAL AQUÍ, Y SU AUSENCIA NO DA ERROR.
+        #    Un hilo nuevo no hereda el contexto de traza: sin esto los tres
+        #    workers anotarían con `padre: null` y el árbol saldría PLANO y con
+        #    pinta de correcto. Y muerde justo donde ya mordía unir por el reloj:
+        #    el paralelo es el único sitio donde «lo que pasó justo antes» deja
+        #    de significar «quien me llamó».
+        #    📌 Una copia POR TAREA, hecha en este hilo. Un mismo `Context` no se
+        #       puede entrar dos veces a la vez.
+        atados = [contexto.atado(trabajo) for _ in bloques]
+        resultados = list(pool.map(lambda par: par[0](par[1]),
+                                   zip(atados, bloques)))
 
     # 🐛 D-B2.1 — ANTES ESTO ERA UNA ASIGNACIÓN, Y MENTÍA POR OMISIÓN.
     #    `ULTIMA_LINEA_DE_TIEMPO = ...` se quedaba solo con la ÚLTIMA vuelta de

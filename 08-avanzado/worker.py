@@ -97,6 +97,7 @@ AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI.parent / "05b-proyecto"))
 
 import agente          # noqa: E402
+import contexto        # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -272,9 +273,13 @@ _CANDADO_REGISTRO = threading.Lock()
 
 def anotar(evento, **datos):
     """Igual que el `anotar` de A, pero escribiendo en el registro del nivel 8."""
+    # ⭐ C.1 · PASO 2 — la MISMA línea que en `orquestador.anotar`, y por eso el
+    #    árbol cruza la frontera entre los dos archivos sin que ninguno de los
+    #    dos sepa del otro. El worker no recibe quién lo llamó: lo mira.
     linea = {
         "hora": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "evento": evento,
+        **contexto.marca(),
         **datos,
     }
     with _CANDADO_REGISTRO:
@@ -290,6 +295,8 @@ class PresupuestoAgotado(Exception):
 # 3) EL BUCLE DEL WORKER
 # ---------------------------------------------------------------------------
 
+# ⭐ C.1 · PASO 2 — cada worker es un TRAMO. No recibe a su padre: lo mira.
+@contexto.envuelto("nombre", prefijo="worker:")
 def correr_worker(encargo,
                   nombre="divisa",
                   sistema=SISTEMA_DIVISA,

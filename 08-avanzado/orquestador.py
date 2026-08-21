@@ -88,6 +88,7 @@ AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI.parent / "05b-proyecto"))
 
 import agente          # noqa: E402
+import contexto        # noqa: E402
 import worker          # noqa: E402
 
 
@@ -193,9 +194,14 @@ _CANDADO_CONTABILIDAD = threading.Lock()
 
 
 def anotar(evento, **datos):
+    # ⭐ C.1 · PASO 2 — `contexto.marca()` es lo único que hay que añadir para
+    #    que la traza deje de ser plana. NO recibe el padre: lo mira. En todo el
+    #    nivel 8 no hay una sola línea que pase un `padre=` como argumento, y
+    #    eso es a propósito (ver la cabecera de `contexto.py`).
     linea = {
         "hora": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "evento": evento,
+        **contexto.marca(),
         **datos,
     }
     with _CANDADO_REGISTRO:
@@ -349,6 +355,11 @@ FUNCIONES_ORQ = {
 #    El modelo solo puede PEDIR. Quien decide si algo corre en paralelo es el
 #    harness — o sea, estas veinte líneas.
 
+# ⭐ C.1 · PASO 2 — cada LLAMADA A HERRAMIENTA es un tramo. Sin esto el árbol
+#    saltaría de la capa al worker y se perdería el escalón de en medio: qué
+#    herramienta pidió el modelo. Es el escalón donde vive el enrutado, o sea
+#    justo lo que la sesión 95 tuvo que deducir a mano.
+@contexto.envuelto("bloque", prefijo="tool:", atributo="name")
 def ejecutar_un_bloque(bloque, contabilidad, verboso=True, funciones=None):
     """Ejecuta UN `tool_use` y devuelve su `tool_result`.
 
@@ -425,6 +436,9 @@ def reparto_en_serie(bloques, contabilidad, verboso=True, funciones=None):
 # 4) EL BUCLE DE ARRIBA — es el mismo bucle. Otra vez.
 # ---------------------------------------------------------------------------
 
+# ⭐ C.1 · PASO 2 — cada capa es un TRAMO. La de más arriba funda la corrida;
+#    las de en medio (B.5) heredan la suya y se cuelgan de quien las llamó.
+@contexto.envuelto("nombre", prefijo="capa:")
 def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                        presupuesto_usd=PRESUPUESTO_ORQ_USD, verboso=True,
                        reparto=None, sistema=None, tools=None, funciones=None,

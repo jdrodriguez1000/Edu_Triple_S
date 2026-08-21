@@ -5544,3 +5544,40 @@ propósito y exige que algo se ponga rojo.**
 facturación por cliente, atribución de errores por servicio, uso de recursos por equipo,
 métricas por región. El total se audita siempre, porque salta a la vista cuando falla. **El
 reparto casi nunca**, porque cuando falla sigue sumando lo mismo.
+
+### LM.65 — La traza es lo único del harness que no se puede añadir hacia atrás
+
+Se instrumentó un multi-agente para que cada renglón del registro supiera de quién era hijo.
+Funcionó. Y al ir a aplicarlo a las corridas ya guardadas —cinco sesiones de datos, pagados
+con dinero de verdad— apareció que **no se puede**. No es caro: es imposible. Los campos no
+están, y no hay de dónde deducirlos.
+
+🔑 **Todo lo demás del harness se puede poner después. Esto no.** Un test se escribe cuando
+aparece el bug. Un presupuesto se pone cuando asusta la factura. Un permiso se recorta el día
+que alguien se asusta. Los tres arreglan **el futuro y el pasado a la vez**, porque el pasado
+se puede volver a correr. **La traza no arregla nada hacia atrás: o la línea nació sabiendo
+de quién era hija, o esa línea ya nunca lo va a saber.**
+
+⚠️ **Y el sustituto barato falla exactamente donde más falta hace.** La tentación es unir las
+piezas por el reloj: *«esta línea salió justo después de aquella, luego cuelga de aquella»*.
+Medido sobre un caso real: acertaría **32 de 35** veces — y falla **en el paralelo**, que es
+justo la parte que se construyó para presumir. 🔑 **El paralelo es el único sitio donde *lo
+que pasó justo antes* deja de significar *quien me llamó*.** Un 91 % de acierto no es un
+instrumento: es un instrumento que se equivoca solo en los casos difíciles.
+
+🚨 **Y el mecanismo hereda la misma trampa, sin dar error.** El parentesco se lleva bien en
+una variable de contexto —la luz de la habitación: quien entra la tiene, quien sale la
+pierde— pero **un hilo nuevo arranca a oscuras**. Sin atar el contexto al cruzar al hilo, los
+hijos salen huérfanos y **el árbol se dibuja plano y con pinta de correcto**. Otra vez el
+paralelo, otra vez sin excepción y sin aviso.
+
+📌 **Cómo se evita que el árbol mida a quien lo dibujó.** Si el parentesco se pasa a mano
+—`padre=` como argumento en cada llamada— sale perfecto, y no prueba que el sistema sepa
+quién llamó a quién: prueba que el que escribió las llamadas lo sabía. **Deducirlo del
+contexto de ejecución quita esa firma:** nadie escribe el padre, se mira.
+
+**Dónde muerde fuera de aquí:** cualquier decisión de instrumentar. Observabilidad, ids de
+petición, versiones de esquema, marcas de origen de un dato. Todo eso parece aplazable
+porque *«se puede añadir cuando haga falta»*, y casi todo se puede. **Lo que identifica de
+dónde vino algo, no.** Ese es el único trabajo que hay que hacer antes de tener el problema,
+porque el día que se tiene, ya es tarde para los datos que lo demuestran.

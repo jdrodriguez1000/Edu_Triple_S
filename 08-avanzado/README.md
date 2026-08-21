@@ -2340,6 +2340,88 @@ mismo día en que se escribió.**
 
 ---
 
+##### 🌳 C.1 · PASO 2 — EL PARENTESCO, el 2026-08-21. **$0,00 · 20 pruebas**
+
+`contexto.py` (nuevo) · `traza.arbol()` · `traza.demo()`. Ni una llamada a la API.
+
+**Lo que se añadió al registro:** `corrida`, `id`, `padre`, `profundidad` y `tramo`.
+
+🔑 **Y lo primero, porque desarma el sospechoso del sobre: NO HAY UNA SOLA LÍNEA EN TODO EL
+NIVEL 8 QUE PASE UN `padre=`.** El sobre avisó que *«el que escribe `padre=` es el mismo que
+ya sabe quién es el padre»*, y un árbol dibujado por quien lo conocía mide al que lo dibujó.
+→ El parentesco **se deduce de dónde está el programa cuando anota**, con `contextvars`, y
+quien lo deduce es la librería estándar. Una variable de contexto no es una carta que va de
+mano en mano: **es la luz de la habitación.** Quien entra la tiene; quien sale la pierde.
+
+##### 🚨 Y la trampa muerde EXACTAMENTE donde ya mordía la traza plana
+
+**Un hilo nuevo no hereda el contexto.** `ThreadPoolExecutor` no lo copia. Sin arreglo, los
+tres workers del fan-out de B.2 anotarían con `padre: null` y `profundidad: 0` — **el árbol
+saldría plano y con pinta de correcto**, sin un solo error.
+
+⭐ **Es el mismo sitio donde falla unir por el reloj** (un segundo con tres arranques, contado
+esta mañana). 🔑 **El paralelo es el único lugar donde *«lo que pasó justo antes»* deja de
+significar *«quien me llamó»*** — y por eso es donde se rompe **toda** forma barata de saber
+quién es quién. → `contexto.atado()`, una copia del contexto **por tarea**.
+
+📌 **Y se ve morder, no se promete:** la prueba 12 corre tres hilos **sin** `atado` y exige
+que los tres salgan huérfanos; la 13 los corre **con** `atado` y exige que los tres cuelguen
+del padre correcto. El bicho y su arreglo, los dos en verde, en la misma corrida.
+
+##### 🌳 El árbol, dibujado — `python traza.py --demo`, $0,00
+
+```
+capa:orquestador          t2   total $0.016410   propio $0.001989
+   tool:consultar_moneda  t3   total $0.004807   propio $0.000000
+      worker:usd          t4   total $0.004807   propio $0.004807
+   tool:consultar_moneda  t5   total $0.004807   propio $0.000000
+      worker:eur          t6   total $0.004807   propio $0.004807
+   tool:consultar_moneda  t7   total $0.004807   propio $0.000000
+      worker:cad          t8   total $0.004807   propio $0.004807
+```
+
+📌 Los workers son falsos —lo que se mide es el parentesco, no el modelo— pero **el camino
+es el de verdad**: `reparto_en_paralelo`, `ejecutar_un_bloque` y los dos `anotar`. Un árbol
+dibujado por un camino de mentira mediría al camino de mentira.
+
+⭐ **Y ya dice algo que la tabla plana no decía: `propio $0.000000` en los tres escalones de
+en medio.** El *«38,6 % del gasto en capas que no averiguan ni un dato»* de B.5 dejó de ser
+una cuenta a mano: **es la forma del árbol.**
+
+##### ⚠️ Y una limitación que CAMBIA EL PLAN DEL PASO 4, dicha en cuanto se supo
+
+**Los registros pagados de las sesiones 92 a 96 no se pueden convertir en árbol.** No es que
+sea caro: **es imposible.** `id` y `padre` no están ahí, y no hay de dónde sacarlos — unir
+por el reloj falla justo en el paralelo.
+
+🔑 **La traza es la única pieza del harness que no se puede añadir hacia atrás.** Un test se
+escribe después. Un presupuesto se pone después. Un árbol, **no**: o la línea nació sabiendo
+de quién era hija, o esa línea ya nunca lo va a saber. **Lo que no se instrumentó, no
+ocurrió.** 📌 Queda como **prueba 20**, para que no se olvide y para que el paso 4 se
+replantee: reconstruir *una corrida ya grabada* solo puede significar **una corrida nueva**.
+
+##### 🧾 Lo que el paso 2 dejó, y lo que decide del paso 3
+
+| | |
+|---|---|
+| `contexto.py` | `tramo` · `marca` · `atado` · `envuelto` — sin dependencias, lo comparten las dos capas sin importarse entre sí |
+| Tocado | los dos `anotar`, `correr_orquestador`, `correr_worker`, `ejecutar_un_bloque`, `reparto_en_paralelo` |
+| Pruebas | **20 en verde**, y las 14 de `profundidad.py` + las de router, supervisor, fan_out y verificador **siguen verdes** |
+| Registro | 79 + 225 líneas, **sin crecer** — el portero sigue mordiendo |
+
+🔑 **Y queda dicho cuál de los cinco campos nuevos es estructura y cuál es decoración:**
+`corrida`, `id`, `padre` y `profundidad` **aguantan el peso**; `tramo` es **una etiqueta**,
+de la misma clase que la `capa` que el paso 1 midió que se podía torcer impunemente. Se
+incluye igual, porque sin nombre legible el árbol no se lee. **El paso 1 no enseñó que las
+etiquetas sobren: enseñó que hay que saber cuáles lo son.**
+
+➡️ **El paso 3 sigue siendo la obligación sellada, y ahora tiene blanco concreto:** la prueba
+que tuerce el parentesco y exige rojo. Las pruebas 12 y 18 ya son media pieza —una tuerce el
+mecanismo, la otra el resultado—; **falta torcer el `padre` de un registro grabado**, que es
+la forma exacta en que el paso 1 mató a `capa`.
+
+---
+
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
