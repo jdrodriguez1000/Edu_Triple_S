@@ -269,6 +269,14 @@ _CAUSAS = {
                     "vueltas sin llegar a una respuesta. No lo reintentes."),
     None: ("El especialista de {moneda} terminó sin el dato de la conversión. "
            "No lo reintentes."),
+    # 🚨 C.3 — la causa MÁS RARA de todas, y la que más falta hacía: el
+    #    especialista no falló, TERMINÓ BIEN. Solo que contestó otra pregunta.
+    #    Por eso la frase no dice «falló»: dice qué trajo y qué se había pedido.
+    "discrepancia": ("El especialista de {moneda} devolvió un resultado "
+                     "completo pero que NO corresponde a lo que se le pidió, "
+                     "así que se descartó. No inventes el dato de {moneda} ni "
+                     "uses el de otra moneda en su lugar: di que esa moneda no "
+                     "se pudo consultar. No lo reintentes."),
 }
 
 
@@ -349,8 +357,15 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
                 "sin_trozo": True,
             }
 
+    # ⭐ C.3 — LO QUE SE PREGUNTÓ VIAJA HACIA ABAJO EN PYTHON, al lado del
+    #    encargo en prosa. No es repetir el encargo: el encargo es la frase que
+    #    lee el modelo, y `pedido` es el dato contra el que se comprueba la
+    #    respuesta. Si el modelo se despista y consulta otra moneda, el encargo
+    #    no puede delatarlo —él mismo es la frase que se ignoró—; `pedido`, sí.
     resultado = worker.correr_worker(encargo, nombre=moneda.lower(),
                                      presupuesto_usd=presupuesto_worker,
+                                     pedido={"moneda": moneda.upper(),
+                                             "monto": monto},
                                      verboso=verboso)
 
     # --- La contabilidad de la capa de abajo. Se suma aquí y no dentro del
@@ -402,6 +417,35 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
     #    forma obliga al que llama a tratarlo aparte, y ahí es donde se olvida.
     datos = resultado["datos"] or {}
     faltan = resultado["faltan"] or []
+    discrepa = resultado.get("discrepa") or []
+
+    # 🚨 C.3 — EL CORTE DE LA DISCREPANCIA, Y VA **ANTES** Y **APARTE**.
+    #    Aquí está lo que la corrida pagada de la 99 enseñó y costó una mentira:
+    #    el corte de abajo pregunta `datos.get("pesos") is None`, y con la
+    #    respuesta equivocada **`pesos` ESTÁ LLENO** — con el número de otra
+    #    moneda. Un contrato que contesta otra pregunta pasa entero por ese
+    #    filtro, porque el filtro busca HUECOS y aquí no hay ninguno.
+    # 🔑 Por eso `discrepa` no podía meterse dentro de `faltan`: no es que
+    #    faltara un dato, es que sobra el que hay. **Un hueco y una
+    #    contradicción se ven distinto y se cortan distinto.**
+    if discrepa:
+        anotar("contrato_discrepa", moneda=moneda.upper(),
+               pedido={"moneda": moneda.upper(), "monto": monto},
+               discrepa=discrepa, recibido=datos)
+        if verboso:
+            print(f"   🚨 se DESCARTA la respuesta de {moneda.upper()}: "
+                  f"{'; '.join(discrepa)}")
+        return {"error": f"No se pudo consultar {moneda}.",
+                "motivo": "discrepancia",
+                "causa": _CAUSAS["discrepancia"].format(moneda=moneda),
+                "detalle": "; ".join(discrepa),
+                # ⭐ EL DATO EQUIVOCADO SE CONSERVA, y fue una decisión, no un
+                #    descuido: **tirarlo es tirar la evidencia**, y el hallazgo
+                #    de la 99 salió justamente de poder leer qué había subido.
+                #    Viaja bajo un nombre que nadie puede confundir con un
+                #    resultado bueno: `descartado`, no `datos`.
+                "descartado": datos,
+                "faltan": faltan}
 
     # `pesos` es el campo sin el cual la consulta no sirvió de nada. Que no esté
     # NO es "un campo vacío más": es que esta moneda no se resolvió.

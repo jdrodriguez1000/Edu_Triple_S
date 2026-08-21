@@ -975,6 +975,46 @@ Si algún día discrepan, manda `CLAUDE.md`.
 nadie hace: no grita y no tiene fecha.
 
 
+## 6.e 💸 Un script que gasta NO puede gastar por defecto
+
+🚨 **Costó $0,087297 aprenderlo, en la sesión 100, y el que gastó fui yo comprobando
+que no había roto nada.**
+
+Correr un módulo en pelado (`python X.py`) es lo que se hace para ver si sigue
+compilando y si sus pruebas siguen verdes. Si ese mismo comando **llama a la API**,
+la comprobación más inocente del día pasa la tarjeta. Y no avisa: se ve igual que
+una suite.
+
+**La regla, en dos líneas:**
+
+```
+python X.py            -> SIEMPRE gratis. Pruebas, informes, comprobaciones.
+python X.py --pagar    -> lo que cuesta dinero, y sólo con la bandera puesta.
+```
+
+**El molde que ya está bien hecho, para copiarlo:** `08-avanzado/presupuesto.py`.
+En pelado imprime su informe, corre sus pruebas gratis y **te dice con todas las
+letras** qué bandera hace falta para pagar. Termina con `sys.exit(1 if fallos else 0)`.
+
+⚠️ **Los que NO lo cumplen, y hay que mirarlos antes de correrlos:**
+`08-avanzado/pipeline.py` y `08-avanzado/linea_base.py` **pagan en pelado**.
+Queda escrito aquí en vez de arreglarlo, por lo mismo de siempre: son piezas de
+lecciones ya dadas y reescribirlas cambia lo que él leyó. **Pero ahora está dicho
+dónde mirar.**
+
+📌 **Y el daño caro no fue el dinero:** `linea_base.py` **reescribió su propio
+archivo de medición sellada** —la línea base contra la que compara el duelo—.
+Se recuperó con `git checkout` porque estaba en Git. 🔑 **Un script que mide y
+guarda en el mismo sitio cada vez que corre no tiene medición: tiene la última.**
+Si el dato es una línea base, o el archivo lleva la fecha en el nombre, o el script
+se niega a sobrescribir sin una bandera.
+
+📌 El porqué de fondo es `LM.15` —un instrumento que puede quedarse encendido en
+producción— y la sesión 50 de TEAPP, donde la báscula de una medición escribía en
+los datos de verdad. **Tercera vez que el instrumento es el que ensucia.**
+
+---
+
 ## 7. Patrón: script de verificación (*preflight*)
 
 La idea de `00-setup/verificar.py`, generalizada. En el mundo real esto se llama

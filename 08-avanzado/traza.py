@@ -1277,11 +1277,34 @@ def _pruebas():
               and c["hora"].startswith("2026-08-20T20:32") for c in contra),
           contra)
 
+    # 32b) 🚨 LA SEGUNDA, Y ES EL HALLAZGO DE LA SESIÓN 100.
+    #      La corrida pagada de la 99 grabó otra contradicción: el worker `cad`
+    #      subió un contrato que decía `USD`. Es la mentira que C.3 arregla hoy.
+    #      ⭐ Y LO QUE ENSEÑA NO ES QUE EL AUDITOR FUNCIONE — ES CUÁNDO SE VIO.
+    #      `auditar_etiquetas` existe desde C.1 paso 5 y cazaba esta línea desde
+    #      el segundo en que se escribió. Ayer el hallazgo lo hizo un humano
+    #      leyendo la salida a ojo: **nadie corrió `traza.py` después de pagar.**
+    #      🔑 Un detector que muerde y cuyo mordisco nadie va a mirar da el mismo
+    #      silencio que uno que no muerde. Es `LM.13` girado del revés, y aquí la
+    #      prueba 33 llevaba una noche en rojo sin que nadie la viera.
+    check("32b. 🚨 y la de la sesión 99 también: `cad` subió un contrato de USD",
+          any(c["se_llama"] == "cad" and c["hizo"] == "USD"
+              and c["hora"].startswith("2026-08-21T19:41") for c in contra),
+          contra)
+
     # 33) Y NO caza nada más. Es lo que separa un auditor de un detector escrito
-    #     para encontrar la línea que ya habías visto: 22 líneas sanas pasan.
+    #     para encontrar la línea que ya habías visto: las sanas pasan.
+    # ⚠️ Se comprueba por HORA y no por cuenta. Antes decía `len(contra) == 1`,
+    #    y un número pelado envejece: bastó que el mundo grabara una segunda
+    #    mentira de verdad para que la prueba se pusiera roja sin que nada se
+    #    hubiera roto. Nombrándolas, una TERCERA contradicción sí la pondría
+    #    roja — que es lo que se quería vigilar.
+    CONOCIDAS = ("2026-08-20T20:32", "2026-08-21T19:41")
     check("33. y las demás comprobables pasan limpias (no es un detector de una)",
-          len(contra) == 1 and comprobadas >= 20,
-          f"{len(contra)} contradicción(es) de {comprobadas} comprobadas")
+          all(c["hora"].startswith(CONOCIDAS) for c in contra)
+          and comprobadas >= 20,
+          f"{len(contra)} contradicción(es) de {comprobadas} comprobadas: "
+          f"{[c['hora'] for c in contra]}")
 
     # 34) 🚨 VISTO MORDER, con las dos mitades en la misma corrida: la misma
     #     forma de línea, una torcida y otra sana.

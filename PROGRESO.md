@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 100 — NIVEL 8: **APUESTA SELLADA Y COMMITEADA ANTES DE TECLEAR**, octava sesión seguida con ese orden. Cinco apuestas, cada una con la frase que la falsifica escrita debajo. Arranca C.3 por el pendiente que C.2 dejó abierto: **el contrato tiene que comprobar que responde a LO QUE SE PREGUNTÓ** —hoy `contrato_divisa` no recibe la moneda pedida, y por eso pidió CAD, subió USD y dijo `faltan: []`—. Orden sellado: contrato primero, corrida desigual (~$0,03) después, porque medir el techo con el contrato aún ciego no dejaría saber cuál resultado creer.)
+**Última actualización:** 2026-08-21 (sesión 100 — NIVEL 8: **C.3 · 1er pendiente PAGADO: el contrato ya comprueba que responde A LO QUE SE PREGUNTÓ** (`contrato_divisa(llamadas, pedido)`, de 26 a **34 pruebas**, todas gratis, con la mentira pagada de la 99 como torcedura). 🎲 Apuestas **1 y 2 GANADAS** —cambiar la firma se llevó por delante al bloque B, y `pesos` estaba LLENO con el número de otra moneda: un hueco y una contradicción se cortan en sitios distintos (`LM.69`)—; **3, 4 y 5 SIN EJERCITAR y se dicen sin ejercitar.** 🎁 **EL HALLAZGO NO LO APOSTÓ NADIE: `traza.py` llevaba una noche en ROJO** — el auditor de C.1 cazaba la mentira de ayer desde el segundo en que se grabó, y nadie lo corrió después de pagar (`LM.70`: un mordisco sin testigo da el mismo silencio que no morder). ⚠️ **ERROR MÍO, $0,087297 gastados sin querer** corriendo `pipeline.py` y `linea_base.py` en pelado — pagan sin preguntar — y `linea_base.py` **reescribió su medición sellada**, recuperada por Git → `GUIDE.md` §6.e.)
 
 ---
 
@@ -4107,6 +4107,88 @@
 #   corrida puede volver a mentir sobre la moneda **mientras se mide el techo**,
 #   y entonces no se sabría cuál de los dos resultados creer.
 # ═══════════════════════════════════════════════════════════════════════════
+#
+# 🚨 **LA 100 ARREGLÓ EL CONTRATO (C.3, 1er pendiente) Y EL HALLAZGO DEL DÍA NO LO
+# APOSTÓ NADIE: el auditor que cazaba la mentira de ayer LLEVABA UNA NOCHE EN ROJO.**
+# ✅ **El contrato ya comprueba que responde A LO QUE SE PREGUNTÓ.**
+# `contrato_divisa(llamadas)` pasó a `contrato_divisa(llamadas, pedido)` y devuelve
+# **tres** cosas: `datos`, `faltan` (huecos) y `discrepa` (contradicciones).
+# El orquestador pasa `pedido={"moneda","monto"}` hacia abajo **en Python, al lado
+# del encargo en prosa** — porque el encargo no puede delatar al modelo que lo
+# ignoró: él mismo es la frase que se ignoró.
+# 📊 De 26 a **34 pruebas**, todas gratis y con la torcedura al lado (`LM.13`).
+# ⭐ **Y la torcedura no se inventó: es la mentira pagada de la 99 copiada palabra
+# por palabra** —se pidió CAD, las herramientas trajeron USD—.
+#
+# 🎲 **LAS CINCO APUESTAS, evaluadas una por una y sin redefinir ninguna:**
+#   · **1 — GANADA.** Cambiar la firma **sí** se llevó por delante al bloque B:
+#     `pipeline.py` tiene otras dos implementaciones de la misma interfaz
+#     (`contrato_recoleccion`, `contrato_archivo`) y el worker las llama a todas
+#     por el mismo sitio. Ahora devuelven `None` en el hueco nuevo = **no
+#     comprobado**, que NO es `[]` = comprobado y cuadra.
+#   · **2 — GANADA, y `P24` la deja clavada.** El corte del orquestador era
+#     `datos.get("pesos") is None`, y con la respuesta torcida **`pesos` vale
+#     1.025.625: está lleno**. La mentira pasaba entera porque el filtro busca
+#     HUECOS y ahí no había ninguno. 🔑 **Un hueco y una contradicción se cortan
+#     en sitios distintos** → `LM.69`. `P19` existe sólo para demostrar que
+#     `faltan` estaba vacío: sin ella, `P20` podría estar cazando otra cosa.
+#   · **3, 4 — SIN EJERCITAR.** La corrida desigual con techo por coste esperado
+#     **no se corrió**. NO se cuentan como ganadas ni como perdidas: se arrastran.
+#   · **5 — SIN EJERCITAR.** El detector de un `id` con dos padres no se escribió.
+#
+# 🎁 **EL HALLAZGO DEL DÍA — importancia ALTA · no bloqueante — y salió de comprobar
+# que no había roto nada.** `traza.py` estaba **en rojo ANTES de tocar código**
+# (verificado con `git stash`). Su prueba 33 decía *«y no caza nada más:
+# `len(contra) == 1`»*. Hoy caza **dos**, y la segunda es
+# `{'hora': '2026-08-21T19:41:33', 'se_llama': 'cad', 'hizo': 'USD'}` — **la
+# mentira de la corrida pagada de ayer**.
+# 🔑 `auditar_etiquetas` existe desde C.1 paso 5 y **la cazaba desde el segundo en
+# que se grabó**. Ayer el hallazgo lo hizo un humano leyendo la salida a ojo.
+# ⭐ **No faltaba el detector: el detector mordió y su mordisco se quedó en un
+# archivo que nadie abrió.** Es `LM.13` girado del revés — un freno que muerde sin
+# testigo produce el mismo silencio que uno que no muerde → **`LM.70`**.
+# 📌 **Y el segundo filo, sobre cómo se escriben las pruebas:** `len(contra) == 1`
+# es **un número pelado, y los números pelados envejecen**. Bastó que el mundo
+# grabara una segunda mentira de verdad para ponerla roja **sin que nada se
+# hubiera roto**. Corregida a comprobar **por hora, nombrando las dos conocidas**:
+# una TERCERA sí la pondría roja, que es lo que se quería vigilar.
+#
+# ⚠️ **ERROR DE ESTA SESIÓN, CON EL NÚMERO DELANTE: $0,087297 gastados sin querer.**
+# Se corrieron `pipeline.py` ($0,016859) y `linea_base.py` ($0,070438) **en pelado**,
+# dando por hecho que eran suites gratis como `traza.py`, `router.py` o `supervisor.py`.
+# **No lo son: pagan sin preguntar.** Es 2,5× lo que costó toda la corrida de ayer.
+# 🚨 **Y el daño caro no fue el dinero: `linea_base.py` REESCRIBIÓ su medición
+# sellada** —`linea_base_claude-haiku-4-5.json`, la línea base del duelo medida el
+# 2026-08-20, contra la que compara el bloque F—. **Recuperada con `git checkout`
+# porque estaba en Git.** Los `.jsonl` se dejaron: sólo crecen y son evidencia real.
+# 🔑 **Un script que mide y guarda en el mismo sitio cada vez que corre no tiene
+# medición: tiene la última.** → `GUIDE.md` §6.e, con el molde bueno señalado
+# (`presupuesto.py`) y los dos malos escritos con nombre.
+#
+# 🔲 **PENDIENTE NUEVO CON DUEÑO, y su pregunta es del estudiante:**
+# `profundidad.py:213` tiene **la misma copia ciega** del corte (`pesos is None`,
+# sin `pedido`). **No se arregló a propósito:** ahí la discrepancia **es el objeto
+# de estudio** —`ENRUTADO_FORZADO` tuerce el encargo a posta para medir el
+# enrutado—. ❓ *¿El experimento quiere que el harness cace su propia torcedura, o
+# necesita que la deje pasar para poder medirla?* Sin esa respuesta, tocarlo es
+# romper el instrumento.
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — lo sellado que quedó sin ejercitar:**
+#   · 🔲 **La corrida desigual con el techo por coste ESPERADO** (~$0,03). El caro
+#     está medido en **$0,016504**. Predicción sellada intacta: corta con
+#     `motivo="presupuesto"` **y gasta MENOS que su techo**, porque el `+ estimado`
+#     adelanta el corte. Paga de paso las apuestas 1 y 2 de la 99.
+#     ⚠️ **Y ahora el contrato ya no puede mentir sobre la moneda mientras se mide
+#     el techo** — que era la razón del orden sellado. Esa mitad ya está pagada.
+#   · 🔲 **El detector de un mismo `id` con dos padres** (arrastrado de C.1).
+#     **Entra con su torcedura al lado o no entra.**
+#   · 🔲 **Contestar la pregunta de `profundidad.py`** antes de tocarlo.
+#   · 🔲 **Y correr `traza.py` DESPUÉS de cada corrida pagada**, no sólo antes de
+#     commitear código. Es el paso que hoy faltaba y que nadie había escrito.
+# 🎲 **Y LA PRIMERA COSA DE LA SESIÓN 101 ES SELLAR LA APUESTA Y COMMITEARLA.**
+#   Van OCHO sesiones con ese orden. Hoy cobró dos veces: la 1 y la 2 se ganaron
+#   limpias, y **tres quedaron sin ejercitar y se dicen sin ejercitar** — que es
+#   exactamente lo que ayer se aprendió a no maquillar.
 
 # ➡️ **SIGUIENTE PASO CONCRETO — cerrar los TRES pendientes de C.2 antes de pasar a C.3.**
 #   · 🔲 **El techo tiene que acotar de verdad:** comprobar `gastado + coste_estimado > techo`

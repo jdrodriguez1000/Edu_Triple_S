@@ -800,6 +800,106 @@ def _pruebas():
     finally:
         orquestador.worker.correr_worker = real3
 
+    # =====================================================================
+    # P19-P25 · C.3 — EL CONTRATO TIENE QUE RESPONDER A LO QUE SE PREGUNTÓ
+    # =====================================================================
+    # 🚨 LA TORCEDURA ES LA MENTIRA DE LA CORRIDA PAGADA DE LA 99, COPIADA
+    #    PALABRA POR PALABRA: se pidió CAD y las herramientas trajeron USD.
+    #    No es un caso inventado para lucir el detector — es el caso que ya
+    #    ocurrió con dinero de verdad y que nadie cazó. `LM.13`: el detector
+    #    entra con su torcedura al lado, y esta torcedura tiene factura.
+    LLAMADAS_TORCIDAS = [
+        {"nombre": "tasa", "entrada": {"de": "USD"},
+         "salida": {"de": "USD", "tasa": 4102.5, "fuente": "mercado (open.er-api.com)",
+                    "actualizado": "2026-08-20"}},
+        {"nombre": "convertir", "entrada": {"de": "USD", "monto": 250},
+         "salida": {"de": "USD", "monto": 250, "resultado": 1025625.0}},
+    ]
+
+    d_t, f_t, disc_t = w.contrato_divisa(LLAMADAS_TORCIDAS,
+                                         pedido={"moneda": "CAD", "monto": 250})
+
+    # P19 · LA MITAD QUE DUELE: el contrato está COMPLETO. Sin esta prueba,
+    #       P20 podría estar cazando un hueco y no una contradicción.
+    check("P19 · la respuesta torcida NO tiene ningun hueco (`faltan` vacio)",
+          f_t == [] and d_t.get("pesos") is not None,
+          "faltan=%s · pesos=%s" % (f_t, d_t.get("pesos")))
+
+    # P20 · y AUN ASÍ se caza. Este es el detector nuevo mordiendo.
+    check("P20 · pero SI discrepa: se pidio CAD y trae USD",
+          bool(disc_t) and any("CAD" in x and "USD" in x for x in disc_t),
+          "discrepa=%s" % disc_t)
+
+    # P21 · NO COMPROBADO ≠ COMPROBADO Y BIEN. `None` y `[]` se ven casi igual
+    #       en pantalla y significan lo contrario: es `LM.15` con dos valores.
+    _, _, disc_ciego = w.contrato_divisa(LLAMADAS_TORCIDAS)
+    check("P21 · sin `pedido` el contrato dice NO COMPROBADO (None), no [] ",
+          disc_ciego is None,
+          "discrepa=%r" % (disc_ciego,))
+
+    # P22 · Y EL DETECTOR TIENE QUE CALLARSE CUANDO TODO CUADRA. Un detector
+    #       que siempre grita no distingue nada. Es la hermana de `P1`.
+    _, _, disc_ok = w.contrato_divisa(LLAMADAS_TORCIDAS,
+                                      pedido={"moneda": "USD", "monto": 250})
+    check("P22 · con la moneda correcta el detector se CALLA (lista vacia)",
+          disc_ok == [],
+          "discrepa=%r" % (disc_ok,))
+
+    # P23 · el monto también, y por el mismo motivo: un worker puede convertir
+    #       100 cuando le pidieron 250 y devolver un contrato impecable.
+    _, _, disc_monto = w.contrato_divisa(LLAMADAS_TORCIDAS,
+                                         pedido={"moneda": "USD", "monto": 100})
+    check("P23 · y el MONTO tambien se comprueba contra lo pedido",
+          bool(disc_monto) and any("monto" in x for x in disc_monto),
+          "discrepa=%s" % disc_monto)
+
+    # --- P24/P25: EL CORTE DE ARRIBA. Que el contrato lo detecte no sirve de
+    #     nada si el orquestador lo deja pasar igual.
+    def _worker_torcido(encargo, nombre="x", presupuesto_usd=None, verboso=True,
+                        pedido=None, **kw):
+        datos, faltan, disc = w.contrato_divisa(LLAMADAS_TORCIDAS, pedido)
+        return {"ok": True, "texto": "250 CAD son 1.025.625 pesos.",
+                "coste_usd": 0.0, "vueltas": 2, "llamadas_api": 2,
+                "entrada_tokens": 0, "salida_tokens": 0, "segundos": 0.0,
+                "herramientas": ["tasa", "convertir"], "motivo": None,
+                "worker": nombre, "datos": datos, "faltan": faltan,
+                "discrepa": disc}
+
+    real4 = orquestador.worker.correr_worker
+    orquestador.worker.correr_worker = _worker_torcido
+    try:
+        conta4 = {"capa": "orquestador", "workers": 0, "coste_workers_usd": 0.0,
+                  "llamadas_api_workers": 0, "entrada_workers": 0,
+                  "salida_workers": 0, "detalle": [], "reparto": None}
+        subio4 = orquestador.herramienta_consultar_moneda(250, "CAD", conta4,
+                                                          verboso=False)
+
+        # 🚨 P24 · LA APUESTA 2 DE HOY, HECHA PRUEBA. El corte viejo del
+        #    orquestador es `datos.get("pesos") is None`, y aquí `pesos` ESTÁ
+        #    LLENO: 1.025.625. Por ese filtro la respuesta torcida pasa entera.
+        #    Hacía falta un corte propio, y esta prueba se pone roja si alguien
+        #    intenta resolverlo metiendo la discrepancia dentro de `faltan`.
+        check("P24 · la respuesta torcida NO SUBE: el orquestador la descarta",
+              subio4.get("motivo") == "discrepancia" and "pesos" not in subio4,
+              "subio=%s" % sorted(subio4.keys()))
+
+        # P25 · y sube con causa EN ESPAÑOL, porque el modelo no lee `motivo`.
+        #       Con una frase que además le prohíbe lo que hizo la 99: usar
+        #       el dato de otra moneda como si fuera este.
+        causa4 = (subio4.get("causa") or "").lower()
+        check("P25 · con causa en espanol que dice NO uses el dato de otra moneda",
+              "no corresponde" in causa4 and "otra moneda" in causa4,
+              "<<%s>>" % subio4.get("causa"))
+
+        # P26 · LA EVIDENCIA SE CONSERVA, y bajo un nombre que nadie confunde
+        #       con un resultado bueno. El hallazgo de la 99 salió de poder
+        #       leer QUÉ había subido: tirarlo es tirar la prueba del delito.
+        check("P26 · el dato descartado se conserva como `descartado`, no `datos`",
+              subio4.get("descartado", {}).get("moneda") == "USD",
+              "descartado=%s" % subio4.get("descartado"))
+    finally:
+        orquestador.worker.correr_worker = real4
+
     w.REGISTRO, orquestador.REGISTRO = _reg_w, _reg_o
 
     print()

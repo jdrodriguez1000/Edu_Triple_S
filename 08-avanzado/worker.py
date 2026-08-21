@@ -247,15 +247,75 @@ HERRAMIENTAS_DIVISA = ["tasa", "convertir"]
 CAMPOS_DIVISA = ["moneda", "monto", "pesos", "tasa", "fuente", "fecha"]
 
 
-def contrato_divisa(llamadas):
+def discrepancias_divisa(datos, pedido):
+    """¿El contrato responde A LO QUE SE PREGUNTÓ? — C.3, y nació de una mentira.
+
+    🐛 EL DEFECTO, medido en la corrida pagada de la sesión 99:
+       se pidió **CAD**, el modelo llamó a `tasa("USD")`, y el contrato subió
+       entero —seis campos llenos, `faltan: []`— **con los números de otra
+       pregunta**. Nadie gritó. Lo cazó un humano leyendo la salida.
+
+    🔑 LA CAUSA NO ERA QUE FALTARA UN CAMPO: era que `moneda` ESTABA SOLA EN SU
+       RENGLÓN. Se llenaba con lo que la herramienta devolvió, y no había
+       ningún otro dato que pudiera contradecirla. Es `LM.66` exacto: *un dato
+       que nadie puede contradecir no es que sea correcto — es que no es
+       comprobable*, y las dos cosas dan el mismo verde.
+       → El testigo que faltaba no estaba en la respuesta. Estaba en la
+         PREGUNTA, y el contrato no la recibía.
+
+    ⭐ DEVUELVE TRES COSAS DISTINTAS, Y LA DIFERENCIA ES LA LECCIÓN:
+       · `None` — NO SE COMPROBÓ (nadie pasó `pedido`).
+       · `[]`   — se comprobó y cuadra.
+       · lista  — se comprobó y NO cuadra, con la frase de qué no cuadra.
+       `None` y `[]` se ven casi igual en pantalla y significan lo contrario.
+       Confundirlos es `LM.15`: un instrumento ciego no da un dato falso, da
+       **silencio**, y el silencio se lee como confirmación.
+    """
+    if not pedido:
+        return None                      # ⚠️ no comprobado ≠ comprobado y bien
+
+    fallos = []
+
+    esperada = (pedido.get("moneda") or "").upper()
+    traida = (datos.get("moneda") or "").upper()
+    # Si `traida` está vacía, eso YA lo dice `faltan`: no se cuenta dos veces.
+    if esperada and traida and traida != esperada:
+        fallos.append(f"moneda: se pidió {esperada} y el contrato trae {traida}")
+
+    # El monto se comprueba por lo mismo: un worker puede convertir 100 cuando
+    # le pidieron 250 y devolver un contrato completo y coherente consigo mismo.
+    esperado = pedido.get("monto")
+    tenido = datos.get("monto")
+    if esperado is not None and tenido is not None:
+        try:
+            if float(tenido) != float(esperado):
+                fallos.append(f"monto: se pidió {esperado} y el contrato trae {tenido}")
+        except (TypeError, ValueError):
+            fallos.append(f"monto: no se pudo comparar {tenido!r} con {esperado!r}")
+
+    return fallos
+
+
+def contrato_divisa(llamadas, pedido=None):
     """Arma el contrato leyendo lo que las herramientas YA devolvieron.
 
     `llamadas` es la lista de lo que pasó por el harness: cada elemento trae
     el nombre de la herramienta, lo que se le pidió y lo que devolvió.
 
-    Devuelve el diccionario del contrato y, junto a él, QUÉ CAMPOS NO PUDO
-    LLENAR. Ese segundo dato es la mitad que la prosa no tenía: una frase no
-    sabe qué le falta — un contrato, sí.
+    `pedido` es LO QUE SE PREGUNTÓ (C.3): un diccionario con `moneda` y, si se
+    quiere, `monto`. Sin él el contrato solo puede decir si está COMPLETO;
+    con él puede decir además si está CONTESTANDO LO QUE SE LE PREGUNTÓ.
+
+    Devuelve TRES cosas:
+      · `datos`    — el contrato
+      · `faltan`   — qué campos NO pudo llenar  → un HUECO
+      · `discrepa` — en qué NO coincide con lo pedido → una CONTRADICCIÓN
+
+    ⚠️ `faltan` y `discrepa` son dos listas y NO se juntaron a propósito.
+       Un hueco es un campo vacío; una discrepancia es un campo LLENO con el
+       dato de otra pregunta. El que llama corta distinto ante cada uno: ante
+       un hueco puede seguir con lo que hay; ante una discrepancia, lo que hay
+       es justamente lo que no puede usar.
     """
     datos = {campo: None for campo in CAMPOS_DIVISA}
 
@@ -279,7 +339,7 @@ def contrato_divisa(llamadas):
             datos["moneda"] = salida.get("de") or datos["moneda"]
 
     faltan = [campo for campo, valor in datos.items() if valor is None]
-    return datos, faltan
+    return datos, faltan, discrepancias_divisa(datos, pedido)
 
 
 # --- EL SYSTEM PROMPT DEL WORKER -------------------------------------------
@@ -381,6 +441,11 @@ def correr_worker(encargo,
                   max_vueltas=MAX_VUELTAS_WORKER,
                   presupuesto_usd=PRESUPUESTO_WORKER_USD,
                   contrato=contrato_divisa,
+                  # C.3 — LO QUE SE PREGUNTÓ, en Python y no en la prosa del
+                  # encargo. El worker no lo usa para nada: lo pasa al contrato
+                  # para que el contrato pueda desmentirse. Por defecto `None`,
+                  # y eso significa NO COMPROBADO, no «todo bien».
+                  pedido=None,
                   historial_previo=None,
                   verboso=True):
     """Corre UN worker de principio a fin y DEVUELVE lo que pasó.
@@ -523,7 +588,8 @@ def correr_worker(encargo,
         # --- EL CONTRATO (A.3). Se arma con lo que pasó por el harness, no
         #     con lo que el modelo dijo. Si no hay función de contrato, el
         #     worker sigue funcionando como en A.1: solo prosa.
-        datos, faltan = (contrato(llamadas) if contrato else (None, None))
+        datos, faltan, discrepa = (contrato(llamadas, pedido) if contrato
+                                   else (None, None, None))
 
         resultado = {
             "worker":         nombre,
@@ -535,6 +601,9 @@ def correr_worker(encargo,
             "texto":          texto,
             "datos":          datos,      # <- lo que viaja entre capas
             "faltan":         faltan,     # <- lo que el contrato NO pudo llenar
+            # 🚨 C.3 — LO QUE EL CONTRATO SÍ LLENÓ, PERO CON OTRA PREGUNTA.
+            #    None = no se comprobó · [] = comprobado y cuadra · lista = no cuadra.
+            "discrepa":       discrepa,
             "ok":             ok,
             "motivo":         motivo,     # None | "max_vueltas" | "presupuesto"
             "vueltas":        vueltas,
@@ -559,6 +628,13 @@ def correr_worker(encargo,
                 print(f"   contrato: {json.dumps(datos, ensure_ascii=False)}")
                 if faltan:
                     print(f"   ⚠️ sin llenar: {', '.join(faltan)}")
+                if discrepa:
+                    for fallo in discrepa:
+                        print(f"   🚨 NO RESPONDE A LO PEDIDO → {fallo}")
+                elif discrepa is None:
+                    # Se dice en voz alta. Un contrato sin `pedido` no está
+                    # bien: está SIN COMPROBAR, y eso hay que poder verlo.
+                    print("   ⚪ contra-lo-pedido: sin comprobar (no se pasó `pedido`)")
         return resultado
 
     for vuelta in range(1, max_vueltas + 1):

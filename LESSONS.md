@@ -5714,3 +5714,73 @@ bautizado con adjetivos no es más fiable que sus adjetivos.
 de aceptarlo, exporta lo que ya se guarda y crúzalo. Muy a menudo la respuesta lleva semanas
 escrita en dos columnas que nunca se compararon — y añadir la tercera columna habría tapado, con
 una tarea nueva y visible, un trabajo de diez minutos que nadie quería hacer.
+
+---
+
+### LM.69 — Un hueco y una contradicción no se cortan igual: el filtro de completitud deja pasar la respuesta a otra pregunta
+
+Un agente especialista devolvía un paquete de datos estructurado en vez de prosa, y ese paquete
+traía consigo la lista de **qué campos no había podido llenar**. La capa de arriba cortaba mirando
+esa lista y un campo clave: si el campo esencial venía vacío, la consulta no había servido.
+Funcionó durante varias piezas y parecía completo.
+
+Entonces el especialista contestó **otra pregunta**. Se le pidió una moneda y consultó otra. El
+paquete subió con los seis campos llenos, la lista de faltantes **vacía**, y el número esencial
+presente — sólo que era el número de otra cosa. **Pasó entero por el filtro, porque el filtro
+buscaba huecos y no había ninguno.**
+
+🔑 La causa no era que faltara una comprobación más: era que el verificador **no recibía la
+pregunta**. Llenaba el campo de identidad con lo que la herramienta hubiera devuelto, y no existía
+ningún otro dato capaz de contradecirlo. Es `LM.66` en su forma más cara: *un dato que nadie puede
+contradecir no es que sea correcto — es que no es comprobable*, y las dos cosas dan el mismo verde.
+El segundo testigo que faltaba no estaba en la respuesta. **Estaba en la pregunta.**
+
+⭐ **Y de ahí sale la distinción que hay que llevarse:** *falta un dato* y *sobra el que hay* son
+dos estados distintos y **se cortan en sitios distintos**. Ante un hueco, el que llama a veces
+puede seguir con lo que tiene. Ante una contradicción, lo que tiene es justamente lo que no puede
+usar. Meterlas en la misma lista hace que la segunda herede el tratamiento de la primera, que es
+el más blando de los dos.
+
+📌 **Corolario de tres valores, no de dos:** un verificador que puede quedarse sin la pregunta
+tiene que distinguir **no comprobado** de **comprobado y cuadra**. Si los dos casos devuelven lo
+mismo, el instrumento ciego se lee como confirmación — que es `LM.15` otra vez, ahora con nombre
+de campo. Y al decidir qué hacer con el dato equivocado, conservarlo bajo un nombre que nadie
+confunda con un resultado bueno vale más que tirarlo: **tirar el dato es tirar la evidencia**, y
+el hallazgo salió justamente de poder leer qué había subido.
+
+**Dónde muerde fuera de aquí:** cualquier validación de esquema. Un JSON Schema, un `pydantic`,
+un contrato de API comprueban **forma**, no **correspondencia**. Un payload perfectamente válido
+que responde a otra petición pasa todas las validaciones que tengas. La pregunta que hay que
+poder hacerle a una respuesta no es *«¿está completa?»* sino **«¿es la respuesta A ESTA?»**, y
+para poder hacerla el validador tiene que ver la petición.
+
+---
+
+### LM.70 — Un detector que muerde y cuyo mordisco nadie va a mirar da el mismo silencio que uno que no muerde
+
+`LM.13` dice que un freno que no has visto morder es una nota, no un freno. Este es su reverso, y
+sale peor parado.
+
+Un auditor escrito dos sesiones antes cruzaba dos campos que hablaban de lo mismo por caminos
+independientes (`LM.68`). Estaba en el repositorio, tenía sus pruebas en verde, y **cazaba la
+mentira desde el segundo exacto en que se grabó**. La mentira se grabó en una corrida pagada por
+la tarde. Se descubrió a la mañana siguiente **leyendo la salida a ojo**, y una de las pruebas del
+auditor llevaba toda la noche en rojo sin que nadie hubiera vuelto a correrla.
+
+🔑 El detector funcionó. Lo que faltaba era el paso que nadie escribió: **volver a pasar los
+auditores por encima de lo que acaba de ocurrir.** Una suite se corre antes de commitear código;
+esta había que correrla después de **generar datos**, que es un momento distinto y no estaba en
+ningún protocolo. Un mordisco que se queda en un archivo que nadie abre no produce una alarma:
+produce silencio, y el silencio se lee como confirmación.
+
+⚠️ **Y el segundo filo, que es sobre cómo se escriben las pruebas:** aquella prueba decía *«y no
+caza nada más: exactamente una»*. Un número pelado **envejece**. Bastó que el mundo grabara una
+segunda contradicción de verdad para que la prueba se pusiera roja sin que nada se hubiera roto —
+y una prueba que se pone roja por motivos correctos se acaba desactivando por costumbre. Nombrar
+los casos conocidos en vez de contarlos conserva la vigilancia y sobrevive al tiempo.
+
+**Dónde muerde fuera de aquí:** todo lo que se llame *linter*, *sanity check* o *auditoría
+nocturna*. La pregunta útil no es «¿existe?» ni «¿pasa?», sino **«¿quién lo corre, cuándo, y qué
+pasa cuando sale rojo un martes?»**. Y si el disparador es *«después de que se generen datos
+nuevos»*, tiene que estar escrito en el protocolo — porque no coincide con el momento en que
+alguien corre las pruebas.

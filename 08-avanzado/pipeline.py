@@ -189,7 +189,15 @@ def anotar(evento, **datos):
 #    `tasa`. Están en Python. Pedírselas al modelo sería pagar tokens para que
 #    nos las repita de memoria y con sus palabras.
 
-def contrato_recoleccion(llamadas):
+# ⚠️ C.3 — `pedido` LLEGA AQUÍ Y ESTAS DOS NO LO USAN, y hay que decir por qué.
+#    El worker pasa lo que se preguntó a TODOS los contratos, porque la interfaz
+#    es una sola. Estas dos etapas del pipeline (B.1) todavía no saben
+#    comprobarse contra la pregunta, así que devuelven `None` en el tercer
+#    hueco: **no comprobado**. No `[]`, que significaría «comprobado y cuadra».
+# 📌 Y queda apuntado, no escondido: `contrato_recoleccion` PODRÍA cazar aquí el
+#    mismo bicho de C.3 —el pipeline pide tres monedas y podría subir otras—.
+#    No entra hoy porque no tiene su torcedura al lado (`LM.13`).
+def contrato_recoleccion(llamadas, pedido=None):
     """Arma la tabla de la verdad leyendo lo que las herramientas devolvieron.
 
     Devuelve `(monedas, faltan)`:
@@ -234,10 +242,10 @@ def contrato_recoleccion(llamadas):
               for m, datos in sorted(monedas.items())
               for campo, valor in datos.items() if valor is None]
 
-    return monedas, faltan
+    return monedas, faltan, None
 
 
-def contrato_archivo(llamadas):
+def contrato_archivo(llamadas, pedido=None):
     """El contrato de la etapa 3: ¿se guardó de verdad, y con qué nombre?
 
     ⭐ Fíjate en por qué esto existe en vez de leer la frase final del modelo.
@@ -258,7 +266,7 @@ def contrato_archivo(llamadas):
         datos["caracteres"] = salida.get("caracteres")
 
     faltan = [campo for campo, valor in datos.items() if valor is None]
-    return datos, faltan
+    return datos, faltan, None
 
 
 # ---------------------------------------------------------------------------
