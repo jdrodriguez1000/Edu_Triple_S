@@ -2848,6 +2848,91 @@ que es justo lo que el paso 5 necesita para llevarle el árbol al defecto de la 
 
 ---
 
+#### 🎲 C.1 · PASO 5 — LA APUESTA, sellada el **2026-08-21** (sesión 97) **antes de la primera línea**
+
+> ⚠️ Séptima seguida. Y esta se sella **después de leer código pero antes de escribirlo**, así
+> que lo leído va aparte, abajo, y **no cuenta como apuesta**.
+
+##### 📏 LO QUE SE CONTÓ ANTES DE APOSTAR — tres hechos, $0,00, y ninguno es una predicción
+
+**1. El defecto de la sesión 95 NO era un enrutado torcido.** El README de B.5 lo dice con todas
+las letras: *«No hubo enrutado equivocado.»* La inyección torcía `nombre=`, el encargo seguía
+diciendo `400 EUR`, y **el worker hizo el trabajo bien**. Lo que se cazó fue *dos líneas `usd` y
+ninguna `eur`*: **un síntoma con dos causas posibles**, y hubo que leer el encargo **a mano**
+para saber cuál era.
+
+**2. El árbol bautiza sus nodos con ese MISMO campo.** `worker.py:299`:
+
+```python
+@contexto.envuelto("nombre", prefijo="worker:")
+def correr_worker(encargo, nombre="divisa", ...):
+```
+
+`nombre` es exactamente el argumento que la inyección de la 95 torcía, y exactamente el campo
+que el **paso 1** midió como adjetivo.
+
+**3. La estructura del árbol nunca estuvo en duda aquel día.** Hubo dos encargos y se hicieron
+dos trabajos: el árbol diría *«dos ramas»* y **acertaría**. Lo que mentía eran los **nombres**.
+
+---
+
+##### 7️⃣ LA APUESTA 1 SE VA A CAER POR SU SEGUNDA MITAD, Y POR LO QUE EL PASO 3 PREDIJO
+
+La apuesta 1 decía: *«el árbol no cambiará ninguna conclusión ya pagada del bloque B — pero
+habría abaratado la de la sesión 95»*.
+
+**Predicción concreta y falsable: la primera mitad se sostiene y la segunda falla. ~85 %.**
+Replicar la inyección de la 95 con el árbol encendido dará **dos ramas `worker:usd` y ninguna
+`eur`** — el mismo síntoma ambiguo, las mismas dos causas, el mismo trabajo a mano. El árbol
+**no** habría abaratado nada.
+
+🔑 **Y el motivo es `LM.66` mordiendo donde no lo esperaba: un árbol cuyos nodos se bautizan con
+un adjetivo hereda la mentira del adjetivo.** El paso 2 dejó escrito que `tramo` *«es una
+etiqueta, de la misma clase que `capa`»* — y se incluyó igual porque sin nombre legible el árbol
+no se lee. **Aquí se cobra esa decisión:** el árbol es honesto en su forma y mentiroso en sus
+rótulos, y lo que un humano mira primero son los rótulos.
+
+⭐ **Se apuesta en la dirección incómoda a propósito.** Ganar esta apuesta significa **perder la
+apuesta 1**, que es mía y del bloque C. Si el árbol **sí** cazara la 95 sin ayuda, la apuesta 1
+se paga y esta se falla — y sería mejor noticia.
+
+##### 8️⃣ Y LA PARTE CONSTRUCTIVA: UN TERCER TESTIGO CIERRA LA AMBIGÜEDAD DE LA 95
+
+Si el tramo del worker se bautizara con **lo que el worker hizo** —la moneda del contrato, que
+es un dato— en vez de con **lo que alguien dijo que era** —`nombre=`, que es un adjetivo—, torcer
+la etiqueta produciría un nodo `worker:usd` **cuyo contrato dice `EUR`**. Contradicción, y roja.
+
+**Predicción: con ese testigo, el síntoma de la 95 deja de tener dos causas. ~75 %.** El harness
+podría por fin distinguir *«el enrutado está torcido»* de *«solo la etiqueta miente»*, que es
+literalmente la pregunta que el paso 1 declaró sin dueño.
+
+⚠️ **Lo que puede salir mal, y se dice antes:** puede que el contrato **no** esté disponible en
+el momento de abrir el tramo —el tramo se abre al entrar en la función y el contrato existe al
+salir—. Si es así, el testigo **no se puede poner donde hace falta**, y eso es un hallazgo sobre
+`envuelto` y no una excusa. Se anotaría como fallada.
+
+##### 💰 Coste apostado: **$0,00**
+
+La inyección de etiqueta es determinista y no necesita modelo; el cebo ya está pagado desde la
+sesión 94. ⚠️ **Y la lección del paso 4 se aplica aquí:** si a mitad de camino hiciera falta
+pagar para creérselo, **se para y se dice antes de gastar**, no después.
+
+##### ⚠️ El sospechoso de estar ciego — sexta sesión seguida
+
+🚨 **Estoy a punto de reproducir un defecto usando la MISMA inyección que lo produjo, y el que
+decide qué se inyecta es el que ya sabe qué va a salir.**
+
+Es el bicho del cebo de B.4 (*«un cebo demasiado fácil mide al cebo, no al cazador»*) con una
+vuelta más: aquí el cebo **ya existe**, grabado en `cebo_mal_enrutado_*.json`, producido por un
+worker real en la sesión 94.
+
+→ **La defensa, sellada como obligación:** la reproducción se hace **con el cebo grabado**, no
+con uno nuevo redactado hoy, y el nodo torcido se compara contra **el contrato que ese cebo ya
+trae dentro** (`moneda: USD`, `monto: 400`), que nadie puede retocar sin que se vea en el
+`git diff`.
+
+---
+
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
