@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 100 — NIVEL 8: **C.3 ENTERO Y LAS CINCO APUESTAS CERRADAS. 1, 2, 3 y 5 ganadas; la 4 FALLADA — y la que se perdió fue la que más valió.** El contrato ya comprueba que responde a lo que se preguntó, y el techo del instrumento pasó del p90 al coste ESPERADO: **el p90 es el precio correcto para un freno y el equivocado para un instrumento**. Con eso el caro por fin se ahogó ($0,009423 de $0,012172, cortando ANTES de gastarse lo suyo) con **$0,009817 parados en los baratos**. 🚨 **Pero el modelo dijo una causa FALSA** —«discrepancia» cuando fue presupuesto—: **el corte nuevo iba primero y enterró la causa real** (`LM.71`), y debajo apareció que el contrato guardaba **el último paso de la cadena en vez de la pregunta** (`LM.72`), dando un falso positivo del mismo tipo que el defecto que venía a cazar. Los dos arreglados. 📊 `presupuesto.py` 26→**40** pruebas, `traza.py` 36→**41**. 💸 Gasto del día **$0,116042**, de los que **$0,087297 fueron un error mío** corriendo scripts que pagan en pelado → `GUIDE.md` §6.e.)
+**Última actualización:** 2026-08-21 (sesión 101 — NIVEL 8: **APUESTA SELLADA Y COMMITEADA ANTES DE TECLEAR**, novena sesión seguida. ⚠️ **Escrita por Claude a petición del estudiante**, que prefirió avanzar a C.4 — se dice porque el sospechoso *«apuesta y evalúa el mismo»* hoy está en su forma más pura, y la única defensa es que las cinco se falsifican con un comando. Arranca **C.4 — los fallos del worker**: se cae, se demora, no contesta. Lo apostado: el crash ya no tumba al orquestador **pero se lleva su gasto del libro**; el árbol no ve un nodo abierto; el mensaje de la frontera miente para los reintentables; «se demora» no tiene freno propio; y la desigual con todo arreglado (~$0,03) por fin sube la causa limpia. Orden sellado: las cuatro de $0,00 primero, la de dinero al final.)
 
 ---
 
@@ -4281,6 +4281,68 @@
 #   Van OCHO. Hoy cobró **cuatro veces**: dos ganadas limpias, una ganada tras
 #   redimensionar, y **una FALLADA que destapó los dos defectos mayores del día.**
 #   ⭐ La que más valió fue la que se perdió.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 🎲 **APUESTA SELLADA DE LA SESIÓN 101 — C.4, LOS FALLOS DEL WORKER.**
+#   Novena sesión seguida sellando antes de teclear. ⚠️ **Y esta vez la escribo
+#   YO, a petición suya** («no me interesa mucho la apuesta, voy a tomar la
+#   tuya»). Se dice porque cambia lo que vale: el sospechoso de las últimas
+#   cinco sesiones —*el que apuesta es el mismo que evalúa*— hoy está en su
+#   forma más pura. La única defensa es que **las cinco se falsifican con un
+#   comando, no con una opinión**, y las cuatro primeras cuestan **$0,00**.
+#   📌 Escrita tras LEER el código (`worker.py`, `orquestador.py`, `agente.py`)
+#   y ANTES de tocarlo. Leer no es tocar; pero si algo se cae solo con un
+#   `grep`, se cuenta como perdida igual.
+#
+#   **APUESTA 1 — el worker que revienta ya NO tumba al orquestador, pero SÍ
+#   se lleva su dinero del libro.** El `except Exception` de `orquestador.py`
+#   (~línea 546) lo atrapa desde B.2 — eso está hecho. Pero si `correr_worker`
+#   lanza, **nunca devuelve `resultado`**, así que las seis líneas de
+#   `contabilidad[...] += resultado[...]` no corren: lo que el worker ya pagó
+#   antes de reventar **no entra en la factura**, y su trozo del reparto ya se
+#   había entregado. Predigo que tras un crash a mitad, `coste_workers_usd`
+#   sale **MENOR** que la suma de las líneas `llamada_api` del registro.
+#   ⇒ *La pierdo si la factura cuadra con el registro después de un crash.*
+#
+#   **APUESTA 2 — el crash es INVISIBLE para el árbol, y `traza.py` lo deja
+#   pasar.** El worker anota `worker_inicio` y muere sin `worker_fin`. Predigo
+#   que `auditar_arbol` da **verde**: un nodo que se abrió y no cerró no
+#   contradice a nadie, y `LM.66` ya dijo que un dato que nadie puede desmentir
+#   no es correcto, es **no comprobable**. Hace falta un detector de **nodo
+#   abierto**, y entra con su torcedura al lado o no entra (`LM.13`).
+#   ⇒ *La pierdo si alguna de las 41 pruebas se pone roja al meterle un
+#     registro con `worker_inicio` huérfano.*
+#
+#   **APUESTA 3 — el mensaje que sube al modelo es FALSO para la mitad de los
+#   fallos.** La frontera dice *«No lo llames otra vez igual»* para todo lo que
+#   caiga en el `except Exception`. Es correcto para un `TypeError` y
+#   **equivocado para un `overloaded_error`**, que es justo el que sí se
+#   arregla reintentando. Es `LM.71` otra vez: **la causa real enterrada por el
+#   mensaje que llega primero.** Predigo que hay que distinguir reintentable de
+#   permanente **en la frontera**, no solo dentro de `hablar_con_el_modelo`.
+#   ⇒ *La pierdo si el mensaje único ya distingue, o si ningún reintentable
+#     llega vivo hasta ahí.*
+#
+#   **APUESTA 4 — «se demora» no tiene freno PROPIO, y su tope real nadie lo ha
+#   calculado.** No hay reloj de pared en `correr_worker`: el único límite es
+#   indirecto —5 vueltas × 3 intentos × 30 s de timeout + las esperas del
+#   reintento—. Predigo que al escribir ese número sale **por encima de 7
+#   minutos por worker**, y que en paralelo el orquestador espera al más lento
+#   sin que nadie lo haya decidido nunca.
+#   ⇒ *La pierdo si el techo calculado sale por debajo de 2 minutos.*
+#
+#   **APUESTA 5 — la única que cuesta dinero (~$0,03): la desigual con TODO
+#   arreglado, y la causa sube LIMPIA.** Las afirmaciones 7 y 8 de la 100
+#   siguen sin cobrar. Los dos arreglos de ayer —el orden del corte y el
+#   contrato del primer acierto— **no se han visto juntos con dinero delante**.
+#   Predigo que el modelo dirá **presupuesto** y no «discrepancia».
+#   ⇒ *La pierdo si vuelve a nombrar una causa que el harness no le dio.*
+#
+# 📌 **Y el orden va sellado también:** las cuatro de $0,00 primero, la de
+#   dinero al final. Si la 1 o la 3 son ciertas, la corrida pagada mediría un
+#   harness que ya se sabe roto — y ayer costó $0,087297 aprender a no pagar
+#   por una medición que iba a haber que repetir.
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ➡️ **SIGUIENTE PASO CONCRETO — cerrar los TRES pendientes de C.2 antes de pasar a C.3.**
