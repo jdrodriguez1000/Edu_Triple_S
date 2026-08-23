@@ -96,6 +96,7 @@ sys.path.insert(0, str(AQUI.parent / "05b-proyecto"))
 
 import agente          # noqa: E402
 import contexto        # noqa: E402
+import modelos         # noqa: E402
 import presupuesto     # noqa: E402
 import worker          # noqa: E402
 
@@ -109,6 +110,17 @@ import worker          # noqa: E402
 #    más, dale un modelo mejor". Sería razonable en un producto y es veneno en
 #    un experimento — lo medido dejaría de ser el esquema.
 MODELO = agente.MODELO
+
+# ⭐ C.6 — LA CONFIGURACIÓN DE ESTA CAPA, y la de la de abajo. Las dos por
+#    defecto son las de siempre: `Capa()` es `agente.MODELO` sin esfuerzo.
+# 🔑 Y son DOS variables y no una a propósito: toda la pieza C.6 consiste en
+#    que arriba y abajo puedan ser distintas. Una sola sería el estado de hoy
+#    con un nombre nuevo.
+# 📊 Y ya hay número para elegir, medido en `modelos.py` sobre 374.217 tokens
+#    pagados: subir ARRIBA a opus cuesta +$0,30; subir ABAJO, +$1,56. Los
+#    tokens están abajo (86,4 %), y ahí es donde el modelo caro arruina.
+CAPA_ORQ = modelos.Capa()
+CAPA_WORKERS = modelos.Capa()
 
 # El de arriba da pocas vueltas: pedir tres monedas y responder. Con 8 sobra.
 MAX_VUELTAS_ORQ = 8
@@ -439,6 +451,10 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
                                      presupuesto_usd=presupuesto_worker,
                                      pedido={"moneda": moneda.upper(),
                                              "monto": monto},
+                                     # ⭐ C.6 — y aquí baja. `None` si nadie la
+                                     #    puso, y entonces el worker usa la
+                                     #    suya de siempre.
+                                     capa=contabilidad.get("capa_workers"),
                                      verboso=verboso)
 
     # --- La contabilidad de la capa de abajo. Se suma aquí y no dentro del
@@ -703,7 +719,11 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                        presupuesto_usd=PRESUPUESTO_ORQ_USD, verboso=True,
                        reparto=None, sistema=None, tools=None, funciones=None,
                        nombre="orquestador", presupuesto_encargo=None,
-                       encargos=None, reintentos_reservados=0):
+                       encargos=None, reintentos_reservados=0,
+                       # ⭐ C.6 — las dos capas, por la puerta. `None` en las
+                       #    dos = lo de siempre, y por eso A.2 y todo el bloque
+                       #    B conservan sus números.
+                       capa=None, capa_workers=None):
     """Corre la capa de arriba y devuelve un diccionario con LAS DOS capas.
 
     Si comparas este bucle con el de `worker.correr_worker`, verás que son el
@@ -718,6 +738,8 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
     """
     # Por defecto, en serie: A.2 no cambia de comportamiento por este refactor.
     reparto = reparto or reparto_en_serie
+    capa = capa or CAPA_ORQ
+    capa_workers = capa_workers or CAPA_WORKERS
 
     # ⭐ B.5 — LAS TRES PIEZAS QUE HACÍAN DE ESTE BUCLE «EL» ORQUESTADOR Y AHORA
     #    LO HACEN «UN» ORQUESTADOR: con qué habla, qué menú ve y qué hay detrás.
@@ -775,10 +797,21 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
         # Vacío por defecto: sin esto, los tres reciben la misma frase y la
         # corrida no puede distinguir un reparto de otro.
         "encargos": encargos,
+        # ⭐ C.6 — LA CONFIGURACIÓN DE LA CAPA DE ABAJO VIAJA AQUÍ, y no en la
+        #    firma de `herramienta_consultar_moneda`. Es el mismo camino que ya
+        #    usan `reparto` y `encargos`, y por el mismo motivo: la herramienta
+        #    tiene la forma de una herramienta cualquiera, y lo que el harness
+        #    necesita pasarle por debajo va en la contabilidad, que es NUESTRA.
+        # 🔑 Al modelo no le sube, y eso es A.3: saber con qué modelo corre su
+        #    especialista no le sirve para decidir nada y le costaría tokens en
+        #    cada vuelta.
+        "capa_workers": capa_workers,
     }
 
     arranque = time.monotonic()
-    anotar("orquestador_inicio", capa=nombre, tarea=tarea)
+    anotar("orquestador_inicio", capa=nombre, tarea=tarea,
+           modelo=capa.modelo, esfuerzo=capa.esfuerzo,
+           modelo_workers=capa_workers.modelo)
 
     if verboso:
         print(f"\n🧠 orquestador ← {tarea}")
@@ -820,14 +853,20 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
 
         for intento in range(1, agente.REINTENTOS_PROPIOS + 1):
             try:
-                respuesta = agente.cliente.messages.create(
-                    model=MODELO,
-                    max_tokens=2048,
-                    system=sistema,
-                    tools=tools,
-                    messages=mensajes,
-                )
-                este_costo = agente.costo(respuesta.usage)
+                peticion_orq = {
+                    # ⭐ C.6 — el modelo de ARRIBA sale de su capa.
+                    "model": capa.modelo,
+                    "max_tokens": 2048,
+                    "system": sistema,
+                    "tools": tools,
+                    "messages": mensajes,
+                }
+                peticion_orq.update(capa.extras_de_peticion())
+                respuesta = agente.cliente.messages.create(**peticion_orq)
+                # 🚨 C.6 — el mismo arreglo que en el worker, y aquí es donde
+                #    más se notaba: la capa de arriba es la candidata natural a
+                #    llevar el modelo caro, y era la que peor se contaba.
+                este_costo = modelos.costo_de(respuesta.usage, capa.modelo)
                 gastado_usd += este_costo
                 # La báscula del arreglo, igual que en el worker: la estimación
                 # se compara con la realidad y las veces que se queda corta se
@@ -840,6 +879,8 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                 salida_tokens += respuesta.usage.output_tokens
                 llamadas_api += 1
                 anotar("llamada_api", capa=nombre, intento=intento,
+                       # ⭐ C.6 — el testigo que la apuesta 2 midió que faltaba.
+                       modelo=capa.modelo, esfuerzo=capa.esfuerzo,
                        entrada=respuesta.usage.input_tokens,
                        salida=respuesta.usage.output_tokens,
                        costo_usd=round(este_costo, 6),

@@ -2059,7 +2059,7 @@ llamadas.
 | C.3 | **Permisos**: quién puede qué | el orquestador **no toca herramientas reales** |
 | C.4 | **Fallos del worker**: se cae, se demora, no contesta | un worker mudo no debe colgar al orquestador |
 | C.5 | ✅ **Tope de recursión**: el bucle orquestador ↔ worker | dos agentes pueden pasarse la pelota para siempre |
-| C.6 | **Modelo y esfuerzo por capa** 🆕 | es la palanca de costo más grande del esquema: **5×** entre la config más barata y la más cara |
+| C.6 | 🟡 **Modelo y esfuerzo por capa** *(pasos 1 y 1b hechos)* | es la palanca de costo más grande del esquema: **5×** entre la config más barata y la más cara |
 
 #### 🆕 C.6 — añadida el 2026-08-20 (sesión 91), y la destapó una pregunta suya
 
@@ -4076,6 +4076,119 @@ estaba escrita y nadie la alcanzó.
 El duelo corre con **el mismo modelo en los dos lados** (pieza 0.4 del sobre). Nada de lo
 que se mida aquí puede cambiar la configuración del duelo: **C.6 se estudia con demos
 propias**, no reconfigurando el experimento sellado.
+
+---
+
+#### 📊 C.6 · PASOS 1 y 1b — LO QUE SALIÓ *(sesión 104 · `modelos.py` · **$0,000000**)*
+
+##### Las tres apuestas del paso 1, resueltas
+
+| # | Lo apostado | Resultado |
+|---|---|---|
+| 1 | el precio está pegado al MÓDULO; el error es exacto | ✅ **5,0000000000×** |
+| 2 | el registro no puede decirlo después | ✅ 0 de 191 líneas |
+| 3 | el techo en dólares sobrevive… y se cae con la 1 | ✅ las dos mitades |
+
+🚨 **Y lo peor de la apuesta 1 no es el factor: es que la mentira es LIMPIA.** Los tres
+modelos del catálogo tienen la salida a **5× la entrada**, así que tarifar mal **escala
+toda la factura por una constante**. Las partes siguen sumando el total (prueba 15), el
+árbol de C.1 sigue cuadrando hacia arriba con lo que `auditar()` suma en plano, y **todos
+los controles internos salen verdes — porque todos usan la misma tabla mala.**
+🔑 **No hay segundo testigo posible dentro de la contabilidad.** Es `LM.66` del revés: en
+C.1 los dos caminos eran independientes y por eso uno podía desmentir al otro; aquí
+comparten la fuente del error y **confirman la mentira en coro**.
+
+🔑 **Y por qué el registro sí lo tenía en C.1 y aquí no, que no es mala suerte:**
+`datos.moneda` se grababa porque era **la SALIDA de una herramienta**, y el registro
+guarda salidas. El modelo es **una ENTRADA de la petición**, y de la petición el registro
+no guardaba nada.
+
+✅ **El techo de C.2 no hay que tocarlo, y el motivo es LA UNIDAD**: está escrito en
+dólares, no en tokens ni en llamadas, así que el precio ya va dentro del número. Un tope
+en tokens habría que recalcularlo con cada modelo. **La unidad de un freno decide si
+viaja o no.** 🚨 Pero se compara contra `gastado_usd`, que salía de `agente.costo()`:
+**vería un 9 % donde hay un 46 %.** Los dos frenos no son independientes — **el
+presupuesto solo vale lo que valga la tabla de precios.**
+
+##### La tabla, ahora medida sobre 374.217 tokens ya pagados
+
+Reparto real: **arriba 13,6 % · abajo 86,4 %** (la estimación anterior decía 12/88, y
+salía de una sola corrida).
+
+| configuración | total | vs. |
+|---|---|---|
+| todo haiku *(lo medido)* | $0,465889 | 1,00× |
+| sonnet arriba + haiku abajo | $0,616585 | 1,32× |
+| opus arriba + haiku abajo | $0,767281 | 1,65× |
+| haiku arriba + **opus abajo** | $2,028053 | **4,35×** |
+| todo opus | $2,329445 | 5,00× |
+
+Subir el ORQUESTADOR a opus: **+$0,30**. Subir los WORKERS: **+$1,56** — **5,2× más**.
+
+##### ⚠️ Un error mío, medido antes de pagar: razoné en tokens y la factura es en dólares
+
+La apuesta 4 decía que el esfuerzo es palanca de segundo orden **«porque la salida es una
+fracción pequeña del gasto»**. Medido: la salida es **6,1 % de los tokens** pero
+**24,6 % del gasto**, porque cada token de salida cuesta **5×**. La apuesta no está
+falsada —predecía el ahorro real, no el techo— **pero su motivo escrito era malo**, y el
+techo del esfuerzo es cuatro veces más alto de lo que esa frase sugería.
+🔑 **Contar tokens y contar dólares no dan la misma intuición cuando la salida vale 5× la
+entrada.** Es `LM.30`: un motivo que suena medido sin estarlo.
+
+##### El paso 1b — el cableado, y nada de lo medido cambió de número
+
+`Capa(modelo, esfuerzo)` entra **por la puerta** en las dos capas, como `reparto` en C.2 y
+`contrato` en A.3: `correr_worker(..., capa=)` y `correr_orquestador(..., capa=,
+capa_workers=)`. La configuración de abajo **viaja dentro de `contabilidad`**, por el
+mismo camino que `reparto` y `encargos` — al modelo no le sube, porque no le sirve para
+decidir y le costaría tokens en cada vuelta. `agente.costo()` sale de los dos bucles y
+entra `modelos.costo_de(usage, capa.modelo)`. El registro gana `modelo` y `esfuerzo`.
+
+📌 **`None` en todo = la conducta de siempre**, y por eso las siete suites del nivel
+siguen verdes con sus números intactos y los `.jsonl` pagados no se tocaron.
+
+##### 🚨 Y el defecto que se llevó el día: escribí una prueba que no podía fallar, en el archivo donde se cuenta esa lección
+
+Las pruebas 12 y 13 del paso 1 se dejaron con esta promesa por escrito: *«se pondrán
+ROJAS cuando C.6 se arregle»*. **Se cableó C.6 entero y siguieron verdes.**
+
+La 12 interroga a `agente.costo`, **que nadie tocó** — el arreglo fue dejar de LLAMARLA en
+los dos bucles, no cambiarla. La 13 interroga a **191 líneas ya grabadas**, que son
+historia. 🔑 **Las dos son ciertas y las dos son inútiles como vigilancia: describen el
+mundo de ayer, y el mundo de ayer nunca se pone rojo.** Es la prueba que no podía fallar
+de la sesión 103 por segunda vez.
+
+✅ Se quedan —son el registro de las apuestas— **rebautizadas para que digan lo que de
+verdad miden**, y sin la promesa. Y se añadieron las **17 a 22**, con un cliente espía que
+apunta con qué se le pidió: ésas sí se ponen rojas si alguien deshace el cableado.
+🔑 **La 20 es la que mata el agujero**: el mismo gasto de tokens, tarifado a 5× —
+$0,010000 con opus contra $0,002000 con haiku—. **Antes del cableado esas dos cifras eran
+idénticas, y eso era la apuesta 1 entera.**
+
+##### 📋 Resumen
+
+| | |
+|---|---|
+| Archivo | `modelos.py` (**22 pruebas**) · `worker.py` y `orquestador.py` cableados |
+| Apuestas | 1, 2 y 3 ✅ · la 4 con su motivo corregido · 5 y 6 abiertas |
+| 💸 Coste | **$0,000000** |
+
+**Abierto, con dueño:**
+- 🔲 **El nombre del archivo de registro sigue llevando UN solo modelo.**
+  `registro_orquestador_{MODELO}.jsonl` nombra a uno, y en una corrida con dos capas
+  distintas las líneas de la otra caen dentro. **Ya no es una ceguera** —desde hoy cada
+  línea dice su `modelo`, así que el dato es auditable—, pero **el rótulo puede seguir
+  mintiendo** y es `LM.17` con otra ropa: el rótulo del contenedor no describe el
+  contenido. *Importancia: media · Urgencia: no bloqueante* — no para el paso 3 porque el
+  testigo está dentro; muerde el día que alguien filtre por nombre de archivo en vez de
+  por campo.
+- 🔲 **`agente.costo()` sigue tarifando con constantes de módulo**, y sigue viva en
+  `router.py:298` y `supervisor.py:258`. Hoy no miente, porque esas dos topologías corren
+  con una sola capa de modelo — **miente el día que no**. Es el mismo bicho con dos
+  dueños que aún no lo saben.
+- 🔲 **`recursion.py` no pasa la capa hacia abajo** en `herramienta_delegar`: una pelota
+  de agentes correría entera con la configuración por defecto. Gratis de arreglar, y sin
+  dueño hasta que C.6 tenga que medirse sobre una cadena.
 ---
 ### 🧠 BLOQUE D — Lo compartido
 

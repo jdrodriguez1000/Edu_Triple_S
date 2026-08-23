@@ -106,6 +106,7 @@ sys.path.insert(0, str(AQUI.parent / "05b-proyecto"))
 
 import agente          # noqa: E402
 import contexto        # noqa: E402
+import modelos         # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -116,6 +117,15 @@ import contexto        # noqa: E402
 #    si A corre con haiku y B con opus, lo medido es el modelo, no el esquema.
 #    Por eso no se escribe un nombre aquí: se toma el de A.
 MODELO = agente.MODELO
+
+# ⭐ C.6 — LA CONFIGURACIÓN POR DEFECTO DE ESTA CAPA, Y ES EXACTAMENTE LA DE
+#    SIEMPRE. `Capa()` sin argumentos toma `agente.MODELO` y ningún esfuerzo, o
+#    sea que A.1 y todo el bloque B siguen corriendo igual y sus números siguen
+#    valiendo. C.6 no cambia la conducta por defecto: **abre una puerta.**
+# 🔒 Y el candado de la pieza 0.4 sigue puesto: el duelo corre con el mismo
+#    modelo en los dos lados. Que se PUEDA cambiar no es permiso para cambiarlo
+#    en el experimento sellado.
+CAPA_WORKER = modelos.Capa()
 
 # Un worker da MENOS vueltas que el agente completo, y no es por prudencia: es
 # que tiene menos que hacer. Su encargo es tasa -> convertir -> responder, o
@@ -500,6 +510,12 @@ def correr_worker(encargo,
                   # para que el contrato pueda desmentirse. Por defecto `None`,
                   # y eso significa NO COMPROBADO, no «todo bien».
                   pedido=None,
+                  # ⭐ C.6 — CON QUÉ MODELO Y CON CUÁNTO ESFUERZO HABLA ESTA
+                  #    CAPA. Entra por la puerta, como `reparto` en C.2 y
+                  #    `contrato` en A.3, y por el mismo motivo: el bucle no
+                  #    crece. `None` = la de siempre, y por eso nada de lo ya
+                  #    medido cambia de número.
+                  capa=None,
                   historial_previo=None,
                   verboso=True):
     """Corre UN worker de principio a fin y DEVUELVE lo que pasó.
@@ -521,6 +537,7 @@ def correr_worker(encargo,
        queda es la caja — y por eso la caja es una decisión de diseño y no un
        detalle de configuración.
     """
+    capa = capa or CAPA_WORKER
     menu = menu_para(permitidas)
     puente = puente_para(permitidas)
 
@@ -541,7 +558,8 @@ def correr_worker(encargo,
     llamadas = []
 
     arranque = time.monotonic()
-    anotar("worker_inicio", worker=nombre, encargo=encargo, herramientas=permitidas)
+    anotar("worker_inicio", worker=nombre, encargo=encargo,
+           herramientas=permitidas, modelo=capa.modelo, esfuerzo=capa.esfuerzo)
 
     if verboso:
         print(f"\n🔧 worker[{nombre}] ← {encargo}")
@@ -590,15 +608,27 @@ def correr_worker(encargo,
                 #    Se añadió en la sesión 92; A.1 no cambia de conducta,
                 #    porque con menú lleno el `if` no se toma.
                 peticion = {
-                    "model": MODELO,
+                    # ⭐ C.6 — EL MODELO SALE DE LA CAPA, NO DE LA CONSTANTE.
+                    #    Es un cambio de una palabra y es media pieza.
+                    "model": capa.modelo,
                     "max_tokens": 1024,
                     "system": sistema,
                     "messages": mensajes,
                 }
                 if menu:
                     peticion["tools"] = menu
+                # `output_config` solo si hay esfuerzo pedido. Vacío si no, y
+                # eso importa: mandar el valor por defecto no es lo mismo que
+                # no mandarlo.
+                peticion.update(capa.extras_de_peticion())
                 respuesta = agente.cliente.messages.create(**peticion)
-                este_costo = agente.costo(respuesta.usage)
+                # 🚨 C.6 — LA LÍNEA QUE ARREGLA LA APUESTA 1. Antes decía
+                #    `agente.costo(respuesta.usage)`, que tarifa con constantes
+                #    de módulo: en cuanto las dos capas dejaban de compartir
+                #    modelo, esto reportaba el precio del OTRO y sin quejarse.
+                #    Medido en `modelos.py`: 5,0× exacto, y ningún cuadre
+                #    interno podía verlo porque todos usaban la misma tabla.
+                este_costo = modelos.costo_de(respuesta.usage, capa.modelo)
                 gastado_usd += este_costo
                 # La comprobación de la estimación contra la realidad. Es gratis
                 # —el dato ya está pagado— y es lo único que convierte el arreglo
@@ -609,7 +639,15 @@ def correr_worker(encargo,
                 entrada_tokens += respuesta.usage.input_tokens
                 salida_tokens += respuesta.usage.output_tokens
                 llamadas_api += 1
+                # ⭐ C.6 — EL TESTIGO QUE FALTABA. La apuesta 2 midió que
+                #    ninguna de las 191 líneas ya grabadas dice qué modelo hizo
+                #    la llamada, así que aquello no se puede auditar ni pagando.
+                # 🔑 Y no estaba por un motivo, no por descuido: el registro
+                #    guardaba SALIDAS (lo que trajo una herramienta) y el modelo
+                #    es una ENTRADA de la petición. Aquí se empieza a guardar
+                #    también con qué se pidió.
                 anotar("llamada_api", worker=nombre, intento=intento,
+                       modelo=capa.modelo, esfuerzo=capa.esfuerzo,
                        entrada=respuesta.usage.input_tokens,
                        salida=respuesta.usage.output_tokens,
                        costo_usd=round(este_costo, 6),
@@ -647,6 +685,11 @@ def correr_worker(encargo,
 
         resultado = {
             "worker":         nombre,
+            # ⭐ C.6 — el modelo viaja en el resultado, no solo en el registro.
+            #    Sin esto, quien orquesta no puede sumar por capa lo que costó
+            #    cada una: tendría el dinero pero no a quién atribuirlo.
+            "modelo":         capa.modelo,
+            "esfuerzo":       capa.esfuerzo,
             "encargo":        encargo,
             # ⚠️ EL TEXTO YA NO ES "lo único que verá el orquestador". En A.1
             #    lo era, y por eso se perdió la fuente del CAD. Ahora viaja el
