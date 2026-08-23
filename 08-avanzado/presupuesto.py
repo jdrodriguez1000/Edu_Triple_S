@@ -207,17 +207,24 @@ class RepartoDeEntrada:
 
     def __init__(self, total_usd=PRESUPUESTO_ENCARGO_USD,
                  n_workers=N_WORKERS_ESPERADOS,
-                 reserva_arriba=RESERVA_ARRIBA):
+                 reserva_arriba=RESERVA_ARRIBA,
+                 reintentos=0):
         if n_workers < 1:
             raise ValueError("un reparto para cero workers no es un reparto")
+        if reintentos < 0:
+            raise ValueError("no se puede reservar un número negativo de reintentos")
 
-        self.total_usd = round(total_usd, 6)
         self.n_workers = n_workers
+
+        # ⭐ EL TOTAL BASE — el que se reparte entre los que VAN A CORRER. Todo
+        #    lo de abajo se calcula con éste, y por eso la reserva de reintentos
+        #    no le quita un céntimo a nadie.
+        base_usd = round(total_usd, 6)
 
         # Lo que va abajo se parte en partes iguales. Es CIEGO a propósito: nadie
         # sabe todavía a qué moneda le tocará cada trozo, y en esta tarea da
         # igual (dispersión medida: 1,01x).
-        para_abajo = self.total_usd * (1.0 - reserva_arriba)
+        para_abajo = base_usd * (1.0 - reserva_arriba)
         trozo = round(para_abajo / n_workers, 6)
         self._trozos = [trozo] * n_workers
         self._trozo = trozo
@@ -233,27 +240,91 @@ class RepartoDeEntrada:
         #    número de trozos, un fan-out de 100 workers pierde 100 veces más.
         # → El resto se queda ARRIBA, y no es arbitrario: el que responde de la
         #   factura es el único que no se puede quedar corto por un redondeo.
-        self.arriba_usd = round(self.total_usd - trozo * n_workers, 6)
+        self.arriba_usd = round(base_usd - trozo * n_workers, 6)
 
-        self.entregados = {}          # nombre -> cuánto se le dio
+        # ⭐ C.5 (antesala) · LA RESERVA DE REINTENTOS — Y SE SUMA, NO SE RESTA.
+        #    La bolsa de los reintentos es SEPARADA y hace CRECER el total del
+        #    encargo. No sale de los trozos ni de la bolsa de arriba, y esa es
+        #    toda la decisión de diseño de la sesión 102.
+        # 📌 Se decidió con tres datos, no a ojo (todos a $0,00):
+        #    · la holgura real de la bolsa de arriba era 0,47 trozos → no llega
+        #    · media ración ($0,004948) sólo cubre a 12 de 57 workers pagados:
+        #      el reintento moriría de presupuesto el 79 % de las veces, y eso
+        #      es fabricar una TERCERA instrucción contraria
+        #    · un trozo entero cubre a 53 de 57 (93 %)
+        # 🔑 Reservar CUESTA. La única elección honesta era decir cuánto y
+        #    dejarlo escrito en la factura, en vez de sacarlo de un bolsillo
+        #    ajeno donde nadie lo vería.
+        self.reintentos_reservados = reintentos
+        self._reserva = [trozo] * reintentos
+        self.total_usd = round(base_usd + trozo * reintentos, 6)
+
+        self.entregados = {}          # nombre -> cuánto se le dio EN TOTAL
+        self.entregas = []            # (nombre, trozo) — el orden, para el árbol
         self.rechazados = []          # los que llegaron tarde
+        self.reintentos_usados = 0
         self._candado = threading.Lock()
 
     # --- lo que se entrega ------------------------------------------------
     def tomar(self, nombre):
-        """Entrega un trozo a `nombre`. Si no quedan, `SinTrozo`."""
+        """Entrega un trozo a `nombre`. Si no quedan, `SinTrozo`.
+
+        ⭐ AQUÍ SE SEPARARON DOS PREGUNTAS QUE ANTES CONTESTABA UNA SOLA LÍNEA:
+           · `jpy` pidiendo por PRIMERA vez -> es un worker de más. No hay sitio.
+           · `cad` pidiendo por SEGUNDA vez -> es un REINTENTO. Tiene su bolsa.
+           La diferencia no la marca un contador: la marca **si ese nombre ya
+           fue servido**. Hasta la sesión 102 las dos caían en el mismo `raise`,
+           y por eso `crash_temporal` invitaba a un reintento que este método
+           rechazaba con una frase falsa (*«es uno de más»*: no sobraba, se le
+           había acabado el sitio).
+
+        🐛 Y LA OTRA MITAD, QUE ERA CONTABLE: la línea de abajo decía
+           `self.entregados[nombre] = trozo`. Un diccionario por nombre contesta
+           *«a quién»*; aquí hacía falta *«cuánto en total»*. Con sitio para el
+           reintento salían cuatro trozos de la caja y quedaban tres claves en
+           el libro: **$0,007422 desaparecidos y `cuadra()` en falso**. Es
+           `LM.73` en el mismo sitio — el dinero no se pierde por gastarse mal,
+           se pierde por no volver por donde se cuenta.
+        """
         with self._candado:
-            if not self._trozos:
+            if self._trozos:
+                trozo = self._trozos.pop()
+            elif nombre in self.entregados and self._reserva:
+                # Es un reintento y queda reserva: ración ENTERA.
+                trozo = self._reserva.pop()
+                self.reintentos_usados += 1
+            elif nombre in self.entregados:
+                # Es un reintento y la reserva se acabó. La frase lo dice tal
+                # cual: no sobra este worker, se acabó lo reservado para volver
+                # a intentarlo. Son dos fallos distintos y merecen dos frases.
+                self.rechazados.append(nombre)
+                raise SinTrozo(
+                    f"'{nombre}' pide reintentar y la reserva está gastada: "
+                    f"se reservó para {self.reintentos_reservados} reintento(s)")
+            else:
                 self.rechazados.append(nombre)
                 raise SinTrozo(
                     f"'{nombre}' es el worker número "
                     f"{self.n_workers + len(self.rechazados)} y el encargo se "
                     f"repartió para {self.n_workers}")
-            trozo = self._trozos.pop()
-            self.entregados[nombre] = trozo
+
+            self.entregados[nombre] = round(
+                self.entregados.get(nombre, 0.0) + trozo, 6)
+            self.entregas.append((nombre, trozo))
             return trozo
 
     # --- lo que se puede preguntar ---------------------------------------
+    def quedan_reintentos(self):
+        """Cuántos reintentos quedan pagados.
+
+        🚨 Existe para que la INVITACIÓN pueda condicionarse. Reservar mueve la
+           contradicción un turno, no la borra: gastada la reserva, el harness
+           vuelve a decir «no lo reintentes» después de haber dicho «inténtalo».
+           Quien redacta la causa tiene que poder preguntar esto antes de
+           invitar. Es la salida (b) apoyándose en la (a).
+        """
+        return len(self._reserva)
+
     def trozo_nominal(self):
         """Cuánto vale un trozo, sin entregar nada. Para las pruebas y el informe.
 
@@ -263,8 +334,14 @@ class RepartoDeEntrada:
         return self._trozo
 
     def sin_repartir(self):
-        """Dinero que quedó en la mesa porque nadie lo pidió."""
-        return round(sum(self._trozos), 6)
+        """Dinero que quedó en la mesa porque nadie lo pidió.
+
+        📌 Cuenta las DOS bolsas: los trozos que nadie reclamó y la reserva de
+           reintentos que no hizo falta. Si sólo contara la primera, `cuadra()`
+           se pondría en falso el día que se reserva y no se reintenta — o sea,
+           el día NORMAL. Un freno que muerde el día bueno se desconecta.
+        """
+        return round(sum(self._trozos) + sum(self._reserva), 6)
 
     def cuadra(self):
         """Ni se crea ni se pierde dinero: arriba + entregado + sin repartir == total.
@@ -272,6 +349,9 @@ class RepartoDeEntrada:
         🔑 Es `LM.66` aplicado aquí: un número que sólo puede comprobarse contra
            sí mismo no es comprobable. Este se comprueba por dos caminos —lo que
            se repartió y lo que se guardó— y tienen que dar el total.
+        ⭐ Y en la sesión 102 fue quien cazó el reintento que pisaba el libro:
+           el defecto no se vio leyendo la línea, se vio porque este número
+           dejó de cuadrar. Por eso existe.
         """
         suma = self.arriba_usd + sum(self.entregados.values()) + self.sin_repartir()
         return abs(round(suma, 6) - self.total_usd) < 1e-6
@@ -282,7 +362,13 @@ class RepartoDeEntrada:
             "arriba_usd": self.arriba_usd,
             "trozo_usd": self.trozo_nominal(),
             "entregados": dict(self.entregados),
+            "entregas": list(self.entregas),
             "rechazados": list(self.rechazados),
+            # 🔑 La reserva va en el informe con NOMBRE PROPIO. Si sólo apareciera
+            #    dentro de `total_usd`, el encargo costaría más y la factura no
+            #    diría por qué: dinero invisible otra vez, que es `LM.73`.
+            "reintentos_reservados": self.reintentos_reservados,
+            "reintentos_usados": self.reintentos_usados,
             "sin_repartir_usd": self.sin_repartir(),
             "cuadra": self.cuadra(),
         }
@@ -498,6 +584,215 @@ def _pruebas():
         check("P7 · un reparto para 0 workers se rechaza", False, "no levantó ValueError")
     except ValueError:
         check("P7 · un reparto para 0 workers se rechaza", True)
+
+    # ═══════════════════════════════════════════════════════════════════
+    # --- P30..P36: C.5 (antesala) — EL REINTENTO TIENE SITIO PROPIO ----
+    # ═══════════════════════════════════════════════════════════════════
+    # 🚨 Estas SIETE se escribieron ROJAS, antes de tocar la clase, y salieron
+    #    de un hueco que abrió el arreglo de C.4: `crash_temporal` le dice al
+    #    modelo *«esta sí puede salir bien al segundo intento»* y el reparto le
+    #    contestaba *«es uno de más. No lo reintentes»* — dos instrucciones
+    #    contrarias del mismo harness en dos turnos seguidos.
+    # 🔑 Y la distinción que faltaba NO es un contador de reintentos: es que
+    #    **ese nombre YA FUE SERVIDO**. `cad` pidiendo por segunda vez es un
+    #    reintento; `jpy` pidiendo por primera es un worker de más. Hoy las dos
+    #    preguntas las contestaba la misma línea, y por eso una tapaba a la otra.
+    # 📌 La forma se decidió CON DATOS, no a ojo (sesión 102, todo a $0,00):
+    #    · la bolsa de arriba sólo tenía holgura para 0,47 trozos -> no llega
+    #    · media ración = $0,004948, y sólo 12 de 57 workers pagados caben ahí:
+    #      un reintento a media ración moriría de presupuesto el 79 % de las
+    #      veces, o sea que produciría la TERCERA instrucción contraria seguida
+    #    · un trozo entero cubre 53 de 57 (93 %)
+    #    -> El reintento cuesta un trozo ENTERO y ningún bolsillo existente
+    #      puede pagarlo. Así que NO se descuenta de nadie: se AUTORIZA, y hace
+    #      crecer el total del encargo, con su línea en la factura.
+    # ⭐ El efecto de esa decisión es que los tres workers no pierden un céntimo
+    #    y `n_workers` sigue valiendo 3 — así la frase de `SinTrozo` sigue siendo
+    #    verdad. Un reparto de 4 trozos la habría vuelto falsa: le hablaría al
+    #    modelo de un reparto para cuatro cuando él pidió tres.
+
+    # --- P30: reservar NO le quita nada a los que sí van a correr --------
+    sin_res = RepartoDeEntrada()
+    con_res = RepartoDeEntrada(reintentos=1)
+    check("P30 · reservar para un reintento NO adelgaza el trozo de los tres",
+          con_res.trozo_nominal() == sin_res.trozo_nominal(),
+          f"sin reserva ${sin_res.trozo_nominal():.6f} == "
+          f"con reserva ${con_res.trozo_nominal():.6f}")
+    check("P30b · ni le toca la bolsa del orquestador",
+          con_res.arriba_usd == sin_res.arriba_usd,
+          f"arriba ${con_res.arriba_usd:.6f}")
+    check("P30c · lo que crece es el TOTAL, y crece un trozo exacto",
+          abs(con_res.total_usd - (sin_res.total_usd + sin_res.trozo_nominal())) < 1e-6,
+          f"${sin_res.total_usd:.6f} + ${sin_res.trozo_nominal():.6f} = "
+          f"${con_res.total_usd:.6f}")
+
+    # --- P31: el reintento de un servido SÍ recibe, y recibe ración entera
+    r30 = RepartoDeEntrada(reintentos=1)
+    for n in ("usd", "eur", "cad"):
+        r30.tomar(n)
+    try:
+        t_re = r30.tomar("cad")            # el reintento: nombre YA servido
+        check("P31 · el reintento de una moneda YA SERVIDA recibe trozo",
+              True, f"${t_re:.6f}")
+        check("P31b · y recibe la ración ENTERA (media mataría al 79 %)",
+              abs(t_re - r30.trozo_nominal()) < 1e-6,
+              f"${t_re:.6f} == trozo ${r30.trozo_nominal():.6f}")
+    except SinTrozo as fallo:
+        check("P31 · el reintento de una moneda YA SERVIDA recibe trozo",
+              False, f"levantó SinTrozo: {fallo}")
+        check("P31b · y recibe la ración ENTERA (media mataría al 79 %)", False)
+
+    # --- P32: EL LIBRO NO PUEDE PISAR. Es la apuesta 1 de la sesión 102. -
+    # 🐛 `self.entregados[nombre] = trozo` contesta *«a quién»*, y aquí hacía
+    #    falta *«cuánto en total»*. Medido antes de tocar nada: con sitio para
+    #    el reintento salían 4 trozos de la caja y 3 claves en el libro —
+    #    $0,007422 desaparecidos sin que nadie protestara. Es `LM.73` en el
+    #    mismo sitio: el dinero no se pierde por gastarse mal, se pierde por
+    #    no volver por donde se cuenta.
+    check("P32 · el libro SUMA las dos entregas del cad, no las pisa",
+          abs(r30.entregados.get("cad", 0.0) - 2 * r30.trozo_nominal()) < 1e-6,
+          f"cad tiene ${r30.entregados.get('cad', 0.0):.6f}, "
+          f"esperado ${2 * r30.trozo_nominal():.6f}")
+    check("P32b · y por eso el reparto sigue cuadrando tras el reintento",
+          r30.cuadra(),
+          f"total ${r30.total_usd:.6f} vs anotado "
+          f"${r30.arriba_usd + sum(r30.entregados.values()) + r30.sin_repartir():.6f}")
+
+    # --- P33: un CUARTO worker sigue siendo un cuarto worker -------------
+    # ⚠️ La reserva es para reintentar, no para colar uno de más. Si esta se
+    #    pone verde por accidente, la reserva se convirtió en un agujero por
+    #    donde el modelo puede pedir workers infinitos — que es exactamente la
+    #    pelota de C.5 un turno antes.
+    r31 = RepartoDeEntrada(reintentos=1)
+    for n in ("usd", "eur", "cad"):
+        r31.tomar(n)
+    fallo = None
+    try:
+        r31.tomar("jpy")                   # nombre NUEVO: no es reintento
+        check("P33 · un nombre NUEVO no toca la reserva: sigue siendo SinTrozo",
+              False, "la reserva se la comió un cuarto worker")
+    except SinTrozo as f33:
+        fallo = f33
+        check("P33 · un nombre NUEVO no toca la reserva: sigue siendo SinTrozo",
+              True, str(fallo))
+    check("P33b · y la frase sigue diciendo la VERDAD: se repartió para 3",
+          fallo is not None and "para 3" in str(fallo) and r31.n_workers == 3,
+          str(fallo))
+
+    # --- P34: la reserva se AGOTA, y ahí vuelve la contradicción ---------
+    # 🚨 Esto es la apuesta 5 de la sesión 102 hecha prueba: reservar no cierra
+    #    la contradicción, la MUEVE un turno. Al segundo reintento el harness
+    #    vuelve a decir «no lo reintentes» después de haber dicho «inténtalo».
+    #    Por eso (a) obliga a (b): la invitación de `_CAUSAS` tiene que saber
+    #    si queda reserva. La prueba deja el borde MEDIDO en vez de supuesto.
+    r32 = RepartoDeEntrada(reintentos=1)
+    for n in ("usd", "eur", "cad"):
+        r32.tomar(n)
+    r32.tomar("cad")                       # gasta la única reserva
+    check("P34 · con la reserva gastada, `quedan_reintentos()` dice 0",
+          r32.quedan_reintentos() == 0, f"quedan {r32.quedan_reintentos()}")
+    try:
+        r32.tomar("eur")                   # segundo reintento, ya sin reserva
+        check("P34b · y un segundo reintento se rechaza", False, "recibió trozo")
+    except SinTrozo as f34:
+        check("P34b · y un segundo reintento se rechaza", True, str(f34))
+
+    # --- P35: sin reserva pedida, NADA cambia ----------------------------
+    # 🔑 `reintentos=0` es el valor por defecto a propósito: A.2, todo el bloque
+    #    B y las corridas pagadas de C.2/C.3 tienen que seguir dando el mismo
+    #    número. Una reserva que se enciende sola cambiaría facturas ya medidas.
+    r33 = RepartoDeEntrada()
+    for n in ("usd", "eur", "cad"):
+        r33.tomar(n)
+    check("P35 · sin reserva pedida, el reintento se rechaza como siempre",
+          r33.quedan_reintentos() == 0 and r33.total_usd == PRESUPUESTO_ENCARGO_USD,
+          f"total ${r33.total_usd:.6f} == ${PRESUPUESTO_ENCARGO_USD:.6f}")
+
+    # --- P36: y el informe lo DICE, que si no es dinero invisible --------
+    inf = r30.informe()
+    check("P36 · el informe declara la reserva y lo que se usó de ella",
+          inf.get("reintentos_reservados") == 1 and inf.get("reintentos_usados") == 1,
+          f"reservados={inf.get('reintentos_reservados')} "
+          f"usados={inf.get('reintentos_usados')}")
+    # ═══════════════════════════════════════════════════════════════════
+    # --- P37: LA INVITACIÓN SE CALLA CUANDO NO HAY CON QUÉ -------------
+    # ═══════════════════════════════════════════════════════════════════
+    # 🚨 Es la salida (b), y es la que CIERRA de verdad la contradicción. Las
+    #    siete de arriba montan la reserva; ésta comprueba que el harness deja
+    #    de dar dos órdenes contrarias. Sin ella, (a) sólo movía el choque un
+    #    turno más allá.
+    # 🔑 Y va por el camino de VERDAD —`herramienta_consultar_moneda`— con el
+    #    worker sustituido: es la lección de P8. Que la frase exista en un
+    #    diccionario no dice que llegue al modelo.
+    # 📌 Dentro, y con la copia que usa el orquestador: es el bicho de P8 —dos
+    #    cargas del mismo módulo dan dos clases `SinTrozo` distintas.
+    import orquestador
+
+    def _worker_reventado(encargo, nombre="x", presupuesto_usd=None,
+                          verboso=True, **kw):
+        """Un worker que se cae por algo PASAJERO. Nunca llama al modelo."""
+        return {"ok": False, "texto": "(se cayó)", "coste_usd": 0.0,
+                "vueltas": 1, "llamadas_api": 0, "entrada_tokens": 0,
+                "salida_tokens": 0, "segundos": 0.0, "herramientas": [],
+                "motivo": "crash_temporal", "worker": nombre,
+                "datos": {}, "faltan": list(orquestador.worker.CAMPOS_DIVISA)}
+
+    real37 = orquestador.worker.correr_worker
+    orquestador.worker.correr_worker = _worker_reventado
+    try:
+        # --- con reserva: la frase INVITA -------------------------------
+        rep_con = orquestador.presupuesto.RepartoDeEntrada(reintentos=1)
+        conta_con = {"capa": "orquestador", "workers": 0,
+                     "coste_workers_usd": 0.0, "llamadas_api_workers": 0,
+                     "entrada_workers": 0, "salida_workers": 0,
+                     "detalle": [], "reparto": rep_con}
+        con = orquestador.herramienta_consultar_moneda(1000, "CAD", conta_con,
+                                                       verboso=False)
+        check("P37 · con reserva, la causa SÍ invita a reintentar",
+              "reservado para un reintento" in con["causa"],
+              con["causa"])
+
+        # --- sin reserva: la MISMA caída, y la frase se calla ------------
+        rep_sin = orquestador.presupuesto.RepartoDeEntrada()      # reintentos=0
+        conta_sin = {"capa": "orquestador", "workers": 0,
+                     "coste_workers_usd": 0.0, "llamadas_api_workers": 0,
+                     "entrada_workers": 0, "salida_workers": 0,
+                     "detalle": [], "reparto": rep_sin}
+        sin = orquestador.herramienta_consultar_moneda(1000, "CAD", conta_sin,
+                                                       verboso=False)
+        check("P37b · sin reserva, la MISMA caída ya NO invita",
+              "no lo reintentes" in sin["causa"].lower(), sin["causa"])
+        check("P37c · y el motivo sigue diciendo la VERDAD: fue pasajero",
+              sin["motivo"] == "crash_temporal"
+              and "PASAJERO" in sin["causa"],
+              f"motivo={sin['motivo']}")
+        # ⭐ Ésta es la que impide el atajo cómodo: habría bastado con mandar el
+        #    crash pasajero a la frase de `crash` para que dejara de invitar, y
+        #    el modelo habría oído «defecto interno nuestro» — mentira. El
+        #    consejo cambia; el diagnóstico, no.
+        check("P37d · las dos frases son DISTINTAS (el freno se ve morder)",
+              con["causa"] != sin["causa"],
+              "misma frase = la condición no llegó a aplicarse")
+
+        # --- y la reserva GASTADA se comporta como la ausencia de reserva -
+        rep_gast = orquestador.presupuesto.RepartoDeEntrada(reintentos=1)
+        for m in ("usd", "eur", "cad"):
+            rep_gast.tomar(m)
+        rep_gast.tomar("cad")                       # se come la reserva
+        conta_g = {"capa": "orquestador", "workers": 0,
+                   "coste_workers_usd": 0.0, "llamadas_api_workers": 0,
+                   "entrada_workers": 0, "salida_workers": 0,
+                   "detalle": [], "reparto": rep_gast}
+        # El reparto ya no tiene trozos: la frontera corta antes con `sin_trozo`,
+        # que es justo la orden contraria que veníamos a matar. Se comprueba que
+        # ya no puede llegar precedida de una invitación.
+        check("P37e · gastada la reserva, `quedan_reintentos()` es 0 y la "
+              "invitación no se puede emitir",
+              rep_gast.quedan_reintentos() == 0,
+              f"quedan {rep_gast.quedan_reintentos()}")
+    finally:
+        orquestador.worker.correr_worker = real37
+
 
     # --- P8/P9/P10: EL CABLE. Que la clase funcione no dice que esté enchufada.
     # 🔑 Es la lección del nivel entero: un freno en un módulo aparte, correcto y

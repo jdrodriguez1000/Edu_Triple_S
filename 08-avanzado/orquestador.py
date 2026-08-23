@@ -282,9 +282,9 @@ _CAUSAS = {
     # 🔑 Y para el reintentable esa frase no es imprecisa, es **dañina**: le
     #    prohíbe justo lo único que lo arreglaba. Es `LM.71` con otra ropa —
     #    el mensaje que llega primero entierra la causa real.
-    # 🔲 PENDIENTE CON DUEÑO — **PRIMERA COSA DE LA SESIÓN 102, ANTES DE C.5.**
-    #    ⚠️ ESTA FRASE INVITA A UN REINTENTO QUE LA CAPA DE AL LADO VA A
-    #       RECHAZAR, y el hueco lo abrió el arreglo de la sesión 101.
+    # ✅ CERRADO EN LA SESIÓN 102 — y así estaba escrito el problema:
+    #    ⚠️ ESTA FRASE INVITABA A UN REINTENTO QUE LA CAPA DE AL LADO
+    #       RECHAZABA, y el hueco lo abrió el arreglo de la sesión 101.
     #    Si el modelo acepta la invitación y vuelve a pedir esa moneda,
     #    `reparto.tomar()` ya no tiene trozo —el encargo se repartió para tres—
     #    y le contesta: *«es uno de más. No lo reintentes.»* Comprobado a $0,00
@@ -298,15 +298,40 @@ _CAUSAS = {
     #    frase que va entre las dos.
     # 📌 Y no se ha visto nunca con dinero delante: `crash_temporal` necesita
     #    una caída real de la API. Es un modo de fallo que sólo asoma el día peor.
-    # 🔲 Tres salidas, y la elección es de diseño, no de código:
-    #      (a) reservar un trozo para reintentos
-    #      (b) condicionar la invitación a que quede trozo
-    #      (c) retirar la invitación: decir la causa y no dar consejo
-    #    (c) es la más honesta y la más pobre. Sin decidir.
+    # ✅ SE ELIGIÓ (a) + (b), Y LAS DOS HICIERON FALTA — decisión de la 102.
+    #    Se descartaron los dos bolsillos «gratis», y los descartó un DATO:
+    #      · prestar de la bolsa de arriba: su holgura real era 0,47 trozos.
+    #        No llega, y dejaría al que responde de la factura a $0,000001.
+    #      · media ración: sólo 12 de 57 workers pagados caben en $0,004948.
+    #        El reintento moriría de presupuesto el 79 % de las veces, y morir
+    #        de presupuesto produce «No lo reintentes» — o sea, fabricaríamos
+    #        la TERCERA orden contraria seguida para tapar la segunda.
+    #      · un trozo entero cubre a 53 de 57 (93 %). Es la única ración que
+    #        de verdad reintenta.
+    # 🔑 Conclusión: reservar CUESTA y no hay bolsillo gratis. La reserva no se
+    #    descuenta de nadie — se AUTORIZA y hace crecer el total del encargo,
+    #    con su línea en el informe (`reintentos_reservados`/`_usados`).
+    # ⭐ Y (a) SOLA NO BASTABA: la reserva es finita, así que al segundo
+    #    reintento volvía la contradicción intacta. Por eso la frase de abajo
+    #    se eligió mirando `quedan_reintentos()`. Reservar movió el problema un
+    #    turno; condicionar la invitación es lo que lo cerró.
     "crash_temporal": ("El especialista de {moneda} se cayó por un problema "
                        "PASAJERO de conexión con el servicio, y ya reintentó "
-                       "por su cuenta sin suerte. Si te queda margen, esta es "
-                       "de las que sí puede salir bien al segundo intento."),
+                       "por su cuenta sin suerte. Queda presupuesto reservado "
+                       "para un reintento: esta es de las que sí puede salir "
+                       "bien al segundo intento."),
+    # ⭐ SESIÓN 102 · LA MISMA CAUSA, SIN INVITACIÓN — Y ES LA SALIDA (b)
+    #    MONTADA ENCIMA DE LA (a). El fallo es idéntico y el consejo es el
+    #    contrario, porque lo que cambió no es el fallo: es si queda con qué.
+    # 🔑 Fíjate en que NO se le miente al modelo diciéndole que es permanente.
+    #    Se le dice la verdad entera: fue pasajero Y no hay con qué volver. Un
+    #    harness que oculta el motivo real para simplificar el consejo es
+    #    exactamente `LM.71`, y ya nos costó tres sesiones seguidas.
+    "crash_temporal_sin_reserva": (
+        "El especialista de {moneda} se cayó por un problema PASAJERO de "
+        "conexión con el servicio, y ya reintentó por su cuenta sin suerte. "
+        "No queda presupuesto reservado para otro intento, así que no lo "
+        "reintentes: di que esa moneda no se pudo consultar."),
     "crash": ("El especialista de {moneda} se cayó por un defecto interno de "
               "nuestro programa, no del servicio de tasas. Volver a llamarlo "
               "igual daría el mismo fallo. No lo reintentes."),
@@ -547,9 +572,23 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
         #    · `motivo` — la etiqueta corta, para nosotros y para las pruebas.
         #    · `causa`  — la frase en español, para el MODELO, que no lee
         #      diccionarios de estados: lee prosa y la repite.
+        # ⭐ SESIÓN 102 — LA CAUSA SE ELIGE MIRANDO SI QUEDA CON QUÉ.
+        #    Hasta hoy `motivo` entraba directo al diccionario y salía una
+        #    frase fija. `crash_temporal` invitaba SIEMPRE a reintentar, y el
+        #    reparto rechazaba ese reintento al turno siguiente: dos órdenes
+        #    contrarias del mismo harness en dos turnos seguidos.
+        # 🔑 Sin reparto —A.2 y todo el bloque B— no hay nada que rechazar, así
+        #    que la invitación es honesta y se mantiene. La condición no es
+        #    «¿hay reserva?» sino «¿puede alguien rechazarme luego?».
+        clave_causa = resultado["motivo"]
+        if clave_causa == "crash_temporal":
+            hay_con_que = reparto is None or reparto.quedan_reintentos() > 0
+            if not hay_con_que:
+                clave_causa = "crash_temporal_sin_reserva"
+
         return {"error": f"No se pudo consultar {moneda}.",
                 "motivo": resultado["motivo"],
-                "causa": _CAUSAS.get(resultado["motivo"],
+                "causa": _CAUSAS.get(clave_causa,
                                      _CAUSAS[None]).format(moneda=moneda),
                 "detalle": resultado["texto"],
                 "faltan": faltan}
@@ -664,7 +703,7 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
                        presupuesto_usd=PRESUPUESTO_ORQ_USD, verboso=True,
                        reparto=None, sistema=None, tools=None, funciones=None,
                        nombre="orquestador", presupuesto_encargo=None,
-                       encargos=None):
+                       encargos=None, reintentos_reservados=0):
     """Corre la capa de arriba y devuelve un diccionario con LAS DOS capas.
 
     Si comparas este bucle con el de `worker.correr_worker`, verás que son el
@@ -702,7 +741,14 @@ def correr_orquestador(tarea, max_vueltas=MAX_VUELTAS_ORQ,
         reparto_presupuesto = (
             presupuesto_encargo
             if isinstance(presupuesto_encargo, presupuesto.RepartoDeEntrada)
-            else presupuesto.RepartoDeEntrada(total_usd=presupuesto_encargo))
+            else presupuesto.RepartoDeEntrada(
+                total_usd=presupuesto_encargo,
+                # ⭐ SESIÓN 102 — por defecto CERO, y es a propósito. Encender
+                #    la reserva sola cambiaría el total del encargo y con él
+                #    todas las facturas ya medidas de C.2 y C.3. Una reserva
+                #    que se enciende sin que nadie la pida no es un freno: es
+                #    un gasto que aparece.
+                reintentos=reintentos_reservados))
         presupuesto_usd = reparto_presupuesto.arriba_usd
 
     gastado_usd = 0.0

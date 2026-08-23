@@ -3700,7 +3700,9 @@ mover la portería—, pero queda dicho por qué está rojo.
 - La corrida pagada: la causa sube limpia y el modelo la repite.
 
 **Abierto, con dueño:**
-- 🔲 🚨 **LA ÚNICA DEUDA QUE ES DE C.4, Y LA ABRIÓ EL ARREGLO DE C.4.** La causa
+- ✅ 🚨 **CERRADA EN LA 102 CON (a)+(b) — ver `C.4b` más abajo.** Era la única
+  deuda que era de C.4, y la abrió el arreglo de C.4. Se deja escrito el problema
+  tal como estaba, porque el enunciado es la mitad de la lección. La causa
   `crash_temporal` le dice al modelo *«esta sí puede salir bien al segundo
   intento»* — y si acepta la invitación, `reparto.tomar()` **ya no tiene trozo**
   y le contesta *«es uno de más. No lo reintentes»*. Comprobado a $0,00: la 4ª
@@ -3714,6 +3716,9 @@ mover la portería—, pero queda dicho por qué está rojo.
   **Tres salidas, y es decisión de diseño:** (a) reservar un trozo para
   reintentos, (b) condicionar la invitación a que quede trozo, (c) retirar la
   invitación. **(c) es la más honesta y la más pobre.**
+  ➡️ **Se eligieron (a) Y (b), y las dos hicieron falta:** (a) sola movía la
+  contradicción un turno —gastada la reserva, volvía intacta—. Y de los dos
+  bolsillos «gratis» no quedó ninguno: **reservar cuesta** (`LM.77`).
 - 🔲 🚨 **Teníamos la respuesta del CAD y la tiramos.** El worker cortó a media cadena, pero
   su contrato salió completo y correcto: `pesos: 2.219.774`, `faltan: []`, `discrepa: []`. La
   pregunta del usuario era *«1.000 CAD, ¿cuánto es en pesos?»* — **eso lo teníamos**. Lo que
@@ -3731,7 +3736,91 @@ mover la portería—, pero queda dicho por qué está rojo.
   pasando?*
 - 🔲 **C.3 nunca tuvo su bloque en este README.** El código está y la lección no. Se anota
   aquí para que no se pierda: lo que no está escrito, no se enseñó.
-- 🔲 **La bandera `--pagar` en `worker.py` y `orquestador.py`** (ver `GUIDE.md` §6.e).
+- ✅ **La bandera `--pagar` en `worker.py` y `orquestador.py`** — hecha en la 101
+  (ver `GUIDE.md` §6.e).
+
+#### 🔧 C.4b — LA RESERVA DE REINTENTOS *(sesión 102 · todo a $0,00)*
+
+**El problema, en una frase:** el arreglo de C.4 dejó al harness dando **dos órdenes
+contrarias en dos turnos seguidos** — *«esta sí puede salir bien al segundo intento»*
+y, cuando el modelo aceptaba, *«es uno de más. No lo reintentes.»*
+
+La salida parecía obvia —reservar presupuesto para el reintento— pero **la pregunta
+real no era esa**: era **de dónde sale ese dinero**. Se propusieron dos bolsillos
+que parecían gratis y **los mató un dato**:
+
+| bolsillo | lo que se midió | veredicto |
+|---|---|---|
+| la bolsa del orquestador (25 %) | su holgura real, en 10 corridas pagadas: **0,47 trozos** | no llega |
+| media ración ($0,004948) | sólo **12 de 57** workers pagados caben ahí | mata al reintento el **79 %** de las veces |
+| ración entera ($0,009896) | cubre **53 de 57** (93 %) | la única que de verdad reintenta |
+
+🔑 **Y morir de presupuesto produce *«no lo reintentes»***: media ración habría
+fabricado **la tercera orden contraria para tapar la segunda**. Un compromiso que
+dobla el problema no es un compromiso.
+
+**Lo que se decidió:** la reserva **no se descuenta de nadie**. Es una bolsa aparte,
+**hace crecer el total del encargo** y va con nombre propio en el informe
+(`reintentos_reservados` / `reintentos_usados`). Los tres workers conservan sus
+$0,009896 y el orquestador su bolsa; el total pasa de **$0,039585 a $0,049481**, y
+ese crecimiento **se ve**. → `LM.77`: **no hay bolsillo gratis.**
+
+**El efecto secundario que se evitó sin buscarlo:** `n_workers` sigue valiendo **3**,
+así que la frase que rechaza al de más —*«se repartió para 3»*— **sigue siendo
+verdad**. Un reparto de cuatro trozos le habría hablado al modelo de un reparto que
+él nunca pidió.
+
+**La distinción que faltaba, y no es un contador:**
+
+```python
+if self._trozos:                                    # un worker normal
+elif nombre in self.entregados and self._reserva:   # un REINTENTO
+elif nombre in self.entregados:                     # reintento, reserva gastada
+else:                                               # un worker de MÁS
+```
+
+`cad` pidiendo por segunda vez es un reintento. `jpy` pidiendo por primera es uno de
+más. **Hasta hoy las dos caían en el mismo `raise`, y por eso una tapaba a la otra.**
+
+🐛 **Y ahí abajo había un defecto contable que nadie había podido ver.** El libro
+guardaba `entregados[nombre] = trozo`: correcto durante todo el curso, porque cada
+nombre pedía **una** vez. Con sitio para el reintento salían **cuatro** raciones de
+la caja y quedaban **tres** apuntadas — **$0,007422 desaparecidos, sin excepción y
+sin aviso**. → `LM.78`: *una clave contesta «a quién», y la pregunta era «cuántas
+veces»*.
+
+⭐ **No se descubrió leyendo la línea culpable.** Se descubrió porque
+`cuadra()` —*repartido + guardado == total*— dejó de cumplirse. **Un invariante
+sirve precisamente el día que el defecto es invisible a la vista.**
+
+⚠️ **Y por qué llevaba ahí sin morder:** las 50+ pruebas pedían raciones con nombres
+**siempre distintos** (`usd`, `eur`, `cad`, y 24 `w0..w23` en la de hilos). Ninguna
+pedía dos veces lo mismo. El caso no estaba escondido: estaba **fuera del campo de
+visión del instrumento**, que es peor.
+
+**(a) sola no bastaba, y por eso entró también (b).** La reserva es finita: gastada,
+volvía la contradicción intacta. Así que la causa **se elige mirando
+`quedan_reintentos()`**, y las dos frases se ven morder en `P37`:
+
+> **con reserva:** *«...un problema PASAJERO... Queda presupuesto reservado para un
+> reintento: esta es de las que sí puede salir bien al segundo intento.»*
+>
+> **sin reserva:** *«...un problema PASAJERO... No queda presupuesto reservado para
+> otro intento, así que no lo reintentes.»*
+
+🚨 **El atajo que se descartó a propósito:** bastaba mandar el crash pasajero a la
+frase de `crash` para que dejara de invitar. Habría funcionado, y el modelo habría
+oído *«defecto interno nuestro»* — **mentira**. `P37c` existe para impedirlo:
+**el consejo cambia con las circunstancias; el diagnóstico, no.** Es `LM.71` sin
+volver a caer.
+
+📌 **Por defecto `reintentos=0`**, y es deliberado: encender la reserva sola
+cambiaría el total del encargo y con él **todas las facturas ya medidas** de C.2 y
+C.3. `P35` lo vigila.
+
+📊 `presupuesto.py` **40 → 58** pruebas. `traza.py` (46) y `fallos.py` (26), intactas.
+💸 Coste del día: **$0,000000**.
+
 
 ---
 ### 🧠 BLOQUE D — Lo compartido

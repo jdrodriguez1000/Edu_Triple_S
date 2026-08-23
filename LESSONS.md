@@ -5952,3 +5952,80 @@ bandera y hace lo suyo — y en pantalla se ve exactamente igual que una suite d
 **Dónde muerde fuera de aquí:** listas de excepciones, de comandos peligrosos, de rutas sensibles,
 de entornos donde no se despliega. O la lista se genera desde la fuente de verdad, o llevará escrito
 al lado **cómo comprobar si tu caso está en ella** — nunca sólo los ejemplos que alguien recordó.
+
+---
+
+### LM.77 — No hay bolsillo gratis: una reserva o se descuenta de alguien o hace crecer el total
+
+Un arreglo dejó al harness dando dos órdenes contrarias en dos turnos seguidos: *«esta sí puede
+salir bien al segundo intento»* y, cuando el modelo aceptaba, *«es uno de más. No lo reintentes.»*
+La salida era obvia —reservar presupuesto para el reintento— y la pregunta real no era esa, sino
+**de dónde sale ese dinero**.
+
+Se propusieron dos bolsillos que parecían gratis, y los mató un dato:
+
+- **La bolsa del que coordina**, que reservaba un 25 % y parecía holgada. Medida contra diez
+  corridas pagadas, su sobrante real era **0,47 raciones**. No llegaba, y prestarla dejaba al que
+  responde de la factura con $0,000001.
+- **Media ración para el reintento.** De 57 ejecuciones pagadas, sólo 12 cabían en media ración:
+  el reintento habría muerto por presupuesto el **79 %** de las veces. Y morir por presupuesto
+  produce *«no lo reintentes»* — o sea, **fabricar una tercera orden contraria para tapar la
+  segunda**. Un compromiso que dobla el problema no es un compromiso.
+
+Una ración entera cubría el 93 %. Esa era la única que de verdad reintentaba, y ningún bolsillo
+existente podía pagarla.
+
+🔑 **Reservar cuesta, siempre.** «Reservar» suena a prudencia y se lee como si fuera gratis, pero
+sólo hay tres sitios de donde puede salir: se lo quitas al que trabaja, se lo quitas al que
+coordina, o **haces crecer el total y lo dices**. Los dos primeros son transferencias silenciosas
+que el día de la factura nadie sabe explicar. El tercero es el único que deja rastro.
+
+📌 Por eso la reserva acabó siendo una bolsa **aparte**, sumada al total y con nombre propio en el
+informe (`reintentos_reservados` / `reintentos_usados`). Meterla como una ración más del mismo
+reparto habría tenido un efecto que nadie pidió: la frase que rechaza al de más pasa a hablar de un
+reparto para cuatro cuando sólo se pidieron tres. **Un número que se toca por un motivo aparece
+diciendo otra cosa en la frase que lo cita.**
+
+⚠️ Y hubo un atajo cómodo que se descartó a propósito: bastaba mandar el fallo pasajero a la frase
+del fallo permanente para que dejara de invitar. Habría funcionado, y el modelo habría oído
+*«defecto interno nuestro»* — falso. **El consejo puede cambiar con las circunstancias; el
+diagnóstico, no.**
+
+**Dónde muerde fuera de aquí:** cuotas, reintentos, *rate limits*, capacidad reservada, colchones de
+tiempo, plazas de emergencia. Cada vez que alguien diga «reservamos un poco por si acaso», la
+pregunta que falta es **a quién se lo quitamos**, y la respuesta tiene que caber en una línea de la
+factura.
+
+---
+
+### LM.78 — Una clave contesta «a quién», y a veces la pregunta era «cuántas veces»
+
+El libro del reparto guardaba `entregados[nombre] = trozo`. Correcto durante todo el curso, porque
+cada nombre pedía exactamente una vez. El día que se permitió un reintento, el mismo nombre pidió
+dos veces: salieron cuatro raciones de la caja y quedaron **tres** apuntadas. **$0,007422
+desaparecidos, sin excepción, sin aviso y sin nadie protestando.**
+
+Es `LM.73` en el mismo sitio —el dinero no se pierde por gastarse mal, se pierde por no volver por
+donde se cuenta— pero con una vuelta más: aquí el registro **sí** se ejecutó. Lo que falló es que la
+estructura elegida no tenía sitio para el segundo dato. Un diccionario por nombre es una afirmación
+callada: *«esto ocurre una vez por nombre.»* Nadie la escribió y nadie la revisó el día que dejó de
+ser cierta.
+
+🔑 **Un cambio de política puede invalidar una estructura de datos sin tocar ni una línea de ella.**
+El defecto no estaba en el código nuevo ni en el viejo: estaba en la costura, y por eso ninguna
+prueba de ninguno de los dos lados lo veía.
+
+📌 Lo que sí lo cazó fue el número que se comprueba por dos caminos: *repartido + guardado == total*.
+No se descubrió leyendo la línea culpable —se leyó cincuenta veces sin ver nada— sino porque esa
+igualdad dejó de cumplirse. **Un invariante sirve precisamente el día que el defecto es invisible a
+la vista.**
+
+⚠️ Y la razón de que llevara ahí sin morder: las pruebas pedían raciones con nombres siempre
+distintos —`usd`, `eur`, `cad`, y veinticuatro `w0..w23` en la prueba de hilos—. Ninguna de las
+cincuenta y tantos pedía **dos veces lo mismo**. El caso no estaba escondido: estaba **fuera del
+campo de visión del instrumento**, que es distinto y bastante peor.
+
+**Dónde muerde fuera de aquí:** cualquier acumulador indexado por identidad —gasto por usuario,
+intentos por sesión, reservas por recurso— el día que llega el primer reintento, el primer duplicado
+o el primer reenvío. Y en las suites: si todos los casos de prueba usan identificadores distintos,
+la repetición no es un caso raro, **es un caso que nunca se probó**.

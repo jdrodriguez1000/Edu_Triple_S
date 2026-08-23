@@ -3,7 +3,7 @@
 > Este es el archivo de memoria del curso. Claude lo lee al empezar cada sesión y lo
 > actualiza al terminar. Tú también puedes escribir aquí lo que quieras.
 
-**Última actualización:** 2026-08-21 (sesión 101 — NIVEL 8: **C.4 COMPLETO Y LAS CINCO APUESTAS GANADAS — y lo que más enseñó no fue ninguna de las cinco.** El worker ahora **siempre cierra**: se caiga, se demore o no conteste. 🔑 El crash no tumbaba a nadie —eso ya funcionaba— pero **`correr_worker` que lanza nunca devuelve, y su gasto no entraba en la factura**: $0,004000 gastados, $0,000000 en el libro (`LM.73`). El árbol gana `nodo_abierto`, porque **la ausencia no contradice a nadie** (`LM.74`); el plazo pasa de un residuo de 8,2 min a 90 s **decididos con un dato** (`LM.75`). 🚨 Y `max_vueltas` **nunca había mordido: 0 de 102 cierres registrados** — el archivo que venía a decirlo lo dio por resuelto en su tercer renglón. 💸 Corrida pagada $0,027482: el modelo repitió **la causa que le dio el harness**, sin inventar. 🚨 Hallazgo del día, anotado y NO arreglado a decisión suya: **teníamos la respuesta del CAD y la tiramos** — un `or` que trata `ok` (el proceso) y `pesos` (el resultado) como una sola pregunta. 📊 `fallos.py` nuevo con 26 pruebas · `traza.py` 41→**46** · `LESSONS.md` 72→**76**. 💸 Gasto **$0,034612**, de los que **$0,007130 fueron un error mío** — con la regla de ayer escrita y su lista a medias (`LM.76`). ✅ Y al cierre, a decisión suya, **`worker.py` y `orquestador.py` dejaron de pagar en pelado**: `--pagar` obligatoria y el aviso con el precio LEÍDO de su registro. ➡️ **La 102 NO arranca en C.5:** arranca cerrando el hueco que abrió el arreglo de hoy — **la causa `crash_temporal` invita a un reintento que el reparto va a rechazar**, comprobado a $0,00, y son dos instrucciones contrarias del mismo harness en dos turnos seguidos.)
+**Última actualización:** 2026-08-23 (sesión 102 — NIVEL 8: **EL HUECO QUE ABRIÓ C.4, CERRADO CON (a)+(b) — Y LA SESIÓN ENTERA COSTÓ $0,000000.** No por prudencia: no hizo falta. 🔑 La pregunta no era *«¿reservamos presupuesto para el reintento?»* sino **«¿a quién se lo quitamos?»** (`LM.77`), y los dos bolsillos que parecían gratis los mató un dato: la bolsa del orquestador tenía holgura real de **0,47 trozos**, y media ración cubre a **12 de 57** workers pagados — el reintento moriría de presupuesto el **79 %** de las veces, ⭐ **fabricando la TERCERA orden contraria para tapar la segunda.** Una ración entera cubre 53 de 57. → La reserva **no se descuenta de nadie**: bolsa aparte, hace crecer el total ($0,039585 → $0,049481) y con nombre propio en el informe. 🐛 Debajo había un defecto contable invisible: `entregados[nombre] = trozo` pisaba el reintento — **4 raciones fuera, 3 apuntadas, $0,007422 desaparecidos sin aviso** (`LM.78`), y **no lo cazó nadie leyendo la línea: lo cazó `cuadra()` al dejar de cumplirse**. 🎲 **Las cinco apuestas ganadas, y la 3 declarada ganada A MEDIAS** —el número sí, las pruebas rojas no las medí— **sin redondearla**. 🚨 Y el atajo cómodo se descartó a propósito: mandar el crash pasajero a la frase de `crash` habría funcionado y el modelo habría oído una mentira. ⭐ **El consejo cambia con las circunstancias; el diagnóstico, no** — `LM.71` sin volver a caer tras tres sesiones cayendo. 📊 `presupuesto.py` 40 → **58** pruebas (las 13 primeras nacieron rojas: *la API no existe*) · `LESSONS.md` 76 → **78** · el README del nivel gana el bloque **C.4b**. ⚠️ Dos errores míos, sin coste y dichos: **mi medidor dio cero en silencio** (`coste_usd` vs `costo_usd` — `LM.15` en vivo) y **hice `git stash` con trabajo sin commitear** por un `exit=1` que era mi propio timeout, no un fallo. ➡️ **La 103 arranca en C.5, el tope de recursión** — y hoy quedó dicho por qué esto era su antesala: **un reintento que nadie acota es la pelota de C.5 un turno antes.**)
 
 ---
 
@@ -4585,6 +4585,104 @@
 # 📌 **El orden va sellado:** primero medir (apuestas 1, 3 y 4 son un comando),
 #   después decidir la forma de la reserva, y **la prueba entra al lado del
 #   arreglo o no entra** (`LM.13`).
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ✅ **CIERRE DE LA 102 — EL HUECO DE C.4, CERRADO CON (a)+(b). GASTO DEL DÍA:
+# $0,000000.** Sesión entera sin pagar un centavo, y no por prudencia: no hizo
+# falta. El instrumento de C.4 y los registros pagados de ochenta sesiones
+# tenían dentro todo lo que había que saber.
+#
+# 🎲 **LAS CINCO APUESTAS, GANADAS** — y una a medias declarada como tal.
+#   · **1 ✅** El reintento pisaba el libro: 4 raciones fuera de la caja, 3
+#     apuntadas, **$0,007422 desaparecidos** y `cuadra()` en falso.
+#   · **2 ✅** La frase de `SinTrozo` se volvía falsa con `n_workers=4`:
+#     *«se repartió para 4»* cuando el modelo pidió tres.
+#   · **3 ✅ a medias, y se dice.** El número, exacto: el trozo caía de
+#     $0,009896 a $0,007422, **−25,0 %**. La otra mitad de la cláusula —*«y
+#     alguna prueba se pone roja»*— **NO se midió**, porque medí pasando
+#     `n_workers=4` a mano en vez de mover la constante. Y con la forma elegida
+#     ya no se medirá nunca. **No se redondea a ganada entera.**
+#   · **4 ✅** Cero rojos antes de escribir nada. El `grep` dijo por qué:
+#     `r3.tomar(n)`, `r3.tomar("jpy")`, `r4.tomar("usd")`, `r6.tomar(f"w{i}")`
+#     — **ni una sola prueba del curso pedía dos veces el mismo nombre.**
+#   · **5 ✅** (a) no cerró nada: lo movió un turno, y obligó a (b).
+#
+# 🔑 **LA PREGUNTA NO ERA «¿RESERVAMOS?» SINO «¿A QUIÉN SE LO QUITAMOS?»** →
+#   `LM.77`. Los dos bolsillos que parecían gratis los mató un dato:
+#   · la bolsa del orquestador (25 %) tenía holgura real de **0,47 trozos** —
+#     medida contra 10 corridas pagadas, peor caso $0,005233 de $0,009897
+#   · media ración ($0,004948) cubre a **12 de 57** workers pagados: el
+#     reintento moriría de presupuesto el **79 %** de las veces
+#   ⭐ **Y morir de presupuesto produce «no lo reintentes»**: media ración
+#     habría fabricado **la TERCERA orden contraria para tapar la segunda**.
+#     Un compromiso que dobla el problema no es un compromiso.
+#   · una ración entera cubre **53 de 57 (93 %)**: la única que reintenta.
+#   → La reserva **no se descuenta de nadie**: es bolsa aparte, **hace crecer el
+#     total** ($0,039585 → $0,049481) y va con nombre propio en el informe.
+#
+# ⭐ **EL EFECTO SECUNDARIO QUE SE EVITÓ SIN BUSCARLO.** Como `n_workers` sigue
+#   valiendo 3, la frase que rechaza al de más —*«se repartió para 3»*— **sigue
+#   siendo verdad**. La apuesta 2 no se ganó: se **desactivó**. 📌 Un número que
+#   se toca por un motivo reaparece diciendo otra cosa en la frase que lo cita.
+#
+# 🐛 **`LM.78` — UNA CLAVE CONTESTA «A QUIÉN», Y LA PREGUNTA ERA «CUÁNTAS
+#   VECES».** `entregados[nombre] = trozo` fue correcto todo el curso porque
+#   cada nombre pedía una vez. El defecto **no estaba en el código nuevo ni en
+#   el viejo: estaba en la costura**, y por eso ninguna prueba de los dos lados
+#   lo veía. ⭐ Y no se cazó leyendo la línea —se leyó cincuenta veces— sino
+#   porque **`cuadra()` dejó de cumplirse**: un invariante sirve justo el día
+#   que el defecto es invisible a la vista.
+#
+# ✅ **LAS 18 PRUEBAS NUEVAS, Y LAS PRIMERAS 13 NACIERON ROJAS.** `P30`–`P36`
+#   se escribieron **antes** de tocar la clase y reventaron con
+#   `TypeError: got an unexpected keyword argument 'reintentos'` — el rojo más
+#   honesto que hay: **la API no existe**. `P37`–`P37e` recorren el camino de
+#   verdad (`herramienta_consultar_moneda` con el worker sustituido), porque
+#   que una frase exista en un diccionario no dice que llegue al modelo.
+#   📊 `presupuesto.py` **40 → 58**. `traza.py` (46) y `fallos.py` (26), intactas.
+#
+# 🚨 **EL ATAJO QUE SE DESCARTÓ A PROPÓSITO, y merece quedar escrito:** bastaba
+#   mandar el crash pasajero a la frase de `crash` para que dejara de invitar.
+#   Habría funcionado, y el modelo habría oído *«defecto interno nuestro»* —
+#   **mentira**. `P37c` existe para impedirlo. ⭐ **El consejo cambia con las
+#   circunstancias; el diagnóstico, no.** Es `LM.71` sin volver a caer, después
+#   de tres sesiones seguidas cayendo.
+#
+# ⚠️ **DOS ERRORES MÍOS, LOS DOS SIN COSTE Y LOS DOS DICHOS:**
+#   · **Mi medidor dio cero en silencio.** Busqué `coste_usd` y el campo es
+#     `costo_usd`; no hay campo `corrida`, las corridas se separan por
+#     `orquestador_inicio`. No dio error: dijo *«0 corridas»*. **`LM.15` en
+#     vivo, y el instrumento ciego era mío.**
+#   · **Hice `git stash` con trabajo sin commitear** para comparar contra el
+#     original. Lo recuperé entero y verifiqué el `git status`, pero fue
+#     **innecesario y arriesgado**: la pregunta se contestaba mirando los
+#     `import`. 📌 Y lo que lo motivó **no era un fallo**: el `exit=1` de
+#     `aislamiento.py` era mi bucle dándole 120 s a un script que tarda más.
+#     **Un instrumento con prisa da un rojo tan falso como un verde.**
+#
+# ➡️ **SIGUIENTE PASO CONCRETO — AHORA SÍ, C.5: EL TOPE DE RECURSIÓN.** El
+#   bucle orquestador ↔ worker: dos agentes pueden pasarse la pelota para
+#   siempre. 📌 Y hoy quedó dicho por qué esto era su antesala: **un reintento
+#   que nadie acota es exactamente la pelota de C.5, un turno antes.** La
+#   reserva le puso número al primer rebote; C.5 tiene que ponérselo a la serie.
+#   Con cuatro deudas heredadas, todas con dueño y **ninguna nueva de hoy**:
+#   · 🔲 **El `or` de la frontera** (hallazgo de la 101). Decisión de diseño sin
+#     tomar: **qué significa un resultado parcial** antes de tocar la línea.
+#   · 🔲 **El contrato de una CADENA** (`LM.72`), de C.3: hoy es un renglón y
+#     una cadena necesita una lista. **Entra o se declara fuera de alcance** —
+#     arrastrarla otra sesión es lo que la vuelve invisible. Van dos.
+#   · 🔲 **`profundidad.py:213`**, la copia ciega del corte y su pregunta sin
+#     contestar: *¿el experimento quiere que el harness cace su propia
+#     torcedura, o la necesita pasando?* **Es suya, no mía.**
+#   · 🔲 **C.3 NUNCA TUVO SU BLOQUE EN EL README del nivel.** C.4 y C.4b sí lo
+#     tienen; C.3 sigue sin él. **Lo que no está escrito, no se enseñó.**
+# 🎲 **Y LA PRIMERA COSA DE LA SESIÓN 103 ES SELLAR LA APUESTA Y COMMITEARLA.**
+#   Van DIEZ. Hoy las cinco se ganaron y **la que más enseñó fue la 3, la
+#   ganada a medias**: obligó a separar el número que sí medí del que no, en
+#   vez de cobrar la casilla entera. ⭐ Una apuesta sirve para tener dónde
+#   mirar; declarar bien lo que NO se midió es lo que impide que sirva para
+#   engañarse.
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ➡️ **SIGUIENTE PASO CONCRETO — cerrar los TRES pendientes de C.2 antes de pasar a C.3.**
