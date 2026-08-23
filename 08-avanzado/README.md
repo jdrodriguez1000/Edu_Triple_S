@@ -2054,10 +2054,10 @@ llamadas.
 
 | # | Pieza | Por qué |
 |---|---|---|
-| C.1 | **Traza anidada**: quién llamó a quién, y a qué profundidad | sin ella, depurar es mirar una caja negra dentro de otra |
-| C.2 | **Presupuesto repartido** entre las dos capas | el tope del nivel 4 solo sabe contar una capa |
-| C.3 | **Permisos**: quién puede qué | el orquestador **no toca herramientas reales** |
-| C.4 | **Fallos del worker**: se cae, se demora, no contesta | un worker mudo no debe colgar al orquestador |
+| C.1 | ✅ **Traza anidada**: quién llamó a quién, y a qué profundidad | sin ella, depurar es mirar una caja negra dentro de otra |
+| C.2 | ✅ **Presupuesto repartido** entre las dos capas | el tope del nivel 4 solo sabe contar una capa |
+| C.3 | ✅ **Permisos**: quién puede qué | el orquestador **no toca herramientas reales** — y el permiso **no dice si te contestaron TU pregunta** |
+| C.4 | ✅ **Fallos del worker**: se cae, se demora, no contesta | un worker mudo no debe colgar al orquestador |
 | C.5 | ✅ **Tope de recursión**: el bucle orquestador ↔ worker | dos agentes pueden pasarse la pelota para siempre |
 | C.6 | ✅ **Modelo y esfuerzo por capa** | es la palanca de costo más grande del esquema: **5×** entre la config más barata y la más cara |
 
@@ -3501,6 +3501,204 @@ los dos sin darme cuenta de que había cambiado de papel.
 
 ---
 
+
+#### ✅ C.3 — LOS PERMISOS *(construida en las sesiones 100 y 101 · **escrita aquí en la 105**)*
+
+⚠️ **Este bloque llega CUATRO SESIONES TARDE, y eso no es un detalle de formato.** El código
+de C.3 se escribió el 2026-08-21 y funcionó; el bloque que lo explica no existía. Entre medias
+el nivel siguió a C.4, C.4b, C.5 y C.6 con una pieza marcada como hecha **cuya lección no
+estaba en ninguna parte**. 🔑 **Lo que no está escrito no se enseñó** — y el aviso estuvo
+anotado en las tres sesiones siguientes sin que nadie lo alcanzara, que es `LM.20` otra vez.
+
+---
+
+##### 🔓 La mitad de C.3 ya estaba resuelta ANTES de empezar — y no se resolvió por seguridad
+
+La tabla del bloque prometía *«Permisos: quién puede qué»* con la trampa *«el orquestador no
+toca herramientas reales»*. Al llegar aquí resultó que **eso ya estaba hecho desde A.1 y A.2**,
+y por motivos que no eran de seguridad:
+
+- **En un worker el permiso deja de ser una pregunta y se vuelve la caja** (A.1). No hay
+  `input()` ni `pedir_permiso` porque **a un worker lo llama un programa, no una persona: no
+  hay dónde decir que no.** Este worker no lleva `guardar_reporte`, y por eso no puede escribir
+  en el disco. El menú y el puente se recortan **los dos** — si sólo se recortara el menú, un
+  modelo que pidiera `trm` de memoria la encontraría y se ejecutaría. **El que manda es el
+  puente.**
+- **El orquestador no lleva ni una herramienta de verdad** (A.2), y la razón que se escribió
+  entonces era del experimento, no de la seguridad: *un orquestador que puede resolver la
+  tarea él solo, la resuelve él solo*, y el bloque F estaría midiendo al contendiente A
+  disfrazado de B.
+
+⭐ **Y ahí está el hallazgo de esta mitad: la decisión correcta ya estaba tomada, pero por el
+motivo de al lado.** C.3 llega a la misma línea de código por seguridad. Una decisión que sólo
+tiene el motivo del experimento **se cae el día que el experimento termina**; con los dos
+motivos escritos, aguanta.
+
+---
+
+##### 🪤 La mitad que SÍ faltaba: un permiso dice quién puede llamar, no si te contestaron TU pregunta
+
+El pendiente que C.2 dejó abierto y era de C.3: **el contrato comprobaba que la respuesta
+estuviera COMPLETA y no que fuera LA TUYA.**
+
+El caso venía pagado de la sesión 99: se pidió **CAD**, las herramientas trajeron **USD**, y el
+contrato salió sin un solo hueco. `faltan: []`. Verde.
+
+🔑 **Los permisos son una defensa de entrada: quién puede llamar a qué.** No dicen nada sobre
+lo que vuelve. Un worker con la caja perfectamente recortada puede devolver, con todos los
+permisos en regla, **el dato de otra pregunta**.
+
+---
+
+##### 🔧 El arreglo — el contrato pasó a devolver TRES cosas, y la tercera es nueva
+
+`contrato_divisa(llamadas)` → `contrato_divisa(llamadas, pedido)`, y devuelve:
+
+| | qué significa | cómo se corta |
+|---|---|---|
+| `datos` | el contrato | — |
+| `faltan` | qué campos **no pudo llenar** → un **HUECO** | se puede seguir con lo que hay |
+| `discrepa` | en qué **no coincide** con lo pedido → una **CONTRADICCIÓN** | lo que hay es justo lo que no sirve |
+
+📌 **`pedido` viaja en Python, al lado del encargo en prosa, y no dentro de él.** El encargo no
+puede delatar al modelo que lo ignoró: **él mismo es la frase que se ignoró.** El testigo tiene
+que venir por fuera de lo que se está juzgando.
+
+📌 **`None` no es `[]`.** Sin `pedido`, `discrepa` vale `None` = **no comprobado**, que no es lo
+mismo que `[]` = comprobado y cuadra. Se ven casi igual y significan lo contrario (`P21`).
+
+---
+
+##### 🥇 Hallazgo 1 — un hueco y una contradicción se cortan en SITIOS DISTINTOS → `LM.69`
+
+Se apostó que meter la discrepancia dentro de `faltan` **no frenaría nada**, y se ganó con el
+número delante. El corte del orquestador era `datos.get("pesos") is None`; con la respuesta
+torcida, **`pesos` valía 1.025.625: estaba lleno.** El filtro buscaba huecos y ahí no había
+ninguno.
+
+Hicieron falta **un campo aparte y un corte aparte**. Dos pruebas, y la primera es la que duele:
+
+- `P19` — la respuesta torcida **no tiene ningún hueco** (`faltan` vacío).
+- `P20` — **y aun así se caza**: `discrepa: ['moneda: se pidió CAD y el contrato trae USD']`.
+
+🔑 **Sin `P19`, `P20` podría estar cazando un hueco y creerse que caza una contradicción.**
+Una prueba que demuestra que el detector viejo estaba ciego vale tanto como la que demuestra
+que el nuevo muerde.
+
+---
+
+##### 🥈 Hallazgo 2 — el detector que cazaba la mentira LLEVABA UNA NOCHE MORDIENDO → `LM.70`
+
+Salió de comprobar que no se había roto nada. **`traza.py` estaba en rojo ANTES de tocar
+código** (verificado con `git stash`). Su prueba decía *«y no caza nada más: `len(contra) == 1`»*
+— y cazaba **dos**. La segunda era
+`{'hora': '2026-08-21T19:41:33', 'se_llama': 'cad', 'hizo': 'USD'}`: **la mentira de la corrida
+pagada del día anterior.**
+
+`auditar_etiquetas` existe desde C.1 · paso 5 y **la cazó en el segundo en que se grabó**. Aquel
+día el hallazgo lo hizo un humano leyendo la salida a ojo.
+
+⭐ **No faltaba el detector: el detector mordió y su mordisco se quedó en un archivo que nadie
+abrió.** Es `LM.13` girado del revés — un freno que muerde sin testigo produce **exactamente el
+mismo silencio** que uno que no muerde.
+
+📌 **Y el segundo filo, sobre cómo se escriben las pruebas:** `len(contra) == 1` es **un número
+pelado, y los números pelados envejecen**. Bastó que el mundo grabara una segunda mentira de
+verdad para ponerla roja **sin que nada se hubiera roto**. Corregida a comprobar **por hora,
+nombrando las conocidas**: una tercera sí la pone roja, que es lo que se quería vigilar.
+
+📌 **De aquí salió un paso de rutina que no existía:** correr `traza.py` **DESPUÉS de cada
+corrida pagada**, no sólo antes de commitear código. Cobró al día siguiente — cazó en el acto
+una tercera contradicción, `cad → COP`, la huella del contrato viejo. **Se deja en la lista de
+conocidas: el registro no se reescribe, y borrarla sería borrar la evidencia.**
+
+---
+
+##### 🥉 Hallazgo 3 — un arreglo puede REABRIR el que tiene al lado → `LM.71`
+
+La corrida pagada de C.3 ($0,028745) destapó que **el arreglo de la mañana rompió el de la
+víspera**.
+
+El worker `cad` se quedó sin presupuesto a mitad de una cadena de tres conversiones. Su
+contrato quedó a medias y **por eso** discrepaba. Como el corte de discrepancia iba **primero**,
+arriba subió `motivo="discrepancia"`, y el modelo lo repitió tal cual:
+
+> *«no se pudo consultar por discrepancia en los datos del especialista»*
+
+**Falso: se quedó sin dinero.**
+
+🔑 **La discrepancia sólo significa algo en un worker que TERMINÓ.** En uno que se paró a
+medias, la discrepancia **no es la causa: es el rastro de haberse parado.** Una consecuencia no
+puede ir delante de su causa.
+
+🚨 **Ninguna prueba lo vio, porque cada una vigilaba su mitad.** Apareció **sólo al pagar una
+corrida entera y leer lo que el modelo dijo al final.** Hoy lo clavan `P27` y `P27b`: un worker
+cortado sube `motivo="presupuesto"` y una causa en español que **vuelve a nombrar el dinero**.
+
+---
+
+##### 🎁 Hallazgo 4 — el falso positivo era del MISMO TIPO que el defecto que venía a cazar → `LM.72`
+
+Debajo había un defecto que no era de ese día. El encargo caro pide una **cadena** (CAD→COP,
+ese resultado a USD, ese a EUR) y `contrato_divisa` **sobrescribía en cada llamada**: se
+quedaba con `moneda: COP, monto: 2219774` — **el final del camino en vez de la pregunta.** El
+worker había hecho exactamente lo que se le pidió, y el detector nuevo gritaba.
+
+⭐ **Ayer «completo» sin ser correcto; hoy «incorrecto» sin que nadie mienta.** El detector daba
+un falso positivo de la misma familia que el defecto que venía a matar.
+
+✅ **Arreglado a decisión del estudiante: gana el PRIMERO** — y «el primero» es **el primer
+acierto**, no la primera línea: los errores ya se saltan antes, así que un worker que falla y
+reintenta sigue contando lo bueno (`P29`). Comprobado sobre las llamadas **reales** de la
+corrida pagada: `{'moneda': 'CAD', 'monto': 1000, 'pesos': 2219774}` con `discrepa: []`.
+
+⚠️ **El precio, dicho entero y no escondido:** un contrato de un renglón describe bien el primer
+paso y **sigue sin contar la cadena**. Los pasos intermedios sólo viven en el registro.
+**Fingir que sí era lo que hacía la versión anterior.**
+
+---
+
+##### ⚠️ El error caro de C.3, con el número delante: **$0,087297 tirados**
+
+Se corrieron `pipeline.py` ($0,016859) y `linea_base.py` ($0,070438) **en pelado**, dando por
+hecho que eran suites gratis como `traza.py` o `router.py`. **No lo son: pagan sin preguntar.**
+Es **2,5×** lo que costó la corrida legítima del día.
+
+🚨 **Y el daño caro no fue el dinero:** `linea_base.py` **reescribió su medición sellada** — la
+línea base del duelo del bloque F, medida el 2026-08-20. **Recuperada con `git checkout` porque
+estaba en Git.**
+
+🔑 **Un script que mide y guarda en el mismo sitio cada vez que corre no tiene medición: tiene
+la última.** → de aquí salió la lista de `GUIDE.md` §6.e, con el molde bueno señalado
+(`presupuesto.py`) y los dos malos escritos con nombre.
+
+---
+
+##### 📋 Resumen de C.3
+
+| | |
+|---|---|
+| Archivos | `worker.py` (`contrato_divisa(llamadas, pedido)`) · `orquestador.py` (corte propio + `descartado`) · `presupuesto.py` (**26 → 40 pruebas**) · `traza.py` (36 → **41**) |
+| Lecciones | `LM.69`, `LM.70`, `LM.71`, `LM.72` |
+| 💸 Coste | **$0,116042** — $0,028745 la corrida legítima · **$0,087297 tirados** |
+
+**Cerrado:**
+- El contrato comprueba que **responde a lo que se preguntó**, no sólo que no tiene huecos.
+- Hueco y contradicción son **dos listas y dos cortes**, y el dato descartado se conserva como
+  `descartado` — nunca como `datos`.
+- La causa que sube al modelo **nombra el motivo real** del worker que se paró.
+
+**Abierto, con dueño** *(y sigue abierto hoy)*:
+- 🔲 **El contrato de una CADENA** (`LM.72`): hoy guarda el primer paso; los intermedios sólo
+  viven en el registro. **Decidir si entra o se declara fuera de alcance.**
+  *Importancia: media · Urgencia: no bloqueante.*
+- 🔲 **`profundidad.py:213`** sigue con la copia ciega del corte (`pesos is None`, sin `pedido`).
+  **No se arregló a propósito:** ahí la discrepancia **es el objeto de estudio**. ❓ *¿El
+  experimento quiere que el harness cace su propia torcedura, o la necesita pasando?* Sin esa
+  respuesta, tocarlo es romper el instrumento.
+  *Importancia: media · Urgencia: no bloqueante.*
+
+---
 
 #### 🎲 C.4 — LA APUESTA, sellada el **2026-08-21** (sesión 101) **antes de la primera línea de código**
 
