@@ -3999,6 +3999,83 @@ corre el experimento y compara los dos extremos de la tabla.
   midió y se rodeó por fuera; **no se tocó**. Estrecharla es una decisión de diseño con
   su propio riesgo —volvería a matar la tanda entera— y se anota, no se improvisa.
 
+
+---
+
+#### 🎲 C.6 — LA APUESTA, sellada el **2026-08-23** (sesión 104) **antes de la primera línea de código**
+
+> **El estudiante:** *«iniciemos con C.6 y tomo tus apuestas»* — se sellan las de esta
+> terminal tal cual, como en la 97 y la 102.
+>
+> Lo de abajo se escribió **después de leer el código y antes de tocarlo**. Los tres
+> hechos del primer apartado están **contados, no adivinados**: son lecturas de archivos
+> que ya existen, cuestan $0,00 y **no contaminan lo apostado** — apostar sobre código
+> que no he leído no vale nada, pero contar lo que ya está escrito tampoco es apostar.
+
+##### Los tres hechos leídos (no son apuestas)
+
+| # | Dónde | Qué dice |
+|---|---|---|
+| 1 | `05b-proyecto/agente.py:155-156` | `PRECIO_ENTRADA` y `PRECIO_SALIDA` son **constantes de módulo**, calculadas UNA vez al importar, con `agente.MODELO` como llave. `costo(usage)` las usa a ellas, **no al modelo de la llamada**. |
+| 2 | `orquestador.py:111` · `worker.py:118` | Las dos capas dicen `MODELO = agente.MODELO`. **Un solo modelo arriba y abajo — y no por elección de C.6: por herencia.** |
+| 3 | `worker.py:611-618` | La línea `llamada_api` del registro anota `entrada`, `salida`, `costo_usd`, `estimado_usd`, `acumulado_usd`, `stop_reason`… **y no anota `modelo`.** |
+
+##### Las seis apuestas
+
+**🎲 1 — El precio está pegado al MÓDULO, no a la llamada.**
+Con `opus-5` arriba y `haiku` abajo, la contabilidad entera del nivel 8 seguirá
+facturando **a precio de haiku, sin una sola queja**. Y el error no será aproximado:
+será **exactamente 5,0×** en la capa de arriba, que es `opus_entrada / haiku_entrada`.
+🔑 Es `LM.15` con otra cara — el instrumento no da un dato falso ruidoso, da uno
+**plausible**: ~$0,0046 donde de verdad hubo ~$0,023.
+
+**🎲 2 — El registro NO podrá decirlo después.**
+En C.1 (sesión 97) el tercer testigo **ya estaba grabado** y no hubo que añadir nada.
+Aquí apuesto **lo contrario**: ninguna línea dice qué modelo hizo esa llamada, así que
+**ni siquiera pagando la corrida se podrá auditar cuál costó qué**. 📌 Y el nombre del
+archivo —`registro_orquestador_{MODELO}.jsonl`— **mentirá por el mismo motivo**: un
+rótulo para dos modelos. El caso simétrico de la 97, y por eso vale medirlo.
+
+**🎲 3 — El presupuesto en dólares es lo único de C.2 que sobrevive intacto… y se cae con la 1.**
+`PRESUPUESTO_ORQ_USD = 0.05` está escrito en **la unidad correcta**, así que **no hay
+que tocarlo** al cambiar de modelo: el margen pasa de 11× a 2,2× y **no corta**.
+🔑 Pero si la 1 gana, ese techo está vigilando **dólares falsos**. Los dos frenos no son
+independientes: **el presupuesto solo vale lo que valga la tabla de precios.**
+
+**🎲 4 — `effort` es una palanca de SEGUNDO orden, y va con número.**
+`effort: low` no baja la tarifa: baja **cuántos tokens de salida** se producen. Y en un
+agente con herramientas la entrada manda, porque **el menú se repaga en cada vuelta**.
+Apuesto: `high → low` ahorra **menos del 10 %** de la capa; `opus → haiku` ahorra
+**~80 %**. 🚨 Con la trampa ya anotada arriba: `effort` **no funciona en
+`claude-haiku-4-5`**, y apuesto que da un **400** y no un silencio — **y que eso es una
+suerte**, porque un parámetro ignorado en silencio sería mucho peor que un error.
+
+**🎲 5 — «Modelo caro arriba» NO se puede demostrar con la tarea de hoy, y se va a ver.**
+El orquestador de hoy **solo reparte y pega**. Apuesto que subirlo a opus **no cambia ni
+una decisión**: mismo fan-out de tres monedas, mismo número de llamadas, y el árbol de
+C.1 de las dos corridas saldrá **isomorfo**. Solo cambia la factura. 🔑 Así el README
+deja de *afirmar* que ahí pagar opus es tirar dinero y pasa a **medirlo**.
+
+**🎲 6 — La del coste, que es la que falló en la 97.**
+Los pasos de código cuestan **$0,00**. El que cuesta es **el que valida**: una corrida
+real con opus arriba ≈ **$0,045**, más las pruebas de `effort` en sonnet ≈ **$0,005**.
+Horquilla sellada: **$0,045–$0,060 el día entero.**
+📌 Y se sella también **el modo de fallo**, porque ya mordió una vez: *contar el coste de
+lo que voy a escribir y no el de lo que hace falta para creérmelo.*
+
+##### 🎁 Un dato que juega a favor, encontrado leyendo
+
+La solución de la apuesta 1 **ya está escrita en este repo**, en el único archivo que hoy
+usa dos modelos: `juez_duelo.py:50-51` se saca sus propios `PRECIO_ENTRADA` y
+`PRECIO_SALIDA` **del catálogo, con su modelo como llave**, precisamente porque no puede
+usar los globales. **Nadie lo generalizó.** Es `LM.20` esperando turno: la corrección ya
+estaba escrita y nadie la alcanzó.
+
+##### 🔒 Lo que NO se toca en C.6
+
+El duelo corre con **el mismo modelo en los dos lados** (pieza 0.4 del sobre). Nada de lo
+que se mida aquí puede cambiar la configuración del duelo: **C.6 se estudia con demos
+propias**, no reconfigurando el experimento sellado.
 ---
 ### 🧠 BLOQUE D — Lo compartido
 
