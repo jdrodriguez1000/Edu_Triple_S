@@ -6124,3 +6124,89 @@ profundidad 78. Un tope escrito contra `profundidad` permite capa y media.
 que se enciende en la capa de entrada y tiene que seguir encendido tres llamadas más abajo. Y en las
 mediciones: **cuando dos experimentos que deberían diferir coinciden, el resultado no es una
 confirmación — es la primera señal de que el instrumento no está conectado.**
+
+---
+
+### LM.82 — Una tabla de precios equivocada no descuadra nada: escala la factura entera
+
+C.6 midió qué pasa cuando las dos capas dejan de compartir modelo, y la contabilidad del nivel 8
+—cinco bloques midiendo dólares— siguió facturando al precio de una sola. El error se pudo poner en
+un número: **5,0000000000×**, y la corrida pagada lo confirmó en factura real, $0,024075 donde el
+harness de ayer habría dicho $0,004815.
+
+🔑 **Y el hallazgo no es el factor: es que la mentira sale LIMPIA.** Los tres modelos del catálogo
+tienen la salida a 5× la entrada, así que tarifar mal **multiplica todo por una constante**. Las
+partes siguen sumando el total, el árbol suma hacia arriba lo mismo que el auditor suma en plano, y
+todos los cuadres internos salen verdes. **Un error que respeta la aritmética no se puede cazar con
+aritmética.**
+
+⚠️ Es `LM.66` del revés y hay que decirlo con esas palabras. Allí un segundo testigo desmintió al
+primero **porque los dos caminos eran independientes**. Aquí los dos caminos comparten la fuente del
+error, así que **confirman la mentira en coro**. Antes de fiarse de un cuadre, la pregunta no es
+«¿coinciden?» sino **«¿de dónde saca cada uno su dato?»** — dos cálculos que leen la misma tabla son
+un testigo, no dos.
+
+📌 El corolario del freno: `PRESUPUESTO_ORQ_USD` no hubo que tocarlo al cambiar de modelo, y el
+motivo es **la unidad** — está escrito en dólares, así que el precio ya va dentro del número; un tope
+en tokens habría que recalcularlo con cada modelo. **La unidad de un freno decide si viaja o no.**
+Pero ese mismo techo se compara contra un gasto que salía de la tabla mala: habría visto un 9 % donde
+había un 46 %. **Un freno correcto conectado a un instrumento ciego no es medio freno: es ninguno.**
+
+**Dónde muerde fuera de aquí:** cualquier constante de configuración leída una vez al importar —
+tarifas, husos horarios, tipos de cambio, tasas de impuesto, factores de conversión. Mientras haya un
+solo valor en juego, la constante y el parámetro dan lo mismo y nadie nota la diferencia. **El día
+que hay dos, uno de los dos empieza a mentir y no tiene forma de saberlo.**
+
+---
+
+### LM.83 — Un campo se graba si es una salida; lo que se PIDIÓ no queda escrito en ninguna parte
+
+La apuesta de C.6 era que el registro no podría decir, después, qué modelo hizo cada llamada. Salió
+exacta: **0 de 191 líneas**. Y al buscar el porqué apareció algo mejor que la apuesta.
+
+En C.1 (`LM.68`) el tercer testigo **ya estaba grabado** y no hubo que añadir nada. Aquí no había
+nada que leer. La diferencia no es suerte ni descuido: **el registro guardaba SALIDAS** —lo que trajo
+una herramienta, lo que contestó el modelo, cuántos tokens costó— **y el modelo es una ENTRADA de la
+petición.** De la petición no se guardaba nada.
+
+🔑 Un registro construido mirando resultados documenta perfectamente **qué pasó** y no puede decir
+**bajo qué condiciones pasó**. Y las dos preguntas se parecen lo suficiente como para que nadie note
+que solo una tiene respuesta — hasta el día en que las condiciones cambian.
+
+📌 La prueba práctica, y es de un minuto: coge una línea de tu registro y pregúntale *«¿con qué
+ajustes se hizo esto?»*. Modelo, versión, límites, banderas, quién configuró. Si la línea no lo dice,
+tu registro sirve para depurar y **no sirve para comparar dos corridas**, que es para lo que se
+guardan los registros a largo plazo.
+
+**Dónde muerde fuera de aquí:** versión del binario, commit desplegado, `feature flags` activos,
+zona de la máquina, límites en vigor. Todo eso es entrada, todo eso cambia, y **casi ningún registro
+lo escribe** porque en el momento de escribirlo parecía obvio.
+
+---
+
+### LM.84 — Un experimento cuyo resultado nulo no distingue dos causas todavía no ha medido nada
+
+La segunda mitad de la apuesta 4 predecía que bajar el esfuerzo de `high` a `low` ahorraría poco.
+Salió **0,0 %** — mismo coste, mismos tokens de salida hasta la unidad. La apuesta gana en el papel, y
+aun así se dejó **sin resolver**, a propósito.
+
+El motivo: un 0 % es compatible con dos mundos distintos. *«El parámetro llegó y no tenía nada que
+recortar»* —el turno medido era un despacho puro, sin razonamiento— y *«el parámetro llegó y no hizo
+nada»*. El experimento no tiene forma de separarlos, así que **el número confirma la predicción sin
+enseñar por qué**.
+
+🔑 **La pregunta que salva un resultado nulo no es «¿salió lo que esperaba?» sino «¿qué otra causa
+produciría este mismo cero?»**. Si hay más de una y no puedes descartarlas, lo que tienes es una
+coincidencia con forma de dato — y una coincidencia a favor es más peligrosa que una en contra,
+porque nadie la va a auditar (`LM.15`).
+
+📌 Lo que sí quedó probado, y por separado: el parámetro **existe y la API lo lee** — pedírselo a
+`claude-haiku-4-5` devuelve un **400** con el motivo escrito, y ese rechazo **no se factura**.
+Comprobar la mitad mala de una trampa puede salir gratis; lo que se paga es el **control**, o sea la
+celda que demuestra que el instrumento funciona cuando debería. **Un experimento con una sola celda
+no distingue la hipótesis del instrumento.**
+
+**Dónde muerde fuera de aquí:** cachés que «no mejoran», índices que «no aceleran», reintentos que
+«no ayudan». Antes de archivar un cero, hay que poder decir qué observación distinguiría *«no sirve»*
+de *«no se activó»*. Si no la hay, el cero es una nota, no un dato — que es `LM.13` aplicado a una
+medición en vez de a un freno.

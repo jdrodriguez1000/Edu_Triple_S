@@ -1009,6 +1009,7 @@ el 2026-08-21, la lista decía DOS, y esa misma tarde se arreglaron dos:**
 | `08-avanzado/aislamiento.py` | ✅ **cumple**: en pelado corre la Parte 1, que es gratis (`count_tokens`). ⚠️ Tarda ~2 min y la Parte 2 paga ~$0,015, con `--contaminacion` |
 | `08-avanzado/contexto.py` | ✅ no tiene `__main__`: en pelado no hace nada |
 | `08-avanzado/recursion.py` | ✅ **molde**: en pelado corre los 7 experimentos a $0,00; `--pruebas` para la suite |
+| `08-avanzado/modelos.py` | ✅ **molde** (sesión 104): en pelado mide sobre tokens ya pagados a $0,00 · `--pruebas` la suite · `--trampa` ~$0,0001 · `--pagar` ~$0,046 |
 
 📌 **Los dos arreglados llevan el aviso con un precio MEDIDO, leído de su propio
 registro y no escrito a mano.** Un número copiado en un aviso es verdad el día
@@ -1025,6 +1026,15 @@ que la leyó buscó su archivo en la lista y no estaba.
 🔑 **Una advertencia con lista incompleta no avisa a medias: tranquiliza.** El
 que mira la lista y no encuentra su archivo concluye que el suyo es de los
 seguros. **Es peor que no tener lista.**
+
+📌 **`modelos.py` (sesión 104) entró en esta lista EL MISMO DÍA en que se escribió,
+y no la semana siguiente.** Es la primera vez que pasa. Las dos veces anteriores la
+lista se completó **después de que un archivo mordiera** —la 101 y la 103—, y las dos
+veces el motivo fue el mismo: el que añade un modo de pago está pensando en la
+medición, no en el que mañana venga a comprobar que no ha roto nada.
+🔑 **La lista no se mantiene revisándola: se mantiene añadiendo la fila en el mismo
+commit que crea la bandera.** Una revisión periódica de una lista de seguridad es
+otra tarea que se olvida; una fila escrita a la vez que el peligro, no.
 
 📌 Y una bandera que el script no conoce **no da error**: `sys.argv` se ignora y
 el programa hace lo suyo. `python X.py --pruebas` en un archivo sin argparse se

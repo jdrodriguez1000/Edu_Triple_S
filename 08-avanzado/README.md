@@ -2059,7 +2059,7 @@ llamadas.
 | C.3 | **Permisos**: quién puede qué | el orquestador **no toca herramientas reales** |
 | C.4 | **Fallos del worker**: se cae, se demora, no contesta | un worker mudo no debe colgar al orquestador |
 | C.5 | ✅ **Tope de recursión**: el bucle orquestador ↔ worker | dos agentes pueden pasarse la pelota para siempre |
-| C.6 | 🟡 **Modelo y esfuerzo por capa** *(pasos 1 y 1b hechos)* | es la palanca de costo más grande del esquema: **5×** entre la config más barata y la más cara |
+| C.6 | ✅ **Modelo y esfuerzo por capa** | es la palanca de costo más grande del esquema: **5×** entre la config más barata y la más cara |
 
 #### 🆕 C.6 — añadida el 2026-08-20 (sesión 91), y la destapó una pregunta suya
 
@@ -4169,7 +4169,7 @@ idénticas, y eso era la apuesta 1 entera.**
 
 | | |
 |---|---|
-| Archivo | `modelos.py` (**22 pruebas**) · `worker.py` y `orquestador.py` cableados |
+| Archivo | `modelos.py` (**22 pruebas** al cerrar el 1b; **23** al final del día) · `worker.py` y `orquestador.py` cableados |
 | Apuestas | 1, 2 y 3 ✅ · la 4 con su motivo corregido · 5 y 6 abiertas |
 | 💸 Coste | **$0,000000** |
 
@@ -4190,6 +4190,140 @@ idénticas, y eso era la apuesta 1 entera.**
   de agentes correría entera con la configuración por defecto. Gratis de arreglar, y sin
   dueño hasta que C.6 tenga que medirse sobre una cadena.
 ---
+
+---
+
+#### 💸 C.6 · PASOS 2 y 3 — LA CORRIDA QUE COSTÓ *(sesión 104 · **$0,058556** el día entero)*
+
+##### Las seis apuestas, cerradas
+
+| # | Lo apostado | Resultado |
+|---|---|---|
+| 1 | el precio pegado al MÓDULO, factor exacto | ✅ **5,0×**, y ahora en factura real |
+| 2 | el registro no puede decirlo después | ✅ 0 de 191 líneas |
+| 3 | el techo en dólares sobrevive… y se cae con la 1 | ✅ las dos mitades |
+| 4 | el esfuerzo es palanca de segundo orden | 🟡 **el número confirma; el instrumento no basta** |
+| 5 | el árbol no cambia al cambiar el modelo de arriba | ✅ **6 de 6** |
+| 6 | horquilla $0,045–$0,060 | ✅ **$0,058451** |
+
+##### La factura, con cada capa a su precio
+
+```
+arriba (opus-5) : $0.024075   (2 llamadas ·  2.445 entrada /  474 salida)
+abajo  (haiku)  : $0.021662   (9 llamadas · 17.997 entrada /  733 salida)
+TOTAL           : $0.045737   en 20,48 s
+
+🚨 Lo que el harness de AYER habría reportado arriba: $0.004815
+   Lo que costó de verdad:                            $0.024075
+   Diferencia no vista:                               $0.019260
+```
+
+🔑 **Dos llamadas arriba costaron más que nueve abajo.** Es C.6 en una línea, y es la
+apuesta 1 vista en una factura y no en un recálculo. → `LM.82`.
+
+##### 🎯 La apuesta 5 sale total: 6 de 6, y por eso la afirmación deja de ser una opinión
+
+Las **seis** corridas de dos capas ya pagadas —todas haiku— y la de hoy con opus arriba
+tienen **exactamente la misma forma de árbol**: `((0,1), (1,3), (2,3))`. Cero quejas del
+auditor de C.1.
+
+🔑 **El modelo de arriba cambió la factura y no cambió ni una decisión.** El README
+*afirmaba* que con un orquestador que solo reparte y pega, pagar opus es tirar dinero;
+ahora está **medido**: son $0,019 por corrida a cambio de nada.
+
+🎁 **Y solo hubo que pagar UNA corrida, no dos.** La de haiku estaba pagada desde la
+sesión 97, con su árbol grabado. **Comparar contra lo ya pagado fue la mitad del ahorro
+del día**, y lo hizo posible C.1 — la única pieza del harness que no se puede añadir hacia
+atrás. Hoy se cobró el interés de haberla puesto entonces.
+
+##### 🚨 La trampa del `effort`, vista morder — y la mitad mala salió GRATIS
+
+```
+→ claude-haiku-4-5 con effort='low'
+   HTTP 400 — "This model does not support the effort parameter."
+   💸 $0,000000
+→ claude-sonnet-5 con effort='low'   (el control)
+   ✅ 15 entrada · 4 salida · $0,000105
+```
+
+Se apostó **un 400 y no un silencio**, y salió un 400 que además dice el motivo. Es una
+suerte de verdad: un `effort` ignorado en silencio te dejaría creyendo que ahorraste.
+
+🎁 **Una petición rechazada con 400 no se factura** — no hubo tokens que cobrar. Lo único
+que se paga es el **control**, y sin él no habría medición: un error podría venir de que
+`effort` no exista en haiku **o** de que lo estemos mandando mal. **Un experimento con una
+sola celda no distingue la hipótesis del instrumento.**
+
+##### 🟡 Y la apuesta 4 se deja SIN RESOLVER aunque el número la confirme
+
+```
+effort=high  · 984 entrada · 227 salida · $0.006357 · tool_use
+effort=low   · 984 entrada · 227 salida · $0.006357 · tool_use
+Ahorro: 0,0 %
+```
+
+Se predijo *«menos del 10 %»* y salió **0 %**: una victoria en el papel y la menos
+informativa posible. Un 0 % es compatible con dos mundos —*«llegó y no tenía nada que
+recortar»*, porque el turno medido era un despacho puro sin razonamiento, y *«llegó y no
+hizo nada»*— y **este experimento no los separa**. → `LM.84`.
+
+⚠️ Es la trampa que este mismo paso nombró, del otro lado: allí un `effort` ignorado te
+haría creer que ahorraste; aquí me haría creer **que medí**.
+
+##### ⚠️ Tres errores míos, los tres medidos y dichos con el número al lado
+
+1. **Razoné en tokens y la factura se cobra en dólares.** La apuesta 4 decía «la salida es
+   una fracción pequeña del gasto». Es **6,1 % de los tokens** y **24,6 % del gasto**,
+   porque cada token de salida cuesta 5×. El motivo escrito era malo aunque la predicción
+   no lo fuera.
+2. **Escribí una prueba que no podía fallar**, dentro del archivo donde se cuenta esa
+   lección. Las 12 y 13 prometían ponerse rojas al arreglar C.6 y no lo hicieron:
+   interrogan a una función que nadie tocó y a 191 líneas que son historia. **Describen el
+   mundo de ayer, y el mundo de ayer nunca se pone rojo.** Entraron las **17 a 22**, con un
+   cliente espía; la **20** es la que mata el agujero.
+3. **`ESFUERZOS` tenía cuatro valores y son cinco.** Faltaba `xhigh`, escrito de memoria y
+   corregido por la documentación — y es el recomendado para trabajo agéntico, o sea **el
+   que faltaba era el útil**. 🔑 El modo de fallo iba en la dirección peligrosa: un
+   validador con la lista corta **no deja pasar basura, rechaza cosas buenas diciendo que
+   son basura**, y con un mensaje que suena a verdad.
+4. **El comparador de árboles tomaba «hoy» como la última corrida en ORDEN DE ARCHIVO.**
+   Aquí se concatenan dos registros, así que la última del montón era una corrida vieja de
+   solo workers: dibujó un árbol de un nodo y lo llamó «hoy». **No dio error** — dibujó una
+   tabla correcta con la fila equivocada resaltada. `LM.15` con ropa de índice: **el orden
+   de un archivo no es el orden del tiempo**, y solo coinciden mientras haya un archivo.
+
+##### 🎁 Y la corrección del paso 1b resultó ser ELLA MISMA imprecisa — lo dijo una prueba en rojo
+
+Al terminar el paso 1b se corrigió una promesa mía diciendo que las pruebas 12 y 13
+*«describen el mundo de ayer, y el mundo de ayer nunca se pone rojo»*. **La 13 se puso roja
+en cuanto la corrida pagada tocó el registro**, junto con la 11.
+
+🔑 Y las dos rojas eran **correctas**: el archivo dejó de ser homogéneo. Sumarlo entero y
+tarifarlo a precio de haiku había dado exactamente lo grabado durante trece sesiones —
+porque **todas las líneas eran de un solo modelo**— y esa suposición no estaba escrita en
+ninguna parte. ⭐ **El pasado no cambia; el archivo donde está guardado, sí.** Un dato
+histórico solo es inmutable si tiene **cómo separarse de lo que se le añade encima**, y
+aquí la marca es la ausencia del campo `modelo` (`antes_de_c6`).
+
+📌 La 13 partida en dos deja las dos mitades a la vista: **`13` — ninguna línea anterior a
+C.6 anota el modelo** (la apuesta, 191 líneas) y **`13b` — toda línea posterior SÍ lo
+anota** (el arreglo, verde con la primera corrida pagada). Un agujero medido y su tapa, en
+renglones separados.
+
+##### 📋 Resumen de C.6
+
+| | |
+|---|---|
+| Archivos | `modelos.py` (**23 pruebas** · 4 modos) · `worker.py` y `orquestador.py` cableados |
+| Lecciones | `LM.82`, `LM.83`, `LM.84` |
+| 💸 Coste | **$0,058556** — $0,000105 la trampa · $0,045737 la corrida · $0,012714 el esfuerzo |
+
+**Abierto, con dueño:**
+- 🔲 **La apuesta 4 sigue sin medirse de verdad.** Hace falta un turno donde el modelo
+  **razone**, no donde despache. *Importancia: media · Urgencia: no bloqueante.*
+- 🔲 Las tres deudas del paso 1b siguen en pie: el nombre del archivo de registro,
+  `agente.costo()` viva en `router.py` y `supervisor.py`, y `recursion.py` sin pasar la
+  capa hacia abajo.
 ### 🧠 BLOQUE D — Lo compartido
 
 | # | Pieza | La trampa |
