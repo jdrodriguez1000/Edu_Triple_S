@@ -108,6 +108,24 @@ class _Tramo:
             "padre": padre["id"] if padre else None,
             "profundidad": (padre["profundidad"] + 1) if padre else 0,
             "tramo": self.nombre,
+
+            # ⭐ C.5 — LA CADENA DE LO QUE ESTÁ ABIERTO AHORA MISMO, de la raíz
+            #    hasta aquí. Es el único campo de esta ficha que NO baja al
+            #    registro, y por eso se añade sin tocar una sola línea ya
+            #    escrita: `marca()` filtra cinco campos y este no es uno.
+            #
+            # 🔑 POR QUÉ NO BASTABA CON `padre` Y `profundidad`. Los dos son
+            #    ciertos y los dos son ciegos para la pregunta de C.5:
+            #      · `profundidad` dice CUÁNTO he bajado — un número.
+            #      · `padre` dice quién me llamó — UNO, el de justo encima.
+            #    Ninguno de los dos puede contestar «¿estoy dentro de alguien
+            #    que se llama igual que yo?», que es la pregunta que separa una
+            #    pelota de una cadena larga y legítima.
+            # ⚠️ Y no se podía deducir: la ficha guarda el `id` del padre, no
+            #    el padre. Desde aquí no hay forma de subir. Que el árbol se
+            #    pueda reconstruir DESPUÉS, leyendo el archivo, no sirve para
+            #    decidir AHORA — y C.5 tiene que decidir antes de abrir.
+            "cadena": (padre["cadena"] + (self.nombre,)) if padre else (self.nombre,),
         }
         self._testigo = _ACTUAL.set(self._ficha)
         return self._ficha
@@ -187,6 +205,19 @@ def marca():
 def actual():
     """El tramo abierto, o `None`. Para las pruebas, no para el código normal."""
     return _ACTUAL.get()
+
+
+def cadena():
+    """Los nombres de los tramos abiertos AHORA, de la raíz hasta aquí.
+
+    Devuelve una tupla. Vacía si no hay ninguno.
+
+    ⭐ Esta sí es para el código normal, y es la diferencia con `actual()`. El
+       freno de C.5 se pregunta «¿dentro de quién estoy?» antes de abrir una
+       capa más, y esta es la única función del módulo que lo contesta.
+    """
+    a = _ACTUAL.get()
+    return a["cadena"] if a else ()
 
 
 def atado(fn):

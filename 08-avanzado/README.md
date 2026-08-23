@@ -2058,7 +2058,7 @@ llamadas.
 | C.2 | **Presupuesto repartido** entre las dos capas | el tope del nivel 4 solo sabe contar una capa |
 | C.3 | **Permisos**: quién puede qué | el orquestador **no toca herramientas reales** |
 | C.4 | **Fallos del worker**: se cae, se demora, no contesta | un worker mudo no debe colgar al orquestador |
-| C.5 | **Tope de recursión**: el bucle orquestador ↔ worker | dos agentes pueden pasarse la pelota para siempre |
+| C.5 | ✅ **Tope de recursión**: el bucle orquestador ↔ worker | dos agentes pueden pasarse la pelota para siempre |
 | C.6 | **Modelo y esfuerzo por capa** 🆕 | es la palanca de costo más grande del esquema: **5×** entre la config más barata y la más cara |
 
 #### 🆕 C.6 — añadida el 2026-08-20 (sesión 91), y la destapó una pregunta suya
@@ -3821,6 +3821,183 @@ C.3. `P35` lo vigila.
 📊 `presupuesto.py` **40 → 58** pruebas. `traza.py` (46) y `fallos.py` (26), intactas.
 💸 Coste del día: **$0,000000**.
 
+
+---
+
+#### 🛡️ C.5 — EL TOPE DE RECURSIÓN *(sesión 103 · `recursion.py` · todo a $0,00)*
+
+**La pregunta, en una frase:** un orquestador llama a un worker. ¿Y si el worker es
+otro orquestador? **Dos agentes pueden pasarse la pelota para siempre**, y cada pase
+es una llamada que se paga.
+
+⚠️ **Y hoy la trampa era peor que en C.4, porque había DOS frenos y los dos parecían
+valer:** `max_vueltas` («el bucle no puede dar vueltas infinitas») y el presupuesto
+(«cuando se acabe el dinero, para»). Los dos existen, los dos están medidos y los dos
+cierran corridas de verdad todos los días. C.5 les preguntó si paraban **ésta**.
+
+##### 🚨 Fabricar la pelota no costó ni una línea rara, y eso ES el hallazgo
+
+`herramienta_delegar` es `orquestador.herramienta_consultar_moneda` con
+`correr_orquestador` donde aquélla tiene `correr_worker`. **Esa única palabra es toda
+la diferencia entre un árbol y una pelota.** No hace falta escribir nada raro: basta
+con la puerta que B.5 le abrió al orquestador —`sistema`, `tools`, `funciones`—.
+🔑 **La recursión no es una avería que se cuela: es lo que pasa por defecto cuando una
+capa puede abrir capas.**
+
+📌 El modelo es de mentira (`ClienteQueDelega` pide siempre delegar) y **una sola
+delegación por capa**, a propósito: si delegara varias, la pelota crecería a lo ancho
+y a lo hondo a la vez y el número final no diría cuál de las dos cosas la hizo crecer.
+
+##### 🎲 Las cinco apuestas, selladas antes de medir — y la que falló es la mejor
+
+| # | Lo apostado | Resultado |
+|---|---|---|
+| 1 | la pelota la para Python quedándose sin pila, **como una avería visible** | 🔴 **FALLADA** |
+| 2 | `max_vueltas` no frena nada: **cero** cierres por vueltas | ✅ |
+| 3 | el dinero sí para, mucho antes, pero con `motivo="presupuesto"` — falso | ✅ *y con el adjetivo corregido* |
+| 4 | una capa de agente cuesta **dos** escalones de `profundidad` | ✅ exacto |
+| 5 | profundidad y repetición **no cazan lo mismo** | ✅ |
+
+##### 🔴 La apuesta 1 falló, y el modo de fallo es el hallazgo del día
+
+Sin ningún freno y sin el corte del laboratorio: **166 capas, 330 llamadas al modelo.**
+Python se quedó sin pila y lanzó `RecursionError` a profundidad 327 — hasta ahí, lo
+apostado. Lo que no se apostó es lo que pasó después.
+
+🚨 **`RecursionError` es una `Exception`**, así que **la red de seguridad de C.4 se lo
+tragó**: la convirtió en un `tool_result` que decía *«el especialista falló por un
+defecto interno del programa»*, el modelo obedeció, cerró su turno, y **las 164 capas
+de encima cerraron una a una y en verde**. La corrida de arriba devolvió `ok=True`,
+`motivo=None` y un texto tranquilo.
+
+🔑 **La red no distingue «se cayó uno de tres» de «el sistema se está comiendo a sí
+mismo».** Las dos cosas entran por el mismo `except` y salen con la misma forma de
+dato. → `LM.79`.
+
+🚨 **Y del desastre entero quedó UNA línea de registro entre 823.** Existió, quedó
+grabado, y estaba a la vista de nadie — porque nadie audita un verde (`LM.15`).
+
+📌 De ahí sale la forma del freno, y es diseño y no gusto: **el freno devuelve un
+diccionario, no lanza una excepción.** Una excepción lanzada en la frontera se la come
+la propia red que hace posible el problema. Medido con su contrafactual (prueba 23):
+el mismo corte como `Exception` corriente → `ok=True` y cinco capas cerradas en verde;
+como `BaseException` → el aviso sale. **Es la única diferencia.**
+
+##### ✅ La apuesta 2, exacta: `max_vueltas` cuenta a lo ancho y la pelota crece a lo hondo
+
+40 capas abiertas con `max_vueltas=8` activo en todas, y **ninguna cerró**: `motivos`
+vacío del todo. Cada capa nueva **estrena su contador en cero**, así que un freno que
+cuenta vueltas dentro de una capa no ve nunca una escalera de capas.
+
+##### ✅ La apuesta 3, y el adjetivo que hubo que corregir con un número
+
+Con el presupuesto repartido de C.2 encendido, la misma pelota murió en **2 capas**.
+El freno funcionó: paró, pronto y barato. Y cerró con `motivo="presupuesto"` — verdad
+y mentira a la vez: es verdad que se acabó el dinero, es mentira lo que ese motivo da
+a entender (*el encargo era caro*). **El encargo no era caro: había un bucle.**
+
+🔑 **De un freno sobrevive el diagnóstico, no la parada.** → `LM.80`.
+
+⚠️ **Pero el adjetivo de la apuesta se midió, y estaba exagerado.** Decía que el
+consejo deducido —«dale más presupuesto»— era *«el peor posible»*. Se obedeció:
+
+| presupuesto | capas | motivos |
+|---|---|---|
+| ×1 ($0,039585) | 2 | `presupuesto` |
+| ×10 | 4 | `presupuesto` |
+| ×100 | 5 | `presupuesto` |
+| ×1000 ($39,58) | **7** | `presupuesto` |
+
+El reparto parte el dinero en cada escalón: **el dinero frena como un logaritmo**, y
+nunca deja que la pelota se dispare. **La apuesta acertó en lo falsable y exageró en
+el adjetivo, y se deja escrito con el número al lado.**
+
+📌 Y el corolario que sí vale: **el presupuesto sólo frena si se REPARTE hacia abajo.**
+Con el tope por pieza de A.2 —cada capa estrenando el suyo— la misma pelota llegó a 40
+capas sin una queja.
+
+##### ✅ La apuesta 4: `profundidad` no cuenta capas, y por eso no sirve de tope
+
+```
+profundidad 0  ->  capa:coordinador-raiz   <- capa
+profundidad 1  ->  tool:delegar
+profundidad 2  ->  capa:coordinador        <- capa
+```
+
+**Una capa de agente cuesta DOS escalones**: la herramienta y la capa. 40 capas dan
+profundidad **78**. Un tope escrito contra `profundidad` permitiría capa y media.
+
+🔑 El árbol de C.1 se dibujó para **leerse después**; este número se pregunta para
+**decidir ahora**. El mismo dato no sirve para las dos cosas sin traducirlo, y
+traducirlo es `capas_abiertas()`.
+
+##### 🛠️ El freno: son DOS topes, y no miden lo mismo
+
+| tope | pregunta | qué caza |
+|---|---|---|
+| **repetición** | ¿ya hay una capa con mi nombre abierta encima? | la pelota `A→B→A`, aunque sea cortísima |
+| **profundidad** | ¿cuántas capas hay abiertas en total? | la escalera `A→B→C→D…`, aunque no se repita un nombre |
+
+🔑 **El orden importa: primero la repetición.** Las dos pararían la corrida, pero dan
+diagnósticos distintos, y el de la repetición es más preciso: dice *estás dentro de ti
+mismo*, no *bajaste mucho*. Al revés, una pelota se reportaría como «demasiadas capas»,
+que **invita a subir el tope** — y subir el tope de una pelota sólo la hace más cara.
+
+✅ **La apuesta 5, medida sobre la cadena real de B.5** (`orquestador → región →
+worker`): con el tope en 3 **pasa sin una queja**; con el tope en 2 **la mata por
+profundidad**; y una pelota corta en la misma cadena cae por **repetición** aunque el
+tope esté en 9. **Los dos topes hacen falta, y hacen falta separados.**
+
+📌 `TOPE_CAPAS = 3` porque tres es lo que llegó a usar el nivel. **Un tope que mata la
+topología más grande que ya corriste no es un freno: es una avería.**
+
+##### 🎁 Y el auditor de C.4 ya veía la pelota sin saber que existía
+
+`traza.auditar_arbol()` sobre el registro de la pelota sin freno: **40 quejas
+`nodo_abierto`**, una por capa. Con el freno puesto, **ninguna**. La comprobación se
+escribió en C.4 para un worker que se cae a media faena, y caza una recursión que
+entonces no existía. 🔑 **Un invariante bien elegido caza cosas que su autor no había
+imaginado** — que es lo contrario de un detector escrito para la línea que ya viste.
+
+##### 🐛 Dos errores míos, medidos y dichos
+
+1. **El tope no viajaba hacia abajo.** Los topes entraban por la firma de la frontera,
+   y **quien llama a una herramienta es el bucle del agente**, que pasa sólo los
+   argumentos que el modelo pidió. En cuanto la corrida bajaba una capa, volvían a su
+   valor por defecto. 🔑 **Y cómo se cazó vale más que el fallo: dos experimentos que
+   debían diferir dieron el mismo número** —40 capas, profundidad 78, el mismo corte—.
+   Es `LM.15` con otra cara: el instrumento ciego no dio silencio, dio **la misma cifra
+   dos veces**, que se lee como confirmación. → `LM.81`.
+2. **La báscula del escalón contestaba otra pregunta.** `profundidad / capas` dio
+   **1,5** — la media entre un salto real de 2 y una cola suelta. Se corrigió midiendo
+   la distancia entre capas consecutivas. `LM.17` otra vez: **el cociente contestaba
+   una pregunta parecida, y por eso salió creíble.**
+
+##### ⚠️ Y una prueba que no podía fallar, corregida dentro del archivo que va de eso
+
+La prueba 15 nació como `check(..., True, "medido en el experimento 3b")`: una nota con
+forma de prueba. **`LM.13` cometido dentro del archivo escrito para `LM.13`.** Ahora
+corre el experimento y compara los dos extremos de la tabla.
+
+##### 📊 Lo que deja C.5
+
+| | |
+|---|---|
+| Código | `recursion.py` (nuevo) · `contexto.py` gana `cadena()` |
+| Pruebas | **26 en verde**, y la 11 está verde **comprobando que la apuesta 1 falló** |
+| Vigilancia | la prueba 3 exige que `marca()` siga bajando **cinco** campos: `cadena` **no entra al registro**, así que ninguna corrida pagada se movió |
+| Suites vecinas | `traza`, `profundidad`, `presupuesto`, `fallos`, `fan_out`, `router`, `supervisor`, `verificador`: verdes |
+| Lecciones | `LM.79`, `LM.80`, `LM.81` |
+| 💸 Coste | **$0,000000** |
+
+**Abierto, con dueño:**
+- 🔲 **El freno nunca se ha visto morder con un modelo de verdad.** Está medido contra
+  un modelo que *siempre* delega, que es el peor caso — y el peor caso es lo único
+  contra lo que se puede dimensionar un freno, pero **no dice si un modelo real llega
+  a hacer esto solo**. Es la misma deuda que `crash_temporal` en C.4.
+- 🔲 **La red de C.4 sigue tragándose todo lo que suba desde abajo** (`LM.79`). Hoy se
+  midió y se rodeó por fuera; **no se tocó**. Estrecharla es una decisión de diseño con
+  su propio riesgo —volvería a matar la tanda entera— y se anota, no se improvisa.
 
 ---
 ### 🧠 BLOQUE D — Lo compartido

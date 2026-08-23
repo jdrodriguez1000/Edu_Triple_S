@@ -6029,3 +6029,98 @@ campo de visión del instrumento**, que es distinto y bastante peor.
 intentos por sesión, reservas por recurso— el día que llega el primer reintento, el primer duplicado
 o el primer reenvío. Y en las suites: si todos los casos de prueba usan identificadores distintos,
 la repetición no es un caso raro, **es un caso que nunca se probó**.
+
+---
+
+### LM.79 — Una red que lo atrapa todo convierte una catástrofe en un `ok=True`
+
+C.4 puso una red de seguridad en la frontera: `except Exception`. Existe por una razón buena y
+medida — sin ella, un worker que revienta se lleva por delante a los otros dos, y eso se vio morder.
+Lo que C.5 midió es lo que esa misma red hace con un fallo que **no es local**.
+
+Una pelota de agentes —un coordinador que delega en otro coordinador, y ése en otro— bajó 166 capas
+y 330 llamadas al modelo. Python acabó quedándose sin pila y lanzó `RecursionError` a profundidad
+327. **`RecursionError` es una `Exception`**, así que la red lo atrapó, lo convirtió en un
+`tool_result` que decía *«el especialista falló por un defecto interno del programa»*, el modelo
+obedeció y cerró su turno, y las 164 capas de encima cerraron **una a una y en verde**. La corrida
+de arriba devolvió `ok=True`, `motivo=None` y un texto tranquilo.
+
+🔑 **La red no distingue «se cayó uno de tres» de «el sistema entero se está comiendo a sí mismo».**
+Las dos cosas entran por el mismo `except` y salen por el mismo tubo, con la misma forma de dato, y
+lo que queda arriba es indistinguible de una corrida sana.
+
+🚨 Y el rastro: **una línea de registro entre 823.** El desastre existió, quedó grabado, y estaba a
+la vista de nadie — porque nadie audita un verde (`LM.15`).
+
+📌 De ahí sale la forma del freno de C.5, y es una decisión de diseño, no una preferencia: **el freno
+devuelve un diccionario, no lanza una excepción.** Una excepción lanzada dentro de la frontera se la
+come la propia red que hace posible el problema. Se midió el contrafactual: el mismo corte, en el
+mismo sitio, cambiando `BaseException` por `Exception` — con `BaseException` el aviso sale; con
+`Exception` la corrida termina diciendo que todo fue bien.
+
+**Dónde muerde fuera de aquí:** cualquier `catch (Exception e) { log; continue; }` en un bucle de
+reintentos, en un consumidor de cola, en un `for` sobre registros. La pregunta que hay que hacerle a
+cada uno es **de qué tamaño es el fallo que estoy tragando** — y si la respuesta es «no lo sé», la
+red no es una red: es una venda.
+
+---
+
+### LM.80 — Un freno que muerde por la razón equivocada entrega el diagnóstico equivocado
+
+La misma pelota, con el presupuesto repartido de C.2 encendido, murió en **2 capas** en vez de 166.
+El freno funcionó: paró, paró pronto y paró barato. Y cerró con `motivo="presupuesto"`.
+
+Eso es verdad y es una mentira a la vez. Es verdad que se acabó el dinero. Es mentira lo que ese
+motivo da a entender: *el encargo era caro*. El encargo no era caro — **había un bucle**, y el dinero
+sólo fue el primero que se rompió.
+
+🔑 **De un freno sobrevive el diagnóstico, no la parada.** La parada dura un instante; el motivo se
+escribe en el registro, sube al modelo, entra en el informe y es lo único sobre lo que alguien
+decidirá mañana. Un freno correcto con un motivo impreciso deja al siguiente lector resolviendo el
+problema que no era.
+
+⚠️ **Y el adjetivo hay que medirlo, no suponerlo.** La apuesta sellada decía que el consejo deducido
+—«dale más presupuesto»— era «el peor posible». Se midió obedeciéndolo: ×10 llevó de 2 capas a 4;
+×100, a 5; **×1000, a 7**. El reparto parte el dinero en cada escalón, así que el dinero frena **como
+un logaritmo**: nunca deja que una pelota se dispare. La apuesta acertó en lo falsable —para, y con
+motivo falso— y **exageró en el adjetivo**. Se deja escrito con el número al lado.
+
+📌 El corolario útil: **el presupuesto sólo frena si se REPARTE hacia abajo.** Con el tope por pieza
+de A.2 —cada capa estrenando su propio tope— la misma pelota llegó a 40 capas sin una sola queja. Un
+tope que cada capa vuelve a estrenar no es un tope del sistema: es un tope de cada uno.
+
+**Dónde muerde fuera de aquí:** timeouts, cuotas, límites de memoria, `max_retries`. Cuando uno de
+ésos corta, la pregunta no es «¿paró?» sino **«¿está contando lo que se rompió?»**. Si no, el
+incidente se archivará bajo el nombre del testigo y no bajo el del culpable.
+
+---
+
+### LM.81 — Un ajuste que no viaja hacia abajo se queda en quien lo escribió
+
+El laboratorio de C.5 tenía dos topes configurables —cuántas capas se permiten y dónde corta el
+experimento— y los recibía como argumentos de la función frontera. Se veía bien y era ciego: **quien
+llama a una herramienta no es quien la configuró, es el bucle del agente**, y ése le pasa exactamente
+los argumentos que el modelo pidió. En cuanto la corrida bajaba una capa, los topes volvían a su
+valor por defecto. Un tope configurado arriba que no cruza la frontera **no es un tope: es una
+variable local con nombre de freno.**
+
+🔑 Y cómo se cazó importa más que el fallo: **dos experimentos distintos dieron el mismo número.** El
+segundo existía justamente para dar otro —40 capas, profundidad 78, el mismo corte, las mismas 40
+llamadas—. Es `LM.15` con otra cara: el instrumento ciego no dio silencio, **dio la misma cifra dos
+veces, que se lee como confirmación en vez de como avería.**
+
+⚠️ La misma sesión produjo la versión pequeña del mismo bicho, en la báscula: se midió «cuántos
+escalones cuesta una capa» dividiendo profundidad entre capas, y salió **1,5**. No es un número de
+escalones: es la media entre un salto real de 2 y una cola suelta. **El cociente contestaba una
+pregunta parecida a la que se hacía**, y por eso el resultado salió creíble. Lo cazó parecer raro, no
+una prueba — que es `LM.17` otra vez.
+
+📌 Y de ahí el dato que sí vale, medido restando posiciones: **una capa de agente cuesta DOS escalones
+de `profundidad`** —la herramienta y la capa—. O sea que el campo `profundidad` de C.1, que existe
+para LEER el árbol después, **no sirve para DECIDIR ahora** sin traducirlo. Cuarenta capas dan
+profundidad 78. Un tope escrito contra `profundidad` permite capa y media.
+
+**Dónde muerde fuera de aquí:** *feature flags*, niveles de log, `dry_run`, límites de gasto — todo lo
+que se enciende en la capa de entrada y tiene que seguir encendido tres llamadas más abajo. Y en las
+mediciones: **cuando dos experimentos que deberían diferir coinciden, el resultado no es una
+confirmación — es la primera señal de que el instrumento no está conectado.**
