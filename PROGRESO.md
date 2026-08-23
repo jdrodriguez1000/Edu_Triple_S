@@ -4531,6 +4531,62 @@
 #   mirar mientras aparece lo otro.
 # ═══════════════════════════════════════════════════════════════════════════
 
+# ═══════════════════════════════════════════════════════════════════════════
+# 🎲 **APUESTA SELLADA DE LA SESIÓN 102 — LA SALIDA (a): RESERVAR UN TROZO
+#   PARA REINTENTOS.** Décima sesión seguida sellando antes de teclear.
+#   ⚠️ La vuelvo a escribir yo, y el sospechoso sigue siendo el mismo —*el que
+#   apuesta es el mismo que evalúa*—. La defensa, igual que ayer: **las cinco se
+#   falsifican con un comando, y las cinco cuestan $0,00.** Hoy no hay corrida
+#   pagada en el sello: si hace falta, se decide con las cuatro primeras vistas.
+#   📌 Escrita tras LEER `orquestador.py` (`_CAUSAS`, `herramienta_consultar_moneda`)
+#   y `presupuesto.py` (`RepartoDeEntrada`, `tomar`, `cuadra`), y ANTES de
+#   tocarlos. Leer no es tocar; si algo se cae con un `grep`, se cuenta perdida.
+#
+#   **APUESTA 1 — el reintento PISA al primero en el libro, y el reparto deja
+#   de cuadrar.** `tomar()` guarda `self.entregados[nombre] = trozo`, y un
+#   reintento del CAD llega **con el mismo nombre**. Predigo que al segundo
+#   `tomar("cad")` se saca un trozo de `_trozos` pero el diccionario **sobre-
+#   escribe** en vez de sumar: sale un trozo de menos en `entregados` y
+#   **`cuadra()` se pone en FALSO**. 🔑 Es `LM.17` con otra ropa: la clave del
+#   diccionario contesta *«quién»* y aquí hacía falta *«cuántas veces»*.
+#   ⇒ *La pierdo si `cuadra()` sigue en verde tras dos `tomar()` del mismo nombre.*
+#
+#   **APUESTA 2 — la frase del rechazo MIENTE en cuanto haya reserva.** El
+#   mensaje de `SinTrozo` dice *«es el worker número {n_workers + rechazados} y
+#   el encargo se repartió para {n_workers}»*. Si la reserva se mete subiendo
+#   `n_workers` de 3 a 4, esa frase pasa a decir *«se repartió para 4»* — y el
+#   modelo pidió tres. Predigo que **la reserva no puede ser un trozo más de la
+#   misma lista**: tiene que ser una bolsa aparte, o la frase que ya era
+#   engañosa se vuelve falsa del todo.
+#   ⇒ *La pierdo si subiendo `n_workers` la frase sigue siendo cierta.*
+#
+#   **APUESTA 3 — la reserva NO ES GRATIS y sale del bolsillo de los que sí
+#   trabajan.** Con el total fijo, partir en 4 en vez de en 3 adelgaza cada
+#   trozo un 25 %. Predigo que el trozo nominal **baja de forma medible** y que
+#   al menos una prueba de `presupuesto.py` que fija ese número **se pone roja**.
+#   🔑 Reservar para el que quizá falle es quitarle a los tres que van a correr.
+#   ⇒ *La pierdo si ninguna prueba se pone roja y el trozo no se mueve.*
+#
+#   **APUESTA 4 — hoy NINGUNA prueba ve el problema, y por eso existe.** Ni
+#   `presupuesto.py`, ni `fallos.py`, ni `traza.py` se ponen rojas al reintentar
+#   una moneda ya servida. Predigo **cero rojos** antes de escribir la prueba
+#   nueva. Es lo dicho ayer: cada una vigila su mitad y **nadie mira la frase
+#   que va entre las dos**.
+#   ⇒ *La pierdo si alguna suite ya lo caza sin tocarla.*
+#
+#   **APUESTA 5 — la salida (a) no cierra la contradicción, la MUEVE un turno.**
+#   Aunque se reserve, la reserva es finita: al segundo reintento vuelve el
+#   mismo *«no lo reintentes»* después del *«esta sí puede salir bien»*.
+#   Predigo que (a) **obliga a (b) de todas formas** —condicionar la invitación
+#   a que quede trozo— y que la frase de `crash_temporal` **acaba tocándose**.
+#   ⇒ *La pierdo si con la reserva puesta la invitación queda coherente sin
+#     tocar `_CAUSAS`.*
+#
+# 📌 **El orden va sellado:** primero medir (apuestas 1, 3 y 4 son un comando),
+#   después decidir la forma de la reserva, y **la prueba entra al lado del
+#   arreglo o no entra** (`LM.13`).
+# ═══════════════════════════════════════════════════════════════════════════
+
 # ➡️ **SIGUIENTE PASO CONCRETO — cerrar los TRES pendientes de C.2 antes de pasar a C.3.**
 #   · 🔲 **El techo tiene que acotar de verdad:** comprobar `gastado + coste_estimado > techo`
 #     **antes** de autorizar. Exige la estimación que se le echó en cara al candidato 3, y con
