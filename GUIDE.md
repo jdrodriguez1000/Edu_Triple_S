@@ -1005,6 +1005,10 @@ el 2026-08-21, la lista decía DOS, y esa misma tarde se arreglaron dos:**
 | `08-avanzado/orquestador.py` | ✅ **arreglado (sesión 101)** — igual |
 | `08-avanzado/pipeline.py` | 🔲 corre los tres eslabones — **paga** |
 | `08-avanzado/linea_base.py` | 🔲 corre el duelo y **sobrescribe su medición** |
+| `08-avanzado/juez_duelo.py` | 🔲 **llama al modelo Y sobrescribe** `veredictos_*.json` — las dos caras a la vez |
+| `08-avanzado/aislamiento.py` | ✅ **cumple**: en pelado corre la Parte 1, que es gratis (`count_tokens`). ⚠️ Tarda ~2 min y la Parte 2 paga ~$0,015, con `--contaminacion` |
+| `08-avanzado/contexto.py` | ✅ no tiene `__main__`: en pelado no hace nada |
+| `08-avanzado/recursion.py` | ✅ **molde**: en pelado corre los 7 experimentos a $0,00; `--pruebas` para la suite |
 
 📌 **Los dos arreglados llevan el aviso con un precio MEDIDO, leído de su propio
 registro y no escrito a mano.** Un número copiado en un aviso es verdad el día
@@ -1028,7 +1032,28 @@ ve exactamente igual que una suite… hasta que llega la factura.
 
 **Los que SÍ están bien y sirven de molde:** `presupuesto.py`, `traza.py`,
 `fan_out.py` (sin banderas corre las pruebas, no la demo), `router.py`,
-`supervisor.py`, `profundidad.py`, `verificador.py`, `fallos.py`.
+`supervisor.py`, `profundidad.py`, `verificador.py`, `fallos.py`,
+`recursion.py`.
+
+⚠️ **Y `fan_out.py` corre sus pruebas con `--test`, no con `--pruebas`.**
+Escribirle `--pruebas` no lanza nada: argparse imprime su `usage` y el
+script termina **sin correr una sola prueba**. No cuesta dinero, pero deja
+una comprobación en blanco que se ve igual que una comprobación hecha.
+
+🚨 **LA LISTA VOLVIÓ A ESTAR INCOMPLETA, Y ESTA VEZ FALTABA EL PEOR.**
+En la sesión 103, barriendo las suites vecinas para ver si C.5 había roto
+algo, **cuatro archivos del nivel 8 no estaban en ninguna de las dos
+listas**: `aislamiento.py`, `juez_duelo.py`, `contexto.py` y el propio
+`recursion.py`. Se miraron uno a uno y **`juez_duelo.py` es el caso más
+grave del nivel**: en pelado **llama al modelo Y sobrescribe** su archivo
+de veredictos — las dos caras del daño de la sesión 100 en el mismo
+`__main__`, y llevaba aquí desde entonces sin que nadie lo mirara.
+🔑 Es `LM.76` por segunda vez en el mismo apartado: **una advertencia con
+la lista incompleta no avisa a medias, tranquiliza.** El que mira y no
+encuentra su archivo concluye que el suyo es de los seguros.
+📌 **Importancia: alta · Urgencia: no bloqueante.** No para ningún trabajo
+hoy —nadie está corriendo el duelo—, pero muerde el día que alguien
+compruebe que no ha roto nada, que es exactamente como se cobró la 100.
 
 📌 **Y el daño caro no fue el dinero:** `linea_base.py` **reescribió su propio
 archivo de medición sellada** —la línea base contra la que compara el duelo—.
