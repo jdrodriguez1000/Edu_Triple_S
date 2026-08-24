@@ -5293,6 +5293,90 @@ porque lo dejé escrito en el sobre antes de poder usarlo como excusa.
 
 ---
 
+#### 🎲 E.2 — LA APUESTA, sellada el **2026-08-24** (sesión 109) **antes de la primera línea de código**
+
+> **Catorce sesiones seguidas** con este orden: se sella, se commitea sola, y luego se escribe
+> el código. En la 107 esa costumbre además fue la copia de seguridad que salvó `PROGRESO.md`.
+>
+> Lo de abajo se escribió **después de contar los 1 468 renglones de los ocho `registro_*.jsonl`,
+> los 1 108 `print(` de los 19 `.py`, y de leer el `__main__` y el `_pruebas()` de las diez
+> suites — y antes de tocar ninguno**. Los seis hechos del primer apartado están **contados, no
+> adivinados**: cuestan $0,00 y no contaminan lo apostado.
+
+##### Los seis hechos contados (no son apuestas)
+
+| # | Dónde | Qué dice |
+|---|---|---|
+| 1 | `grep` de `smtplib`, `sendmail`, `webhook`, `slack`, `telegram`, `twilio`, `requests.post`, `urllib.request` sobre los 20 `.py` | **Cero coincidencias de código.** Los 11 aciertos son la palabra *«avisar»* **dentro de comentarios**. No hay ningún canal de aviso en el nivel: **E.2 tiene que TRAER el problema**, igual que E.1 trajo el disparador. |
+| 2 | Los 19 `.py` | **1 108 `print(`. `import logging`: CERO. `sys.stderr`: 4 usos, y los cuatro son `recursion.py:437-458` para SILENCIARLO** (`open(os.devnull)`). 🔑 El único canal del nivel es **la pantalla**, y la única vez que se toca el canal de errores es **para taparlo**. |
+| 3 | `disparador.py:1520` y `disparador.py:1533` | `_pruebas()` **devuelve** `fallos` (la lista) y `__main__` **lo llama pelado, descartando el valor**. 🚨 Las **67 comprobaciones en rojo saldrían con código de salida 0** — y es justo el módulo del bloque donde **no hay nadie mirando la pantalla**. |
+| 4 | El `_pruebas()` de las diez suites | **Tres convenciones incompatibles de «¿falló?», dos de ellas con la polaridad INVERTIDA:** `return fallos` — lista, truthy = **FALLÓ** — (`compartida`, `disparador`, `skills_compartidas`, `verificador`); `return not fallos` — True = **TODO BIEN** — (`fallos`, `modelos`, `recursion`); `return 0/1` — código de salida — (`router`, `supervisor`, `profundidad`, `traza`). Mismo nivel, misma mano, mismo mes. |
+| 5 | Los 8 `registro_*.jsonl`, **1 468 renglones**, **100 nombres de campo distintos** | **Ninguno se llama `nivel`, `gravedad` ni `severidad`.** El único campo que juzga es `ok`, y solo lo llevan **194 renglones (13 %)**. 🔑 Un vigilante que llegara hoy **no tiene por dónde filtrar**: el registro cuenta lo que pasó, no dice cuál de todo eso es malo. |
+| 6 | Esos mismos renglones, filtrados a mano | **Ya hay 163 renglones que gritan y llevan días sin que nadie los oiga:** `worker_fin` con `ok:False` × **61**, `contrato_discrepa` × **44**, `sin_trozo` × **58**. ⚠️ Y el matiz que lo hace útil: **la mayoría se provocaron a propósito** (A.3, C.4). **El registro no distingue el fallo provocado del real** — y eso, no la falta de canal, es lo que hace imposible avisar sin ahogar al que recibe el aviso. |
+
+##### Las seis apuestas
+
+**🎲 1 — El canal es lo barato. Apuesto que menos del 10 % del trabajo de E.2 es «mandar el aviso».**
+Lo que cuesta está **antes**: qué merece un aviso, a quién, cada cuánto, y qué se hace con el
+aviso número 200. Falsificable con una cuenta, no con una impresión: al cerrar E.2 se cuentan las
+líneas de la función que **emite** contra las de las que **deciden**. Pronóstico: **1 a 10 o peor.**
+🔑 El titular que apuesto: *«no tenemos alertas» casi nunca significa que falte el emisor.*
+
+**🎲 2 — La primera regla que a cualquiera se le ocurre tiene 100 % de falsos positivos, y lo enseño con los renglones que YA existen.**
+Un avisador ingenuo —*«un aviso por cada renglón con `ok:False` o `contrato_discrepa` o
+`sin_trozo`»*— dispara **163 avisos** sobre los registros de hoy. Apuesto que **ni uno solo**
+corresponde a un fallo que nadie supiera: los 163 son experimentos que provoqué yo y cuyo
+resultado ya está escrito en este README. ⭐ **Avisar de todo es exactamente igual de mudo que no
+avisar**, y aquí sale con un número en vez de con una frase de póster.
+
+**🎲 3 — El MUDO no se puede avisar con el registro, y eso NO es un descuido del registro.**
+Es la apuesta 4 de E.1 cobrada en la pieza siguiente. Apuesto que el avisador necesita **dos
+entradas de naturaleza distinta** —lo que escribe **el que trabaja** y lo que prometió **el
+calendario**— y que si solo se le da el registro, el turno mudo es invisible **por construcción**.
+🔑 Y la consecuencia incómoda que apuesto con ella: **el avisador no puede vivir dentro del
+proceso que vigila.** El que se murió no manda el aviso de que se murió.
+
+**🎲 4 — El avisador va a tener EL MISMO bicho que vigila: va a fallar mudo.**
+Apuesto que la primera versión escrita sin pensar mete el envío en un `try/except: pass` —igual
+que `anotar_intento` en `disparador.py:1035`, que ya lo tiene y lo dice— y que entonces **quien
+vigila el silencio se queda en silencio**. ⭐ Y apuesto también la salida, para que no valga
+inventarla después: **no se arregla con otro `try`.** Se arregla porque **alguien tiene que estar
+esperando el aviso**. Un aviso que solo se manda no se puede comprobar; uno que se **espera**, sí.
+🔑 Es el **latido**, y es lo contrario de la alarma: **la alarma la manda el que falla; el latido
+lo echa de menos el que escucha.**
+
+**🎲 5 — El código de salida 0 de `disparador.py` es un fallo de verdad, y lo demuestro rompiendo una comprobación a propósito.**
+Apuesto que con una prueba torcida a mano, `python disparador.py` seguido de `echo $?` da **0**, y
+que el mismo experimento sobre `router.py` da **1**. Dos módulos del mismo nivel, la misma mano,
+la misma semana, **resultado opuesto ante el mismo fallo**. ⚠️ **Permiso para fallar sola:** si da
+1, la apuesta cae, y mejor para el nivel. 📌 Y el orden importa y queda escrito aquí: **primero se
+mide, después se arregla.** Al revés se pierde el dato y queda la anécdota.
+
+**🎲 6 — Va a costar $0,00 otra vez, y esta vez la trampa es OTRA y es peor que la de E.1.**
+Cuarta sesión seguida a cero. Pero E.2 trata de **a quién se avisa**, y el destinatario real es
+una persona a las 3 de la mañana. Apuesto que **todo** lo que se mida hoy será sobre el **emisor**
+—¿se generó el aviso?, ¿llegó al archivo?, ¿con qué texto?— y **nada** sobre el **receptor**
+—¿lo leyó?, ¿a tiempo?, ¿hizo algo?—. Y ese hueco **no se cierra con código**. Lo dejo escrito
+antes de que sea una excusa: si al cerrar E.2 escribo *«y así alguien se entera»*, esa frase **no
+está medida**, y es justamente la del título del bloque. 🔑 `LM.66` por adelantado contra mi propia
+conclusión: **¿qué otro dato tendría que estar en desacuerdo con esta, si estuviera mal?**
+
+##### 🔒 Lo que NO se toca en E.2
+
+- **El `_pruebas()` pelado de `disparador.py:1533` NO se arregla al pasar.** Es **el sujeto** de
+  la apuesta 5, no una deuda que corregir de camino. Se mide primero y se arregla después, **en
+  ese orden**, o el dato se pierde y queda la anécdota.
+- **Ningún registro existente se reescribe.** Los 1 468 renglones son la prueba de los hechos 5 y
+  6: si les añado hoy el campo `gravedad` que les falta, **borro la evidencia de que faltaba**.
+- **`compartida.py` y `contexto.py` no se editan**, por el mismo motivo que en D.1 y E.1: son
+  código medido, y el valor de aquellas mediciones depende de que sigan siendo el mismo código.
+- **No se manda un aviso de verdad a ningún sitio.** Ni correo, ni webhook, ni red. El canal se
+  simula en disco. ⚠️ Y esto **no es una limitación escondida en una nota al pie: es la apuesta 6
+  convertida en regla**, escrita antes de poder usarla como excusa.
+- **El sobre del bloque 0 sigue cerrado.**
+
+---
+
 ### 📏 BLOQUE F — Medir y decidir
 
 | # | Pieza | Produce |
