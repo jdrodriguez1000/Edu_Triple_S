@@ -6314,3 +6314,86 @@ timeout para que la alerta calle; capturar `except Exception` alrededor de lo qu
 La pregunta antes de silenciar cualquier cosa es **«¿esto era el fallo, o era el único testigo?»**.
 Es `LM.15` con una vuelta más: allá el instrumento nacía ciego, aquí **lo cegamos nosotros
 arreglando bien otra cosa**.
+
+---
+
+### LM.89 — Lo compartido solo duele cuando alguien lo cambia; si no, no duele: CUESTA
+
+Las dos mitades del bloque D son la misma forma con signo contrario, y por eso van juntas.
+
+**D.1 era escribir.** Dos workers guardando en el mismo archivo perdían el **49,5 %** de lo que
+escribían, y el archivo quedaba **perfectamente válido**: 0 % de archivos rotos, cero excepciones.
+
+**D.2 es leer.** Cuatro `.md` que nadie modifica, leídos por **12 hilos, 480 veces**: **0 errores y
+0 cuerpos equivocados**. Ni un candado, ni una precaución. Lo mismo que allá destrozaba, aquí no
+hace nada.
+
+🔑 **La diferencia no es la concurrencia: es quién escribe.** Un recurso compartido de solo lectura
+no tiene carrera que perder — no hay dos versiones peleando, hay una que todos copian. Poner un
+candado ahí es pagar espera por nada.
+
+⚠️ **Y sin embargo el coste no desapareció, cambió de sitio.** Esas 480 lecturas fueron **2 400
+aperturas de archivo**, porque `leer_skill()` relee la carpeta entera en cada llamada para buscar un
+nombre en la lista. Nada se rompe. Nada avisa. **No sale en ninguna factura**, porque el disco no
+manda factura — y por eso es el coste que sobrevive años sin que nadie lo mire.
+
+**Dónde muerde fuera de aquí:** un fichero de configuración releído en cada petición; un `.json` de
+plantillas cargado por request; una consulta de catálogo que nadie cachea porque *«es solo una
+lectura»*. La pregunta no es *«¿puede corromperse?»* — es **«¿cuántas veces por segundo lo estoy
+volviendo a pedir, y a quién se lo estoy cobrando?»**.
+
+---
+
+### LM.90 — Contar caracteres lo que se factura en tokens no es aproximar: es medir otra cosa
+
+Aposté que el menú de skills, pagado nueve veces, costaría **más de 1,4×** lo que cuestan los cuatro
+cuerpos leídos una vez cada uno.
+
+- En **caracteres**: 17 649 contra 11 928 → **1,48×**. Apuesta ganada.
+- En **tokens**, que es lo que cobra la API: 5 598 contra 4 183 → **1,34×**. Apuesta **perdida**.
+
+Misma comparación, mismos textos, mismo día. La **dirección** aguantó en las dos —el menú pierde—;
+el **número que había sellado**, no.
+
+🔑 **Los caracteres no se reparten igual entre dos textos.** El menú son frases largas de prosa; los
+cuerpos llevan listas, cifras, viñetas y nombres propios, que se parten en más tokens por carácter.
+Un ratio no es una constante del idioma: **depende de la forma del texto**, y comparar dos textos de
+formas distintas por su longitud es comparar dos cosas por una tercera que no las representa.
+
+⚠️ Y el veneno concreto: **la unidad barata me daba la razón.** Si no llego a medir en tokens, cierro
+la sesión con un 1,48× que confirmaba lo que había escrito la mañana anterior. El error no habría
+dado ningún síntoma — habría dado una apuesta ganada.
+
+**Dónde muerde fuera de aquí:** estimar coste de LLM con `len(texto)/4`; dimensionar una ventana de
+contexto en kilobytes; comparar el «peso» de dos prompts por su tamaño en disco. **Cuando el número
+decide algo y está cerca de un umbral, estimarlo es lo mismo que no medirlo** — y `count_tokens`
+cuesta $0,00.
+
+---
+
+### LM.91 — Una comparación que no puede dar las dos respuestas no es una medición: es una constante disfrazada
+
+Escribí `coste_de_repartir()` para decidir la apuesta 3: ¿sale más barato que el orquestador lea una
+skill y la baje a los tres workers, o que cada worker la lea por su cuenta? La función comparaba los
+cuerpos y devolvía `gana_compartir`.
+
+Y devolvía **`False` con cualquier número que se le metiera**. Con 1 worker o con 20. Con 1 vuelta o
+con 20. No porque compartir perdiera: porque la cuenta que escribí **no podía dar la otra
+respuesta**. Faltaba el término que decide de verdad —**pedir una skill cuesta una vuelta entera de
+API**, y una vuelta más re-manda el prompt completo, 1 828 tokens en este caso—. Con él puesto,
+compartir gana cuando la piden los tres.
+
+🚨 **No lo vi leyéndola. Lo cazó una prueba en rojo** que exigía el resultado contrario en un caso
+extremo, y se puso roja *porque el caso extremo tampoco podía darse*.
+
+🔑 Es `LM.66` en la capa del instrumento. Allá el defecto era **un dato solo en su renglón**, que
+nadie podía contradecir. Aquí es **un cálculo solo en su renglón**: nada en las entradas puede
+moverlo, así que su verde no informa de nada. Y las dos cosas dan exactamente el mismo verde que la
+versión correcta.
+
+**La pregunta que lo caza, y hay que hacérsela a toda comparación antes de creerle:** no *«¿está bien
+la cuenta?»* sino **«¿con qué entradas daría lo contrario?»**. Si no existe ninguna, la cuenta sobra
+— y peor, está ocupando el sitio de la que sí decidía.
+
+📌 Por eso `P16` no comprueba un resultado: comprueba que **la función produce las dos respuestas**
+sobre el rango de entradas. Es la única de las 28 que la versión rota no habría podido pasar.

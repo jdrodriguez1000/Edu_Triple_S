@@ -4527,7 +4527,7 @@ renglones separados.
 | # | Pieza | La trampa |
 |---|---|---|
 | ✅ D.1 | **Memoria compartida** entre workers · `compartida.py` (sesión 106) | dos workers escribiendo a la vez sobre el mismo archivo |
-| D.2 | **Skills compartidas** | el menú entero en cada worker se paga en cada worker |
+| ✅ D.2 | **Skills compartidas** · `skills_compartidas.py` (sesión 107) | el menú entero en cada worker se paga en cada worker |
 
 Se apoya en `memoria.py` y `skills.py` del 6b, que ya existen para una capa.
 
@@ -4872,6 +4872,139 @@ prueba gratis, y que hoy **no hay dónde leer que pasó**.
 - **El sobre del bloque 0 sigue cerrado.** Nada de D.2 puede cambiar la configuración del duelo.
 - **Las apuestas 1, 2 y 3 se miden ANTES de que exista una línea de caché.** Si el caché entra
   primero, los tres números de arriba dejan de ser comparables con las trece sesiones anteriores.
+
+---
+
+#### 📊 D.2 — LO QUE SALIÓ *(sesión 107 · `skills_compartidas.py` · **28 pruebas** · **$0,000000**)*
+
+##### 🚨 EL HALLAZGO DEL DÍA: escribí una comparación que solo podía dar una respuesta
+
+`coste_de_repartir()` existía para decidir la apuesta 3. Devolvía `gana_compartir: False`.
+
+Y lo devolvía **con cualquier número que se le metiera.** Con 1 worker o con 20. Con 1 vuelta o con
+20. No porque compartir perdiera: porque la cuenta que escribí **no podía dar la otra respuesta**.
+
+```
+vueltas  1 -> compartir  6000   cada uno  3000   gana compartir: False
+vueltas  2 -> compartir  9000   cada uno  6000   gana compartir: False
+vueltas  8 -> compartir 27000   cada uno 24000   gana compartir: False
+vueltas 20 -> compartir 63000   cada uno 60000   gana compartir: False
+```
+
+**Faltaba el término que decide de verdad:** pedir una skill **es una llamada a herramienta**, o sea
+**una vuelta entera de API** — y una vuelta más re-manda el prompt completo, **1 828 tokens** aquí.
+Yo solo estaba comparando cuerpos. Con el término puesto, la cuenta se da la vuelta y **compartir
+gana cuando la piden los tres**.
+
+🚨 **No lo vi leyéndola.** Lo cazó `P15` en rojo — una prueba que exigía el resultado contrario en un
+caso extremo, y se puso roja *porque el caso extremo tampoco podía darse*.
+
+🔑 Es **`LM.66` en la capa del instrumento**. Allá el defecto era un **dato** solo en su renglón, que
+nada podía contradecir; aquí es un **cálculo** solo en su renglón: nada en las entradas puede
+moverlo, así que su verde no informa. **Las dos cosas dan el mismo verde que la versión correcta.**
+→ `LM.91`, y la pregunta que lo caza no es *«¿está bien la cuenta?»* sino **«¿con qué entradas daría
+lo contrario?»**.
+
+📌 Por eso **`P16` no comprueba un resultado: comprueba que la función produce las DOS respuestas**
+sobre el rango de entradas. Es la única de las 28 que la versión rota no habría podido pasar.
+
+##### La medición, en la unidad que se factura
+
+| llamadas | menú pagado (tok) | vs cuerpos | *en caracteres* | quién gana |
+|---:|---:|---:|---:|---|
+| 1 | 622 | 0,15× | *0,16×* | el menú |
+| 3 | 1 866 | 0,45× | *0,49×* | el menú |
+| 6 | 3 732 | 0,89× | *0,99×* | el menú |
+| **7** | 4 354 | **1,04×** | *1,15×* | 🚨 los cuerpos |
+| **9** ← el fan-out real | 5 598 | **1,34×** | *1,48×* | 🚨 los cuerpos |
+| 18 ← con dos rondas | 11 196 | 2,68× | *2,96×* | 🚨 los cuerpos |
+
+Menú: **622 tokens** (1 961 car.). Los cuatro cuerpos: **4 183 tokens** (11 928 car.).
+
+##### Las seis apuestas, resueltas
+
+**🎲 1 — ✅ en la dirección, 🔴 en el número. Y la unidad me estaba dando la razón.**
+El menú repetido **sí** cuesta más que todo el conocimiento que reparte: **5 598 contra 4 183
+tokens** en el fan-out real. Pero sellé *«por encima de 1,4×»* y sale **1,34×**. En **caracteres**
+habría dado **1,48×** y habría cantado victoria.
+🔑 **Los caracteres no se reparten igual entre dos textos:** el menú es prosa larga, los cuerpos
+llevan listas, cifras y viñetas, que se parten en más tokens por carácter. → `LM.90`.
+⭐ **Y el titular útil no es el 1,34×, es el vuelco: la 7ª llamada.** No hace falta un fan-out para
+cruzarlo — **un solo agente con siete vueltas ya lo cruza**. La frase *«el menú es barato, es el
+14 % del total»* es verdadera **por ficha** y falsa **por corrida**.
+
+**🎲 2 — ✅ las dos mitades.** Recortar a una ficha deja el menú en **779 de 1 961 caracteres**, y
+el worker recortado **deja de ver tres fichas**. El ahorro es real y pequeño contra los ~17 997
+tokens de entrada de la corrida. Y reproduce el `SOBRE.md` palabra por palabra: **no puede avisar de
+una regla que no ve.**
+🔑 **Primera vez que el aislamiento se mide en lo que el worker SABE**, no en lo que puede HACER.
+Hasta hoy A.3 y A.4 vivían en la caja de herramientas.
+
+**🎲 3 — 🟡 la mitad correcta, la mitad equivocada, y el arreglo la partió así.**
+Aposté *«el equilibrio es ≥ 2 workers, y este fan-out nunca lo alcanza»*. **El equilibrio es 3, y el
+fan-out lo alcanza justo en el último escalón posible.**
+
+| la piden | cada uno lee | bajar a todos | gana |
+|---:|---:|---:|---|
+| 1 | 4 282 | 11 043 | que cada uno lea |
+| 2 | 8 564 | 11 043 | que cada uno lea |
+| **3** | **12 846** | **11 043** | **compartir** |
+
+🔑 **Y lo que decide no es el cuerpo de la skill: es la vuelta extra.** Con 1 227 tokens de cuerpo,
+el que manda es el prefijo de **1 828** que cuesta pedirla. *Un mecanismo de compartir que gana o
+pierde por lo que cuesta preguntar, no por lo que pesa la respuesta.*
+
+**🎲 4 — 🔴 la mitad principal FALLA, ✅ y falla exactamente por el borde que sellé con ella.**
+El nivel 8 corre en **`claude-haiku-4-5`**, cuyo mínimo de caché es **4 096 tokens**. El prefijo de
+un worker son **1 828**. **Faltan 2 268 — y ni sumándole el menú entero llega.** El caché **no se
+activaría**, y la API **no lo diría**: se manda el `cache_control`, se acepta, y
+`cache_creation_input_tokens` vuelve en 0.
+
+| modelo | mínimo |
+|---|---:|
+| Opus 5 | 512 |
+| Opus 4.8 · Sonnet 5 · Sonnet 4.6 | 1 024 |
+| Opus 4.7 | 2 048 |
+| **Haiku 4.5** · Opus 4.6 · Opus 4.5 | **4 096** |
+
+🚨 **El mínimo NO baja con la generación.** El mismo prefijo de 1 828 tokens **sí** cachearía en
+Opus 5 y **no** en Haiku 4.5 — el modelo más barato tiene el listón **ocho veces más alto**.
+🔑 Es `LM.15` con forma de descuento que no llegó: **el instrumento no da un dato falso, da
+silencio**, y el silencio se lee como *«ya está cacheado»*. Lo único que prueba que el caché
+funciona es leer `usage.cache_read_input_tokens` — **no haber escrito `cache_control`.**
+
+**🎲 5 — ✅ exacta, y es el titular del bloque D entero.**
+12 hilos × 40 lecturas = **480 lecturas: 0 errores, 0 cuerpos equivocados.** Donde D.1 perdía el
+**49,5 %** escribiendo, D.2 no pierde nada leyendo. Sin un solo candado.
+🔑 **Lo compartido solo duele cuando alguien lo CAMBIA.** Cuando nadie lo cambia, no duele:
+**cuesta.** Y el coste no desapareció, cambió de sitio — esas 480 lecturas fueron **2 400 aperturas
+de archivo**, porque `leer_skill()` relee la carpeta entera para buscar un nombre. Nada se rompe,
+nada avisa, **y no sale en ninguna factura porque el disco no manda factura**. → `LM.89`.
+
+**🎲 6 — ✅ y la deuda queda escrita, no escondida.**
+Dos lecturas de la **misma** skill dan **cuerpos distintos** si el `.md` cambia entre medias
+(`9ca468e0cbf6` ≠ `127a4faf595e`), y **las dos devuelven un cuerpo válido, sin error ni aviso**.
+🔑 Es `LM.66` en la capa del conocimiento: **el cuerpo de la skill está solo en su renglón** —
+ningún otro dato del contrato puede desmentirlo. `P23` deja la deuda como prueba: **el registro de
+hoy no tiene dónde decir cuál se leyó.**
+
+##### 📋 Resumen de D.2
+
+| | |
+|---|---|
+| Archivos | `skills_compartidas.py` (**28 pruebas** · 2 modos) · `GUIDE.md` §6.e con su fila |
+| Lecciones | `LM.89`, `LM.90`, `LM.91` |
+| 💸 Coste | **$0,000000** — segunda sesión seguida a cero. `count_tokens` no cobra |
+
+**Abierto, con dueño:**
+- 🔲 **Ningún worker lleva skills todavía.** D.2 midió la aritmética, que es donde estaba la
+  sorpresa; cablearlo a `worker.py` es del bloque F. *Importancia: media · Urgencia: no bloqueante.*
+- 🔲 **La huella de la skill no se anota en el registro** (`P23`). Sin ella no se puede decir si dos
+  workers de la misma corrida leyeron lo mismo. *Importancia: media · Urgencia: no bloqueante.*
+- 🔲 **El modelo de la apuesta 3 supone que el cuerpo se lee en la primera vuelta.** Si se leyera en
+  la segunda, el equilibrio se mueve y no está medido. *Importancia: baja · Urgencia: no bloqueante.*
+- 🔲 **`TOKENS_MEDIDOS` es una foto del 2026-08-23.** Si cambia un `.md`, la tabla miente y nada lo
+  comprueba. *Importancia: media · Urgencia: no bloqueante.*
 
 ### ⏰ BLOQUE E — Agentes programados
 
