@@ -6210,3 +6210,107 @@ no distingue la hipótesis del instrumento.**
 «no ayudan». Antes de archivar un cero, hay que poder decir qué observación distinguiría *«no sirve»*
 de *«no se activó»*. Si no la hay, el cero es una nota, no un dato — que es `LM.13` aplicado a una
 medición en vez de a un freno.
+
+---
+
+### LM.85 — Dos funciones correctas pueden contradecirse, y la contradicción no vive en ninguna de las dos
+
+`06b/memoria.py` promete por escrito que un archivo dañado **no se borra**, porque es la única
+evidencia de qué pasó. `cargar_memoria()` cumple: avisa, devuelve `[]`, no toca nada. Y
+`guardar_dato()`, **tres líneas más abajo**, llama a `cargar_memoria()`, recibe ese `[]`, le añade el
+dato nuevo y reescribe el archivo entero. Medido en la sesión 106: tres datos sanos, el archivo
+cortado a la mitad, **una** escritura después — y queda un archivo válido con un dato, un
+`(True, "guardado")` de vuelta, y la evidencia borrada.
+
+Nadie mintió. Las dos funciones hacen exactamente lo que dice su comentario, y las dos son correctas
+leídas solas. **Lo que no existía era el comentario que las mirara juntas.**
+
+🔑 La raíz es un valor de retorno que significa dos cosas: `[]` quería decir *«no hay nada»* y
+también *«no pude leer»*. Quien lo recibe no puede distinguirlas, así que el escritor trató un
+archivo dañado como un archivo nuevo. Es el par **(resultado, motivo)** —la idea del estudiante, que
+ya había pagado seis veces en ese mismo repositorio— **faltando justo en la función de al lado**.
+
+**Dónde muerde fuera de aquí:** cualquier par leer/escribir donde el lector es tolerante. Un caché
+que devuelve vacío cuando falla y un escritor que reconstruye desde el vacío. Un parser que ignora lo
+que no entiende y un serializador que escribe lo que quedó. **La pregunta no es «¿esta función es
+correcta?» sino «¿qué hace la de al lado con lo que esta devuelve cuando algo va mal?»** — y esa
+pregunta no tiene dónde leerse: no está en ninguno de los dos archivos.
+
+---
+
+### LM.86 — Un `.jsonl` roto grita; un estado pisado calla. Son dos fallos, y solo uno se ve
+
+En B.2 el paralelismo destapó el **registro**, y el arreglo fue un candado. En D.1 destapó el
+**estado**, y copiar el candado tal cual no habría bastado, porque el fallo tiene otra forma:
+
+| | El registro | La memoria |
+|---|---|---|
+| Qué hace | **añade** al final | **lee, modifica y reescribe entero** |
+| Qué se rompe | dos líneas se entrelazan | una lectura vieja pisa una escritura nueva |
+| Cómo se ve | un archivo ilegible | **un archivo perfectamente legible que miente** |
+
+Medido con dos hilos —que es el caso mínimo, dos workers— la forma ingenua pierde el **49,5 %** de lo
+que escribe con **0 % de archivos rotos**. Cero excepciones, cero avisos, JSON válido.
+
+🔑 Y los tres fallos que la gente mete en la bolsa de «concurrencia» necesitan **tres** arreglos
+distintos: el candado (dos escrituras se entrelazan), `os.replace()` (el archivo queda o se ve a
+medias) y **releer dentro del candado** (la lectura vieja). El tercero es el que se olvida y es
+invisible: si la lectura se hace **antes** del `with`, el candado está puesto, verde, y no protege
+nada — porque lo que hay que proteger no es la escritura, **es la distancia entre leer y escribir**.
+**Un candado mal colocado no da error; da confianza.**
+
+**Dónde muerde fuera de aquí:** contadores, saldos, carritos, cualquier `x = leer(); escribir(x+1)`.
+La señal de alarma no es la palabra «concurrencia»: es **leer y escribir el mismo sitio en dos pasos**.
+
+---
+
+### LM.87 — Un candado protege un archivo, no un módulo; y un `threading.Lock` no cruza un proceso
+
+Dos hechos del mismo repositorio, medidos el mismo día.
+
+**El primero:** `orquestador.py` y `worker.py` tienen cada uno su `_CANDADO_REGISTRO`. Son **dos
+objetos distintos**, y hoy no se pisan solo porque escriben en dos archivos distintos. En
+`presupuesto.py:823` los dos apuntan al mismo archivo. Ejercitado con dos hilos: con **dos** candados
+se pierden registros en las tres tallas probadas —**16 de 2400 hasta con líneas de 60 bytes**—; con
+**uno**, cero en las tres. 🔑 Un candado tiene que vivir donde vive **el archivo que protege**, no
+donde vive el módulo que escribe.
+
+**El segundo, y es peor.** Un `threading.Lock` es un objeto en la memoria de **un** proceso. Se
+montó una versión con candado de hilos, relectura dentro y escritura atómica —**todo lo que una
+revisión de código llamaría correcto**— y pasa las 18 pruebas de hilos sin despeinarse. Con cinco
+procesos de verdad pierde el **80 %**: **más que no poner nada** (76,7 %). Con un candado que vive en
+el disco, **0 %**.
+
+🔑 **El modo de fallo más caro de ese archivo no se ve leyendo el código, ni corriendo las pruebas
+que cualquiera escribiría. Solo se ve lanzando dos `python`.** Y no es un caso de laboratorio: un
+agente programado que se dispara dos veces son dos procesos.
+
+📌 Al lado salió otro que se parece y no es el mismo: **«atómico» quiere decir «no queda a medias»,
+no «siempre se puede»**. En POSIX `os.replace()` renombra encima de un archivo abierto; en Windows lo
+**niega** con `PermissionError [WinError 5]` — 26 de 60 procesos caídos, y los 16 clasificados eran
+ese error sin una sola excepción de otra clase. En Linux esa prueba habría estado verde para siempre.
+
+---
+
+### LM.88 — Arreglar el síntoma ruidoso deja el silencioso solo, y ahora sin testigo
+
+Tres veces el mismo día, con tres dueños distintos.
+
+1. El lector de `memoria.py` convierte *«el archivo está dañado»* en *«aquí no había nada»*: por eso
+   las columnas «JSON roto» y «quedó vacío» salieron **idénticas** en las cuatro filas de la tabla.
+   Una defensa correcta contra **un** escritor es un **borrador silencioso** con dos.
+2. Con dos candados sobre un archivo, el síntoma que predice el comentario del repo es el ruidoso
+   —*«dos líneas se entrelazan»*—; el que ocurre de verdad es el mudo: con 60 bytes hubo **0 líneas
+   rotas y 16 registros desaparecidos**.
+3. Y el tercero fue mío. Al ponerle reintentos al `os.replace()`, los **26 procesos caídos** pasaron
+   a **0** y las pérdidas **no se movieron**. El reintento era correcto y hay que decir lo que hizo.
+
+🔑 **Un `0` en la columna del síntoma ruidoso se lee como «ya no pasa nada», y lo que pasa es que ya
+no se oye.** Cuando un sistema falla de dos maneras y arreglas la que grita, no has reducido el
+riesgo a la mitad: has quitado el aviso que te habría llevado a la otra.
+
+**Dónde muerde fuera de aquí:** tragarse una excepción para que el log deje de llenarse; subir un
+timeout para que la alerta calle; capturar `except Exception` alrededor de lo que fallaba a veces.
+La pregunta antes de silenciar cualquier cosa es **«¿esto era el fallo, o era el único testigo?»**.
+Es `LM.15` con una vuelta más: allá el instrumento nacía ciego, aquí **lo cegamos nosotros
+arreglando bien otra cosa**.

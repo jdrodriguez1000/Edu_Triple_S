@@ -4526,7 +4526,7 @@ renglones separados.
 
 | # | Pieza | La trampa |
 |---|---|---|
-| D.1 | **Memoria compartida** entre workers | dos workers escribiendo a la vez sobre el mismo archivo |
+| ✅ D.1 | **Memoria compartida** entre workers · `compartida.py` (sesión 106) | dos workers escribiendo a la vez sobre el mismo archivo |
 | D.2 | **Skills compartidas** | el menú entero en cada worker se paga en cada worker |
 
 Se apoya en `memoria.py` y `skills.py` del 6b, que ya existen para una capa.
@@ -4631,6 +4631,158 @@ gratis.** `presupuesto.py` y `traza.py` lo son; `pipeline.py` y `linea_base.py` 
   🔑 Mismo motivo por el que `worker.py` repitió el bucle en vez de editar `agente.py`: **el
   valor de una medición vieja depende de que su código siga siendo el mismo.**
 - El **sobre del bloque 0** sigue cerrado. Nada de D.1 puede cambiar la configuración del duelo.
+
+---
+
+#### 📊 D.1 — LO QUE SALIÓ *(sesión 106 · `compartida.py` · **28 pruebas** · **$0,000000**)*
+
+##### 🚨 EL HALLAZGO DEL DÍA, y ninguna de las seis apuestas lo estaba mirando
+
+`06b/memoria.py` promete, con estas palabras: *«En (b) y (c) NO se borra el archivo. Es
+tentador y es un error: el archivo dañado es la única evidencia de qué pasó.»*
+
+**La promesa es del lector. Quien la rompe es el escritor, tres líneas más abajo.**
+`guardar_dato()` llama a `cargar_memoria()`, recibe el `[]` que significa *«no pude
+leer»*, le añade el dato nuevo y **reescribe el archivo entero**. Medido:
+
+| | El archivo | `cargar` | Lo que devuelve |
+|---|---|---|---|
+| 3 datos sanos | válido | 3 | — |
+| se daña (lo que deja una carrera) | roto | avisa, 0, **y no lo borra** ✅ | — |
+| **UNA escritura después** | **válido, con 1 dato** 💀 | 1 | **`(True, "guardado")`** 🟢 |
+
+🔑 **Nadie mintió: las dos funciones hacen exactamente lo que dice su comentario. Lo que
+no existía era el comentario que las mirara juntas.** Un archivo puede tener todas sus
+piezas correctas y una contradicción entre dos de ellas, y esa contradicción **no vive en
+ninguna de las dos**, así que no hay dónde leerla.
+⭐ Y explica un número que salió idéntico en las cuatro filas de la tabla de abajo: **«JSON
+roto» y «quedó vacío» dieron siempre el mismo valor** (0, 0, 3, 49 sobre 200). No es
+casualidad. Cada vez que la carrera rompe el archivo, la defensa escrita para ser prudente
+—*«nunca revientes, sigue sin memoria»*— convierte *«esto está dañado»* en *«aquí no había
+nada»*. **Una defensa correcta contra UN escritor es un borrador silencioso con dos.**
+🪤 Es la cuarta cara de `LM.15`, y la peor: el instrumento ciego no da un dato falso, da
+silencio — **y aquí el silencio además limpia la escena.**
+📌 Y es `LM.19` con su forma exacta: *la lista de pendientes dice qué falta por construir,
+nunca dijo qué falta por saber.* Las seis apuestas eran una lista. Esto estaba al lado.
+
+##### La medición, con su control al lado
+
+N hilos guardando N datos distintos a la vez, 200 vueltas por fila, `TOPE = 8`:
+
+| hilos | JSON roto | quedó vacío | **datos perdidos** |
+|---|---|---|---|
+| **2** | 0/200 (0,0 %) | 0/200 | **198/400 (49,5 %)** |
+| 3 | 0/200 (0,0 %) | 0/200 | 383/600 (63,8 %) |
+| 6 | 3/200 (1,5 %) | 3/200 | 872/1200 (72,7 %) |
+| 12 | 49/200 (24,5 %) | 49/200 | 1310/1600 (81,9 %) |
+
+🚨 **La primera fila es literal la trampa que el temario le puso a D.1** —*«dos workers
+escribiendo a la vez sobre el mismo archivo»*— y sale así: **pierden la mitad de lo que
+escriben y dejan el archivo perfectamente válido.** Cero excepciones, cero avisos.
+🔑 **Un `.jsonl` roto grita; un estado pisado calla.** Y por eso el candado de B.2 no se
+podía copiar y ya: allá el síntoma es un archivo ilegible, aquí es uno legible que miente.
+
+Con el arreglo puesto, las cuatro filas dan **0/480 perdidos y 0 archivos rotos**.
+
+##### Las seis apuestas, resueltas
+
+**🔴 APUESTA 1 — FALLADA en su mitad falsable, y el modo de fallo es mejor que la apuesta.**
+Aposté que dos candados sobre un archivo **no romperían nada con líneas cortas**. Se rompen:
+
+| candados | relleno | líneas rotas | **registros perdidos** |
+|---|---|---|---|
+| DOS | 60 B | 0 | **16/2400 (0,67 %)** |
+| DOS | 4 kB | 10 | **102/2400 (4,25 %)** |
+| DOS | 20 kB | 3 | **77/2400 (3,21 %)** |
+| **UNO** | 60 B · 4 kB · 20 kB | **0** | **0/2400 (0,00 %)** |
+
+La mitad que sí acertó: **el tamaño manda** (0,67 % → 4,25 %). La que falló: *«corto es
+seguro»*. 🔑 Y hay algo que no aposté y es lo que vale: **el síntoma dominante no son
+líneas rotas, son líneas que DESAPARECEN ENTERAS** — con 60 bytes hubo 0 rotas y 16
+perdidas. El comentario de `orquestador.py:206` predice el síntoma ruidoso —*«dos líneas se
+entrelazan y el `.jsonl` deja de ser `.jsonl`»*— y el que ocurre de verdad es el mudo.
+📌 **La fila de UN candado es lo que convierte esto en una medición y no en una anécdota.**
+La primera versión del experimento no la tenía, y sin ella *«se rompió»* no dice si fue la
+falta de candado o que el experimento apretara de más.
+
+**🟢 APUESTA 2 — GANADA exactamente donde la puse, e incompleta un paso más allá.**
+Dije: dos workers → **archivo válido con un solo dato dentro**, sin excepción y sin aviso.
+Es la fila 1 de la tabla: 0 % roto, 49,5 % perdido. ⚠️ Pero dije *«sin romper el archivo»*
+sin poner número de hilos, y a 12 hilos se rompe el 24,5 % de las veces. **La afirmación
+era verdadera en su escala y falsa fuera de ella, y yo no escribí la escala.**
+
+**🟢 APUESTA 3 — GANADA, y con más margen del que pedí.** La misma carrera con procesos:
+
+| modo | qué lleva puesto | **perdidos** |
+|---|---|---|
+| `ingenuo` | nada | 46/60 (76,7 %) |
+| **`solo_hilos`** | **candado de hilos + relectura dentro + escritura atómica** | **48/60 (80,0 %)** |
+| `arreglado` | lo anterior **+ candado DE ARCHIVO** | **0/60 (0,0 %)** |
+
+🚨 `solo_hilos` lleva **todo lo que una revisión de código llamaría correcto**, pasa las 18
+pruebas de hilos sin despeinarse, y entre procesos **pierde más que no hacer nada**.
+🔑 **El modo de fallo peor de este archivo no se ve leyendo el código, ni corriendo las
+pruebas que cualquiera escribiría. Solo se ve lanzando dos `python`.** Por eso `P19` está
+en la suite aunque tarde 15 s: es la única que puede morderlo.
+
+**🟢 APUESTA 4 — GANADA en las tres partes, y con un cuarto caso que no aposté.**
+`os.replace()` resolvió el caso que su comentario nombra (morir a media escritura) **y** el
+que no nombra (que otro lo vea a medias), **y no resolvió la actualización perdida** —
+`solo_hilos` la lleva puesta y pierde el 80 %. Las tres, como estaban escritas.
+🚨 **Lo que no aposté: en Windows `os.replace()` puede NEGARSE.** Si otro proceso tiene el
+destino abierto —aunque sea leyéndolo— da `PermissionError [WinError 5]`. Medido: **26 de
+60 procesos caídos con traceback**, y los 16 clasificados eran ese error, **sin una sola
+excepción de otra clase**. 🔑 **«Atómico» quiere decir «no queda a medias», no «siempre se
+puede».** En Linux esto no pasa, y esa es justo la razón por la que hay que decirlo.
+
+**🟢 APUESTA 5 — GANADA. La política de la sesión 18 no sobrevivió al segundo escritor.**
+Dije que el archivo dejaría de ser *«lo que sé del usuario»* y que el `TOPE = 8` pasaría de
+política de olvido a **workers desalojándose entre ellos**. Las dos cosas: cada dato lleva
+ahora `quien`, y el desalojo tiene una **reserva** —no se saca el último dato de un worker
+si otro tiene más de uno—.
+🔑 **Y la reserva no se inventó hoy: es `RepartoDeEntrada` de C.2 con otro recurso.** Un
+recurso compartido y escaso se reparte con una reserva por participante o se lo lleva el
+primero que llegue. Que la misma forma sirva para **dólares** y para **renglones de
+memoria** es la señal de que era estructura y no un truco del presupuesto.
+⚠️ Y su límite queda escrito y probado (`P13`): si los ocho datos son de ocho workers
+distintos, la reserva **no se puede cumplir** y sale el más viejo. Prometía un reparto, no
+un milagro — igual que C.2 cuando el presupuesto no alcanza.
+
+**🟢 APUESTA 6 — GANADA. $0,000000 el día entero**, dentro de la horquilla $0,00–$0,010.
+Ni una llamada al modelo. La carrera ocurre **por debajo** de él, y medirla con un worker
+de verdad habría pagado por mirar otra cosa.
+
+##### 📎 Un arreglo mío que se llevó un síntoma y dejó el otro — y se dice
+
+Al ponerle reintentos al `os.replace()`, la columna de **procesos caídos** de `solo_hilos`
+pasó de **26/60 a 0/60** y la de pérdidas **no se movió**. El reintento era correcto —cubre
+al lector que no pide el candado, que es el hueco que queda incluso con todo bien puesto—
+pero hay que decir lo que hizo: **se llevó el síntoma ruidoso y dejó intacto el silencioso.**
+🔑 Un `0` en esa columna se lee como *«ya no pasa nada»*, y lo que pasa es que **ya no se
+oye**. Tercera vez en el día que la misma forma aparece, y la tercera es mía.
+
+##### 📋 Resumen de D.1
+
+| | |
+|---|---|
+| Archivo | `compartida.py` — **28 pruebas**, 3 modos (`ingenuo` · `solo_hilos` · `arreglado`) |
+| Los cuatro arreglos | candado de hilos · candado **de archivo** · **releer dentro** · `os.replace()` |
+| Lecciones | `LM.85`, `LM.86`, `LM.87`, `LM.88` |
+| 💸 Coste | **$0,000000** |
+
+**Abierto, con dueño:**
+- 🔲 **El candado rancio tiene un supuesto dentro: que nadie tarda 30 s en guardar un
+  renglón.** Está escrito en `_CandadoDeArchivo`, no medido. *Importancia: media ·
+  Urgencia: no bloqueante.*
+- 🔲 **`cargar()` no pide el candado.** Un lector puede ver el estado justo antes de una
+  escritura. Para leer un perfil da igual; para decidir sobre él, no. *Importancia: baja ·
+  Urgencia: no bloqueante.*
+- 🔲 **Ningún worker llama a `recordar()` todavía.** D.1 midió la plomería, que es donde
+  estaba el fallo. Cablearlo al `worker.py` es trabajo de D.2 o del bloque F.
+  *Importancia: media · Urgencia: no bloqueante.*
+- 🔲 **`presupuesto.py:823` sigue apuntando dos candados al mismo archivo.** Hoy no muerde
+  porque esas pruebas no corren en paralelo — medido, no supuesto. *Importancia: media ·
+  Urgencia: no bloqueante.*
 
 ---
 

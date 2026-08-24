@@ -45,3 +45,13 @@ caja/
 # inventadas. Si cayeran en registro_workers_*.jsonl contaminarian la evidencia
 # PAGADA del nivel 8 -- que es justo el bicho que se cazo en la sesion 99.
 08-avanzado/registro_pruebas_gratis.jsonl
+
+# La memoria compartida entre workers (nivel 8, D.1). No sube por DOS motivos,
+# y conviene distinguirlos porque piden cosas distintas:
+#   1. Es ESTADO, no evidencia: se reescribe entero en cada corrida.
+#   2. Guarda hechos sobre una persona, igual que `memoria.json` del 6b — y Git
+#      no olvida: borrarlo despues NO lo borra del historial.
+# El `.lock` es todavia mas claro: es un archivo que solo existe mientras alguien
+# escribe, y si aparece en un commit es que alguien murio sin soltarlo.
+08-avanzado/memoria_equipo.json
+08-avanzado/*.json.lock

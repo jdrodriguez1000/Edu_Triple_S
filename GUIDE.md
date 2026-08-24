@@ -1010,6 +1010,7 @@ el 2026-08-21, la lista decía DOS, y esa misma tarde se arreglaron dos:**
 | `08-avanzado/contexto.py` | ✅ no tiene `__main__`: en pelado no hace nada |
 | `08-avanzado/recursion.py` | ✅ **molde**: en pelado corre los 7 experimentos a $0,00; `--pruebas` para la suite |
 | `08-avanzado/modelos.py` | ✅ **molde** (sesión 104): en pelado mide sobre tokens ya pagados a $0,00 · `--pruebas` la suite · `--trampa` ~$0,0001 · `--pagar` ~$0,046 |
+| `08-avanzado/compartida.py` | ✅ **molde** (sesión 106): **no tiene modo de pago** — ni una llamada al modelo. En pelado corre sus 28 pruebas · `--carrera` y `--entre-procesos` las tablas, las dos a $0,00. ⚠️ Las pruebas `P19-P21` lanzan procesos y tardan ~15 s |
 
 📌 **Los dos arreglados llevan el aviso con un precio MEDIDO, leído de su propio
 registro y no escrito a mano.** Un número copiado en un aviso es verdad el día
@@ -1043,7 +1044,18 @@ ve exactamente igual que una suite… hasta que llega la factura.
 **Los que SÍ están bien y sirven de molde:** `presupuesto.py`, `traza.py`,
 `fan_out.py` (sin banderas corre las pruebas, no la demo), `router.py`,
 `supervisor.py`, `profundidad.py`, `verificador.py`, `fallos.py`,
-`recursion.py`.
+`recursion.py`, `modelos.py` y `compartida.py` — los dos últimos también en la tabla de arriba, que es la que manda.
+
+📌 **`compartida.py` (sesión 106) es el segundo que entra el mismo día que se
+escribe**, y es el caso fácil: **no tiene modo de pago que declarar.** Ni una
+llamada al modelo, así que TODAS sus banderas son gratis —`--carrera`,
+`--entre-procesos`, `--procesos`— y en pelado corre sus 28 pruebas.
+⚠️ Que sea gratis no lo saca de la lista: **la lista no dice «qué cuesta», dice
+«qué pasa si lo corro sin mirar»**, y eso hay que poder leerlo también cuando la
+respuesta es «nada». Un archivo ausente de la lista no significa «gratis»:
+significa **«no lo sabemos»**, que es justo lo que costó $0,087297 en la 105.
+📌 Y avisa de una cosa que no es dinero: `--entre-procesos` y las pruebas
+`P19-P21` **lanzan procesos de verdad y tardan ~15 s**. No es un cuelgue.
 
 ⚠️ **Y `fan_out.py` corre sus pruebas con `--test`, no con `--pruebas`.**
 Escribirle `--pruebas` no lanza nada: argparse imprime su `usage` y el
