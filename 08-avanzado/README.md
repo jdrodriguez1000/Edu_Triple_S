@@ -4533,6 +4533,107 @@ Se apoya en `memoria.py` y `skills.py` del 6b, que ya existen para una capa.
 
 ---
 
+#### 🎲 D.1 — LA APUESTA, sellada el **2026-08-23** (sesión 106) **antes de la primera línea de código**
+
+> **El estudiante:** *«escribe la apuesta, yo me uno a tu apuesta y trabaja en D.1»* — se
+> sellan las de esta terminal tal cual, como en la 97, la 102 y la 104. Van **once sesiones
+> seguidas** con este orden.
+>
+> Lo de abajo se escribió **después de leer `memoria.py`, `worker.py`, `orquestador.py`,
+> `fan_out.py`, `contexto.py` y `presupuesto.py`, y antes de tocar ninguno**. Los cuatro
+> hechos del primer apartado están **contados, no adivinados**: cuestan $0,00 y no
+> contaminan lo apostado.
+
+##### Los cuatro hechos leídos (no son apuestas)
+
+| # | Dónde | Qué dice |
+|---|---|---|
+| 1 | `06b-memoria-skills/memoria.py` (338 líneas) | **No importa `threading`. Cero candados.** Y `guardar_dato()` es un **leer → modificar → escribir** de manual: `cargar_memoria()`, `datos.append(...)`, `_escribir(datos)`. |
+| 2 | `memoria.py` → `_escribir()` | Es un `ARCHIVO.write_text(...)`: **trunca y escribe**. Su propia cabecera ya anota la deuda —*«si el programa muere justo aquí, el archivo queda a medias»*— y la solución —*«escribir en un temporal y renombrar»*. **Escrita pensando en morir, no en dos escritores.** |
+| 3 | `worker.py:252` | `HERRAMIENTAS_DIVISA = ["tasa", "convertir"]`. **Los workers de hoy no tienen memoria.** No hay nada roto todavía: D.1 tiene que **traer el problema**, no encontrarlo. |
+| 4 | `orquestador.py:211` · `worker.py:468` · `contexto.py:65` | El nivel 8 **ya sabe** hacer esto: tres `threading.Lock()`. Pero son **tres objetos distintos**, uno por módulo. Y en `presupuesto.py:823-824` hay `orquestador.REGISTRO = w.REGISTRO`: **un archivo con dos candados.** |
+
+##### Las seis apuestas
+
+**🎲 1 — Un candado no protege un archivo: protege un MÓDULO. Y el caso ya está en el repo.**
+El hecho 4 no es la apuesta; la apuesta es qué pasa si lo ejercito. Monto dos hilos, uno
+entrando por `orquestador.anotar()` y otro por `worker.anotar()`, sobre el archivo único de
+`presupuesto.py`. Apuesto que **con líneas cortas NO se rompe nada** —el `write` de una línea
+pequeña sale de un tirón y los dos candados sobran— y que **hay que engordar la línea para
+verlo romperse**. ~60 %.
+🔑 Si acierto, el titular no es *«está mal»*: es que **el defecto lleva sesiones ahí, y lo que
+falta para que muerda no es el candado, es el tamaño.** `LM.13` con una vuelta más — un freno
+que no se ve morder es una nota, y este ni siquiera es un freno: son dos cerraduras en dos
+puertas de la misma habitación.
+📌 Y se sella el modo de fallo: si no consigo romperlo **ni con líneas grandes**, la apuesta
+no es «ganada», es **instrumento ciego** — y se dice así.
+
+**🎲 2 — La memoria se rompe de forma DISTINTA al registro, y peor: sin romper el archivo.**
+El registro **añade** (`open(..., "a")`); la memoria **lee, modifica y reescribe entera**. Son
+dos problemas distintos con la misma etiqueta. Apuesto: dos workers guardando **dos datos
+distintos a la vez** dejan un `memoria.json` **perfectamente válido, con un solo dato dentro**.
+Sin excepción, sin línea rota, sin aviso — y `cargar_memoria()` lo lee feliz. ~90 %.
+🔑 **Un `.jsonl` roto grita; un estado pisado calla.** Por eso el candado del registro **no se
+puede copiar y ya**: el de allá evita que dos frases se mezclen, el de aquí tiene que evitar
+que una lectura vieja pise una escritura nueva.
+
+**🎲 3 — El `threading.Lock` arregla los hilos y NO arregla nada en cuanto haya dos procesos.**
+Un `Lock` es un objeto en la memoria de **un** proceso: dos procesos tienen dos, y ninguno ve
+al otro. Apuesto que la misma pérdida de la apuesta 2 **vuelve intacta** con dos `subprocess`,
+**con el candado puesto y verde**. ~85 %, y se mide hoy y gratis.
+⚠️ Y no es un caso de laboratorio: **el bloque E es exactamente eso** —agentes programados, y
+su primera pregunta escrita es *«¿qué pasa si se dispara dos veces?»*. La respuesta de D.1
+tiene que aguantar hasta allá o se paga dos veces.
+
+**🎲 4 — El arreglo de verdad son TRES arreglos, no uno, y el repo ya tiene uno escrito con el
+riesgo equivocado al lado.**
+`_escribir()` propone `os.replace()` para el caso *«el programa muere a media escritura»*.
+Apuesto que ese cambio **resuelve además un caso que su comentario no nombra** —el archivo a
+medias visto por otro proceso— **y que sigue sin resolver la actualización perdida**, que es la
+de D.1. ~80 %. Tres cosas en la misma bolsa de «concurrencia», y tres arreglos:
+
+| El fallo | El arreglo | ¿Lo cubre el candado? |
+|---|---|---|
+| dos escrituras se entrelazan | candado | sí |
+| el archivo se ve a medias | escribir en temporal + `os.replace()` | no |
+| una lectura vieja pisa lo nuevo | **releer DENTRO del candado** | no, si el candado se pone mal |
+
+🪤 Y es `LM.67` por segunda vez: en la 97 el comentario de `contexto.py` decía *«a propósito»*
+pensando en el **espacio** cuando el peligro estaba en el **tiempo**. Aquí la deuda de
+`_escribir()` nombra **la muerte del proceso** cuando el peligro es **el proceso de al lado**.
+🔑 **Un motivo escrito blinda la decisión contra el siguiente lector — incluso cuando el motivo
+apunta al riesgo equivocado.**
+
+**🎲 5 — «Memoria compartida» es una decisión de PRODUCTO, y se va a colar disfrazada de plomería.**
+Hoy la decisión 1 de la sesión 18 dice: *«solo el PERFIL: hechos estables sobre el usuario»* —
+un agente, una persona. Apuesto que en cuanto tres workers escriben ahí, el archivo deja de ser
+*«lo que sé del usuario»* y se vuelve *«lo que sabe el equipo»*, y que esa política **no
+sobrevive el contacto sin una regla nueva de quién puede escribir qué**. ~75 %.
+📌 Falsable y con fecha: si al cerrar D.1 el archivo tiene **la misma forma y la misma
+política** que hoy, la apuesta falló y se dice.
+🔑 El `TOPE = 8` es la prueba barata: con un escritor es una política de olvido; con tres es
+**tres workers desalojándose el trabajo entre ellos**, y el código no cambió una línea.
+
+**🎲 6 — La del coste, que es la que falló en la 97 y la que se cobró en la 105.**
+D.1 es Python plano: abrir archivos, hilos, procesos. Apuesto **$0,00 en todos los pasos de
+código**, y que la única tentación de pagar —*«que un worker de verdad llame a `recordar`»*—
+**no hace falta para medir nada de D.1**, porque la carrera ocurre **por debajo del modelo**.
+Horquilla sellada: **$0,00–$0,010 el día entero.**
+🚨 Modo de fallo sellado, y es literal el de la sesión 105: **creer que correr una suite es
+gratis.** `presupuesto.py` y `traza.py` lo son; `pipeline.py` y `linea_base.py` **no** —
+`GUIDE.md` §6.e, que costó $0,087297 aprender.
+
+##### 🔒 Lo que NO se toca en D.1
+
+- **`06b-memoria-skills/memoria.py` no se edita.** Es código medido de otro nivel, y su
+  `memoria.json` tiene datos de una persona. D.1 trabaja sobre una **copia propia** en
+  `08-avanzado/`, con su propio archivo de datos y su propia línea en `.gitignore`.
+  🔑 Mismo motivo por el que `worker.py` repitió el bucle en vez de editar `agente.py`: **el
+  valor de una medición vieja depende de que su código siga siendo el mismo.**
+- El **sobre del bloque 0** sigue cerrado. Nada de D.1 puede cambiar la configuración del duelo.
+
+---
+
 ### ⏰ BLOQUE E — Agentes programados
 
 **El que se había caído del plan.** Y no es un adorno: es la única parte del nivel
