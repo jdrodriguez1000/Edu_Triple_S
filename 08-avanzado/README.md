@@ -5013,8 +5013,11 @@ donde **no hay nadie mirando la pantalla**.
 
 | # | Pieza | La pregunta |
 |---|---|---|
-| E.1 | **El disparador**: qué lo enciende y en qué ventana corre | ¿qué pasa si se dispara dos veces? |
-| E.2 | **Fallar sin público**: cómo se entera alguien | un fallo mudo a las 3 a.m. no existe hasta la factura |
+| E.1 ✅ | **El disparador**: qué lo enciende y en qué ventana corre | ¿qué pasa si se dispara dos veces? |
+| E.2 ✅ | **Fallar sin público**: cómo se entera alguien | un fallo mudo a las 3 a.m. no existe hasta la factura |
+
+✅ **El bloque E cerró entero el 2026-08-24** (sesiones 108 y 109): `disparador.py` y `avisador.py`,
+105 pruebas entre los dos y **$0,000000**.
 
 📌 Esto ya lo viviste en TEAPP: `D-045` (la ventana horaria), y el ajuste
 `stop`/`terminate` que **una pieza automática ejecuta todas las noches sin que nadie
@@ -5374,6 +5377,184 @@ conclusión: **¿qué otro dato tendría que estar en desacuerdo con esta, si es
   simula en disco. ⚠️ Y esto **no es una limitación escondida en una nota al pie: es la apuesta 6
   convertida en regla**, escrita antes de poder usarla como excusa.
 - **El sobre del bloque 0 sigue cerrado.**
+
+---
+
+
+#### 📊 E.2 — LO QUE SALIÓ *(sesión 109 · `avisador.py` · **38 pruebas** · **$0,000000**)*
+
+**Cuarta sesión seguida a cero**, y el bloque E cierra entero. Cinco escalones, cada uno
+destapando lo que el anterior daba por hecho.
+
+##### 🚨 EL HALLAZGO DEL DÍA: la gravedad no es una propiedad del renglón
+
+El escalón 1 corrió la regla ingenua sobre los **1 468 renglones reales y pagados** del nivel:
+
+```
+163 avisos    ·    NOTICIA: 0    ·    FALSOS POSITIVOS: 100,0 %
+```
+
+| origen | avisos | qué era |
+|---|---|---|
+| PRUEBAS | **155** | lo escribieron las suites del nivel al correr |
+| EXPERIMENTO | **8** | fallos provocados a propósito, con su resultado ya escrito en este README |
+| NOTICIA | **0** | — |
+
+Y la regla **no está mal**. Sus tres condiciones (`ok:False`, `contrato_discrepa`, `sin_trozo`)
+son las únicas señales de problema que el registro sabe dar, porque el hecho 5 del sobre ya había
+contado que **ninguno de los 100 nombres de campo dice gravedad**.
+
+🚨 **El 95 % sale de un solo archivo, y el archivo se llama `registro_pruebas_gratis.jsonl`.** El
+filtro obvio —*«ignora ese archivo»*— es **una línea** y mata el 95 % del ruido de golpe.
+🔑 **Y no sirve: ese filtro no lee un campo, lee un NOMBRE DE ARCHIVO.** Ningún renglón dice de sí
+mismo *«soy una prueba»*. La separación entre lo real y lo provocado es un **accidente de cómo se
+guardó**, no una propiedad de lo que se guardó — el día que una suite escriba en el registro de al
+lado, el filtro se cae y nadie se entera.
+
+⭐ **De ahí sale el titular, y es `LM.92`:** un `ok:False` con motivo `presupuesto` es **idéntico
+renglón por renglón** cuando lo provocó una prueba y cuando arruinó la corrida de un cliente. No se
+distinguen **porque no son distintos**: lo distinto es el mundo alrededor, y de ese mundo solo
+tiene noticia **el que estaba dentro**. La gravedad es una propiedad **del momento en que se
+escribió**, y por eso solo se puede escribir *entonces*, nunca deducir *después*.
+
+⚠️ Y el precio, con el número al lado: **los 1 468 renglones ya pagados no tendrán `entorno`
+jamás.** No es que sea trabajoso añadírselo — es que añadírselo sería **inventármelo**. `LM.65`
+cobrada otra vez, y esta vez sobre un campo de una línea.
+
+📌 **La columna «¿era noticia?» no sale de ningún campo: la puse yo**, leyendo este README. Está
+dicho en el código y no escondido, porque es justamente el hallazgo: **el único que sabe si un
+renglón era noticia es alguien que ya sabía la respuesta**, y ese alguien es el que no está
+despierto a las 3 de la mañana.
+
+##### 🎲 LAS APUESTAS, UNA POR UNA
+
+**✅ 1 — «menos del 10 % del trabajo es mandar el aviso». Sale 6,8 %.**
+Contado con `ast` sobre sentencias ejecutables, no sobre renglones: **5 sentencias emiten · 69
+deciden**. El pronóstico decía *«1 a 10 o peor»* y salió **1 a 13,8**. ⚠️ Y lo que la cuenta no es,
+dicho en el propio informe: **yo elegí qué funciones van en cada columna**, y lo elegí después de
+escribirlas. El reparto vive en las listas `EMITEN` y `DECIDEN` del código, para que se pueda
+discutir renglón por renglón. 🔑 **Una cuenta cuyo criterio se puede leer se discute; una impresión,
+no.** ⭐ **El titular: «no tenemos alertas» casi nunca significa que falte el emisor.** `mandar()`
+son nueve renglones y no fue el problema **ni una sola vez** en los cinco escalones.
+
+**✅ 2 — «163 avisos y ni uno era noticia». Sale exacta: 163 y 0.**
+Es la tabla de arriba. ⭐ **Avisar de todo es exactamente igual de mudo que no avisar**, y aquí sale
+con un número en vez de con una frase de póster. 📌 Y el control que la hace medición y no truco:
+`P13` exige que la regla **deje pasar el 89 %** de los renglones. Una regla que marcara todo daría
+un 163 igual de redondo y no diría nada.
+
+**✅ 3 — «el MUDO no se puede avisar con el registro». Sale entera, y con su control.**
+Tres turnos de una noche: `hecho`, `sin_exito`, y el de las 05:00 que **nadie intentó**. El
+avisador que solo lee renglones ve los dos primeros y **no puede ver el tercero** — no por
+descuido, **por construcción**: el que no corre no escribe. 🔑 **Hacen falta dos entradas de
+naturaleza distinta:** el registro lo escribe **el que trabaja** (lo que sí pasó); el calendario lo
+escribe **el que prometió** (lo que debía pasar). **Ningún volumen de la primera produce la
+segunda.** ⭐ Y `P23` la hace falsificable: **alargar el calendario mueve los mudos de 1 a 3** sin
+tocar un solo renglón. Si el dato saliera del registro, no se movería. 🚨 **Y de ahí sale dónde
+tiene que vivir el código: este avisador no puede correr dentro del proceso que vigila.** El que se
+murió a las 3:04 no manda el aviso de que se murió.
+
+**✅ 4 — «el avisador tendrá el mismo bicho que vigila: fallará mudo». Sale, y la salida también.**
+Con la red caída, la versión con `try/except: pass` manda **0 avisos, 0 errores, ningún rastro**, y
+el proceso sale con código 0. **El avisador no se rompió: se calló.** Y el segundo `try` no arregla
+nada — **viajaría por el mismo canal caído**. ⭐ **LA ALARMA LA MANDA EL QUE FALLA; EL LATIDO LO
+ECHA DE MENOS EL QUE ESCUCHA** (`LM.93`). El latido invierte quién actúa, y por eso las tres
+situaciones producen tres quejas distintas:
+
+| situación | qué dice el que escucha |
+|---|---|
+| `except: pass` | *no late: nunca ha latido — ¿alguien lo arrancó?* |
+| latido, red caída | *late mal: vivo, pero 2 avisos no salieron* |
+| latido, 3 h sin correr | *no late: el último latido tiene 10 800 s* |
+
+🔑 **La tercera fila es el `MUDO` del escalón 3 aplicado al vigilante**: se comprueba una
+**ausencia** contra un **ritmo prometido de antemano**, igual que el calendario promete un turno.
+🚨 Y el campo `fallos_envio` es la mitad que casi nadie escribe: **un latido que dice «vivo» pase lo
+que pase es un `except: pass` con mejor prensa.** ⚠️ Y lo que esto **no** arregla, dicho en el
+informe y no en una nota al pie: alguien tiene que escuchar el latido, y ese alguien puede callarse
+también. **La cadena no se cierra con más código — termina fuera, en algo que no controlas.** Cada
+capa mueve el silencio un escalón hacia arriba; ninguna lo borra.
+
+**✅ 5 — «`disparador.py` sale 0 y `router.py` sale 1». Medido antes de arreglar nada.**
+
+```
+2026-08-24, sesión 109, ANTES del arreglo:
+  disparador.py  →  código 0   (`_pruebas()` llamada pelada)
+  router.py      →  código 1   (`sys.exit(main(sys.argv[1:]))`)
+```
+
+Mismo nivel, misma mano, la misma semana, el mismo fallo: **uno gritaba y el otro decía que todo
+había ido bien.** 🔑 Y no era un descuido de estilo: **`disparador.py` es precisamente el módulo
+pensado para correr SIN NADIE DELANTE.** Sus 67 comprobaciones en rojo se imprimían en una pantalla
+que nadie mira, y lo único que sí llegaba al que lo arrancó —el código de salida— decía **0**.
+⭐ **El aviso más barato del mundo ya estaba ahí, y se tiraba en la última línea del archivo. No
+hacía falta escribir un canal: hacía falta no tirar el que había.**
+
+**✅ 6 — «$0,00, y la trampa es que todo será sobre el emisor». Las dos mitades se cumplen.**
+Cuarta sesión seguida a cero. Y la trampa se cumplió palabra por palabra: **las 38 pruebas miden el
+emisor** —¿se generó el aviso?, ¿llegó al archivo?, ¿con qué texto?, ¿se echó de menos el latido?—
+y **ni una sola mide al receptor**: si lo leyó, si a tiempo, si hizo algo. 🔑 **Ese hueco no se
+cierra con código, y es el del título del bloque.** Queda dicho aquí, donde no puede disfrazarse de
+conclusión.
+
+##### 🎁 EL MEDIDOR TUVO DOS VECES EL BICHO QUE VENÍA A MEDIR
+
+La primera versión del escalón 5 dio **código 1 en los dos módulos**, y la apuesta 5 se habría
+declarado fallada con un número en la mano. Las dos veces el `1` era un **reventón**, no una prueba
+en rojo:
+
+1. `NameError` — sustituí las llamadas a los informes por un nombre inventado (`_nada_`).
+2. `ModuleNotFoundError` — copié el módulo a una carpeta temporal, y `router.py` hace
+   `sys.path.insert(0, AQUI.parent / "05b-proyecto")`: desde una temporal ese vecino no existe.
+
+🔑 **UN CÓDIGO 1 NO DICE «FALLÓ LA PRUEBA»: DICE «ALGO PASÓ»** (`LM.95`). Y lo cazó **pedirle el
+`stderr` en vez de creerle el número** — por eso `codigo_de_salida_con_prueba_rota()` devuelve los
+dos, y `P34` exige que el `stderr` esté **vacío** en ambos. ⭐ Sin ese control, el instrumento
+habría dado un dato falso con la forma exacta de un dato bueno, que es `LM.66` en la capa del
+medidor.
+
+##### ⭐ EL ARREGLO MATÓ A LA PRUEBA QUE LO MIDIÓ
+
+`P31` medía que `disparador.py` salía con **0**. Se arregló `disparador.py` en esta misma sesión —
+después de medir, que era la regla escrita en el sobre— y `P31` se puso **roja al instante**.
+
+🔑 **Una prueba que describe el estado roto muere el día que lo arreglas**, y lo que queda es una
+anécdota en un README. Por eso `P31` pasó a su forma *«ahora sale 1»* —el 0 medido vive arriba con
+su fecha— y entró **`P35`, que es de otra clase: un detector de la FORMA del bicho.** Lee con `ast`
+el `__main__` de los **14 módulos con suite** del nivel y pregunta *«¿alguno llama a sus pruebas y
+tira el resultado?»*. Hoy: **ninguno**. ⭐ **Es la diferencia entre arreglar un fallo y cerrar una
+clase de fallos** (`LM.94`) — este detector es para el archivo que alguien escriba en la sesión 130.
+📌 Y `P36` lo obliga a morder sobre un archivo torcido fabricado a propósito: **un detector que
+nunca se ve morder es una nota, no un detector** (`LM.13`).
+
+##### 📎 Deudas nuevas de E.2
+
+- 🔲 **Ningún módulo del nivel escribe el campo `entorno`.** E.2 midió que hace falta y lo demostró
+  sobre una demo; cablearlo a `worker.py` y `orquestador.py` es del bloque F. *Importancia: alta ·
+  Urgencia: no bloqueante* — sin él, cualquier avisador que se conecte mañana vuelve al 100 % de
+  falsos positivos del escalón 1.
+- 🔲 **El latido no está cableado a ningún proceso real**, igual que el disparador de E.1. Vive en
+  `avisador.py` y nadie lo escribe todavía. *Importancia: media · Urgencia: no bloqueante.*
+- 🔲 **Nadie escucha el latido.** `echa_de_menos()` existe y funciona; no hay proceso que lo llame
+  cada hora. *Importancia: media · Urgencia: no bloqueante* — y la cadena termina fuera del
+  repositorio por definición, así que esto no se cierra aquí del todo nunca.
+- 🔲 **El escalón 2 y el 3 se miden sobre demos fabricadas**, no sobre renglones pagados. No hay
+  alternativa honesta —el campo no existe en ninguno de los 1 468— pero la diferencia de peso con
+  el escalón 1 es real. *Importancia: baja · Urgencia: no bloqueante.*
+- 🔲 **`_copia_con_prueba_rota()` escribe un archivo temporal DENTRO de la carpeta del nivel.** Se
+  borra en un `finally`, pero un `kill -9` a media medición lo dejaría ahí. *Importancia: baja ·
+  Urgencia: no bloqueante.*
+
+##### 📋 Resumen de E.2
+
+| | |
+|---|---|
+| Archivo | `avisador.py`, 1 180 renglones |
+| Pruebas | **38, todas verdes**, y el proceso **sale con 1 si alguna se pone roja** |
+| Coste | **$0,000000** — cuarta sesión seguida |
+| Apuestas | **6 de 6** ✅ |
+| Arreglos | `disparador.py` propaga su código de salida (medido antes) |
+| Lecciones | `LM.92`, `LM.93`, `LM.94`, `LM.95` |
 
 ---
 

@@ -1580,9 +1580,17 @@ if __name__ == "__main__":
         informe_escalon_3()
         informe_escalon_4()
     else:
-        _pruebas()
+        fallidas = _pruebas()
         informe_escalon_1()
         informe_atomicidad()
         informe_escalon_2()
         informe_escalon_3()
         informe_escalon_4()
+        # 🚨 ARREGLADO EN LA SESIÓN 109, y el agujero está MEDIDO en el escalón 5
+        #    de `avisador.py`: hasta hoy esta línea no existía y `_pruebas()` se
+        #    llamaba pelada, tirando su valor. Las 67 comprobaciones en rojo
+        #    salían con código 0 — en el módulo pensado para correr SIN NADIE
+        #    DELANTE, donde la pantalla no la lee nadie y el código de salida es
+        #    lo único que llega al que arrancó el proceso.
+        # 🔑 El aviso más barato del mundo ya estaba aquí. Se tiraba.
+        sys.exit(1 if fallidas else 0)

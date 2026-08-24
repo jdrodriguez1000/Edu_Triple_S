@@ -6397,3 +6397,150 @@ la cuenta?»* sino **«¿con qué entradas daría lo contrario?»**. Si no exist
 
 📌 Por eso `P16` no comprueba un resultado: comprueba que **la función produce las dos respuestas**
 sobre el rango de entradas. Es la única de las 28 que la versión rota no habría podido pasar.
+
+
+---
+
+### LM.92 — La gravedad no es una propiedad del renglón: es del momento en que se escribió
+
+Escribí el avisador más razonable del mundo: recorre el registro y manda un aviso por cada renglón
+que pinta mal. Tres condiciones, ocho líneas, funciona a la primera. Lo corrí sobre los **1 468
+renglones reales** del nivel 8.
+
+**163 avisos. Cero eran noticia. Falsos positivos: 100 %.**
+
+Y la regla no estaba mal: `ok:False`, `contrato_discrepa` y `sin_trozo` son las únicas señales de
+problema que ese registro sabe dar. El fallo estaba en otro sitio.
+
+🚨 **Un `ok:False` con motivo `presupuesto` es idéntico renglón por renglón cuando lo provocó una
+prueba y cuando arruinó la corrida de un cliente.** No se distinguen **porque no son distintos**.
+Lo distinto es el mundo alrededor —¿estábamos probando o sirviendo?— y de ese mundo solo tiene
+noticia **el que estaba dentro cuando se escribió**.
+
+🔑 **El que lee nunca puede recuperar la gravedad. El que escribe la tiene gratis y casi nunca la
+escribe.** Un campo de una palabra —`entorno: "produccion"`— convierte 32 avisos en 2, y no se
+puede añadir después: rellenarlo hoy sobre lo de ayer **sería inventármelo** (`LM.65`).
+
+⚠️ Y ojo con el atajo que parece que funciona. El 95 % de mis 163 avisos salía de un archivo
+llamado `registro_pruebas_gratis.jsonl`, así que **una línea** —*«ignora ese archivo»*— habría
+matado el 95 % del ruido. Y sería una trampa: ese filtro **no lee un campo, lee un nombre de
+archivo**. La separación entre lo real y lo provocado era un **accidente de cómo se guardó**, no
+una propiedad de lo guardado. El día que una suite escriba en el registro de al lado, se cae sola.
+
+⭐ **Avisar de todo es exactamente igual de mudo que no avisar**, y esto es lo que hace que la
+frase no sea un póster: se puede contar. El que recibe 163 llamadas y el que no recibe ninguna
+**se enteran de lo mismo**.
+
+**La pregunta que hay que hacerse antes de escribir el primer renglón de un registro:** no *«¿qué
+guardo?»* sino **«¿qué va a necesitar saber el que lea esto sin haber estado aquí?»**.
+
+📌 Y hay un corolario incómodo para el que audita: la columna *«¿esto era noticia?»* la puse yo, a
+mano, leyendo lo que había escrito semanas antes. **El único que sabe si un renglón era noticia es
+alguien que ya sabía la respuesta** — y ese alguien es justo el que no está despierto a las 3 de
+la mañana.
+
+
+---
+
+### LM.93 — La alarma la manda el que falla; el latido lo echa de menos el que escucha
+
+El avisador estaba terminado y afinado: la regla ya no daba falsos positivos y ya sabía ver el
+turno que nadie disparó. Entonces le tiré la red.
+
+Y pasó lo que pasa siempre, porque el código que lo provoca lo escribe todo el mundo y **parece
+prudente**:
+
+```python
+try:
+    canal.mandar(...)
+except Exception:
+    pass          # ← «que un fallo del aviso no tumbe el trabajo»
+```
+
+**Cero avisos. Cero errores. Ningún rastro. Código de salida 0.** El avisador no se rompió: **se
+calló**. Y los fallos de producción que tenía que gritar siguieron ahí, sin que nadie los supiera.
+
+🚨 La reacción natural es envolverlo en otro `try` que avise de que el aviso falló. **No puede
+funcionar, y no por falta de esfuerzo sino por forma: ese segundo aviso viaja por el mismo canal
+caído.** Es el mismo error que preguntarle a alguien si te está oyendo.
+
+⭐ Lo que sí funciona invierte **quién actúa**:
+
+| pieza | quién actúa | qué pasa si el que falla está muerto |
+|---|---|---|
+| alarma | **el que falla** | no la manda — **silencio** |
+| latido | **el que escucha** | lo echa de menos — **ruido** |
+
+🔑 Y el latido es el mismo mecanismo que ver un turno que no se disparó: **se comprueba una
+AUSENCIA contra algo prometido de antemano.** El calendario promete un turno; el latido promete un
+ritmo. Los dos casos necesitan un dato que **no escribe el que trabaja**, porque el que no
+trabajó no escribe nada.
+
+🚨 **Y un latido tiene que confesar, no solo respirar.** Si escribe «vivo» pase lo que pase, es un
+`except: pass` con mejor prensa: hay que anotar **cuántos avisos no salieron**. Vivo y sin servir
+para nada son dos estados distintos, y el que escucha necesita poder separarlos.
+
+⚠️ **Y esto no cierra la cadena, solo la alarga.** Alguien tiene que escuchar el latido, y ese
+alguien puede callarse también. **La cadena no se cierra con más código: termina fuera, en algo que
+no controlas** —una persona, o un servicio que pagas precisamente para que grite—. Cada capa mueve
+el silencio un escalón hacia arriba; **ninguna lo borra.** Saber dónde está tu último escalón es
+parte del diseño, no un detalle de operaciones.
+
+
+---
+
+### LM.94 — Una prueba que describe el estado roto muere el día que lo arreglas
+
+Medí que `disparador.py`, con una comprobación en rojo, salía con **código 0**: llamaba a
+`_pruebas()` y tiraba el resultado. Escribí la prueba que lo demostraba. Arreglé el archivo.
+
+**La prueba se puso roja al instante.** Decía «sale 0» y ya no salía 0.
+
+Es una tontería obvia una vez vista, y sin embargo decide qué queda de un hallazgo. Una prueba
+escrita **contra el caso** documenta un pasado que acabas de borrar: al arreglarlo, o la tiras, o
+la das la vuelta, y en los dos casos **lo aprendido se queda en un README** — donde nadie lo va a
+leer el día que el bicho vuelva con otra cara.
+
+⭐ **Lo que sobrevive es un detector de la FORMA del bicho, no de su caso.** En vez de *«este
+archivo sale con 0»*, la pregunta es *«¿hay algún módulo cuyo `__main__` llame a sus pruebas y tire
+el resultado?»*. Eso se lee con `ast` sobre los archivos que **todavía no existen**, y encuentra al
+siguiente.
+
+🔑 **Es la diferencia entre arreglar un fallo y cerrar una clase de fallos.** El primero se paga una
+vez y se olvida; el segundo se paga una vez y cobra durante años.
+
+📌 Con dos condiciones, o el detector es peor que nada. **Uno:** tiene que leer la **posición**, no
+el nombre — `_pruebas()` a solas es una sentencia y su valor se pierde; dentro de `sys.exit(...)`
+no. Un `grep` no distingue las dos. **Dos:** hay que verlo morder sobre un archivo torcido a
+propósito, porque **un detector que nunca se ve morder es una nota, no un detector** (`LM.13`): sin
+esa segunda prueba, la primera podría estar verde por no funcionar.
+
+
+---
+
+### LM.95 — Un código de salida 1 no dice «falló la prueba»: dice «algo pasó»
+
+Para medir lo de `LM.94` escribí un medidor: copia el módulo, le fuerza una comprobación en rojo,
+lo corre y lee el código de salida. Salió **1 en los dos módulos**, y con ese número en la mano la
+apuesta del día se habría declarado fallada.
+
+Las dos veces el `1` **no era una prueba en rojo**. Era un reventón:
+
+1. `NameError`, porque sustituí unas llamadas por un nombre inventado.
+2. `ModuleNotFoundError`, porque copié el módulo a una carpeta temporal y él buscaba un vecino que
+   allí no existía.
+
+🔑 **El medidor tuvo, dos veces seguidas, el mismo bicho que venía a medir: informó de un fallo por
+un motivo que no era el fallo.** Y su salida era indistinguible de la buena — un `1` limpio.
+
+⭐ **Lo cazó pedirle el `stderr` en vez de creerle el número.** Por eso la función devuelve los dos
+y una prueba exige que el `stderr` esté **vacío**: sin ese control, el instrumento entrega un dato
+falso **con la forma exacta de un dato bueno**, que es `LM.66` en la capa del medidor.
+
+**La regla que queda:** un canal que solo tiene dos valores —bien y mal— **no puede decir por qué**,
+y por eso nunca se lee solo. `0` es una afirmación; `1` es una **pregunta**. El que trata un `1`
+como un diagnóstico ya se equivocó, aunque acierte esta vez.
+
+📌 Y esto no es un argumento contra los códigos de salida: son el aviso más barato que existe,
+funcionan sin red y los entiende todo lo que arranca un proceso. Es un argumento contra **leerlos
+sin lo que viene al lado**.
