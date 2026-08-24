@@ -5670,6 +5670,148 @@ F.1 escribo *«y así se sabrá quién falló»*, esa frase **no está medida**.
 
 ---
 
+#### 📊 F.1 — LO QUE SALIÓ *(sesión 110 · `atribuidor.py` + `rubrica_duelo.md` v2 · **24 pruebas** · **$0,000000**)*
+
+**Quinta sesión seguida a cero**, y el bloque F abre. Cuatro escalones, y el hallazgo del día
+no fue ninguna de las seis apuestas: fue **lo que el instrumento no ha podido medir todavía**.
+
+##### 🔑 LA FORMA DE F.1: dos instrumentos, no uno
+
+El nudo estaba **declarado cuatro días antes** en `rubrica_duelo.md:50` y nadie lo había cobrado.
+La rúbrica prohíbe que el juez sepa cuántas capas hubo —si ve workers, califica el esquema en vez
+de la respuesta— y el campo «quién falló» **exige** saberlas. Las dos cosas correctas, y no caben
+en la misma cabeza.
+
+> ⭐ **A un instrumento al que le tapas los ojos a propósito no le puedes pedir además que señale
+> con el dedo.** (`LM.96`)
+
+| | CAPA 1 | CAPA 2 |
+|---|---|---|
+| Quién | `juez_duelo.py` **(no se tocó)** | `atribuidor.py` **(nuevo)** |
+| Contesta | **qué** casilla falló | **de quién** es |
+| Con qué | un modelo, `claude-sonnet-5` | la traza de C.1, ya grabada |
+| ¿Sabe las capas? | **NO, sigue con la venda** | sí — es lo único que hace |
+| Coste | $0,12534 ya pagados | **$0,00** |
+
+📌 Y la capa 2 **no pregunta a ningún modelo**, y no por ahorrar: sería un **tercer opinante**
+donde hace falta un **testigo**. `P22` lee el propio archivo y se pone roja si aparece una llamada
+a la API — sin ella, la apuesta 1 dejaría de ser cierta **en silencio**.
+
+##### 🚨 EL HALLAZGO DEL DÍA: el estado que F.1 existe para marcar salió CERO veces
+
+Sobre las **7 corridas reales** ya grabadas: **63 casillas atribuidas, $0,00**.
+
+```
+ok  54    ·    esquema:presupuesto  7    ·    esquema:contrato  2    ·    orquestador  0
+```
+
+**Cero.** El estado que este archivo existe para poder marcar —*«el de abajo lo entregó bien y
+arriba se torció»*— **no se ha visto morder ni una vez en el mundo.** Muerde en `P7` y `P8`, y
+esas dos corridas **las fabriqué yo**.
+
+🔑 Y no es un fallo del instrumento: **el defecto necesita dos capas para existir, y las dos capas
+todavía no han corrido el duelo.** F.3 es la primera vez que ese número puede dejar de ser cero
+— y si sigue en cero después del duelo, **eso también es un hallazgo**.
+
+⭐ **Estaba escrito en la apuesta 6 ANTES de medir**, palabra por palabra: *«el atribuidor va a
+llegar a F.3 sin haber mordido nunca lo que vino a medir»*. Es `LM.13` con fecha puesta por
+adelantado, que es la única forma de que una advertencia así no se lea como excusa después.
+
+##### 🚨 EL `ok` DE CADA CAPA NO ES UN VEREDICTO: ES UNA DECLARACIÓN DE LA PARTE
+
+De los 60 `worker_fin`, cinco dicen `ok:False`. Un atribuidor que les creyera culparía al worker
+en los cinco. **Y en los cinco señalaría al que sí hizo el trabajo:** los cinco traen el contrato
+**completo** —cifra, tasa, fuente, fecha— y `faltan: []`. **Ninguno falló por el dato.** El
+presupuesto los cortó **después** de que ya tenían la respuesta. En una corrida son **los tres
+workers a la vez**, con el tope en `$0.00`.
+
+Y el otro lado es simétrico y peor: **20 de 20 `orquestador_fin` dicen `ok:True`**, mientras la
+sesión 95 midió que al menos una vez enrutó el euro al worker del dólar.
+
+> 🔑 **Nadie se declara culpable a sí mismo, y no por mentir: porque cada capa solo informa de lo
+> que ve desde donde está.** El worker sabe que lo cortaron; no sabe si el encargo era el
+> correcto. (`LM.98`)
+
+##### 🎁 EL CRUCE ACIERTA EN EL HECHO Y SE EQUIVOCA EN EL CULPABLE
+
+El cruce más tonto que se puede escribir —*¿el encargo corresponde a la tarea?*— **salta en 3
+corridas**: la tarea pide una conversión por moneda y al worker del CAD le llega una **cadena de
+tres eslabones**.
+
+Y ahí hubo que corregirse en voz alta, porque el dato es correcto y la conclusión fácil era falsa.
+Fui a ver **quién torció ese encargo: no fue el orquestador.** Está fijo a mano en
+`presupuesto.py:406`, `ENCARGOS_DESIGUALES`, puesto **a propósito por C.2** para que el CAD saliera
+caro y se pudiera medir el reparto del presupuesto.
+
+🔑 **El registro no tiene forma de distinguirlo:** `encargo` está grabado, pero **quién lo escribió,
+no**. Es `LM.92` de ayer con otra ropa — *un encargo que no corresponde a la tarea se ve idéntico
+cuando lo torció el orquestador y cuando lo clavó a mano un experimento.*
+
+📎 Deuda anotada y **no** arreglada: falta un campo `origen` en `worker_inicio`. No se añade
+retroactivamente porque reescribir los registros **borraría la evidencia de que faltaba** (`LM.65`,
+y estaba en el sobre).
+
+##### 🎁 Y UN CASO EN QUE LOS DOS HICIERON BIEN SU PARTE Y LA RESPUESTA SE TIRÓ A LA BASURA
+
+En `c20260821T194121-ae1e85` el worker del CAD **acertó**: su texto dice `1.000 CAD = 2.219.774
+COP`. Pero el contrato de A.3 **solo tiene sitio para UNA conversión**, y el encargo pedía tres,
+así que guardó el último eslabón: `moneda: USD, monto: 725,65`. El orquestador leyó eso, vio que no
+cuadraba, y **se negó a publicar una cifra que no podía respaldar** — que es lo correcto.
+
+⭐ **Ninguno de los dos falló, y la respuesta correcta se perdió igual: la caja no daba para
+llevarla.** De ahí sale `esquema:contrato`, y de ahí sale que `esquema` **no era un estado: eran
+tres**.
+
+##### 🎲 LAS APUESTAS, UNA POR UNA
+
+**🟢 1 — GANADA, y con un freno que la vigila.** El campo culpable **no** vive en el JSON del juez:
+vive en un módulo aparte que no llama a ningún modelo. Y `P22` lo mantiene así.
+
+**🟡 2 — MEDIA GANADA, MEDIA FALLADA, y la fallada es la mejor mitad.** ✅ Sí hace falta un estado
+para *«falló y no se puede decir de quién es»*. 🔴 **Pero aposté que caería sobre `C4-DOLAR`, y no
+cae:** C4 **sí** es atribuible — al **esquema**, porque el aislamiento de A.4 impide a los dos lados
+verlo. `no_atribuible` quedó para algo mejor: **el juez dice `FALLA` y la traza no ve nada torcido**
+— un desacuerdo entre dos testigos, que la rúbrica ahora **está obligada a confesar** en vez de
+promediar. ⭐ Y aposté 4 estados: salieron **7**.
+
+**🟢 3 — GANADA, y es la que sostiene el día.** 63 casillas atribuidas, **cero llamadas a la API**,
+cruzando `encargo`, `datos` y el texto final. `P20` la vigila.
+
+**🟢 4 — GANADA sin margen de duda, con los números arriba.** 5 de 5 `ok:False` inocentes y 20 de
+20 `ok:True` sin auditor. → `LM.98`.
+
+**🟢 5 — GANADA, y el motivo resultó más fuerte que la apuesta.** Las 11 casillas siguen siendo 11
+(`P21`). Y el porqué se convirtió en lección propia: **el contendiente A ya pasó por el
+instrumento y su juicio está pagado.** Cambiarlo obliga a rejuzgarlo, o la comparación se rompe.
+→ `LM.97`.
+
+**🟢 6 — GANADA, incluida su trampa.** $0,000000, y el hueco declarado antes de medir salió
+exactamente donde se dijo: `orquestador` = 0 sobre datos reales.
+
+##### 🎁 EL REGALO DEL DÍA: el detector se detectó a sí mismo, DOS VECES
+
+`P22` nació roja: los literales que buscaba (`anthropic`, `messages.create`) estaban **en la línea
+que los buscaba**. Se arregló partiendo las agujas. Y la prueba siguiente —la que obliga al freno a
+**morder** (`LM.13`)— necesitaba un cebo con la llamada dentro… **que también vive en el mismo
+archivo**. **El mismo bicho, dos veces, en diez minutos.**
+
+🔑 **Un detector de texto sobre código no lee código: lee texto.** No sabe qué es una llamada y qué
+es la palabra «llamada». → `LM.99`, con la versión corta: **la lista de patrones prohibidos es
+siempre el primer archivo que los contiene.**
+
+##### Lo que queda escrito
+
+| | |
+|---|---|
+| Archivos | `atribuidor.py` (nuevo) · `rubrica_duelo.md` **v2**, Parte 6 |
+| Pruebas | **24, todas verdes**, y el proceso **sale con 1 si alguna se pone roja** |
+| Coste | **$0,000000** — quinta sesión seguida |
+| Apuestas | **5 de 6 enteras**, la 2 partida por la mitad ✅ |
+| Sin tocar | el juez, su venda, los 33 veredictos pagados, los registros |
+| Lecciones | `LM.96`, `LM.97`, `LM.98`, `LM.99` |
+
+---
+
 ### 🏁 BLOQUE G — Cierre
 
 `L8.x` en `LESSONS.md`, `GUIDE.md` revisado, el mapa actualizado, y la respuesta

@@ -1,4 +1,4 @@
-# RÚBRICA DEL DUELO — nivel 8, pieza 0.3
+# RÚBRICA DEL DUELO — nivel 8, pieza 0.3 · **v2 (F.1, sesión 110)**
 
 > **El instrumento de medición del duelo.** Se escribe **antes** de correr nada y
 > **antes** de que exista el orquestador. Si este texto está torcido, todo lo que se
@@ -52,6 +52,10 @@ depurar y para F.1, **no para el juez de este duelo**.
 ⚠️ **Y por eso esta rúbrica NO tiene el campo «quién falló».** Ese campo es de la pieza
 **F.1**, cuando ya exista un orquestador que se pueda culpar. Meterlo aquí obligaría a
 mostrarle las capas al juez, que es justo lo que la decisión de arriba prohíbe.
+
+> ✅ **F.1 la cumplió sin levantarla** (sesión 110). El campo existe, y **no está
+> aquí**: vive en la **Parte 6**, en una capa aparte que este juez no ve. La venda
+> sigue puesta.
 
 ---
 
@@ -214,3 +218,119 @@ Lo que no se negocia:
 cuantas justificaciones antes de creerle al número.
 
 > **Un juez sin auditar es un número con autoridad prestada.**
+
+---
+
+# 🆕 Parte 6 — LA CAPA 2: quién falló *(añadida en F.1, sesión 110)*
+
+> **Esto es lo que hace de esta rúbrica una rúbrica de DOS capas.** Todo lo de arriba
+> es la capa 1 y **no ha cambiado ni una palabra**: las mismas 11 casillas, el mismo
+> juez, la misma venda. Lo de aquí abajo es una capa nueva que se **añade encima**, y
+> el juez del duelo **no la ve**.
+
+## Por qué el campo no vive arriba
+
+La Parte 0 dijo, el 2026-08-20, que *«esta rúbrica NO tiene el campo quién falló…
+meterlo aquí obligaría a mostrarle las capas al juez»*. **Sigue siendo verdad y por eso
+el campo no está arriba.** F.1 no levantó esa prohibición: la rodeó.
+
+> 🔑 **A un instrumento al que le tapas los ojos a propósito no le puedes pedir además
+> que señale con el dedo.** Hacen falta dos instrumentos.
+
+| | CAPA 1 | CAPA 2 |
+|---|---|---|
+| Quién la produce | `juez_duelo.py` | `atribuidor.py` |
+| Qué contesta | **¿qué** casilla falló | **de quién** es |
+| Con qué | un modelo (`claude-sonnet-5`) | la traza de C.1, ya grabada |
+| Qué ve | tarea · llamadas aplanadas · respuesta | `tarea`, `encargo`, `datos`, texto final |
+| ¿Sabe cuántas capas hubo? | **NO, y sigue sin saberlo** | sí — es lo único que hace |
+| Coste | $0,12534 los 33 veredictos ya pagados | **$0,00** |
+
+📌 **La capa 2 no pregunta a ningún modelo, y no es por ahorrar.** Preguntarle a un
+modelo quién falló pondría un **tercer opinante** donde hace falta un **testigo**. La
+traza no opina: estaba delante.
+
+---
+
+## Los siete estados
+
+Se aplican **solo a las casillas que la capa 1 marcó `FALLA`**. Un `PASA` no se discute.
+
+| Estado | Qué significa | Dónde se arregla |
+|---|---|---|
+| `ok` | la casilla pasó | — |
+| `worker` | el de abajo entregó mal el dato | **abajo** |
+| `orquestador` | el de abajo entregó bien y arriba se torció | **arriba** |
+| `esquema:presupuesto` | el dato **estaba** y un tope de gasto cortó el turno | en la política de C.2 |
+| `esquema:contrato` | el dato **estaba** y el contrato no daba para llevarlo | en el contrato de A.3 |
+| `esquema:aislamiento` | nadie tenía el contexto para acertar | en el reparto de A.4 |
+| `no_atribuible` | falló, y **no hay con qué repartir la culpa** | a mano |
+
+⭐ **Los tres `esquema:` no son adornos, y separarlos costó el escalón 1.** Un fallo de
+esquema **no se arregla regañando a ninguna de las dos capas**: las dos hicieron su
+parte. Se arregla cambiando las reglas del juego, que es una decisión de otra persona y
+de otro día. Meterlos a los tres en `no_atribuible` sería cierto y sería inútil.
+
+---
+
+## 🚨 El estado que obliga a la rúbrica a decir «no sé»
+
+`no_atribuible` tiene un caso que **no se puede resolver dándole la razón a nadie**: el
+juez dice `FALLA` y la traza no ve nada torcido. Eso significa una de dos cosas, y las
+dos hay que mirarlas a mano:
+
+- **el juez se equivocó** — la Parte 5 lleva cuatro días avisando de esto; o
+- **falló algo que la traza no sabe mirar.**
+
+🔑 Es `LM.66` con los dos testigos en la mesa: la pregunta ante un dato no es *«¿está
+bien?»* sino ***«¿qué otro dato tendría que estar en desacuerdo con éste, si estuviera
+mal?»***. Aquí ese otro dato **existe, y a veces está en desacuerdo**. Promediar los dos
+sería inventarse la respuesta.
+
+---
+
+## Lo que la capa 2 mide sobre las dos casillas que no son por moneda
+
+- **`C4-DOLAR` → `esquema:aislamiento`.** La v1 ya lo había descrito sin saber que
+  estaba describiendo un estado: *«el worker del dólar NO SABE que existen otras dos
+  monedas»*. Culpar al worker sería cobrarle lo que no podía ver; culpar al orquestador,
+  lo que nadie le dijo. **Es el precio de A.4, y ahora tiene nombre.**
+- **`C5-REPORTE` → `orquestador`.** Ésta sí tiene dueño: ningún worker lleva
+  `guardar_reporte` en su menú. El que guarda —y el que dice que guardó cuando el
+  permiso fue denegado— es el de arriba.
+
+---
+
+## ⚠️ Lo que la capa 2 NO mide, medido
+
+Sobre las **7 corridas reales** ya grabadas: **63 casillas atribuidas, $0,00, y
+`orquestador` salió CERO veces.**
+
+> 🚨 **El estado que esta capa existe para poder marcar no se ha visto morder ni una vez
+> en el mundo.** Muerde en `P7` y `P8` de `atribuidor.py`, y esas dos corridas están
+> **fabricadas a mano**.
+
+No es un fallo del instrumento: el defecto **necesita dos capas para existir**, y las
+dos capas todavía no han corrido el duelo. **F.3 es la primera vez que ese número puede
+dejar de ser cero** — y si sigue en cero después del duelo, eso también es un hallazgo.
+
+📌 Y una deuda que se anota en vez de taparse: el registro guarda **`encargo`**, pero no
+**quién lo escribió**. Un encargo que no corresponde a la tarea se ve **idéntico** cuando
+lo torció el orquestador y cuando lo clavó a mano un experimento. Falta un campo
+`origen`, y no se añade retroactivamente porque reescribir los registros borraría la
+evidencia de que faltaba (`LM.65`).
+
+---
+
+## 🔒 Lo que la v2 NO cambió, y el motivo
+
+**Las 11 casillas siguen siendo 11.** No se añadió ni una.
+
+No es pereza: **el contendiente A ya pasó por este instrumento y su juicio está
+pagado** —33 veredictos, $0,12534, del 2026-08-20—. Cambiar las casillas ahora obligaría
+a **volver a juzgar a A** para poder comparar, y el duelo del sobre dejaría de ser un
+duelo.
+
+> ⭐ **El instrumento se congela cuando el primer contendiente ya pasó por él.** Lo que
+> se puede añadir después es una capa **encima**; lo que no se puede es mover la regla
+> con la que ya mediste a uno de los dos.

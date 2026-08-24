@@ -6544,3 +6544,109 @@ como un diagnóstico ya se equivocó, aunque acierte esta vez.
 📌 Y esto no es un argumento contra los códigos de salida: son el aviso más barato que existe,
 funcionan sin red y los entiende todo lo que arranca un proceso. Es un argumento contra **leerlos
 sin lo que viene al lado**.
+
+---
+
+### LM.96 — A un instrumento al que le tapas los ojos a propósito no le puedes pedir además que señale con el dedo
+
+La rúbrica del duelo se escribió el 2026-08-20 con una venda deliberada: **el juez no puede saber
+si la corrida fue de una capa o de dos.** El motivo era bueno — un modelo con opinión sobre
+multi-agente calificaría el esquema en vez de la respuesta, y sería el juez decidiendo el duelo
+que el duelo existe para decidir.
+
+Cuatro días después llegó F.1 a pedirle el campo **«quién falló»**. Y ese campo **exige** saber
+las capas.
+
+🔑 **Las dos cosas eran correctas y no cabían en la misma cabeza.** Lo notable es que la
+contradicción **ya estaba escrita** en la propia rúbrica —*«meterlo aquí obligaría a mostrarle las
+capas al juez»*—: no se descubrió, se **cobró**.
+
+⭐ La salida no fue quitar la venda ni renunciar al campo: fue **partir el instrumento en dos**.
+Un juez ciego que dice *qué* falló, y un testigo que lee la traza y dice *de quién* es. Y el
+segundo **no puede ser otro modelo**: preguntarle a un modelo quién falló pone un **tercer
+opinante** donde hace falta alguien que estuviera delante.
+
+**La regla que queda:** cuando una restricción bien puesta choca con un requisito nuevo, la
+pregunta no es cuál de los dos cede. Es **cuántos instrumentos hacen falta**. Una venda solo
+estorba si insistes en que el mismo que la lleva haga los dos trabajos.
+
+📌 Y tiene una consecuencia barata que se cobra sola: el instrumento ciego **no se tocó**. Sus 33
+veredictos ya pagados siguen valiendo, porque la capa nueva se puso **encima** y no dentro.
+
+---
+
+### LM.97 — El instrumento se congela cuando el primer contendiente ya pasó por él
+
+Al escribir la v2 de la rúbrica la tentación evidente era añadir casillas: ya se sabía más, se
+habían visto modos de fallo nuevos, y el criterio descartado del 5b seguía picando.
+
+**No se podía, y el motivo no es de gusto sino de aritmética.** El contendiente A —la línea base—
+**ya pasó por el instrumento de 11 casillas**, y su juicio está pagado: 33 veredictos, $0,12534,
+del 2026-08-20. Añadir una casilla número 12 obliga a **volver a juzgar a A** para que los dos
+números sean comparables. Y volver a juzgarlo cuesta dinero, cuesta otra corrida del juez, y
+mete una fecha distinta en la mitad de una comparación.
+
+🔑 **Un instrumento de medida deja de ser libre en el instante en que mide al primero de dos.**
+Antes de eso se puede cambiar lo que se quiera y gratis; después, cada cambio se paga dos veces o
+rompe la comparación.
+
+⭐ **Lo que sí se puede añadir después es una capa ENCIMA.** La v2 sumó siete estados de culpa sin
+tocar una sola casilla, y por eso el juicio de A sigue sirviendo entero. **Lo que no se puede es
+mover la regla con la que ya mediste a uno de los dos.**
+
+📌 La versión práctica, para cualquier proyecto: si vas a comparar dos cosas, **la última
+oportunidad de discutir la rúbrica es antes de medir la primera.** Después ya no estás afinando
+el instrumento — estás moviendo la portería, y normalmente sin darte cuenta.
+
+---
+
+### LM.98 — El `ok` que cada uno escribe sobre sí mismo no es un veredicto: es una declaración de la parte
+
+En el registro del nivel hay 60 `worker_fin`. Cinco dicen `ok: False`. Un atribuidor que les
+creyera culparía al worker en los cinco casos.
+
+**Y en los cinco estaría señalando al que sí hizo el trabajo.** Los cinco traen el contrato
+**completo** —cifra, tasa, fuente, fecha— y `faltan: []`. Ninguno falló por el dato: el
+presupuesto los cortó **después** de que ya tenían la respuesta.
+
+El otro lado es peor y es simétrico: **20 de 20 `orquestador_fin` dicen `ok: True`. Cero fallos.**
+Y la sesión 95 midió que al menos una vez mandó el trabajo del euro al worker del dólar.
+
+🔑 **Nadie se declara culpable a sí mismo, y no por mentir: porque cada capa solo puede informar
+de lo que ve desde donde está.** El worker sabe que lo cortaron; no sabe si el encargo era el
+correcto. El orquestador sabe que juntó tres respuestas; no sabe si eran las que se pidieron.
+
+⭐ Por eso la culpa **no puede salir de un campo que escribe el implicado**. Sale de **cruzar dos
+cosas que están en manos distintas**: lo que se pidió arriba y lo que se entregó abajo. Ese cruce
+no lo hace ninguna de las dos partes — lo hace un tercero que lee las dos.
+
+**La regla que queda:** ante cualquier campo de auto-reporte, la pregunta de `LM.66` tiene una
+respuesta conocida de antemano. *¿Qué dato tendría que estar en desacuerdo con éste si estuviera
+mal?* **Ninguno, mientras el único que lo escribe sea el mismo que sale retratado.**
+
+---
+
+### LM.99 — Un detector que se lee a sí mismo no distingue el veneno del frasco de muestras
+
+`atribuidor.py` tiene una prueba, `P22`, que abre su propio archivo y se pone roja si encuentra
+una llamada a la API. Es un freno bueno: sin él, la apuesta de que el módulo no paga dejaría de
+ser cierta **en silencio**.
+
+Nació roja. Los literales que buscaba —`anthropic`, `messages.create`— estaban **en la línea que
+los buscaba**.
+
+Se arregló partiendo las agujas. Y a la prueba siguiente, la que obliga al freno a **morder**
+(`LM.13`), le hizo falta un cebo con la llamada dentro… **que también vive en el mismo archivo**.
+**El mismo bicho, dos veces, en diez minutos.**
+
+🔑 **Un detector que inspecciona su propio texto no tiene forma de saber qué parte de él es el
+sujeto y qué parte es el instrumento.** Para él, la definición del veneno y el veneno se ven
+exactamente igual — porque son la misma cadena de caracteres.
+
+⭐ Y la lección no es *«no leas tu propio archivo»*: leerlo es justo lo que hace útil a `P22`.
+Es que **un detector de texto sobre código no lee código: lee texto.** No sabe qué es una llamada
+y qué es la palabra «llamada» — y esa diferencia es todo. La alternativa seria, cuando importa de
+verdad, es leer el árbol sintáctico (`ast`), como hizo `P35` de `avisador.py` ayer.
+
+📌 La versión corta, para cualquier `grep` que vigile un repositorio: **la lista de patrones
+prohibidos es siempre el primer archivo que los contiene.**
