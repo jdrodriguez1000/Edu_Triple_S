@@ -5022,6 +5022,96 @@ lea nada**. Aquí se estudia como pieza del esquema, no como accidente de la nub
 
 ---
 
+#### 🎲 E.1 — LA APUESTA, sellada el **2026-08-24** (sesión 108) **antes de la primera línea de código**
+
+> **El estudiante:** *«sella por favor y yo tomo esas apuestas, e inicia con E.1»* — se sellan
+> las de esta terminal tal cual. Van **trece sesiones seguidas** con este orden, y en la 107 esa
+> costumbre además fue la copia de seguridad que salvó `PROGRESO.md`.
+>
+> Lo de abajo se escribió **después de leer `compartida.py`, `contexto.py`, `orquestador.py` y
+> `worker.py`, y después de contar los 1 352 renglones de los ocho `registro_*.jsonl` — y antes
+> de tocar ninguno**. Los cinco hechos del primer apartado están **contados, no adivinados**:
+> cuestan $0,00 y no contaminan lo apostado.
+
+##### Los cinco hechos contados (no son apuestas)
+
+| # | Dónde | Qué dice |
+|---|---|---|
+| 1 | `grep` de `schedule`, `apscheduler`, `crontab`, `schtasks`, `systemd` sobre los 19 `.py` | **Cero coincidencias.** No hay disparador en el nivel. **E.1 tiene que TRAER el problema**, igual que D.1 trajo la carrera y D.2 trajo las skills. |
+| 2 | `contexto.py:73` → `_corrida_nueva()` | Fecha + 6 caracteres de azar. Garantiza que dos corridas **se distingan**; no garantiza —ni puede— que **solo haya una**. 🔑 El campo que arregló la sesión 97 hace el disparo doble **más invisible**, no menos: dos nombres distintos parecen dos trabajos legítimos. |
+| 3 | Los 8 `registro_*.jsonl`, **1 352 renglones** | Todos llevan `hora` = **cuándo ocurrió**. **Ninguno lleva un campo que diga cuándo DEBÍA ocurrir**, ni a qué disparo pertenece, ni qué turno cubría. Cero campos de ventana. |
+| 4 | Corrida `c20260823T231228-c2bdd0`, medida de punta a punta | Un trabajo completo dura **21 s**; las seis corridas con `corrida` van de **7 s a 21 s**. Contra las dos constantes del único candado que cruza procesos (`compartida.py:166-167`): **`ESPERA_MAXIMA_S = 5.0`** y **`CANDADO_RANCIO_S = 30.0`**. **El trabajo dura 4× la espera y el 70 % de la caducidad.** |
+| 5 | `LM.87`, medido en la sesión 106 | Cinco procesos con `threading.Lock` pierden el **80 %** — peor que no poner nada (76,7 %); con candado de disco, **0 %**. 🔑 **El bloque E es ese mismo experimento sin nadie que lo provoque:** ahí lancé dos `python` a propósito; aquí los lanza el reloj. |
+
+##### Las seis apuestas
+
+**🎲 1 — El candado que SÍ funciona no sirve para esto, y sus dos constantes ya lo dicen.**
+`_CandadoDeArchivo` se escribió para proteger **un renglón** —milisegundos—. Un trabajo dura
+**21 s**. Apuesto **las dos mitades**: (a) usarlo tal cual para proteger un trabajo entero hace
+que el segundo disparo muera con `CandadoOcupado` **a los 5 s, con el primero todavía
+trabajando** — y eso está *bien*, es el comportamiento correcto; pero (b) si el trabajo pasa de
+**30 s**, el candado **se declara rancio y el segundo lo rompe solo**, y los dos corren a la vez
+**sin un solo error, sin una excepción y sin un renglón que lo diga**.
+🔑 **El titular que apuesto: un candado con caducidad convierte «tardar mucho» en «no había
+candado».** Se reproduce con un trabajo falso de 35 s. **$0,00, sin API.**
+📌 Y si sale, la deuda viva *«el candado rancio de 30 s sin medir»* —abierta en la 106— deja de
+ser una nota y pasa a tener un modo de fallo con nombre.
+
+**🎲 2 — «Idempotente» van a ser DOS cosas distintas, y van a hacer falta las dos.**
+No solaparse **no es** no repetir el efecto. Apuesto que el candado resuelve solo la primera, y
+que el disparo **secuencial** —a las 3:00 falla, a las 3:05 el reloj reintenta— repite el trabajo
+entero **sin que el candado se entere**, porque para entonces ya está libre y no queda rastro de
+que hubo un primer intento. Hace falta una **marca de trabajo hecho**, que es otra pieza y otro
+archivo. Pronóstico: el candado sale **necesario y no suficiente**, y se puede enseñar el renglón
+exacto donde deja de servir.
+
+**🎲 3 — La marca de «ya corrí» NO puede llamarse `corrida`, y su requisito es el OPUESTO.**
+Apuesto que hay que inventar un identificador nuevo —**el turno**: `2026-08-24T03:00`— y que su
+regla es exactamente la contraria a la de `corrida`. `corrida` **tiene que ser única**; el turno
+**tiene que repetirse a propósito**, porque solo así el segundo disparo puede preguntar *«¿este
+turno ya se hizo?»* y encontrarse a sí mismo. 🔑 **Dos identificadores en el mismo renglón con
+requisitos opuestos, y confundirlos es el bicho entero.**
+
+**🎲 4 — El disparo que NO ocurre es peor que el doble, y hoy es literalmente indetectable.**
+Apuesto que con los ocho registros de hoy **se puede escribir en código** «esto se disparó dos
+veces» —basta contar corridas— **y NO se puede escribir** «esto no se disparó», ni con trampas,
+porque **un disparo que no ocurrió no deja renglón** y ningún archivo dice cuándo se le esperaba.
+Es `LM.15` con forma de calendario: el instrumento no da un dato falso, **da silencio**, y seis
+días parado se ven igual que seis días perfectos. Pronóstico: la comprobación necesita un dato que
+**no existe en ninguno de los 1 352 renglones**, y por eso E.1 tiene que escribirlo.
+
+**🎲 5 — El disparo doble no pone roja NI UNA de las pruebas que ya existen.**
+Hoy el nivel tiene **292 comprobaciones** contadas en diez archivos (`presupuesto.py` 64,
+`traza.py` 47, `compartida.py` 29, `skills_compartidas.py` 29, `recursion.py` 27, `fallos.py` 26,
+`modelos.py` 23, `supervisor.py` 20, `profundidad.py` 14, `router.py` 13). Apuesto que **ninguna**
+se pone roja cuando el trabajo se dispara dos veces, porque **las 292 corren dentro de un solo
+`python`**. Es `LM.87` —*«solo se ve lanzando dos `python`»*— en su forma de recuento, y es un
+número que se puede enseñar. ⚠️ **Permiso para fallar sola:** si alguna se pone roja, mejor para
+el nivel y peor para la apuesta, y se dice cuál.
+
+**🎲 6 — Va a costar $0,00, y digo AHORA por qué eso es una trampa.**
+Tercera sesión seguida a cero: todo lo de E.1 se mide con un trabajo falso, sin una sola llamada
+a la API. Pero el modo de fallo real del bloque E **cuesta dinero de verdad** —dos disparos son
+dos facturas— y medirlo gratis significa que **el número que más importa, el coste del disparo
+doble, va a salir de una multiplicación y no de una medición**. Lo dejo escrito antes de que sea
+una excusa: si al cerrar E.1 digo *«y costaría el doble»*, esa frase es **aritmética, no un
+dato**, y hay que marcarla como tal. 🔑 Es `LM.66` aplicado por adelantado a mi propia conclusión:
+**¿qué otro dato tendría que estar en desacuerdo con este, si estuviera mal?**
+
+##### 🔒 Lo que NO se toca en E.1
+
+- **`compartida.py` no se edita.** Es código medido en la sesión 106, y el valor de aquella
+  medición depende de que su código siga siendo el mismo. Si la apuesta 1 sale, la conclusión se
+  escribe **aquí**, y el arreglo —si lo hay— vive en la pieza nueva de E.1.
+- **`contexto.py` tampoco.** `corrida` se queda como está: el turno es un campo **nuevo**, no una
+  reforma del que ya funciona.
+- **El sobre del bloque 0 sigue cerrado.** Nada de E.1 puede tocar la configuración del duelo.
+- **Ningún registro existente se reescribe.** Los 1 352 renglones son la prueba del hecho 3: si
+  les añado el campo que les falta, **borro la evidencia de que faltaba**.
+
+
+---
+
 ### 📏 BLOQUE F — Medir y decidir
 
 | # | Pieza | Produce |
