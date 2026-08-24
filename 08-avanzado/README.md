@@ -5578,6 +5578,98 @@ es quién decide llamarla.**
 
 ---
 
+---
+
+#### 🎲 F.1 — LA APUESTA, sellada el **2026-08-24** (sesión 110) **antes de la primera línea de código**
+
+> **Quince sesiones seguidas** con este orden: se sella, se commitea sola, y luego se escribe
+> el código.
+>
+> Lo de abajo se escribió **después de contar** los 33 veredictos pagados del único juicio que
+> existe, los 536 renglones de `registro_orquestador_*.jsonl` + `registro_workers_*.jsonl`,
+> sus 80 nombres de campo, y de leer entera la `rubrica_duelo.md` v1 — **y antes de tocar
+> nada**. Los seis hechos del primer apartado están **contados, no adivinados**: cuestan $0,00
+> y no contaminan lo apostado.
+
+##### Los seis hechos contados (no son apuestas)
+
+| # | Dónde | Qué dice |
+|---|---|---|
+| 1 | `veredictos_registro_linea_base_claude-haiku-4-5.json` | **El único juicio pagado del nivel**, del 2026-08-20, juez `claude-sonnet-5`, **$0,12534**. 3 corridas × 11 casillas = **33 veredictos: 30 `PASA`, 3 `FALLA`**. Mediana de aciertos: **0,9091** (10 de 11). |
+| 2 | Esos mismos 33 | 🚨 **Las 3 `FALLA` son LA MISMA casilla: `C4-DOLAR`.** Y las 33 son de la **línea base**, que tiene **una capa**. 🔑 **El defecto que F.1 viene a arreglar no se ha visto ni una sola vez** — con una capa el culpable es siempre el mismo, y un `FALLA` a secas no mezcla nada porque no hay nada que mezclar. |
+| 3 | La Parte 2 de `rubrica_duelo.md` | De las 11 casillas, **9 se califican por moneda** (C1·C2·C3 × USD·EUR·CAD) y **2 no** (`C4-DOLAR`, `C5-REPORTE`). 🚨 **La única casilla que ha fallado alguna vez es una de las dos que NO se pueden atribuir a un worker.** |
+| 4 | `rubrica_duelo.md:50`, escrita el 2026-08-20 | La contradicción de F.1 **estaba declarada cuatro días antes de llegar aquí**: *«el juez no puede saber si la corrida fue de una capa o de dos»* y *«esta rúbrica NO tiene el campo quién falló… meterlo aquí obligaría a mostrarle las capas al juez»*. **El instrumento ciego y el campo culpable no caben en la misma cabeza.** |
+| 5 | Los 405 + 131 renglones de workers y orquestador | `worker_inicio` y `worker_fin` llevan **`encargo`** (60 y 60), y el orquestador lleva **`tarea`**. 🔑 **Los dos extremos del reparto —lo que se pidió arriba y lo que se mandó abajo— están grabados desde la sesión 93.** Lo que la sesión 97 dijo que faltaba *(«hace falta el encargo al lado — que es F.1»)* **ya está en el disco**. |
+| 6 | Los 80 campos de esos 536 renglones | **Ninguno nombra un culpable.** Los dos únicos que se le parecen son `capa` y `por_capa`, y `capa` es **la etiqueta que el paso 1 de C.1 mató por mentirosa**. 🚨 Y el marcador que sí existe se autoabsuelve: **20 de 20 `orquestador_fin` con `ok:True`, cero fallos** — mientras que **la sesión 95 midió que al menos una vez enrutó el trabajo del euro al worker del usd**. Los 60 `worker_fin`: 55 `ok:True`, 5 `ok:False`, **los 5 por `presupuesto`**. |
+
+##### Las seis apuestas
+
+**🎲 1 — El campo «quién falló» NO lo puede escribir el juez del duelo, y F.1 va a terminar con DOS instrumentos, no con uno.**
+Apuesto que la salida de F.1 son **dos piezas separadas**: el **juez ciego**, que sigue diciendo
+*qué casilla* falló sin saber cuántas capas hubo, y un **atribuidor** que lee la traza de C.1
+—con `padre`, `corrida`, `profundidad` y `encargo`— y dice *de quién es*. Falsificable sin
+ambigüedad: **si al cerrar F.1 el campo culpable vive dentro del JSON que devuelve el modelo
+juez, la apuesta cae.** 🔑 El titular que apuesto: *un instrumento al que le tapas los ojos a
+propósito no puede además señalar con el dedo.*
+
+**🎲 2 — Los estados no son dos, son cuatro, y el cuarto es el que duele.**
+`worker` · `orquestador` · **`esquema`** · **`no atribuible`**. Apuesto que hace falta un estado
+para *«esta casilla falló y no se puede decir de quién es»*, y apuesto **dónde va a caer**:
+sobre `C4-DOLAR`, la única que ha fallado hasta hoy. La v1 ya avisó por qué —*«el worker del
+dólar no sabe que existen otras dos monedas»*—: eso no es culpa del worker ni del orquestador,
+**es el precio del aislamiento (A.4)**, y culparlo a cualquiera de los dos sería una mentira con
+formato de dato. ⚠️ **Permiso para fallar sola:** si en F.3 `C4-DOLAR` falla en B y se atribuye
+limpiamente a una de las dos capas, la apuesta cae y mejor para el nivel.
+
+**🎲 3 — Las 9 casillas por moneda se atribuyen sin pagar un modelo, con campos que YA están grabados.**
+Apuesto que C1·C2·C3 se resuelven cruzando el `encargo` del worker con lo que devolvió, y eso
+con el texto final del orquestador — **cero llamadas a la API**. Si el worker del EUR trajo el
+número torcido, el fallo se ve en su `worker_fin`; si lo trajo bien y salió mal arriba, el fallo
+es del **fan-in**. Falsificable con una cuenta: **si para atribuir alguna de las 9 hay que
+preguntarle a un modelo, la apuesta cae.**
+
+**🎲 4 — 🚨 Nadie se declara culpable, y lo apuesto con el número de hoy.**
+20 de 20 `orquestador_fin` dicen `ok:True`, y la sesión 95 midió un enrutado torcido que ese
+`ok` no vio. Apuesto que **el campo «quién falló» no puede salir del `ok` que cada capa escribe
+sobre sí misma**, y que tiene que salir de **cruzar el encargo con el resultado** — que es un
+tercero, no una de las partes. 🔑 Es `LM.66` otra vez, y la pregunta es la misma: *¿qué otro
+dato tendría que estar en desacuerdo con éste, si estuviera mal?* Para `ok`, hoy, la respuesta
+sigue siendo **ninguno**.
+
+**🎲 5 — Las 11 casillas se quedan en 11, y el motivo no es pereza: es que el juicio de A YA ESTÁ PAGADO.**
+Apuesto que la v2 **no añade ni quita casillas** — lo que cambia es el **tipo del valor** de cada
+una, no cuántos renglones hay. Falsificable con una cuenta al cerrar: **si `rubrica_duelo.md` v2
+tiene 12 casillas o más, la apuesta cae.** El motivo va escrito antes por si luego tienta
+saltárselo: los 33 veredictos de la línea base costaron $0,12534 y están grabados **con 11
+casillas**. Cambiar el instrumento ahora obliga a **volver a juzgar a A para poder comparar**, y
+el duelo del sobre dejaría de ser un duelo. **El instrumento se congela cuando el primer
+contendiente ya pasó por él.**
+
+**🎲 6 — Va a costar $0,00, y la trampa la digo antes de poder usarla de excusa.**
+Quinta sesión seguida a cero: F.1 es un documento más un lector de registros ya pagados.
+🚨 Pero apuesto también su agujero: la v2 se va a validar contra **los 3 juicios de la línea
+base** (que no tienen dos capas) y contra **trazas fabricadas** (que las tengo yo que inventar),
+y **ninguna de las dos es un fallo de orquestador de verdad**. Es `LM.13` con el nombre puesto:
+**el atribuidor va a llegar a F.3 sin haber mordido nunca lo que vino a medir.** Si al cerrar
+F.1 escribo *«y así se sabrá quién falló»*, esa frase **no está medida**.
+
+##### 🔒 Lo que NO se toca en F.1
+
+- **El sobre del bloque 0 sigue cerrado.** F.3 lo abre; F.1 no lo mira.
+- **No se corre el duelo.** Ni una llamada del orquestador contra la línea base: eso es F.3, y
+  adelantarlo aquí sería mirar el resultado mientras se afina el instrumento que va a medirlo.
+- **Los 3 juicios de la línea base NO se vuelven a juzgar.** Están pagados y son la mitad del
+  duelo. Rejuzgarlos con otro instrumento borraría la única medición limpia que hay.
+- **Al juez NO se le quita la venda.** Sigue sin saber cuántas capas hubo. Si la v2 necesita
+  destapársela para poder culpar, entonces la apuesta 1 estaba mal y **se dice**, no se
+  destapa a escondidas.
+- **Ningún registro existente se reescribe.** Los 536 renglones son la prueba del hecho 6: si
+  hoy les añado el campo culpable que les falta, **borro la evidencia de que faltaba** (`LM.65`).
+- **`compartida.py`, `contexto.py` y `traza.py` no se editan.** Son código medido, y el valor de
+  aquellas mediciones depende de que sigan siendo el mismo código.
+
+---
+
 ### 🏁 BLOQUE G — Cierre
 
 `L8.x` en `LESSONS.md`, `GUIDE.md` revisado, el mapa actualizado, y la respuesta
