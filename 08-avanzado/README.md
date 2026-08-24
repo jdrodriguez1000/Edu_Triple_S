@@ -5112,6 +5112,187 @@ dato**, y hay que marcarla como tal. 🔑 Es `LM.66` aplicado por adelantado a m
 
 ---
 
+---
+
+#### 📊 E.1 — LO QUE SALIÓ *(sesión 108 · `disparador.py` · **67 pruebas** · **$0,000000**)*
+
+Cuatro escalones, cada uno rompiendo al anterior. **Tercera sesión seguida a cero.**
+
+##### 🚨 EL HALLAZGO DEL DÍA: `open(ruta, "a")` NO es atómico entre procesos en Windows
+
+*Importancia: alta · Urgencia: no bloqueante* — hoy no muerde en código pagado, y el
+motivo está medido, no supuesto.
+
+El escalón 1 iba a enseñar el trabajo repetido, y lo enseñó. Pero la prueba `P21` —escrita
+para comprobar que el coste sale al doble— **se puso roja**, y el motivo era mejor que la
+prueba: al solaparse **faltaban renglones del registro**, con **cero líneas rotas y cero
+excepciones**. Y la fila secuencial no perdía ninguno: **la pérdida es del solapamiento, no
+del trabajo.**
+
+Ahí había dos explicaciones que producen el mismo archivo —el renglón se pierde de camino,
+o llega y otro lo pisa— y con renglones del mismo largo son **indistinguibles**. Se separan
+con tamaños distintos (`atomico_o_no()`, 800 renglones, dos procesos):
+
+| | |
+|---|---:|
+| esperados | 800 |
+| en el archivo | 754 |
+| **MIXTOS** (A y B revueltos) | **0** |
+| **de LONGITUD IMPOSIBLE** | **46** → todos de **178** |
+| huecos sin escribir | 0 |
+| bytes en disco = bytes de lo que queda | ✓ |
+
+🔑 **La huella es el 178.** Un renglón de B ocupa 20 + 2 = 22 bytes; 200 − 22 = 178. Esos 46
+renglones son **la cola de una A a la que otro proceso le escribió encima los 22 primeros
+bytes**. El renglón llegó al disco y luego lo pisaron.
+
+⭐ **Y la forma del fallo importa tanto como el fallo:** no se entrelazan a mitad de renglón
+—cero mixtos—, **se pisan**. Por eso con renglones del mismo largo, que es el caso real de un
+`.jsonl`, el pisotón es **exactamente invisible**: ni mixtos, ni longitudes raras, ni huecos.
+Solo un renglón que no está. **Es `LM.66` en la capa del sistema de archivos: el renglón
+perdido está solo en su renglón, y nada puede desmentirlo.**
+
+⚠️ **Segunda vez que Windows cambia un resultado de este nivel, y en el sentido contrario.**
+En `LM.87` Windows **negó** un `os.replace()` que POSIX permite: hizo **ruido** —26 procesos
+caídos—. Aquí POSIX garantiza que un `O_APPEND` es atómico y Windows no, así que hace
+**silencio**. La misma diferencia de sistema operativo, una vez con traceback y otra sin nada.
+
+📌 **Dónde muerde en código que ya existe:** `orquestador.py:228`, `worker.py:483`,
+`router.py:192`, `supervisor.py:120` y `pipeline.py:176` usan ese mismo `open(REGISTRO, "a")`.
+**Hoy no muerde, y está medido por qué:** los cinco escriben dentro de un `threading.Lock` y el
+fan-out usa **hilos**. Muerde el día que haya **dos procesos** — que es el tema del bloque E.
+
+##### ⚠️ Y la propia `P21` se puso roja sola media hora después de escribirla
+
+Pedía `perdidos > 0` en **una** corrida. La pérdida **no ocurre siempre**: `[0, 2, 2, 0]` en
+cuatro rondas, 5,0 % en total. 🔑 **Y esa es la razón por la que un fallo así vive años en un
+programa: no se reproduce a la primera, así que el que lo ve una vez concluye que se equivocó.
+Una prueba de algo probabilístico tiene que medir la TASA, no el suceso.**
+
+##### 🎲 LAS APUESTAS, UNA POR UNA
+
+**🎲 1 — 🟡 (a) ✅ · (b) 🔴, y el motivo del fallo es mejor que la apuesta.**
+
+| el trabajo dura | espera | rancio | hicieron | cedieron | corridas |
+|---|---:|---:|---:|---:|---:|
+| 2 s (corto) | 5,0 | 30,0 | **2** | 0 | 2 |
+| 8 s (> espera) | 5,0 | 30,0 | 1 | 1 | 1 |
+| 35 s (> rancio) | 5,0 | 30,0 | **1** | 1 | 1 |
+| 35 s, **espera 60** | 60,0 | 30,0 | **2** | 0 | 2 |
+
+🚨 **FILA 1 — el candado funcionó y no sirvió de nada.** El trabajo dura menos que la espera,
+así que el segundo **no se rinde: espera su turno y hace el trabajo entero igual.** Cero
+renglones perdidos ✅, dos corridas ❌. 🔑 **Un candado SERIALIZA; no DEDUPLICA.**
+
+🔴 **FILA 3 — la apuesta 1(b) falló.** Sellé que un trabajo de más de 30 s haría que el segundo
+rompiera el candado por rancio. **No pasa:** el que espera se rinde a los 5 s y `_rancio()`
+**solo se comprueba mientras se espera**. Con `ESPERA_MAXIMA_S (5) < CANDADO_RANCIO_S (30)`, la
+caducidad es **inalcanzable** durante un solapamiento.
+
+🚨 **FILA 4 — el bicho de verdad, y es peor.** Un solo cambio: la espera sube de 5 a 60. Ahora
+el segundo aguanta hasta los 30 s, declara el candado abandonado **con su dueño vivo y
+trabajando**, lo borra y entra. Medido: 66 s, `["hizo","hizo"]`, 0 reventados.
+🔑 **El fallo no lo dispara un trabajo largo: LO DISPARA SER MÁS PACIENTE.** Subir la espera
+—justo lo que cualquiera haría para arreglar la fila 2— es lo que rompe el candado.
+
+**🎲 2 — ✅ entera.** El disparo **secuencial** repite el trabajo entero sin que el candado se
+entere, porque para entonces ya está libre. El candado sale **necesario y no suficiente**, con
+el renglón exacto donde deja de servir.
+
+**🎲 3 — ✅ entera.** La marca de «ya corrí» necesita un identificador con el requisito
+**opuesto** al de `corrida`: el **turno**, que se repite a propósito porque describe la
+**ranura**, no la ejecución. Con él, las tres filas que el candado no podía —incluida la
+secuencial— dan **una sola corrida y una sola marca**.
+🔑 Y el detalle que enseña la pieza: el segundo **no cede**, se entera de que **ya está hecho**.
+`cedio` y `ya_estaba` son estados distintos. **El candado se borra al soltarlo; la marca se
+queda.**
+
+**🚨 SEGUNDO HALLAZGO, de la misma familia que el primero.** La marca se guardaba como
+`2026-08-24T03:00.json`. En Linux es legal; en Windows los dos puntos **separan el archivo de un
+flujo alterno de NTFS**. `dir /r`: `0 bytes 2026-08-24T03` + `73 bytes …json:$DATA`. **Y el
+veneno es que funcionaba** —`exists()` encontraba el flujo, `O_EXCL` seguía deduplicando, las
+pruebas verdes—. Lo único que fallaba era **listar**: `glob("*.json")` daba **cero** con todas
+las marcas puestas, que es justo lo que el escalón 4 necesita. → `_nombre_de_marca()`, vigilado
+por `P43`.
+⭐ **Un identificador que se usa como nombre de archivo tiene que pasar por una puerta.**
+
+**🚨 LA PREGUNTA QUE NO TIENE RESPUESTA BUENA: ¿marcar ANTES o DESPUÉS?**
+
+| qué le pasa al primer disparo | marcar | se rehace | veredictos |
+|---|---|---|---|
+| se rompe a mitad | antes | **NO** | `fallo, ya_estaba` |
+| se rompe a mitad | después | sí | `fallo, hizo` |
+| la máquina se apaga | antes | NO | `murio, ya_estaba` |
+| la máquina se apaga | después | **NO** | `murio, cedio` |
+| se apaga, **rancio 1 s** | después | **sí** | `murio, hizo` |
+
+🔑 **No existe «exactamente una vez».** Marcar **antes** = *como mucho una vez*: si el trabajo se
+rompe, nadie lo reintenta nunca. Marcar **después** = *al menos una vez*: el reintento funciona,
+pero **los renglones a medias del primero se quedan**.
+⭐ La elección **es del negocio, no técnica**, y hay que hacerla antes: **el que no elige ya
+eligió** — el escalón 1 marcaba «después» sin saberlo.
+
+⭐ **Y aquí se entiende por fin para qué sirve `CANDADO_RANCIO_S`:** el que muere no suelta el
+candado, y el reintento cede **sin llegar a mirar la marca**. 🔑 **La caducidad no es para el
+solape —ahí es inalcanzable—: ES PARA EL CADÁVER.** Y eso ordena los tres números: **mayor que
+el trabajo** (o rompes a un vivo) y **menor que el hueco entre disparos** (o el muerto bloquea
+el turno siguiente). Hoy: 21 s · 30 s · 3 600 s. **Cuadra por casualidad, y ahora está escrito.**
+📌 Eso cierra la deuda «el candado rancio de 30 s sin medir» de la 106: no era un número suelto,
+era una **relación entre tres**.
+
+**🎲 4 — ✅ y con el matiz que importa.**
+
+| turno | ¿marca? | intentos | de verdad |
+|---|---:|---:|---|
+| 03:00 | sí | 1 | salió bien |
+| 04:00 | no | 2 | vinieron dos y ninguno pudo |
+| 05:00 | no | **0** | **no se disparó nunca** |
+
+«Se disparó dos veces» se escribe contando corridas. **«No se disparó» no se puede escribir con
+el registro, porque el que no corre no escribe.** 🔑 **Un registro solo prueba lo que SÍ pasó;
+para lo que no pasó hace falta algo escrito ANTES, y es de otra clase: el registro lo escribe el
+que trabaja, el calendario lo escribe el que prometió.**
+⭐ Y la fila del medio casi se escapa: sin anotar los intentos, «vino y no pudo» se ve igual que
+«no vino». **Son tres estados, no dos** — `LM.88` por tercera vez en el día. Por eso
+`anotar_intento()` se llama **también cuando el disparo cede**, y con eso queda pagada la deuda
+que abrió el escalón 2 (`P65`).
+
+**🎲 5 — 🟡 la letra ✅, el espíritu 🔴, y la diferencia es el hallazgo.**
+Medido: los diez módulos del nivel, primero solos y luego **dos procesos a la vez**, arrancados
+en el mismo instante. **Cero comprobaciones rojas en las dos columnas** — la letra de la apuesta
+se cumple. 🚨 **Pero `traza` reventó 1 de 2 procesos**, y una suite que muere **no reporta rojo:
+no reporta nada.** La causa está en código existente: `profundidad.py:594` usa un nombre de
+archivo **fijo** en la carpeta del nivel (`_prueba_registro.jsonl`), y dos procesos chocan con
+`PermissionError [Errno 13]` — **la misma clase de error de `LM.87`**.
+🔑 **Aposté que nada se pondría rojo y acerté por el motivo equivocado: no es que aguanten, es
+que ni siquiera llegan a quejarse.** Tercera cara del silencio en un día.
+📌 Y el medidor tuvo **tres defectos propios antes de dar un dato**, los tres cazados porque
+reventaba también corriendo SOLO: sustituía `sys.stdout` por un `StringIO` (los módulos hacen
+`reconfigure()`), pedía `len()` a un valor de retorno que en unos módulos es lista y en otros
+booleano, y por eso acabó contando **lo que el módulo imprime**, que es lo único que significa
+lo mismo en los diez.
+
+**🎲 6 — ✅ y la trampa que anuncié SE CUMPLIÓ.** $0,000000, sin una llamada al modelo. Y el
+coste del disparo doble sigue siendo **una multiplicación, no una medición** — está dicho aquí
+porque lo dejé escrito en el sobre antes de poder usarlo como excusa.
+
+##### 📎 Deudas nuevas de E.1
+
+- 🔲 **`profundidad.py:594` usa un nombre de archivo fijo en la carpeta del nivel.** Dos procesos
+  corriendo las pruebas chocan con `PermissionError`. *Importancia: media · Urgencia: no
+  bloqueante* — solo muerde al correr las pruebas en paralelo, que es lo que hizo la apuesta 5.
+- 🔲 **`skills_compartidas.py:586` tiene el `reconfigure()` dentro de `__main__`.** Importarlo y
+  llamar a `_pruebas()` revienta con emoji. *Importancia: baja · Urgencia: no bloqueante.*
+- 🔲 **Los cinco `open(REGISTRO, "a")` del nivel siguen sin candado de disco.** Hoy no muerden
+  —hilos, no procesos—, y el día que E.2 lance un proceso, sí. *Importancia: alta · Urgencia: no
+  bloqueante.*
+- 🔲 **El disparador no está cableado a ningún agente real.** E.1 midió la mecánica, que es donde
+  estaba la sorpresa. *Importancia: media · Urgencia: no bloqueante.*
+- 🔲 **El coste del disparo doble no está medido, está multiplicado.** *Importancia: media ·
+  Urgencia: no bloqueante.*
+
+---
+
 ### 📏 BLOQUE F — Medir y decidir
 
 | # | Pieza | Produce |

@@ -1012,6 +1012,7 @@ el 2026-08-21, la lista decía DOS, y esa misma tarde se arreglaron dos:**
 | `08-avanzado/modelos.py` | ✅ **molde** (sesión 104): en pelado mide sobre tokens ya pagados a $0,00 · `--pruebas` la suite · `--trampa` ~$0,0001 · `--pagar` ~$0,046 |
 | `08-avanzado/compartida.py` | ✅ **molde** (sesión 106): **no tiene modo de pago** — ni una llamada al modelo. En pelado corre sus 28 pruebas · `--carrera` y `--entre-procesos` las tablas, las dos a $0,00. ⚠️ Las pruebas `P19-P21` lanzan procesos y tardan ~15 s |
 | `08-avanzado/skills_compartidas.py` | ✅ **molde** (sesión 107): **no tiene modo de pago.** En pelado corre sus 28 pruebas · `--tabla` el informe, las dos a $0,00. ⚠️ Su función `tokens()` **sí** llama a la API, pero al contador (`count_tokens`), que **no cobra** — y no la llama ni la suite ni la tabla: los tokens medidos están anclados en `TOKENS_MEDIDOS` con su fecha |
+| `08-avanzado/disparador.py` | ✅ **molde** (sesión 108): **no tiene modo de pago ni lo tendrá.** En pelado corre sus 67 pruebas y las cuatro tablas · `--informe` solo las tablas, todo a $0,00. ⚠️ Lanza `python` de verdad como procesos hijos (`--disparo`, `--candado`, `--turno`, `--atomico`): el trabajo que corren es **falso** y no toca la API. 📌 El informe del escalón 2 tarda ~2 min porque una fila mide un trabajo de 35 s con una espera de 60 s — es tiempo, no dinero |
 
 📌 **Los dos arreglados llevan el aviso con un precio MEDIDO, leído de su propio
 registro y no escrito a mano.** Un número copiado en un aviso es verdad el día
