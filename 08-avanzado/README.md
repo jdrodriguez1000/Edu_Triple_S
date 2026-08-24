@@ -4786,6 +4786,93 @@ oye**. Tercera vez en el día que la misma forma aparece, y la tercera es mía.
 
 ---
 
+---
+
+#### 🎲 D.2 — LA APUESTA, sellada el **2026-08-23** (sesión 107) **antes de la primera línea de código**
+
+> **El estudiante:** *«me uno a tu apuesta y trabajemos en D.2»* — se sellan las de esta
+> terminal tal cual. Van **doce sesiones seguidas** con este orden.
+>
+> Lo de abajo se escribió **después de leer `06b-memoria-skills/skills.py`, sus cuatro
+> `.md`, `worker.py`, `orquestador.py` y `fan_out.py`, y después de correr `skills.py` y
+> de contar los tokens del último fan-out pagado — y antes de tocar ninguno**. Los cinco
+> hechos del primer apartado están **contados, no adivinados**: cuestan $0,00 y no
+> contaminan lo apostado.
+
+##### Los cinco hechos contados (no son apuestas)
+
+| # | Dónde | Qué dice |
+|---|---|---|
+| 1 | `skills.py` corrido hoy | **El menú pesa 1961 caracteres** y los cuatro cuerpos pesan **11 928**. El menú es el **14 %** del conocimiento total… y es el único que **viaja en cada vuelta**. |
+| 2 | `skills.py` → `menu_como_texto()` | Su propio comentario ya lo dice: *«esto se paga en CADA vuelta»*. Está escrito pensando en **un agente**. La palabra «worker» no aparece en las 213 líneas. |
+| 3 | `registro_workers_*.jsonl`, corrida `c20260823T231228` | El fan-out real son **3 workers × 3 vueltas = 9 llamadas**, con **17 997 tokens de entrada** en total (1828 → 1994 → 2166 por worker). Ese es el denominador contra el que se mide todo lo de abajo. |
+| 4 | `worker.py:252` y todo el nivel 8 | **Ningún worker tiene skills.** No hay `leer_skill` en ninguna caja de herramientas. Igual que en D.1: **D.2 tiene que TRAER el problema, no encontrarlo.** |
+| 5 | `grep cache_control 08-avanzado/*.py` | **Cero coincidencias.** El nivel 8 entero paga el system prompt completo en cada llamada, trece sesiones seguidas. Y los tres workers comparten `SISTEMA_DIVISA` **carácter por carácter**. |
+
+##### Las seis apuestas
+
+**🎲 1 — El menú repetido cuesta MÁS que todo el conocimiento que reparte.**
+El menú existe para no pagar los cuerpos. La apuesta es que en este fan-out **se paga el
+truco más caro que la cosa que evita**: 1961 caracteres × 9 llamadas ≈ **17 600 caracteres
+de menú**, contra **11 928 de los cuatro cuerpos leídos una vez cada uno**. Si sale,
+la frase *«el menú es barato porque es el 14 %»* es verdadera por ficha y **falsa por
+corrida**. Se mide gratis, con `count_tokens` y con caracteres. **Pronóstico: sale, y por
+encima de 1,4×.**
+
+**🎲 2 — Recortar el menú por worker ahorra poco y reproduce la predicción del SOBRE.**
+Lo obvio es copiar `HERRAMIENTAS_DIVISA`: que el worker del dólar vea solo su ficha. Apuesto
+**las dos mitades**: (a) el ahorro es **menor del 15 % de la entrada total**, porque el menú
+no es lo que domina los 17 997 tokens — las herramientas y el historial sí; y (b) el worker
+recortado **pierde exactamente lo que el `SOBRE.md` predijo para las herramientas**: no puede
+avisar de una regla que no ve. 🔑 **Es A.3 y A.4 otra vez, y en la capa que nadie miraba:
+hasta hoy el aislamiento se había medido en lo que el worker puede HACER; esta es la primera
+vez en lo que el worker SABE.**
+
+**🎲 3 — Compartir desde arriba sale MÁS CARO que no compartir, y con este fan-out siempre.**
+La solución elegante —que el orquestador lea la skill una vez y baje el cuerpo a los tres
+workers— **pierde** cuando los que la necesitan son menos de dos. En el fan-out de divisas
+cada worker atiende **una moneda independiente**: o ninguno necesita `normas-cambiarias`, o
+la necesita uno. Bajarla a los tres paga **3× un cuerpo que dos tiran**. 🔑 Apuesto que el
+punto de equilibrio es **≥ 2 workers que la pidan**, y que este fan-out **nunca lo alcanza**.
+Si sale, el titular es feo y útil: **un mecanismo de compartir que en el caso real cuesta
+más que la duplicación que venía a arreglar.**
+
+**🎲 4 — El caché de prompt le cambia el signo a las tres anteriores, y por eso las tres
+anteriores se miden ANTES de tocarlo.** Los tres workers comparten el system prompt carácter
+por carácter (hecho 5). Apuesto que con el menú dentro de un bloque cacheado, **de las 9
+llamadas solo la primera lo paga entero** y las otras 8 lo leen barato. ⚠️ Y apuesto también
+el borde que lo puede tumbar: **hay un mínimo de tokens por debajo del cual el caché
+sencillamente no se activa**, y el system prompt del worker **puede estar por debajo**. Si el
+mínimo muerde, la apuesta 4 falla **sin que nadie vea un error** — el caché no da un aviso
+cuando no se aplica, da una factura igual. **`LM.15` con forma de descuento que no llegó.**
+
+**🎲 5 — Lo que en D.1 rompía, aquí no rompe — y el motivo es que aquí nadie escribe.**
+`leer_skill()` **relee los cuatro archivos del disco en cada llamada**. Apuesto que 12 hilos
+llamándola en paralelo dan **0 errores y 0 cuerpos equivocados**, contra el 49,5 % de datos
+perdidos que dio la memoria compartida con dos escritores. 🔑 **La asimetría es el titular
+del bloque D entero: D.1 era escribir y D.2 es leer, y lo compartido solo duele cuando
+alguien lo cambia.** El coste de releer 12 000 caracteres del disco 480 veces **es real y es
+invisible**, porque no sale en la factura de la API.
+
+**🎲 6 — Y la deuda que va a aparecer no es de dinero: dos workers de la MISMA corrida
+pueden leer versiones DISTINTAS de la misma skill, y el registro no lo dice.**
+Nada en `skills.py` fija una versión: cada `leer_skill()` abre el `.md` **otra vez**. Si el
+archivo cambia a mitad del fan-out, el worker del dólar y el del euro trabajan con reglas
+distintas **y los dos devuelven contratos completos, verdes y coherentes consigo mismos**.
+🔑 Es `LM.66` en la capa del conocimiento: **el cuerpo de la skill está SOLO en su renglón —
+ningún otro dato del contrato puede desmentirlo.** Apuesto que se puede provocar en una
+prueba gratis, y que hoy **no hay dónde leer que pasó**.
+
+##### 🔒 Lo que NO se toca en D.2
+
+- **`06b-memoria-skills/skills.py` no se edita, ni sus cuatro `.md`.** Mismo motivo que
+  `memoria.py` en D.1 y que `agente.py` en A.1: es código medido de otro nivel, y **el valor
+  de una medición vieja depende de que su código siga siendo el mismo.** D.2 trabaja sobre
+  una pieza propia en `08-avanzado/`.
+- **El sobre del bloque 0 sigue cerrado.** Nada de D.2 puede cambiar la configuración del duelo.
+- **Las apuestas 1, 2 y 3 se miden ANTES de que exista una línea de caché.** Si el caché entra
+  primero, los tres números de arriba dejan de ser comparables con las trece sesiones anteriores.
+
 ### ⏰ BLOQUE E — Agentes programados
 
 **El que se había caído del plan.** Y no es un adorno: es la única parte del nivel
