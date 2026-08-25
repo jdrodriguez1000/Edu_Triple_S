@@ -6167,6 +6167,85 @@ falta.** Por eso `P5` exige que cada hueco diga **por qué** lo es, y `P6` que *
 
 ---
 
+#### 🎲 E.1 · LA DEUDA DEL CANDADO — LA APUESTA, sellada el **2026-08-25** (sesión 112) **antes de la primera línea de código**
+
+La deuda que se paga hoy, tal como quedó anotada ayer:
+
+> 📎 *Candado de disco: `worker.py` y `orquestador.py` tienen DOS objetos `Lock()` distintos
+> y `presupuesto.py:823` apunta los dos al mismo archivo. **Alta, BLOQUEANTE para F.3.**
+> El arreglo tiene forma conocida: un candado por ARCHIVO, viviendo junto al archivo, como
+> hizo `compartida.py` con `_CANDADO_HILOS`.*
+
+##### Lo que se contó ANTES de apostar (leído del código y MEDIDO en el disco, $0,00)
+
+| # | Qué se contó | Cuánto salió |
+|---|---|---|
+| 1 | Módulos con su propio `anotar` + su propio `Lock` | **4**, no 2: `orquestador.py:212`, `worker.py:501`, `router.py:183`, `supervisor.py:111` |
+| 2 | Archivos de registro distintos por defecto | **4** — hoy no se pisan |
+| 3 | Sitios que hoy juntan dos módulos en UN archivo | **1**: `presupuesto.py:823-824`. `registro_desviado()` da un temporal **por módulo**: no colisiona |
+| 4 | Líneas partidas en `registro_pruebas_gratis.jsonl` | **1** — la 626, cola de 321 bytes de un `worker_fin` de ~818 |
+| 5 | ¿Cabe una línea en el buffer de 8192? | **sí**: el `worker_fin` más gordo mide **818 bytes**. La hipótesis «se partió por el buffer» queda **muerta, medida** |
+| 6 | 1 proceso · 2 hilos · **dos** candados (como hoy) | **54 malas**, 49 perdidas de 6000 |
+| 7 | 2 procesos · un candado cada uno | **329 malas**, 265 perdidas de 6000 |
+| 8 | 1 proceso · 2 hilos · **un** candado compartido | **0 malas, 0 perdidas** |
+| 9 | 2 procesos · **candado de DISCO** de `compartida.py` | **0 malas, 0 perdidas** |
+
+🚨 **Y una medición que casi sale falsa siendo yo el culpable:** el primer experimento usó
+todas las líneas **del mismo tamaño** y dio **0 malas** — con el bicho delante. La cola
+sobrevive solo cuando una línea **corta** pisa la cabeza de una **larga**. Un experimento con
+datos más limpios que los reales **absuelve al culpable**.
+
+##### 🎲 Las cuatro apuestas
+
+**🎲 1 — EL ARREGLO ESCRITO EN LA DEUDA ES LA MITAD DEL ARREGLO, y la mitad que falta es la que mordió.**
+La deuda prescribe *«como `_CANDADO_HILOS`»*, que es un `threading.Lock` — y **un candado de
+hilos no cruza procesos**. Apuesto que el candado compartido cierra la fila 6 y **deja la fila 7
+intacta**, y que hacen falta **los dos**: uno por archivo para los hilos, y el de disco para los
+procesos.
+⚠️ **Falsable:** si al cerrar un solo candado de hilos por archivo pone la fila 7 en cero, esta falla.
+
+**🎲 2 — LO QUE AMENAZA A F.3 NO ES LA LÍNEA ROTA: ES LA QUE DESAPARECE SIN RUIDO.**
+La línea rota **grita** (`JSONDecodeError`) y por eso se vio. La perdida **calla**: en la fila 7
+se esfumaron **265 de 6000** sin un solo error. El duelo se puntúa **contando eventos**, así que
+una corrida pagada a la que le faltan eventos da un veredicto **tranquilo y falso**.
+⚠️ **Falsable:** si al contar sale que las perdidas son 0 siempre que las malas son 0, esta falla
+— y la fila 7 del conteo ya dice que no.
+
+**🎲 3 — LA PRUEBA QUE CUENTA MALAS NO BASTA, Y NACERÍA VERDE.**
+Apuesto que una prueba que solo valide JSON **pasa** mientras se pierden líneas. Por eso hoy hay
+que contar **6000 de 6000**, no «6000 válidas».
+⚠️ **Falsable:** si la prueba de líneas malas se pone roja sola ante la pérdida, esta falla.
+
+**🎲 4 — El candado de disco en el camino caliente CUESTA tiempo, y F.3 paga por tiempo.**
+Apuesto que se nota y que **aun así compensa**. No lo prometo: lo mido, con el número antes y
+después, y si el precio es malo se dice y se decide con él delante.
+⚠️ **Falsable:** cualquier cierre que diga «no se notó» sin un número al lado.
+
+##### 💰 La horquilla del coste, sellada antes de tocar nada
+
+**$0,000000.** Esta sesión no llama a la API: los cuatro escenarios se miden con archivos y
+procesos de Python, sin modelo. **Octava sesión seguida a cero.**
+⚠️ **Falsable:** un solo `llamada_api` en un registro pagado la tumba.
+
+##### 🕵️ El sospechoso de hoy
+
+**El que escribe el arreglo es el mismo que escribe el experimento que lo absuelve** — y hoy ya
+pasó una vez: el conteo 6 salió **0 malas** en su primer intento, con líneas del mismo tamaño.
+Séptima sesión seguida nombrándolo. Dos defensas, y las dos en el código:
+
+1. Una prueba que **reproduzca el bicho primero** y falle si NO lo reproduce. Un arreglo que no
+   ha visto morder a su bicho es una nota (`LM.13`).
+2. Una prueba que cuente **líneas esperadas**, no líneas válidas.
+
+##### 🔒 Lo que NO se toca
+
+- **La línea 626 sigue partida.** Decisión suya, tomada hoy: es la evidencia del bicho.
+  Repararla borraría lo único que demuestra que esto mordió de verdad (`LM.65`).
+- **Los registros pagados.** Ni una línea.
+- **El sobre del bloque 0.** Sigue cerrado; lo abre F.3.
+
+---
+
 ## 🔒 ANTES DE ABRIR EL SOBRE — lo que F.3 tiene que leer primero
 
 *(escrito al cerrar la sesión 111, con F.1 y F.2 ya cerradas)*
