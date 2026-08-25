@@ -5876,6 +5876,94 @@ Dos defensas, y las dos en el código, no en la intención:
 - **El sobre del bloque 0.** Sigue cerrado; lo abre F.3.
 
 
+
+#### 📊 F.1 · LA DEUDA — LO QUE SALIÓ *(sesión 111 · `origen` en `worker.py` + `orquestador.py` + `atribuidor.py` + `presupuesto.py` · **34 + 61 comprobaciones verdes** · **$0,000000**)*
+
+##### 🎲 Las cuatro apuestas, una por una
+
+**🟢 1 — GANADA, y era el hallazgo de verdad.** `origen` **no puede valer `"modelo"`**, y no
+por decisión de estilo: `orquestador.py:402` arma la frase en Python y el modelo solo aporta
+`monto` y `moneda`. **El harness escribe el encargo SIEMPRE.** La deuda pedía distinguir *«lo
+escribió el modelo o el harness»* y esa pregunta no tiene sentido aquí: lo que el modelo elige
+es **el destino**. Los valores son `plantilla` y `experimento`. → `LM.101`.
+
+**🟢 2 — GANADA, fila por fila.** Sobre las 7 corridas ya grabadas: **`{ok: 18, no_comprobable: 3}`**.
+Cero culpables, tres no comprobables — el par exacto que se selló. `P33` lo vigila.
+
+**🟢 3 — GANADA. $0,000000, sexta sesión seguida a cero.** El campo se decide **arriba**, antes de
+bajar, así que un espía en lugar de `correr_worker` basta para ver las dos ramas grabarse
+(`P30`-`P32` de `presupuesto.py`). Ni una llamada a la API en todo el día.
+
+**🟢 4 — GANADA, y obligó a partir el estado en dos.** El escritor tiene 2 valores; el lector
+tiene **3 casos**, porque existe la ausencia. Y no bastaba con un estado nuevo: hicieron falta
+**dos**, porque `no_atribuible` («se sabe, y no es de nadie») y `no_comprobable` («no se sabe»)
+son cosas distintas y confundirlas es la mentira. → `LM.100`.
+
+##### 🔑 EL TITULAR: el instrumento hoy SABE MENOS que ayer, y por eso hoy acierta
+
+| | ayer (sesión 110) | hoy (sesión 111) |
+|---|---|---|
+| encargos que no corresponden | 3 | 3 |
+| lo que dice el informe | **`orquestador`** | **`no_comprobable`** |
+| ¿era cierto? | **no** — hubo que ir a `presupuesto.py:406` a mano | **sí** |
+
+**El número empeoró y el instrumento mejoró.** Es `LM.100`: un campo se añade **hacia adelante**,
+los registros viejos no se reescriben (`LM.65`), y esa temporada de *«no consta»* **es la
+evidencia de que el campo faltaba**. La próxima corrida por el orquestador ya dirá `experimento`
+con todas las letras.
+
+##### 🕵️ La defensa contra el sospechoso, y se puede señalar el renglón
+
+El sospechoso sellado: *«el que escribe `origen=` decide también qué significa cada valor y elige
+las torceduras»*. Las dos defensas están en el código:
+
+- **`P27`** — encargo torcido **sin** `origen` → `no_comprobable`. Si alguien decide que la
+  ausencia «seguramente era plantilla», esta prueba se pone roja.
+- **`P28`-`P30`** — **la misma frase torcida, tres veces**, cambiando solo el campo:
+  `experimento` / `orquestador` / `no_comprobable`. **Si `origen` no cambiara nada, `P30` es roja.**
+- **`P31`** — un `origen="plantila"` con una errata **revienta antes de grabar**. Sin esto, una
+  errata se leería como la ausencia que este campo vino a hacer visible.
+- **`P32`** — `revisar_encargo` **no** añade una casilla 12. `LM.97` sigue en pie: el juicio
+  congelado no se toca, esto es una capa **encima**.
+- **`P26`** — los valores del lector coinciden con los del escritor, comprobado contra el archivo.
+
+##### 📌 Dónde quedó cada pieza
+
+| Archivo | Qué hace |
+|---|---|
+| `worker.py` | `ORIGEN_PLANTILLA` / `ORIGEN_EXPERIMENTO`, el parámetro, el freno del valor inventado, y lo graba en **`worker_inicio` y en `worker_fin`** |
+| `orquestador.py` | **el único que sabe la respuesta**: `plantilla` en la línea 402, `experimento` en la rama del override de C.2 |
+| `atribuidor.py` | `origen_de()` (la ausencia nunca es un valor), `revisar_encargo()`, dos estados nuevos, escalón 3 reescrito |
+| `presupuesto.py` | las pruebas del **escritor**, y viven aquí porque `ENCARGOS_DESIGUALES` es de aquí |
+
+📌 `origen` viaja **en los dos eventos**, no solo en `worker_inicio` como pedía la deuda: el
+atribuidor lee `worker_fin`, y **un campo que califica a otro tiene que estar donde esté el
+calificado** — si no, se separan la primera vez que alguien lee solo una de las dos mitades.
+
+##### 🚨 UN HALLAZGO LATERAL, Y NO ES DE HOY
+
+**Importancia: alta · Urgencia: NO bloqueante.** `avisador.py` **sale con 1**, y ya salía con 1
+**antes de tocar nada hoy** (comprobado sobre el árbol limpio con `git stash`). Fallan `P8`, `P9`
+y `P12`: llevan clavados los números de la sesión 109 —*1520 líneas, 163 avisos*— y los cuentan
+sobre `registro_pruebas_gratis.jsonl`, que **está en `.gitignore` y crece cada vez que alguien
+corre las pruebas gratis**. Hoy hay 1521 líneas y 767 en ese archivo.
+
+🔑 **Es una prueba que no puede volver a estar verde nunca**, porque mide algo que aumenta solo.
+Y el daño no es el rojo: es que **una suite siempre roja enseña a no mirar el rojo**. Se deja
+anotado y sin arreglar a propósito: decidir si ese número se congela o se vuelve relativo es una
+decisión del bloque E, no de F.
+
+##### Lo que queda escrito
+
+| | |
+|---|---|
+| Archivos | `worker.py`, `orquestador.py`, `atribuidor.py`, `presupuesto.py` |
+| Pruebas | `atribuidor.py` **34 verdes** (eran 24) · `presupuesto.py` **61 verdes** (eran 58) · **13 nuevas** |
+| Coste | **$0,000000** — sexta sesión seguida |
+| Apuestas | **4 de 4** |
+| Sin tocar | los registros pagados (131 y 405, el portero lo confirma), el juez, las 11 casillas |
+| Lecciones | `LM.100`, `LM.101` |
+
 ---
 
 ### 🏁 BLOQUE G — Cierre

@@ -58,6 +58,7 @@ workers se lanzan es EL MODELO de arriba, en tiempo de ejecución.
 """
 
 import threading
+from collections import defaultdict
 from pathlib import Path
 
 # La cadena es limpia y en un solo sentido: presupuesto -> worker -> agente.
@@ -1316,6 +1317,69 @@ def _pruebas():
     check("P29 · el primero es el primer ACIERTO: un fallo previo no lo bloquea",
           d_r["moneda"] == "CAD" and d_r["tasa"] == 2219.77,
           "moneda=%s tasa=%s" % (d_r["moneda"], d_r["tasa"]))
+
+    # --- P30-P32 · 📎 F.1 · LA DEUDA: EL ESCRITOR DEL CAMPO `origen` ------
+    #
+    # 🔑 Y esta prueba vive AQUÍ y no en `atribuidor.py` a propósito: el encargo
+    #    torcido es de C.2, y C.2 es este archivo. `ENCARGOS_DESIGUALES` está
+    #    veinte líneas más arriba. El que puso la trampa es el que tiene que
+    #    demostrar que ahora la trampa se declara.
+    #
+    # ⚠️ La sesión 110 midió que el atribuidor veía 3 encargos que no
+    #    correspondían a la tarea y culpaba al ORQUESTADOR — y era falso: los
+    #    torció esta constante, a mano. Faltaba el campo que lo dijera.
+    #
+    # 💸 Sin una sola llamada a la API: se sustituye `correr_worker` por un
+    #    espía. `origen` se decide ARRIBA, antes de bajar, y por eso se puede
+    #    ver sin pagar. (Era la apuesta 3 del día.)
+    _visto = {}
+
+    def _espia(encargo, **kw):
+        _visto["encargo"] = encargo
+        _visto["origen"] = kw.get("origen")
+        return {"worker": kw.get("nombre"), "texto": "-", "datos": None,
+                "faltan": None, "discrepa": None, "ok": True, "motivo": None,
+                "vueltas": 1, "llamadas_api": 0, "herramientas": [],
+                "entrada_tokens": 0, "salida_tokens": 0, "coste_usd": 0.0,
+                "peor_llamada_usd": 0.0, "estimaciones_cortas": 0,
+                "segundos": 0.0, "modelo": "-", "esfuerzo": "-",
+                "encargo": encargo, "origen": kw.get("origen")}
+
+    _correr_real = w.correr_worker
+    w.correr_worker = _espia
+    try:
+        # (a) sin `encargos`: la frase sale del molde de Python
+        # `defaultdict(int)`: la contabilidad de verdad la arma
+        # `correr_orquestador`, y aquí solo hace falta que los contadores
+        # existan. Lo que se mide es `origen`, no la factura.
+        orquestador.herramienta_consultar_moneda(
+            1000, "CAD", defaultdict(int, {"encargos": None, "detalle": []}), verboso=False)
+        origen_normal, encargo_normal = _visto["origen"], _visto["encargo"]
+
+        # (b) con `encargos`: la frase la clava ESTE archivo
+        orquestador.herramienta_consultar_moneda(
+            1000, "CAD", defaultdict(int, {"encargos": ENCARGOS_DESIGUALES,
+                              "detalle": []}),
+            verboso=False)
+        origen_torcido, encargo_torcido = _visto["origen"], _visto["encargo"]
+    finally:
+        w.correr_worker = _correr_real
+
+    check("P30 · el encargo normal baja marcado como `plantilla`",
+          origen_normal == w.ORIGEN_PLANTILLA,
+          "origen=%r encargo=%r" % (origen_normal, encargo_normal[:40]))
+
+    check("P31 · el encargo de ENCARGOS_DESIGUALES baja como `experimento`",
+          origen_torcido == w.ORIGEN_EXPERIMENTO,
+          "origen=%r" % (origen_torcido,))
+
+    # 🚨 P32 · Y AQUÍ ESTÁ LA DEUDA CERRADA, EN UNA LÍNEA: los dos encargos son
+    #    DISTINTOS y los dos `origen` también. Ayer el registro guardaba el
+    #    primer dato y no el segundo, y por eso los dos casos se veían iguales.
+    check("P32 · MUERDE: dos encargos distintos, y ahora el registro dice de quién",
+          encargo_normal != encargo_torcido
+          and origen_normal != origen_torcido,
+          "%r vs %r" % (origen_normal, origen_torcido))
 
     w.REGISTRO, orquestador.REGISTRO = _reg_w, _reg_o
 

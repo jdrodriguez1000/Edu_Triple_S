@@ -109,7 +109,21 @@ CULPAS = (
     "esquema:contrato",
     "esquema:aislamiento",
     "no_atribuible",
+    # --- 📎 F.1 · LA DEUDA — los dos que añade el campo `origen` ----------
+    # 🚨 Y son DOS porque son dos cosas distintas, y confundirlas es el bicho:
+    #    `no_atribuible`  = SE SABE lo que pasó y no es de ninguna de las dos
+    #                       capas (dos testigos que no se ponen de acuerdo).
+    #    `no_comprobable` = NO SE SABE. Falta el dato con el que se decidiría.
+    #    Un auditor que llama verde a lo segundo miente por omisión; uno que lo
+    #    llama `no_atribuible` miente diciendo que ya lo miró.
+    "experimento",      # lo torció un instrumento de medida, no una capa
+    "no_comprobable",   # la línea no declara `origen` y sin él no hay respuesta
 )
+
+# Los valores que el escritor puede poner. Se repiten a propósito en vez de
+# importarse de `worker.py`, por el mismo motivo que las 11 casillas: si un día
+# dejan de coincidir, `P26` lo dice en voz alta.
+ORIGENES = ("plantilla", "experimento")
 
 # Las 11 casillas, copiadas de `juez_duelo.py`. Se repiten a propósito y no se
 # importan: si un día las dos listas dejan de coincidir, `P2` lo dice en voz
@@ -230,6 +244,81 @@ def _contrato_de_otra_moneda(w, codigo):
     """
     datos = w.get("datos") or {}
     return bool(datos) and datos.get("moneda") not in (None, codigo)
+
+
+def origen_de(w):
+    """Quién escribió el encargo de este worker, o `None` si nadie lo dijo.
+
+    🚨 AQUÍ VIVE LA DEFENSA DE LA APUESTA 4, y cabe en el `if`: cualquier cosa
+       que no esté en `ORIGENES` —la ausencia, `None`, una errata, un valor
+       inventado por un futuro yo— sale como **no declarado**. Nunca como el
+       valor cómodo.
+
+    🔑 Tratar la ausencia como `plantilla` sería `LM.98` calcado: leer un dato
+       que nadie puso como si fuera una declaración de la parte. Las 172 líneas
+       ya grabadas no lo llevan, y ese silencio es el hallazgo, no un detalle a
+       rellenar con el valor más probable.
+    """
+    o = (w or {}).get("origen")
+    return o if o in ORIGENES else None
+
+
+def encargo_no_corresponde(encargo, tarea):
+    """El cruce más tonto que se puede escribir: ¿el encargo pide algo que la
+    tarea de arriba no pedía? La tarea pide UNA conversión por moneda; el
+    encargo caro de C.2 pide una CADENA de tres eslabones.
+
+    ⚠️ Es deliberadamente estrecho y no pretende ser un detector general. Su
+       valor no está en cuántos casos caza: está en que **el único que caza ya
+       demostró que el hecho y el culpable son dos preguntas distintas.**
+    """
+    return "ese resultado" in (encargo or "").lower()         and "ese resultado" not in (tarea or "").lower()
+
+
+def revisar_encargo(corrida):
+    """📎 F.1 · LA DEUDA CERRADA — de quién es un encargo que no corresponde.
+
+    Devuelve `{moneda: (culpa, motivo)}`.
+
+    🔒 Y NO ES UNA CASILLA NUEVA. Las 11 siguen siendo 11 (`LM.97`: el
+       instrumento se congela cuando el primer contendiente ya pasó por él, y el
+       contendiente A ya está pagado). Esto es una capa ENCIMA, que es lo que
+       `LM.97` sí deja añadir: se lee aparte, no entra en `revisar_corrida()` y
+       no toca el reparto de las casillas juzgadas.
+
+    🚨 La misma frase torcida sale con TRES dueños distintos según quién la
+       escribiera — y ese es exactamente el dato que ayer no existía.
+    """
+    tarea = corrida.get("tarea") or ""
+    fuera = {}
+    for moneda in MONEDAS:
+        w = corrida["workers"].get(moneda)
+        if w is None:
+            fuera[moneda] = ("no_atribuible", "no hay worker_fin en la corrida")
+            continue
+
+        if not encargo_no_corresponde(w.get("encargo"), tarea):
+            # El cruce no saltó: no hay nada que atribuir. Aquí la ausencia de
+            # `origen` da igual, y por eso este `ok` sí es honesto — no se está
+            # callando una pregunta, es que no se hizo ninguna.
+            fuera[moneda] = ("ok", "")
+            continue
+
+        origen = origen_de(w)
+        if origen is None:
+            fuera[moneda] = ("no_comprobable",
+                             "el encargo no corresponde a la tarea y la línea no "
+                             "declara `origen`: no se puede saber si lo torció el "
+                             "orquestador o lo clavó un experimento")
+        elif origen == "experimento":
+            fuera[moneda] = ("experimento",
+                             "lo clavó a mano un instrumento de medida "
+                             "(ENCARGOS_DESIGUALES de C.2), no lo enrutó nadie")
+        else:
+            fuera[moneda] = ("orquestador",
+                             "salió de la plantilla del orquestador y aun así no "
+                             "corresponde a la tarea que le encargaron arriba")
+    return fuera
 
 
 def revisar_moneda(criterio, moneda, corrida):
@@ -467,40 +556,53 @@ def informe_escalon_2():
 
 
 def informe_escalon_3():
-    """La única fila `orquestador` de todo lo grabado, y por qué no es suya."""
-    print("\n" + "=" * 74)
-    print("[F.1 · escalón 3] 🎁 el cruce acierta en el HECHO y se equivoca en el CULPABLE")
+    """El cruce que ayer acertaba en el HECHO y erraba el CULPABLE — y que hoy
+    dice en voz alta que NO PUEDE SABERLO sobre lo ya grabado.
+
+    🔑 Ayer este informe daba un culpable (`orquestador`) y estaba equivocado, y
+       para desmentirlo hubo que ir a `presupuesto.py:406` a mano. Hoy da un
+       «no lo sé» y es correcto. **Un instrumento que confiesa vale más que uno
+       que acierta el hecho y falla el nombre.**
+    """
+    print()
+    print("=" * 74)
+    print("[F.1 · escalón 3] 📎 LA DEUDA CERRADA: quién escribió el encargo")
     print("=" * 74)
 
     corridas = corridas_grabadas()
-    torcidos = []
+    total = Counter()
+    filas = []
     for c, corr in corridas.items():
-        tarea = (corr["tarea"] or "").lower()
-        for moneda in MONEDAS:
-            w = corr["workers"][moneda]
-            enc = w.get("encargo") or ""
-            # ⭐ El cruce más tonto que se puede escribir, y salta de verdad:
-            #    la tarea pide UNA conversión por moneda; este encargo pide tres.
-            if "ese resultado" in enc.lower() and "ese resultado" not in tarea:
-                torcidos.append((c, moneda, enc))
+        for moneda, (culpa, motivo) in revisar_encargo(corr).items():
+            total[culpa] += 1
+            if culpa != "ok":
+                filas.append((c, moneda, culpa, motivo))
 
-    print(f"\n  encargos que NO corresponden a la tarea de arriba: {len(torcidos)}")
-    for c, moneda, enc in torcidos:
-        print(f"     {c}  [{moneda}]  {enc[:58]}...")
+    print()
+    print(f"  corridas leídas: {len(corridas)}   ·   "
+          f"casillas de encargo: {sum(total.values())}")
+    print("  " + "   ·   ".join(f"{k} {v}" for k, v in sorted(total.items())))
 
-    print("\n  ⚠️ Y aquí hay que corregirse en voz alta, porque el dato es correcto")
-    print("     y la conclusión fácil era falsa. Fui a ver QUIÉN torció ese encargo:")
-    print("     NO fue el orquestador. Está fijo a mano en `presupuesto.py:406`,")
-    print("     `ENCARGOS_DESIGUALES`, puesto a propósito por C.2 para que el CAD")
-    print("     saliera caro y se pudiera medir el reparto del presupuesto.")
-    print("\n  🔑 El registro no tiene forma de distinguirlo: `encargo` está grabado,")
-    print("     pero QUIÉN LO ESCRIBIÓ, no. Es `LM.92` de ayer con otra ropa —")
-    print("     un encargo que no corresponde a la tarea se ve IDÉNTICO cuando lo")
-    print("     torció el orquestador y cuando lo clavó a mano un experimento.")
-    print("\n  📎 Deuda anotada, no arreglada hoy: falta un campo `origen` en")
-    print("     `worker_inicio` que diga si el encargo lo escribió el modelo o el")
-    print("     harness. No se añade ahora porque reescribir los registros borraría")
-    print("     la evidencia de que faltaba (`LM.65`, y está en el sobre).")
+    print()
+    print(f"  encargos que NO corresponden a la tarea de arriba: {len(filas)}")
+    for c, moneda, culpa, motivo in filas:
+        print(f"     {c}  [{moneda}]  →  {culpa.upper()}")
+        print(f"        {motivo}")
+
+    print()
+    print("  AYER: el cruce saltó en 3 corridas, el informe dijo `orquestador`,")
+    print("     y hubo que ir a `presupuesto.py:406` A MANO para desmentirlo.")
+    print()
+    print("  HOY: esas mismas 3 salen `no_comprobable`. Y NO es un empeoramiento:")
+    print("     es la primera vez que el instrumento dice «no lo sé» en lugar de")
+    print("     dar un culpable que resultó ser falso.")
+    print()
+    print("  ⚠️ El campo se añade HACIA ADELANTE. Los registros viejos no se")
+    print("     reescriben (`LM.65`), y por eso la evidencia de que faltaba sigue")
+    print("     en el disco: estos 3 `no_comprobable` SON esa evidencia.")
+    print()
+    print("  ⭐ La próxima corrida que pase por el orquestador ya trae el campo,")
+    print("     y entonces esta misma línea dirá `EXPERIMENTO` con todas las letras.")
 
 
 def informe_escalon_4():
@@ -771,6 +873,93 @@ def _pruebas():
         check("P24 · las 11 casillas coinciden con las de juez_duelo.py",
               all(f'"{c}"' in t for c in CASILLAS),
               "si divergen, el atribuidor calificaría casillas que el juez no juzga")
+
+    # =====================================================================
+    #  P25-P33 · 📎 F.1 · LA DEUDA CERRADA: el campo `origen`
+    # =====================================================================
+    #  🕵️ El sospechoso sellado hoy: «el que escribe `origen=` es el mismo que
+    #     decide qué significa cada valor Y el mismo que elige las torceduras».
+    #     Las dos defensas están abajo, en el código y no en la intención:
+    #     P27 exige que la AUSENCIA no salga verde, y P28-P30 pasan la MISMA
+    #     frase torcida tres veces cambiando solo `origen`.
+
+    ENC_TORCIDO = ("Convierte 1000 CAD a pesos colombianos. Después convierte "
+                   "ESE RESULTADO en pesos a dólares estadounidenses.")
+
+    def _con_encargo(origen, encargo=ENC_TORCIDO, moneda="cad"):
+        c = _corrida_falsa()
+        c["workers"][moneda]["encargo"] = encargo
+        if origen is not None:
+            c["workers"][moneda]["origen"] = origen
+        return c
+
+    # --- P25: el cruce no ensucia una corrida sana -------------------------
+    check("P25 · con encargos normales, el cruce no produce ninguna culpa",
+          set(cu for cu, _ in revisar_encargo(_corrida_falsa()).values()) == {"ok"},
+          str(revisar_encargo(_corrida_falsa())))
+
+    # --- P26: el contrato con el ESCRITOR ----------------------------------
+    #     Los valores están copiados de `worker.py`, no importados, por el mismo
+    #     motivo que las 11 casillas. Si divergen, el lector clasificaría como
+    #     «no declarado» algo que sí se declaró — y eso sale verde y es mentira.
+    w_py = (AQUI / "worker.py")
+    if w_py.exists():
+        t = w_py.read_text(encoding="utf-8")
+        check("P26 · los `origen` del lector coinciden con los del escritor",
+              all(('= "' + o + '"') in t for o in ORIGENES),
+              "si divergen, un valor real se leería como ausencia")
+
+    # --- P27: 🚨 LA DEFENSA 1 · la ausencia NO es verde --------------------
+    culpa, motivo = revisar_encargo(_con_encargo(None))["cad"]
+    check("P27 · APUESTA 4 · encargo torcido SIN `origen` -> NO_COMPROBABLE",
+          culpa == "no_comprobable", culpa + ": " + motivo)
+    check("P27b · ...y no se cuela como `ok` ni como el valor cómodo",
+          culpa not in ("ok", "plantilla") and bool(motivo))
+
+    # --- P28-P30: 🚨 LA DEFENSA 2 · el MISMO encargo, tres dueños ----------
+    #     Entre las tres cambia UNA sola cosa: el campo. Si `origen` no cambiara
+    #     nada, las tres darían lo mismo y P30 se pondría roja.
+    a = revisar_encargo(_con_encargo("experimento"))["cad"][0]
+    b = revisar_encargo(_con_encargo("plantilla"))["cad"][0]
+    check("P28 · el mismo encargo torcido, `origen=experimento` -> EXPERIMENTO",
+          a == "experimento", a)
+    check("P29 · el mismo encargo torcido, `origen=plantilla` -> ORQUESTADOR",
+          b == "orquestador", b)
+    check("P30 · MUERDE: las tres lecturas del MISMO texto son distintas",
+          len({a, b, culpa}) == 3, a + " / " + b + " / " + culpa)
+
+    # --- P31: el escritor rechaza un valor inventado -----------------------
+    #     Sin esto, un `origen="plantila"` con una errata se grabaría igual y
+    #     saldría como «no declarado»: un bicho disfrazado de la ausencia que
+    #     este campo vino a hacer visible. LM.13 — el freno tiene que morder.
+    try:
+        import worker as _w
+        try:
+            _w.correr_worker("da igual", nombre="usd", origen="plantila",
+                             verboso=False)
+            mordio = False
+        except ValueError:
+            mordio = True
+        except Exception:
+            mordio = False      # llegó más lejos: el freno NO cortó a tiempo
+        check("P31 · MUERDE: un `origen` con errata revienta ANTES de grabar",
+              mordio, "un valor inventado no puede llegar al registro")
+    except ImportError:
+        pass
+
+    # --- P32: la capa nueva NO toca el juicio congelado (LM.97) ------------
+    check("P32 · `revisar_encargo` no añade casillas a las 11 del juez",
+          set(revisar_corrida(_con_encargo("experimento"))) ==
+          set(revisar_corrida(_corrida_falsa())) and len(CASILLAS) == 11,
+          "es una capa ENCIMA, no una casilla 12")
+
+    # --- P33: la apuesta 2, medida contra el disco -------------------------
+    reales = Counter()
+    for corr_real in corridas_grabadas().values():
+        reales.update(cu for cu, _ in revisar_encargo(corr_real).values())
+    check("P33 · APUESTA 2 · sobre lo YA grabado: 0 culpables, 3 no comprobables",
+          reales.get("orquestador", 0) == 0 and reales.get("no_comprobable", 0) == 3,
+          str(dict(reales)))
 
     print(f"\n  → {len(fallos)} en rojo." if fallos else "\n  → todas verdes.")
     return fallos

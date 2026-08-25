@@ -400,6 +400,15 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
     # deliberado: así el worker recibe siempre la misma forma de petición y las
     # tres monedas son comparables entre sí.
     encargo = f"Convierte {monto} {moneda} a pesos colombianos."
+    # 📎 F.1 · LA DEUDA — Y AQUÍ SE VE POR QUÉ ESTABA MAL ENUNCIADA.
+    #    La deuda pedía distinguir «lo escribió el modelo o el harness». Mira la
+    #    línea de arriba: **el harness lo escribe SIEMPRE**. El modelo de arriba
+    #    solo eligió `monto` y `moneda` — el DESTINO, no el texto.
+    # 🔑 Por eso el valor es `plantilla` y no `modelo`: dice que la frase salió
+    #    del molde de Python aplicado al destino que pidió el modelo. Si mañana
+    #    el enrutado se tuerce, el texto será el correcto y la moneda no: lo que
+    #    delata un enrutado torcido no es esta frase, es `pedido` contra `datos`.
+    origen = worker.ORIGEN_PLANTILLA
 
     # ⭐ C.2 · CIERRE — EL ENCARGO DESIGUAL, Y ES LA OBLIGACIÓN QUE LLEVABA DOS
     #    SESIONES SIN PAGARSE.
@@ -415,6 +424,11 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
     encargos = contabilidad.get("encargos")
     if encargos and moneda.upper() in encargos:
         encargo = encargos[moneda.upper()].format(monto=monto, moneda=moneda.upper())
+        # 📎 F.1 · ESTE ES EL RENGLÓN QUE LA SESIÓN 110 TUVO QUE IR A BUSCAR A
+        #    MANO. El cruce del atribuidor vio 3 encargos que no correspondían a
+        #    la tarea y la conclusión fácil —«los torció el orquestador»— era
+        #    falsa: los torció C.2, aquí, a propósito. Ahora lo dice el registro.
+        origen = worker.ORIGEN_EXPERIMENTO
 
     # ⭐ C.2 — AQUÍ SE ENTREGA EL TROZO, Y ES EL SITIO EXACTO DONDE EL DINERO
     #    CRUZA LA FRONTERA. Si no hay reparto —A.2 y todo el bloque B— el worker
@@ -449,6 +463,8 @@ def herramienta_consultar_moneda(monto, moneda, contabilidad, verboso=True):
     #    no puede delatarlo —él mismo es la frase que se ignoró—; `pedido`, sí.
     resultado = worker.correr_worker(encargo, nombre=moneda.lower(),
                                      presupuesto_usd=presupuesto_worker,
+                                     # 📎 F.1 · baja pegado al encargo
+                                     origen=origen,
                                      pedido={"moneda": moneda.upper(),
                                              "monto": monto},
                                      # ⭐ C.6 — y aquí baja. `None` si nadie la

@@ -160,6 +160,39 @@ PRESUPUESTO_WORKER_USD = 0.05
 LIMITE_WORKER_SEGUNDOS = 90.0
 
 # ---------------------------------------------------------------------------
+# 📎 F.1 · LA DEUDA DE AYER — QUIÉN ESCRIBIÓ EL ENCARGO
+# ---------------------------------------------------------------------------
+# La sesión 110 midió que el cruce más tonto del atribuidor —«¿el encargo
+# corresponde a la tarea?»— **acierta en el hecho y se equivoca en el culpable**:
+# saltó en 3 corridas, y quien había torcido ese encargo NO era el orquestador,
+# sino `ENCARGOS_DESIGUALES` de `presupuesto.py`, clavado a mano por C.2.
+#
+# 🔑 El registro guardaba `encargo` y no guardaba QUIÉN LO ESCRIBIÓ. Un encargo
+#    torcido se ve IDÉNTICO cuando lo enrutó mal el de arriba y cuando lo puso a
+#    propósito un instrumento de medida.
+#
+# ⚠️ Y al ir a escribir el campo apareció que la deuda estaba MAL ENUNCIADA. Decía
+#    «si el encargo lo escribió el modelo o el harness», y el modelo **no escribe
+#    encargos**: `orquestador.py` arma la frase en Python y el modelo solo elige
+#    `monto` y `moneda`. Lo que el modelo decide es EL DESTINO, no el texto. Por
+#    eso aquí no hay un valor `"modelo"`: sería un estado que ninguna rama puede
+#    producir, y un estado así siempre sale en cero sin que nadie sepa si es
+#    porque no pasa o porque no se puede escribir.
+ORIGEN_PLANTILLA = "plantilla"       # la frase la armó el harness sobre el
+                                     # destino que eligió el modelo de arriba
+ORIGEN_EXPERIMENTO = "experimento"   # la frase la clavó a mano un instrumento
+                                     # de medida (C.2, A.4, los cebos…)
+ORIGENES = (ORIGEN_PLANTILLA, ORIGEN_EXPERIMENTO)
+
+# 🚨 Y LA AUSENCIA NO ES UN TERCER VALOR: es la falta de declaración.
+#    `origen=None` significa NADIE LO DIJO, y el lector tiene prohibido leerlo
+#    como si fuera `plantilla` —el valor cómodo—. Es `LM.98` con otra ropa: un
+#    dato ausente no es una declaración de la parte, y tratarlo como tal es
+#    exactamente el error que la sesión 110 midió en el `ok` de cada capa.
+#    📌 Las 172 líneas `worker_inicio` ya grabadas están todas ahí, y NO se
+#       reescriben: `LM.65`. Reescribirlas borraría la evidencia de que faltaba.
+
+# ---------------------------------------------------------------------------
 # 🚨 C.2 · CIERRE — EL PRECIO DE LA PRÓXIMA LLAMADA, Y POR QUÉ HAY QUE ADIVINARLO
 # ---------------------------------------------------------------------------
 # Hasta la sesión 98 el freno preguntaba `if gastado >= presupuesto`. Suena bien
@@ -510,6 +543,13 @@ def correr_worker(encargo,
                   # para que el contrato pueda desmentirse. Por defecto `None`,
                   # y eso significa NO COMPROBADO, no «todo bien».
                   pedido=None,
+                  # 📎 F.1 · LA DEUDA — QUIÉN ESCRIBIÓ EL ENCARGO.
+                  #    Entra por la puerta, como `pedido`, `contrato` y `capa`:
+                  #    el worker no lo usa para nada, solo lo graba. Y no puede
+                  #    deducirlo — el que sabe si esta frase es la plantilla o
+                  #    un cebo es EL QUE LA ESCRIBIÓ, que está una capa arriba.
+                  # ⚠️ `None` = NADIE LO DECLARÓ. No es `plantilla`.
+                  origen=None,
                   # ⭐ C.6 — CON QUÉ MODELO Y CON CUÁNTO ESFUERZO HABLA ESTA
                   #    CAPA. Entra por la puerta, como `reparto` en C.2 y
                   #    `contrato` en A.3, y por el mismo motivo: el bucle no
@@ -538,6 +578,12 @@ def correr_worker(encargo,
        detalle de configuración.
     """
     capa = capa or CAPA_WORKER
+    # 🔒 Un `origen` que no está en la lista revienta ANTES de grabar nada. Sin
+    #    esto, un `origen="plantila"` con una errata se escribiría igual y el
+    #    lector lo leería como «no declarado»: un bicho que se disfraza de la
+    #    ausencia que este campo vino a hacer visible.
+    if origen is not None and origen not in ORIGENES:
+        raise ValueError(f"origen desconocido: {origen!r}. Solo {ORIGENES} o None.")
     menu = menu_para(permitidas)
     puente = puente_para(permitidas)
 
@@ -558,7 +604,7 @@ def correr_worker(encargo,
     llamadas = []
 
     arranque = time.monotonic()
-    anotar("worker_inicio", worker=nombre, encargo=encargo,
+    anotar("worker_inicio", worker=nombre, encargo=encargo, origen=origen,
            herramientas=permitidas, modelo=capa.modelo, esfuerzo=capa.esfuerzo)
 
     if verboso:
@@ -691,6 +737,10 @@ def correr_worker(encargo,
             "modelo":         capa.modelo,
             "esfuerzo":       capa.esfuerzo,
             "encargo":        encargo,
+            # 📎 F.1 · va PEGADO a `encargo` y en los dos eventos, no solo en
+            #    `worker_inicio`: el atribuidor lee `worker_fin`, y un campo
+            #    que califica a otro tiene que estar donde esté el calificado.
+            "origen":         origen,
             # ⚠️ EL TEXTO YA NO ES "lo único que verá el orquestador". En A.1
             #    lo era, y por eso se perdió la fuente del CAD. Ahora viaja el
             #    contrato; el texto se conserva para que un humano lo lea y

@@ -6650,3 +6650,61 @@ verdad, es leer el árbol sintáctico (`ast`), como hizo `P35` de `avisador.py` 
 
 📌 La versión corta, para cualquier `grep` que vigile un repositorio: **la lista de patrones
 prohibidos es siempre el primer archivo que los contiene.**
+
+### LM.100 — Un campo se añade hacia adelante, y lo primero que pasa es que el instrumento SABE MENOS que ayer
+
+*(sesión 111 · nivel 8 · F.1, la deuda)*
+
+Ayer el atribuidor decía que **3 encargos los había torcido el orquestador**. Era falso, y hubo
+que ir a `presupuesto.py:406` a mano para desmentirlo: los había clavado un experimento.
+
+Hoy, con el campo `origen` puesto, esas mismas 3 salen **`no_comprobable`**.
+
+Visto como número, el instrumento **empeoró**: pasó de dar 3 culpables a dar 3 «no lo sé».
+Visto como instrumento, es la primera vez que **acierta**.
+
+🔑 **El campo se añade hacia adelante, y las líneas viejas no se reescriben** (`LM.65`). Así que
+entre el día en que el campo nace y el día en que hay corridas nuevas, la respuesta correcta a
+la pregunta que ese campo vino a contestar es **«no consta»** — y esa temporada de «no consta»
+**es la evidencia de que el campo faltaba**. Rellenarla con el valor más probable la borraría.
+
+⚠️ Y por eso el estado nuevo tuvo que ser **dos**, no uno:
+
+- `no_atribuible` = **se sabe** lo que pasó, y no es de ninguna de las dos capas.
+- `no_comprobable` = **no se sabe**. Falta el dato con el que se decidiría.
+
+Un auditor que llama verde a lo segundo **miente por omisión**; uno que lo llama `no_atribuible`
+miente peor: dice que ya lo miró.
+
+⭐ La forma corta: **cuando un instrumento estrena un campo, su primera medición honesta es un
+hueco.** Si estrena un campo y todo sigue verde, el campo no está haciendo nada.
+
+---
+
+### LM.101 — Una deuda es una hipótesis sobre el arreglo, y solo se sabe al ir a pagarla
+
+*(sesión 111 · nivel 8 · F.1, la deuda)*
+
+La deuda decía, escrita con todas las letras el día anterior:
+
+> *falta un campo `origen` en `worker_inicio` que diga **si el encargo lo escribió el modelo o el
+> harness**.*
+
+Al ir a escribirlo apareció que **el modelo no escribe encargos**. `orquestador.py:402` arma la
+frase en Python —`f"Convierte {monto} {moneda} a pesos colombianos."`— y lo único que el modelo
+aporta son `monto` y `moneda`. **Lo que el modelo elige es el DESTINO, no el texto.**
+
+Si la deuda se hubiera implementado al pie de la letra, el campo habría nacido con un valor
+`"modelo"` que **ninguna rama del programa puede producir**. Y un estado así es el peor de todos,
+porque **sale en cero y nadie sabe si es porque no pasa o porque no se puede escribir** — que es
+exactamente el `capa` de la sesión 97 volviendo por la puerta de atrás.
+
+🔑 **Una deuda anotada es una hipótesis sobre cuál es el arreglo, no una especificación de él.**
+Anotarla sirve —sin ella nadie vuelve—; obedecerla literalmente es lo que produce campos que
+describen un mundo que no existe.
+
+📌 El síntoma que lo delata, y es barato de comprobar: **antes de escribir un estado, buscar la
+línea que lo escribiría.** Si no aparece, el estado sobra o el enunciado está mal.
+
+⭐ Y cambia lo que hay que hacer al abrir una deuda vieja: **el primer paso no es implementarla,
+es volver a medir si sigue siendo verdad.**
