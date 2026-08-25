@@ -72,7 +72,6 @@ dieron silencio**, y el silencio se lee como confirmación (`LM.15`).
 
 import json
 import sys
-import threading
 import time
 import unicodedata
 from datetime import datetime, timezone
@@ -84,6 +83,7 @@ AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI.parent / "05b-proyecto"))
 
 import agente          # noqa: E402
+import compartida     # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -180,7 +180,9 @@ BANCO = [
 #    esperar a nadie. Por eso se ponen siempre, no «cuando haga falta». El día
 #    que un router se llame desde un reparto en paralelo, esto ya está.
 
-_CANDADO_REGISTRO = threading.Lock()
+# 🚚 `_CANDADO_REGISTRO` se MUDÓ a `compartida.py` en la sesión 112 — no se
+#    borró por gusto: mientras estuvo aquí era uno de CUATRO candados
+#    distintos vigilando archivos que a veces son el mismo.
 
 
 def anotar(evento, **datos):
@@ -188,9 +190,13 @@ def anotar(evento, **datos):
     linea = {"hora": datetime.now(timezone.utc).isoformat(timespec="seconds"),
              "evento": evento}
     linea.update(datos)
-    with _CANDADO_REGISTRO:
-        with open(REGISTRO, "a", encoding="utf-8") as f:
-            f.write(json.dumps(linea, ensure_ascii=False) + "\n")
+    # 🔒 SESIÓN 112 — EL CANDADO YA NO VIVE AQUÍ.
+    #    Vive junto al ARCHIVO, en `compartida.anotar_linea`, y son DOS: uno de
+    #    hilos por archivo y uno de disco para los otros procesos. Hasta hoy este
+    #    módulo tenía el suyo propio, y un candado atado al módulo no protege un
+    #    archivo que comparte con otros tres. Mordió: la línea 626 de
+    #    `registro_pruebas_gratis.jsonl`. El porqué y los números, allá.
+    compartida.anotar_linea(REGISTRO, linea)
 
 
 # ---------------------------------------------------------------------------

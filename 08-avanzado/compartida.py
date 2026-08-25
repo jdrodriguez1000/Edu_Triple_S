@@ -556,6 +556,231 @@ def recordar(dato, quien="?"):
 
 
 # ---------------------------------------------------------------------------
+# 6.b) EL `anotar` ÚNICO — sesión 112, la deuda de E.1 pagada
+# ---------------------------------------------------------------------------
+# 🚨 POR QUÉ ESTÁ AQUÍ Y NO EN CADA MÓDULO.
+#    Hasta hoy había CUATRO copias de `anotar`, una en `orquestador.py`, otra en
+#    `worker.py`, otra en `router.py` y otra en `supervisor.py`. Cada una con su
+#    propio `threading.Lock()` de módulo. Y un candado atado al MÓDULO no protege
+#    nada: lo que se comparte es el ARCHIVO. Dos módulos apuntando al mismo
+#    `.jsonl` son dos cerraduras en dos puertas de la misma habitación.
+#
+# 🐛 MORDIÓ DE VERDAD: la línea 626 de `registro_pruebas_gratis.jsonl`, del
+#    2026-08-24T19:19:15, es la cola de 321 bytes de un `worker_fin` de ~818 cuya
+#    cabeza pisó otro escritor. **Se deja partida a propósito**: es la evidencia.
+#
+# 🔑 Y LA DEUDA PRESCRIBÍA LA MITAD DEL ARREGLO. Decía «un candado por archivo,
+#    como `_CANDADO_HILOS`» — pero `_CANDADO_HILOS` es un `threading.Lock`, y un
+#    candado de hilos **no cruza procesos**. Medido en la sesión 112, líneas del
+#    tamaño real, 6000 escrituras:
+#
+#      | escenario                                   | malas | perdidas |
+#      |---------------------------------------------|-------|----------|
+#      | 1 proceso, 2 hilos, DOS candados (como hoy) |    54 |       49 |
+#      | 2 procesos, un candado cada uno             |   329 |      265 |
+#      | 1 proceso, UN candado de hilos compartido   |     0 |        0 |
+#      | 2 procesos, candado de DISCO                |     0 |        0 |
+#
+#    Las dos últimas filas son DOS arreglos, no uno. El candado de hilos cierra
+#    la fila 1 y **deja la fila 2 intacta**. Por eso aquí se ponen los dos.
+#
+# 🚨 Y LO QUE MÁS IMPORTA NO ES LA COLUMNA «malas»: ES LA DE «perdidas».
+#    Una línea rota GRITA (`JSONDecodeError`) y por eso se vio. Una línea perdida
+#    CALLA. En un experimento con todas las líneas del mismo tamaño salieron
+#    **0 malas y 545 perdidas**: el bicho delante, y el detector en verde.
+#    El duelo de F.3 se puntúa CONTANDO eventos — a una corrida pagada a la que
+#    le faltan eventos le sale un veredicto tranquilo y falso. Es `LM.15`.
+_CANDADOS_POR_ARCHIVO = {}
+_CANDADO_DEL_MAPA = threading.Lock()
+
+
+def candado_de_archivo(archivo):
+    """El candado de hilos que le toca a ESTE archivo. Uno por archivo, no por módulo.
+
+    📌 La clave es la ruta ya resuelta, no el objeto `Path`: dos rutas que apuntan
+       al mismo archivo escrito distinto (`./r.jsonl` y el absoluto) tienen que
+       darse el MISMO candado, o volvemos a tener dos cerraduras.
+    ⚠️ El mapa también necesita su propio candado. Sin él, dos hilos pueden entrar
+       a la vez al `setdefault` — y la carrera que estamos matando reaparecería en
+       la máquina de matarla.
+    """
+    clave = str(Path(archivo).resolve())
+    with _CANDADO_DEL_MAPA:
+        candado = _CANDADOS_POR_ARCHIVO.get(clave)
+        if candado is None:
+            candado = _CANDADOS_POR_ARCHIVO[clave] = threading.Lock()
+        return candado
+
+
+def anotar_linea(archivo, linea):
+    """Escribe UN renglón en un `.jsonl`, a prueba de hilos Y de procesos.
+
+    Los dos candados van anidados y el orden importa: primero el de hilos, que es
+    barato y local, y solo después el de disco, que es el caro. Al revés, los
+    hilos de este proceso se pelearían por el `.lock` uno a uno.
+
+    ⚠️ SI EL CANDADO DE DISCO NO SE CONSIGUE, ESTO REVIENTA (`CandadoOcupado`) —
+       y es a propósito. La alternativa es escribir igual y perder el renglón sin
+       ruido, que es exactamente el fallo que este arreglo vino a matar. Un fallo
+       que grita se arregla; uno que calla se hereda.
+    """
+    texto = json.dumps(linea, ensure_ascii=False) + "\n"
+    with candado_de_archivo(archivo):          # 1) los hilos de ESTE proceso
+        with _CandadoDeArchivo(archivo):       # 2) los OTROS procesos
+            with open(archivo, "a", encoding="utf-8") as f:
+                f.write(texto)
+
+
+def _escribir_turno_anotar(archivo, evento, vueltas, tam, modo):
+    """Lo que corre DENTRO de cada proceso hijo de `_carrera_anotar`.
+
+    `como_antes` es el `anotar` viejo calcado: un `threading.Lock` de módulo y un
+    `open` a pelo. Existe para poder ver morder al bicho, no por nostalgia.
+    """
+    candado = threading.Lock()
+    for i in range(vueltas):
+        linea = {"evento": evento, "n": i, "relleno": "x" * tam}
+        if modo == "anotar_linea":
+            anotar_linea(archivo, linea)
+        else:
+            with candado:
+                with open(archivo, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(linea, ensure_ascii=False) + "\n")
+
+
+def _carrera_anotar(archivo, modo="como_antes", vueltas=400):
+    """Dos PROCESOS anotando en el mismo `.jsonl`. Devuelve malas y perdidas.
+
+    ⚠️ Los tamaños son distintos a propósito (760 y 120, como un `worker_fin` y
+       un `sin_trozo` reales). Con tamaños iguales el renglón pisado desaparece
+       entero y no queda cola: el bicho sigue ahí y el contador de líneas rotas
+       lo absuelve. Es lo que midió P23.
+    """
+    import subprocess
+    archivo = Path(archivo)
+    hijos = [subprocess.Popen(
+        [sys.executable, str(Path(__file__).resolve()), "--anotar-turno",
+         str(archivo), evento, str(vueltas), str(tam), modo],
+        stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        for evento, tam in (("worker_fin", 760), ("sin_trozo", 120))]
+    caidos = 0
+    for h in hijos:
+        h.communicate()
+        if h.returncode != 0:
+            caidos += 1
+
+    malas = total = 0
+    for l in open(archivo, encoding="utf-8"):
+        if not l.strip():
+            continue
+        total += 1
+        try:
+            json.loads(l)
+        except Exception:
+            malas += 1
+    return {"malas": malas, "total": total,
+            "perdidas": vueltas * 2 - total, "caidos": caidos}
+
+
+# ---------------------------------------------------------------------------
+# 6.c) EL FRENO `--pagar` — sesión 112, y lo escribió un error mío
+# ---------------------------------------------------------------------------
+# 🐛 QUÉ PASÓ. Al comprobar que el arreglo del candado no rompía nada, se corrió
+#    `python <modulo>.py` sobre los 22 módulos del nivel. Tres de ellos pagan sin
+#    pedir permiso: `pipeline.py`, `linea_base.py` y `juez_duelo.py`.
+#    **Coste medido, no estimado: $2,520038 → $2,622123 = $0,102085.** Y la
+#    horquilla sellada esa mañana decía $0,000000.
+#
+# 🚨 Y LO CARO NO FUE EL DINERO. `linea_base.py` REHIZO la línea base sellada el
+#    2026-08-20 —la contrincante del duelo de F.3— y `juez_duelo.py` REJUZGÓ sus
+#    33 veredictos. Los dos artefactos sellados, sustituidos por otros, sin una
+#    sola pregunta y sin dejar rastro salvo la fecha de dentro.
+#
+# 🔑 POR QUÉ NINGÚN FRENO DEL NIVEL LO VIO, Y ES `LM.102` UN PISO MÁS ABAJO.
+#    El portero de la 111 dejó de vigilar una LISTA y pasó a vigilar una CLASE.
+#    Eso estuvo bien. Pero la clase que eligió es *«módulos que tienen
+#    `_pruebas`»* — y los tres que cobran **no tienen pruebas**: tienen un
+#    `__main__` que paga. No se quedaron fuera por un descuido de la lista:
+#    **el criterio los excluye por construcción.**
+#    → La clase «lo que puede ensuciar» y la clase «lo que puede cobrar» no se
+#      tocan, y el nivel entero estaba vigilando la primera.
+#
+# 🔑 Y LA OTRA MITAD ES `LM.20`: EL ARREGLO YA ESTABA ESCRITO AL LADO.
+#    `worker.py` exige `--pagar` desde el bloque A y encima enseña la mediana
+#    antes de dejarte pulsar. Tres archivos del mismo nivel no lo alcanzaron.
+#    Por eso esto vive AQUÍ y no copiado tres veces (la lección de la 97).
+#
+# 📌 `worker.py` conserva su versión propia a propósito, y la razón va escrita
+#    en vez de olvidada: su freno está MEDIDO y funcionando desde el bloque A,
+#    y reescribirlo hoy sería arriesgar un freno bueno para ganar simetría.
+def precio_medido(archivo, campo="coste_usd"):
+    """Lo que YA costó esto, leído del registro. `None` si no hay con qué.
+
+    📌 Se lee del disco en vez de escribirse a mano porque un precio a mano
+       envejece callado, y un aviso con un número viejo es peor que sin número:
+       parece medido.
+    """
+    valores = []
+    try:
+        for linea in open(archivo, encoding="utf-8"):
+            linea = linea.strip()
+            if not linea:
+                continue
+            try:
+                dato = json.loads(linea)
+            except Exception:
+                continue          # una línea partida no invalida las demás
+            if isinstance(dato.get(campo), (int, float)) and dato[campo] > 0:
+                valores.append(dato[campo])
+    except OSError:
+        return None
+    if not valores:
+        return None
+    valores.sort()
+    return {"n": len(valores), "mediana": valores[len(valores) // 2],
+            "peor": valores[-1], "total": sum(valores)}
+
+
+def exigir_pagar(comando, que_hace, archivo_precio=None, campo="coste_usd",
+                 tambien_pisa=(), argv=None):
+    """Si no viene `--pagar`, cuenta qué haría y se va con bien. No devuelve nada.
+
+    ⚠️ `tambien_pisa` es la parte que el freno de `worker.py` no tenía y que hoy
+       hizo falta: el dinero no fue lo caro. Lo caro fue **sobrescribir un
+       artefacto sellado**, y eso no sale en ninguna factura.
+    """
+    argv = sys.argv if argv is None else argv
+    if "--pagar" in argv:
+        return
+
+    print()
+    print("💸 Esto llama a la API DE VERDAD. Por eso no arranca solo.")
+    print(f"   {que_hace}")
+
+    if tambien_pisa:
+        print()
+        print("🔒 Y ADEMÁS SOBRESCRIBE ESTO, QUE ESTÁ SELLADO:")
+        for cosa in tambien_pisa:
+            print(f"     · {cosa}")
+
+    precio = precio_medido(archivo_precio, campo) if archivo_precio else None
+    if precio:
+        print()
+        print(f"   Lo que costaron las {precio['n']} llamadas ya registradas:")
+        print(f"     mediana ${precio['mediana']:.6f}  ·  "
+              f"la peor ${precio['peor']:.6f}  ·  "
+              f"suma ${precio['total']:.6f}")
+
+    print()
+    print("   Para correrlo de verdad:")
+    print(f"       {comando} --pagar")
+    print()
+    print("   📌 Si venías a comprobar que el archivo sigue sano, esto ya lo")
+    print("      hizo: importó, compiló y leyó su registro. Gratis.")
+    raise SystemExit(0)
+
+
+# ---------------------------------------------------------------------------
 # 7) EL MEDIDOR — el experimento que produjo la tabla de la cabecera
 # ---------------------------------------------------------------------------
 MODOS = {
@@ -814,6 +1039,114 @@ def _pruebas():
     check("P21 · y no se cae ni un proceso",
           ar["reventados"] == 0, f"{ar['reventados']} caídos")
 
+    # --- P22-P27: EL `anotar` ÚNICO (sesión 112, la deuda de E.1) ----------
+    # 🚨 LAS TRES PRIMERAS SON CONTROLES, Y SE PONEN ROJAS SI **NO** REPRODUCEN
+    #    EL BICHO. Un arreglo que no ha visto morder a su bicho es una nota
+    #    (`LM.13`), y aquí el bicho ya se escondió una vez: ver P24.
+    def _cuenta(archivo, esperadas):
+        malas = total = 0
+        for l in open(archivo, encoding="utf-8"):
+            if not l.strip():
+                continue
+            total += 1
+            try:
+                json.loads(l)
+            except Exception:
+                malas += 1
+        return {"malas": malas, "total": total, "perdidas": esperadas - total}
+
+    def _escribir_como_antes(archivo, candado, evento, vueltas, tam):
+        """El `anotar` VIEJO, calcado: candado de módulo y `open` a pelo."""
+        for i in range(vueltas):
+            linea = json.dumps({"evento": evento, "n": i, "relleno": "x" * tam},
+                               ensure_ascii=False)
+            with candado:
+                with open(archivo, "a", encoding="utf-8") as f:
+                    f.write(linea + "\n")
+
+    def _dos_hilos(archivo, escribe, vueltas=1500, tam_a=760, tam_b=120):
+        hilos = [threading.Thread(target=escribe, args=(archivo, e, vueltas, t))
+                 for e, t in (("worker_fin", tam_a), ("sin_trozo", tam_b))]
+        for h in hilos:
+            h.start()
+        for h in hilos:
+            h.join()
+        return _cuenta(archivo, vueltas * 2)
+
+    # P22 — el bicho de la línea 626, reproducido. DOS candados, UN archivo.
+    a22 = carpeta / "p22.jsonl"
+    a22.touch()
+    r22 = _dos_hilos(a22, lambda f, e, v, t: _escribir_como_antes(f, threading.Lock(), e, v, t))
+    check("P22 · CONTROL: dos candados de módulo sobre UN archivo parten líneas "
+          "(el bicho de la 626, reproducido)",
+          r22["malas"] > 0,
+          f"{r22['malas']} malas, {r22['perdidas']} perdidas de {2*1500}")
+
+    # 🚨 P23 — LA PRUEBA QUE CASI ME ABSUELVE, Y ES LA MÁS IMPORTANTE DE LAS SEIS.
+    #    El primer experimento de la sesión 112 usó todas las líneas DEL MISMO
+    #    TAMAÑO y dio **0 malas** — con el bicho delante. La cola solo sobrevive
+    #    cuando una línea CORTA pisa la cabeza de una LARGA; con tamaños iguales
+    #    la pisada es exacta y el renglón **desaparece entero, sin ruido**.
+    # 🔑 Por eso esta prueba exige las dos cosas a la vez: `malas == 0` **y**
+    #    `perdidas > 0`. Es la forma de dejar escrito que contar líneas rotas
+    #    NO es un detector: mientras estaba en verde se perdía el 9 % del registro.
+    a23 = carpeta / "p23.jsonl"
+    a23.touch()
+    # ⚠️ `n` va rellenado a 4 cifras y los dos eventos miden lo mismo: si las
+    #    líneas no son EXACTAMENTE igual de largas, unas pocas colas sobreviven
+    #    y `malas` deja de ser cero. Se midió al escribir esta prueba: con `n`
+    #    sin rellenar salían 9 malas y 65 perdidas. El bicho es el mismo; lo que
+    #    cambia es cuánto de él se ve.
+    def _mismo_tamano(archivo, evento, vueltas, tam):
+        candado = threading.Lock()
+        for i in range(vueltas):
+            linea = json.dumps({"evento": "ev", "n": f"{i:04d}", "relleno": "x" * tam},
+                               ensure_ascii=False)
+            with candado:
+                with open(archivo, "a", encoding="utf-8") as f:
+                    f.write(linea + "\n")
+
+    r23 = _dos_hilos(a23, _mismo_tamano, tam_a=400, tam_b=400)
+    check("P23 · CONTROL: con líneas del MISMO tamaño no hay ni una rota y aun "
+          "así se pierden — el detector de «malas» nace verde",
+          r23["malas"] == 0 and r23["perdidas"] > 0,
+          f"{r23['malas']} malas, {r23['perdidas']} perdidas de {2*1500}")
+
+    # P24 — el arreglo, entre hilos: ni rotas ni perdidas.
+    a24 = carpeta / "p24.jsonl"
+    a24.touch()
+    r24 = _dos_hilos(a24, lambda f, e, v, t: [
+        anotar_linea(f, {"evento": e, "n": i, "relleno": "x" * t}) for i in range(v)])
+    check("P24 · ARREGLADO: un candado por ARCHIVO, y entre hilos no se rompe "
+          "ni se pierde ni una",
+          r24["malas"] == 0 and r24["perdidas"] == 0,
+          f"{r24['malas']} malas, {r24['perdidas']} perdidas de {2*1500}")
+
+    # P25 — el candado es del ARCHIVO, no de la ruta con que se escribió.
+    check("P25 · dos rutas al mismo archivo comparten candado; dos archivos, no",
+          candado_de_archivo(a24) is candado_de_archivo(Path(str(a24)).absolute())
+          and candado_de_archivo(a24) is not candado_de_archivo(a22))
+
+    # 🚨 P26-P27 — Y AHORA LA MITAD QUE LA DEUDA NO PEDÍA.
+    #    La deuda decía «un candado por archivo, como `_CANDADO_HILOS`». P24 ya
+    #    la cumple entera. P26 enseña que eso **no basta**: `_CANDADO_HILOS` es
+    #    un `threading.Lock` y no cruza procesos. Es el mismo hueco que P19
+    #    destapó para `guardar_dato` en la sesión 106, otra vez y en otro sitio.
+    print("\n  (P26-P27 lanzan procesos de verdad: tardan ~10 s)")
+    a26 = carpeta / "p26.jsonl"
+    a26.touch()
+    r26 = _carrera_anotar(a26, modo="como_antes", vueltas=400)
+    check("P26 · CONTROL: entre PROCESOS el candado de hilos no protege nada",
+          r26["malas"] > 0 or r26["perdidas"] > 0,
+          f"{r26['malas']} malas, {r26['perdidas']} perdidas de 800")
+
+    a27 = carpeta / "p27.jsonl"
+    a27.touch()
+    r27 = _carrera_anotar(a27, modo="anotar_linea", vueltas=400)
+    check("P27 · ARREGLADO: con el candado de DISCO tampoco entre procesos",
+          r27["malas"] == 0 and r27["perdidas"] == 0,
+          f"{r27['malas']} malas, {r27['perdidas']} perdidas de 800")
+
     print()
     if fallos:
         print(f"XX  {len(fallos)} en rojo: {', '.join(fallos)}")
@@ -836,6 +1169,13 @@ if __name__ == "__main__":
         while time.time() < arranque:      # todos salen al mismo segundo
             time.sleep(0.001)
         print(MODOS[modo](f"dato-{etiqueta}", quien=etiqueta, archivo=ARCHIVO))
+        sys.exit(0)
+
+    if "--anotar-turno" in sys.argv:
+        i = sys.argv.index("--anotar-turno")
+        _escribir_turno_anotar(Path(sys.argv[i + 1]), sys.argv[i + 2],
+                               int(sys.argv[i + 3]), int(sys.argv[i + 4]),
+                               sys.argv[i + 5])
         sys.exit(0)
 
     if "--entre-procesos" in sys.argv:

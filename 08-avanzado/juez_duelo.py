@@ -38,6 +38,7 @@ AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI.parent / "05b-proyecto"))
 
 import agente  # noqa: E402  — se le reutiliza el cliente y el catálogo
+import compartida
 
 
 MODELO_JUEZ = "claude-sonnet-5"
@@ -240,6 +241,13 @@ if __name__ == "__main__":
         print(f"ℹ️  El registro trae {len(corridas)} corridas. Se califican las "
               f"3 ÚLTIMAS (las tres oficiales); la primera fue la de humo.")
         corridas = corridas[-3:]
+
+    # 🔒 SESIÓN 112 — el freno que faltaba: esto paga Y rejuzga los veredictos
+    #    sellados, que es lo que de verdad costó caro ese día.
+    compartida.exigir_pagar(
+        "python juez_duelo.py",
+        f"Llama a {MODELO_JUEZ} para calificar {len(corridas)} corrida(s).",
+        tambien_pisa=[f"veredictos_{ruta.stem}.json — los veredictos sellados"])
 
     rubrica = cargar_rubrica()
 

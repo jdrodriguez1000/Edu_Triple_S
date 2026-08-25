@@ -46,6 +46,7 @@ AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI.parent / "05b-proyecto"))
 
 import agente          # noqa: E402
+import compartida
 import herramientas    # noqa: E402
 
 
@@ -157,6 +158,17 @@ if __name__ == "__main__":
           f"max_vueltas: {MAX_VUELTAS}")
     print(f"Tarea: {TAREA}")
     print("=" * 70)
+
+    # 🔒 SESIÓN 112 — el freno que faltaba, y aquí es el que más falta hacía:
+    #    esto no solo paga, REHACE la contrincante sellada del duelo de F.3.
+    compartida.exigir_pagar(
+        "python linea_base.py",
+        f"Corre {cuantas} veces el agente de UNA capa contra la API de verdad.",
+        archivo_precio=REGISTRO,
+        tambien_pisa=[
+            f"linea_base_{agente.MODELO}.json — la línea base medida el "
+            "2026-08-20, contrincante del duelo de F.3",
+        ])
 
     resultados = [una_corrida(n) for n in range(1, cuantas + 1)]
 

@@ -974,6 +974,73 @@ NO_VIGILADOS = {
 }
 
 
+
+# ---------------------------------------------------------------------------
+# EL SEGUNDO PORTERO — el que vigila el DINERO, sesión 112
+# ---------------------------------------------------------------------------
+# 🚨 POR QUÉ HACÍAN FALTA DOS, Y LO ENSEÑÓ UN ERROR QUE COSTÓ $0,102085.
+#    El portero de arriba vigila una CLASE y no una lista — ese fue el arreglo
+#    de la 111 y sigue siendo bueno. Pero la clase que eligió es *«módulos que
+#    tienen `_pruebas`»*, y el 2026-08-25 cobraron tres que **no tienen
+#    pruebas**: `pipeline.py`, `linea_base.py` y `juez_duelo.py`. Tienen un
+#    `__main__` que llama a la API en cuanto lo arrancas.
+#
+# 🔑 NO SE ESCAPARON DE LA LISTA: SE ESCAPARON DEL CRITERIO. La clase «lo que
+#    puede ensuciar el registro» y la clase «lo que puede cobrarte» **no se
+#    tocan**, y el nivel entero estaba vigilando solo la primera. Un portero más
+#    atento no lo habría cazado; hacía falta OTRO portero, mirando otra cosa.
+#
+# 📌 Y como en la 111, hacen falta las DOS listas. Sin `NO_COBRAN`, «no tiene
+#    freno» y «no puede cobrar» se ven igual.
+NO_COBRAN = {
+    "agente": "es del nivel 5b; aquí solo se importa",
+    "herramientas": "funciones puras y peticiones HTTP a APIs de tasas, sin modelo",
+    "modelos": "solo tabla de precios y nombres; no llama",
+    "atribuidor": "solo LEE registros ya escritos",
+    "avisador": "solo LEE registros ya escritos",
+    "traza": "es este archivo: lee registros, no los produce",
+    "juez_duelo": "TIENE freno propio desde la 112",
+    "linea_base": "TIENE freno propio desde la 112",
+    "pipeline": "TIENE freno propio desde la 112",
+    "orquestador": "TIENE freno propio (--pagar) desde el bloque C",
+    "worker": "TIENE freno propio (--pagar) desde el bloque A",
+}
+
+
+def _paga_al_correrse(fuente):
+    """¿Este archivo puede llamar a la API con solo arrancarlo?
+
+    Se lee el CÓDIGO, no se ejecuta: averiguarlo corriéndolo es exactamente el
+    error que este portero existe para no repetir.
+    """
+    if "if __name__" not in fuente:
+        return False
+    cuerpo = fuente.split("if __name__", 1)[1]
+    # Las dos puertas por las que sale el dinero en este nivel.
+    return ("agente.cliente" in cuerpo or "anthropic" in cuerpo
+            or "correr_worker" in cuerpo or "correr_pipeline" in cuerpo
+            or "una_corrida" in cuerpo or "juzgar" in cuerpo)
+
+
+def portero_del_dinero(verboso=True):
+    """Exige que todo módulo capaz de cobrar tenga freno, o razón escrita.
+
+    Devuelve la lista de los que no tienen ni una cosa ni la otra.
+    ⚠️ No corre nada. Un portero que para averiguar si algo cobra lo ejecuta
+       ya te cobró.
+    """
+    sin_freno = []
+    for f in sorted(AQUI.glob("*.py")):
+        fuente = f.read_text(encoding="utf-8")
+        if not _paga_al_correrse(fuente):
+            continue
+        tiene_freno = ("--pagar" in fuente or "exigir_pagar" in fuente)
+        if not tiene_freno and f.stem not in NO_COBRAN:
+            sin_freno.append(f.stem)
+    if verboso and sin_freno:
+        print(f"  ⚠️  sin freno y sin razón escrita: {sin_freno}")
+    return sin_freno
+
 def portero(verboso=True):
     """Corre las pruebas gratis de TODO el nivel y exige que los registros
     reales no crezcan ni una línea.
@@ -1597,6 +1664,48 @@ def _pruebas():
     check("46. sobre los registros REALES tampoco muerde (99 pares completos)",
           abiertos_reales == [],
           f"{len(abiertos_reales)} caso(s): {abiertos_reales}")
+
+    # --- 47-50: EL PORTERO DEL DINERO (sesión 112) -------------------------
+    # 🚨 UN PORTERO QUE NACE VERDE NO HA DEMOSTRADO NADA. Es `P9` de F.2: si no
+    #    se le rompe el caso y se le ve ponerse rojo, lo único medido es que
+    #    hoy no hay nada que cazar — que es también lo que decía el portero de
+    #    la 111 el día antes de que se le colara `evals_orquestador`.
+    check("47. el portero del dinero está limpio HOY",
+          portero_del_dinero(verboso=False) == [],
+          portero_del_dinero(verboso=False))
+
+    # 48-49) 🚨 MUERDE SOBRE EL CASO REAL: los tres archivos TAL COMO ESTABAN
+    #        esta mañana. Se les quita el freno del texto y se comprueba que el
+    #        portero los señala. Es el caso que costó $0,102085.
+    def _sin_freno(nombre):
+        """El fuente de hoy, con el freno arrancado: el archivo de ayer."""
+        fuente = (AQUI / f"{nombre}.py").read_text(encoding="utf-8")
+        return "\n".join(l for l in fuente.splitlines()
+                         if "exigir_pagar" not in l and "--pagar" not in l)
+
+    cazados = [n for n in ("pipeline", "linea_base", "juez_duelo")
+               if _paga_al_correrse(_sin_freno(n))
+               and "exigir_pagar" not in _sin_freno(n)]
+    check("48. 🚨 MUERDE: los tres de ayer, sin su freno, se reconocen como "
+          "capaces de cobrar",
+          cazados == ["pipeline", "linea_base", "juez_duelo"], cazados)
+
+    # ⭐ Y la mitad que de verdad importa: que estuvieran en `NO_COBRAN` NO les
+    #    vale. La razón escrita de los tres dice «TIENE freno propio desde la
+    #    112» — si mañana alguien arranca el freno y deja la razón, la razón
+    #    miente y el portero se calla. Por eso la razón y el freno se comprueban
+    #    por separado.
+    mentirosas = [n for n, razon in NO_COBRAN.items()
+                  if "TIENE freno" in razon
+                  and "exigir_pagar" not in (AQUI / f"{n}.py").read_text(encoding="utf-8")
+                  and "--pagar" not in (AQUI / f"{n}.py").read_text(encoding="utf-8")]
+    check("49. ⭐ ninguna razón de `NO_COBRAN` promete un freno que no existe",
+          mentirosas == [], mentirosas)
+
+    # 50) Y el detector no puede ser complaciente: un módulo que NO cobra no
+    #     debe dar positivo, o el portero se vuelve ruido y se ignora.
+    check("50. y NO se queja de un módulo que solo lee registros",
+          not _paga_al_correrse((AQUI / "atribuidor.py").read_text(encoding="utf-8")))
 
     print()
     if fallos:

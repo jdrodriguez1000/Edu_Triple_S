@@ -133,6 +133,7 @@ AQUI = Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI.parent / "05b-proyecto"))
 
 import agente              # noqa: E402
+import compartida
 import herramientas        # noqa: E402
 
 import verificador         # noqa: E402
@@ -565,6 +566,14 @@ if __name__ == "__main__":
     print("      entrada del siguiente. Y NO HAY ORQUESTADOR.")
     print("=" * 70)
     print("⚠️  Es una DEMO del bloque B, no el duelo. El duelo se corre en F.3.")
+
+    # 🔒 SESIÓN 112 — el freno que faltaba. Ver `compartida.exigir_pagar`: este
+    #    archivo cobró parte de los $0,10 de la 112 por correrse "para ver si
+    #    seguía sano".
+    compartida.exigir_pagar(
+        "python pipeline.py",
+        "Corre los TRES eslabones de verdad: tres agentes, red y modelo.",
+        archivo_precio=REGISTRO, campo="coste_total_usd")
 
     r = correr_pipeline(ENCARGO, nombre_archivo="informe-pipeline.txt")
 

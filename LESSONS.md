@@ -6778,3 +6778,94 @@ al pie. Una salvedad que se lee después de la conclusión llega tarde: la concl
 caso 434** —el nivel ya tenía 433 `check()`— **sino decir de quién es cada modo de falla y cuáles
 no tienen dueño**. Un catálogo que solo lista lo cubierto siempre está completo: se completa
 borrando lo que falta.
+
+
+---
+
+## `LM.104` — Un experimento con datos más limpios que los reales absuelve al culpable
+
+**Sesión 112.** El bicho a cazar era la línea 626 del registro: la **cola** de un `worker_fin`
+cuya cabeza pisó otro escritor. El primer experimento montó dos hilos escribiendo el mismo
+archivo con dos candados distintos —el defecto exacto— y salió **0 líneas malas**.
+
+Casi lo cierro ahí. *«Dos hilos con dos candados no parten líneas»* habría sido una frase
+medida, publicable, y **falsa**.
+
+El fallo estaba en un detalle del montaje: **todas las líneas del experimento medían lo mismo.**
+Cuando una línea pisa a otra de su tamaño exacto, la tapa entera y **no queda cola**: el renglón
+desaparece limpio y el contador de JSON inválido no ve nada. Con tamaños distintos —un
+`worker_fin` de 818 bytes y un `sin_trozo` de 176, como en el registro de verdad— aparecieron
+**329 líneas partidas**.
+
+🔑 **Un experimento no hereda el desorden de los datos reales: hay que ponérselo a mano.** Y el
+desorden que hace falta no es «más aleatoriedad» en general — es **la propiedad concreta de la
+que depende el síntoma**, que aquí era que los renglones fueran desiguales.
+
+⚠️ Lo peligroso es la dirección del error: los datos sintéticos son **casi siempre más
+uniformes** que los reales. Así que este fallo casi nunca produce un falso positivo — produce
+un **verde**. Es `LM.15` con otro disfraz: el instrumento ciego no dio un dato falso, dio silencio.
+
+📌 La defensa que quedó escrita es la prueba `P23` de `compartida.py`, y es un CONTROL invertido:
+exige `malas == 0` **y** `perdidas > 0` a la vez. Es decir, **exige demostrar que el detector
+puede estar en verde mientras se pierde el 9 % del archivo.** Un detector cuya ceguera está
+escrita en una prueba ya no engaña a nadie.
+
+---
+
+## `LM.105` — Dos porteros, porque «lo que puede ensuciar» y «lo que puede cobrar» son clases distintas
+
+**Sesión 112, y la escribió un error mío que costó $0,102085.**
+
+El nivel tenía un portero bueno. En la 97 nació vigilando que las pruebas no ensuciaran los
+registros pagados; en la 111 se le corrigió el defecto de `LM.102` —vigilaba una **lista**— y
+pasó a vigilar una **clase**: *cualquier módulo con `_pruebas` que nadie haya clasificado*.
+
+Ese arreglo fue correcto y sigue siéndolo. Y no sirvió de nada.
+
+Para comprobar que un arreglo no rompía nada, corrí `python <modulo>.py` sobre los 22 módulos.
+Tres pagan nada más arrancarlos: `pipeline.py`, `linea_base.py` y `juez_duelo.py`. Se llevaron
+$0,10 — y, mucho peor, **rehicieron la línea base sellada del duelo y rejuzgaron sus 33
+veredictos**, los dos artefactos que la sesión siguiente iba a abrir.
+
+🔑 **No se escaparon de la lista: se escaparon del CRITERIO.** La clase que el portero vigila es
+*«módulos con `_pruebas`»*, y los tres que cobran **no tienen pruebas**: tienen un `__main__`
+que llama a la API. Las dos clases —lo que puede ensuciar y lo que puede cobrar— **no se
+tocan**. Un portero más atento no lo habría cazado nunca. Hacía falta **otro portero, mirando
+otra cosa**.
+
+⚠️ Y de ahí la trampa general: **arreglar un portero da la sensación de haber cerrado el
+agujero**, porque el arreglo es real y se ve morder. Lo que no se ve es que sigue vigilando **un
+solo eje**. La pregunta que faltaba no era *«¿mi portero vigila una clase o una lista?»* sino
+**«¿cuántas clases distintas de daño hay aquí?»**. Aquí había dos: ensuciar datos y gastar dinero.
+
+📌 Y hay un tercer daño que no es ninguno de los dos y fue el caro: **sobrescribir algo sellado.**
+No sale en ninguna factura y no ensucia ningún registro — cambia una fecha dentro de un `.json`
+y ya está. Por eso `compartida.exigir_pagar()` tiene el parámetro `tambien_pisa`: el aviso dice
+qué artefacto sellado se lleva por delante, además de lo que cuesta.
+
+🔑 Y la otra mitad es `LM.20` otra vez, por enésima vez: **el freno ya estaba escrito al lado.**
+`worker.py` exige `--pagar` desde el bloque A y encima te enseña la mediana antes de dejarte
+pulsar. Tres archivos del mismo nivel, de la misma carpeta, no lo alcanzaron.
+
+---
+
+## `LM.106` — Un umbral dentro de su propia banda de ruido es una moneda al aire con nombre de prueba
+
+**Sesión 112, de rebote.** `P18` de `compartida.py` exige que la carrera ingenua pierda más del
+**25 %** de los datos. Se puso roja sin que nada estuviera mal, y al medirla salió que su
+resultado oscila entre **27 % y 50 %** según cómo esté la máquina. El umbral vive **dentro** del
+ruido.
+
+Lo primero que hice fue sospechar de mi propio cambio, y los primeros números lo confirmaban:
+mi versión daba 25-33 % y la commiteada 39-42 %. **Interleavándolas** —una, otra, una, otra—
+se deshizo: 38/50/42 contra 36/32/27. Lo que medía la primera tanda no era el código, era **el
+orden en que corrieron**.
+
+🔑 **Dos versiones no se comparan corriendo una y luego la otra.** Cualquier cosa que cambie con
+el tiempo —caché de disco, calor, otro proceso— se disfraza de diferencia entre las versiones, y
+se disfraza *bien*, porque produce dos bloques limpios y separados. Interleavar es barato y es la
+diferencia entre medir el código y medir la tarde.
+
+📌 Una prueba así no está mal escrita: está **mal calibrada**. Y mientras siga en el borde, cada
+rojo suyo cuesta una investigación — que es justo lo que `LM.30` dice del hallazgo que no se
+puede falsar: **compite por la atención con el que sí paraba el trabajo.**

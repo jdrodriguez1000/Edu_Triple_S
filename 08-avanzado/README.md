@@ -6246,6 +6246,72 @@ Séptima sesión seguida nombrándolo. Dos defensas, y las dos en el código:
 
 ---
 
+
+#### 📊 E.1 · LA DEUDA DEL CANDADO — LO QUE SALIÓ *(sesión 112 · `compartida.py` + los 4 que anotan + `traza.py` · **6 pruebas nuevas del candado + 4 del portero** · **$0,102085 — y no estaban presupuestados**)*
+
+##### 🎲 Las apuestas, una por una
+
+**🟢 1 — GANADA, y era la razón de ser del día.** La deuda prescribía *«un candado por archivo,
+como `_CANDADO_HILOS`»* y eso es la **mitad**. Medido: el candado de hilos compartido pone el
+caso de un proceso en 0 y **deja el de dos procesos intacto**. `P24` cierra el primero; hicieron
+falta `P26`/`P27` y el candado de **disco** para el segundo.
+
+**🟢 2 — GANADA, y es la que cambia F.3.** La línea rota grita; la perdida calla. `P23` lo deja
+escrito: **0 malas y 65 perdidas de 3000**, con el bicho delante y el detector en verde.
+
+**🟢 3 — GANADA.** La prueba que solo valida JSON **nace verde mientras se pierde el 2 %**. Por
+eso todas las nuevas cuentan **líneas esperadas**, no líneas válidas.
+
+**🟢 4 — GANADA, con número y no con promesa.** El candado de disco cuesta **×3,35** por renglón
+(492 µs → 1647 µs). En una corrida de ~130 renglones eso son **+150 ms**, contra llamadas a la
+API de ~10 s. Compensa, y ahora se puede desmentir.
+
+**🔴 LA HORQUILLA DEL COSTE — PERDIDA, Y LA PERDÍ YO, NO EL CÓDIGO.**
+Sellada en **$0,000000**, con *«una sola `llamada_api` la tumba»*. Hubo **6**.
+Medido de punta a punta: **$2,520038 → $2,622123 = $0,102085**.
+La octava sesión seguida a cero se acabó, y se acabó por correr un instrumento sin preguntar qué
+hacía. Se cuenta entero en `LM.105`.
+
+##### 🐛 EL BICHO DEL DÍA ES MÍO Y NO ESTABA EN EL CÓDIGO
+
+Para comprobar que el candado no rompía nada, corrí `python <modulo>.py` sobre los 22 módulos.
+Tres pagan al arrancar: `pipeline.py`, `linea_base.py`, `juez_duelo.py`. Y lo caro no fue el
+dinero: **`linea_base.py` rehízo la línea base sellada el 2026-08-20 —la contrincante del duelo
+de F.3— y `juez_duelo.py` rejuzgó sus 33 veredictos.**
+
+🚨 **Y NINGÚN FRENO DEL NIVEL LO VIO, por una razón que no es un descuido.** El portero de la 111
+vigila *«módulos con `_pruebas` que nadie clasificó»* — y los tres que cobran **no tienen
+pruebas**. No se escaparon de la lista: **se escaparon del criterio.** → `LM.105`.
+
+📏 **Medido antes de decidir:** las dos líneas base son casi la misma — mediana **$0,023165**
+(sellada) contra **$0,023006** (rehecha), un 0,7 %; y la dispersión *dentro* del set sellado
+(10,0 s – 12,67 s) es **mayor** que la diferencia entre los dos. Es decir: la contaminación
+**no cambia el resultado del duelo**. Lo que cambia es que el artefacto que F.3 abra sea el que
+se selló, y eso no es aritmética: es poder decir después *«esto es lo que apostamos»*.
+📌 Una afirmación mía de esa mañana —*«el duelo no mide lo que dice medir»*— era **falsa**, y la
+corrigió esta medición.
+
+##### ✅ Lo que quedó puesto
+
+| | |
+|---|---|
+| `compartida.anotar_linea()` | **un** `anotar` para los 4 módulos: candado de hilos **por archivo** + candado de **disco** |
+| `compartida.exigir_pagar()` | el freno `--pagar` que `worker.py` ya tenía, ahora en el ORIGEN, y con `tambien_pisa` |
+| `traza.portero_del_dinero()` | el **segundo** portero: todo módulo capaz de cobrar tiene freno o razón escrita (`NO_COBRAN`) |
+| Pruebas | `P22`-`P27` en `compartida.py` · `47`-`50` en `traza.py` · **las 3 primeras son CONTROLES que se ponen rojos si NO reproducen el bicho** |
+| Visto morder | `48` señala los tres archivos de ayer sin su freno · `md5sum` confirma que ya no tocan nada |
+| Sin tocar | **la línea 626 sigue partida** (decisión suya: es la evidencia) · el sobre · los 33 veredictos |
+
+##### 📎 Deudas nuevas de hoy
+
+| Deuda | Importancia | Urgencia |
+|---|---|---|
+| Los 5 archivos contaminados por mi error siguen sin restaurar | media | decisión pendiente, **antes de F.3** |
+| `P18` de `compartida.py`: umbral (25 %) dentro de su ruido (27-50 %) | media | no bloqueante — `LM.106` |
+| `worker.py` conserva su freno propio en vez del del origen | baja | no bloqueante (razón escrita: está medido) |
+
+---
+
 ## 🔒 ANTES DE ABRIR EL SOBRE — lo que F.3 tiene que leer primero
 
 *(escrito al cerrar la sesión 111, con F.1 y F.2 ya cerradas)*
@@ -6292,7 +6358,9 @@ apuesta 6 de F.1 **antes** de medir, que es la única forma de que no se lea com
 
 | Deuda | Importancia | Urgencia | Dónde |
 |---|---|---|---|
-| **Candado de disco: dos `Lock()`, un archivo** | alta | **BLOQUEANTE para F.3** | E.1 · `compartida.py:363`, `presupuesto.py:823` |
+| ✅ ~~Candado de disco: dos `Lock()`, un archivo~~ | — | **CERRADA en la 112** | `compartida.anotar_linea()` · `P22`-`P27` |
+| **5 archivos contaminados sin restaurar** (línea base y veredictos sellados, rehechos por error el 25-ago) | media | decisión pendiente **antes de F.3** | copia a salvo; medido: cambia el duelo un 0,7 % |
+| `P18` de `compartida.py`: umbral dentro de su ruido | media | no bloqueante | `LM.106` |
 | `avisador.py` sale con 1 y **no puede volver a estar verde** | alta | no bloqueante | E.2 · `P8`, `P9`, `P12` cuentan un registro que crece solo |
 | Ningún módulo escribe `entorno` | alta | no bloqueante | E.2 |
 | `orquestador` sin morder sobre datos reales | alta | no bloqueante | **se paga en F.3** |
