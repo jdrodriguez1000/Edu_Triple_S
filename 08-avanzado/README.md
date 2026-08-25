@@ -6661,8 +6661,138 @@ Detrás, la última tarea del recorrido: **`METODO.md`**.
 
 ## Ejercicios
 
-*(se escriben a medida que avanza el nivel)*
+Los seis primeros son **las deudas vivas de la tabla de arriba**, convertidas en trabajo.
+No son inventados: son lo que este nivel dejó sin cerrar, y por eso son los que más enseñan.
+
+1. **Dale `guardar_reporte` a B y vuelve a correr el duelo.** Es la deuda de importancia
+   alta del nivel: el B construido tenía 2 herramientas y el B sellado tenía 4. El veredicto
+   aguanta por la **dirección** del error (`L8.4`) —esa herramienta añade una vuelta, o sea
+   más lento y más caro—, pero *aguanta por un argumento, no por un número*. Sella antes de
+   correr cuánto crees que sube el tiempo desde los 15,63 s, y mira si aciertas.
+   ⚠️ **Esto NO reabre el sobre.** El sobre está abierto y su veredicto es firme; esto mide
+   **cuánto más** perdió B, que es otra pregunta.
+2. **Paga al juez y mide los aciertos de B.** Quedaron sin medir a propósito, porque el sobre
+   exigía los tres tramos y el tiempo ya había decidido. Ahora que no puede cambiar el
+   veredicto es el momento **más barato** de saberlo: si B acertaba **más**, el nivel gana un
+   matiz que hoy no tiene — *perdió en tiempo y coste, y aun así respondía mejor*.
+   📌 Córrelo con `duelo.py` y su aplanador, que es lo que le pone la venda al juez (`L8.3`).
+3. **Pon `avisador.py` en verde.** Hoy sale con código 1 y **no puede volver a estar verde**:
+   avisó sobre 1 468 renglones reales con **100 % de falsos positivos**, y todos venían de las
+   suites de pruebas. El filtro obvio —*ignora `registro_pruebas_gratis.jsonl`*— es una línea
+   y mata el 95 % del ruido, **y no sirve**: lee un nombre de archivo, no un campo. El
+   ejercicio de verdad es el que el bloque E dejó apuntado: **que el renglón diga de sí mismo
+   si es real o provocado.**
+4. **Haz que alguien escriba `entorno`.** Ningún módulo lo escribe. Es el campo que separaría
+   lo pagado de lo provocado sin leer nombres de archivo — o sea, es **la mitad del ejercicio
+   3**, y por eso van juntos.
+5. **Recalibra `P18` de `compartida.py`.** Su umbral cae dentro de su propio ruido (`LM.106`):
+   una prueba así **da verde por suerte, no por salud**. Mide primero la dispersión real y pon
+   el umbral fuera de ella, o cámbiala por una que no dependa del tiempo.
+6. **Cablea el latido y ponle quién lo escuche.** Está escrito y desconectado. Y antes de
+   cablearlo, contesta la pregunta que lo hace útil: *si el latido deja de llegar, ¿quién se
+   entera, y en cuánto tiempo?* Un latido sin oyente es exactamente lo que el bloque E llama
+   **un fallo mudo a las 3 a.m.**
+7. **Rompe la venda del juez a propósito.** Quítale el aplanador a `duelo.py` y pásale al juez
+   el registro crudo del orquestador. Comprueba que el juez **sí** nota que hubo dos capas, y
+   mira si le cambia la calificación. Es `L8.3` visto morder: cinco semanas de decisión
+   correcta y ni una línea que la cumpliera.
+8. **Sube la tarea del duelo a diez monedas y vuelve a apostar.** `L8.1` dice que se reparte
+   cuando el trabajo es independizable **y** una capa no puede hacerlo en un turno. Diez
+   monedas es la forma más barata de averiguar dónde está esa frontera: sella primero en qué
+   número crees que B empieza a ganar, y solo después córrelo.
+9. **Corre el duelo con `opus` arriba y `haiku` abajo.** C.6 midió **5×** entre la config más
+   barata y la más cara, y el duelo se corrió con el mismo modelo en los dos lados **a
+   propósito**, para que lo medido fuera el esquema y no el modelo. Este ejercicio mide lo
+   otro: cuánto de la derrota de B era del esquema y cuánto se puede comprar con dinero.
+10. **Escribe la topología que falta y táchala con la razón.** El nivel tiene pipeline,
+    fan-out/fan-in, router, supervisor y profundidad > 2. Busca una sexta forma (por ejemplo
+    *debate*: dos workers con la misma tarea y un tercero que elige). Si al escribirla
+    descubres que **se colapsa** —como les pasó a B.1 y B.5—, ese descubrimiento **es** el
+    ejercicio hecho, y se tacha con la razón escrita. La regla del nivel no pide construirla:
+    pide no olvidarla.
+
+---
 
 ## Lo que ya sabes
 
-*(se escribe al cerrar el nivel)*
+Después de este nivel puedes:
+
+- **Decidir si de verdad necesitas varios agentes, con un número y no con una opinión.**
+  La respuesta medida aquí fue **no**: B tardó 1,41× lo que A y costó 1,16×. Y la regla que
+  quedó (`L8.1`) es más útil que el veredicto: **reparte cuando el trabajo sea independizable
+  Y una capa no pueda hacerlo en un turno.** Si cabe en un turno, la capa de arriba es coste
+  puro — porque **el modelo ya hace el fan-out solo**: en A.2 pidió las tres monedas en un
+  único turno, tres `tool_use` en la vuelta 1.
+- **Sellar un resultado antes de medirlo, y aguantar el sello con el resultado delante.**
+  El sobre protege un **trío** —tarea + contendientes + tramos—, y se abrió sin mover un
+  tramo. La frase de la que te protege no es *«me equivoqué»*: es **«bueno, con otra tarea
+  habría ganado»**, que es cambiar la tarea después de medir, con más pasos.
+- **Construir un worker y un orquestador, y saber qué los separa de un agente cualquiera.**
+  Un worker es un agente llamable como función: no tiene `input()` ni pide permiso, **porque
+  a un worker lo llama un programa y no hay dónde decir que no**. El permiso deja de ser una
+  pregunta y se vuelve **la caja**: se recortan el menú *y* el puente, porque el que manda es
+  el puente.
+- **Escribir el contrato entre capas, y saber qué se pierde al cruzarlo.** Del worker sube un
+  dato con forma fija; lo que no sube es **lo que el worker vio**. Por eso la capa de arriba
+  puede redactar un párrafo impecable sobre algo que no ocurrió.
+- **Nombrar las cinco topologías y saber cuál pide la tarea** — pipeline, fan-out/fan-in,
+  router, supervisor y profundidad > 2. Y la regla que las ordena: **la forma de la tarea
+  decide la topología, no al revés.** La tarea del duelo sirve para B.2 y no servía para B.1.
+- **Reconocer cuándo una topología no necesita orquestador.** Si el orden es fijo, son tres
+  líneas de Python. **El modelo se paga por decidir; si no hay nada que decidir, no hay nada
+  que pagar.** Un orquestador hace falta cuando el camino depende de lo que se encuentre.
+- **Saber por qué el tiempo de un pipeline es la SUMA y el de un fan-out es el MÁXIMO**, y por
+  qué eso no es un defecto de ninguno de los dos: es la definición de depender o no depender.
+- **Montar los seis frenos del harness de dos capas**, que es lo que impide que esto explote:
+  traza anidada, presupuesto repartido, permisos por capa, fallos del worker, tope de
+  recursión y modelo por capa. Y sabes **qué mide cada uno**, no solo que existe.
+- **Ver que la recursión no es una avería que se cuela.** `herramienta_delegar` es la
+  herramienta normal con **una palabra cambiada**. **La recursión es lo que pasa por defecto
+  cuando una capa puede abrir capas** — y no la paran ni `max_vueltas` ni el presupuesto.
+- **Elegir modelo por capa sabiendo lo que cuesta.** Medido en factura real: **5×** entre la
+  configuración más barata y la más cara, y **dos llamadas arriba costaron más que nueve
+  abajo**. Es la palanca de coste más grande del esquema, y el harness de la víspera no la
+  veía: reportaba $0,0048 donde se pagaron $0,0241.
+- **Compartir memoria entre workers sin que se pisen**, y saber por qué un candado no basta:
+  **un candado protege un módulo, no un archivo**. Tres `threading.Lock()` en tres módulos
+  sobre el mismo archivo son tres candados y ninguna protección.
+- **Decidir si compartir una skill sale a cuenta, con la cuenta completa.** Pedir una skill
+  **es una vuelta entera de API**, no solo un cuerpo más grande. Sin ese término, la
+  comparación no podía dar más que una respuesta.
+- **Programar un agente que corre sin nadie mirando**, y saber que `open(ruta, "a")` **no es
+  atómico entre procesos en Windows**: 754 renglones de 800, cero excepciones, y la huella del
+  pisotón en un largo imposible de 178 bytes.
+- **Diseñar un aviso que sirva.** La regla ingenua dio **163 avisos y 100 % de falsos
+  positivos** sobre renglones reales. **La gravedad no es una propiedad del renglón**: si
+  ningún campo dice de sí mismo qué es, el filtro acaba leyendo nombres de archivo.
+- **Medir un multi-agente con dos instrumentos y no con uno.** El juez lleva venda —si ve
+  workers, califica el esquema en vez de la respuesta— y por eso **no puede además señalar
+  quién falló**: eso lo hace un atribuidor que lee la traza, gratis y sin modelo. **A un
+  instrumento al que le tapas los ojos a propósito no le puedes pedir que señale con el dedo.**
+- **Distinguir medir el defecto de medir el detector.** El enrutado torcido **no puede tener
+  un eval determinista**, porque quien elige el destino es el modelo. Diez verdes significan
+  *«cuando se tuerce, no pasa de aquí»*, nunca *«no se tuerce»*.
+
+### ⭐ Y las tres que no se aprenden con un multi-agente, sino con cualquier programa
+
+- **La capa de arriba no sabe lo que no puede hacer: lo narra.** B afirmó haber guardado el
+  reporte en 2 de 3 corridas, con **cero llamadas** a la herramienta — que no tenía. **Partir
+  el trabajo no reparte solo la carga: reparte también lo que cada capa puede llegar a saber
+  sobre sí misma.**
+- **Un dato solo en su renglón no es correcto: es incomprobable**, y da exactamente el mismo
+  verde. La pregunta ante un campo así no es *«¿está bien?»* sino **«¿qué otro dato tendría
+  que estar en desacuerdo con este si estuviera mal?»**. Vale igual para un **cálculo**, y ahí
+  la pregunta gemela es *«¿con qué entradas daría la otra respuesta?»*.
+- **Una lista de comprobaciones que se cumple entera no dice que no haya nada roto: dice que
+  no hay nada roto EN LA LISTA.** Las seis afirmaciones salieron verdes a la primera; el fallo
+  apareció **al lado**, mirando la salida y pensando *«`c1` es un nombre demasiado corto para
+  ser único»*.
+
+### 🧾 Y lo que este nivel te cobró por saberlo
+
+Varias sesiones seguidas a **$0,00** en medio de un nivel que midió modelos, presupuestos y un
+duelo. No fue suerte: los hallazgos caros —el candado, la comparación amañada, el `append` no
+atómico, el aviso inútil— **salieron todos de pruebas gratis sobre registros ya pagados**.
+📌 Y la horquilla del último día se perdió **por abajo** ($0,077903 contra $0,15–$0,30 sellados)
+porque se selló contando con un juez que al final no hizo falta correr. **Se falla y se
+explica, no se reajusta** (`L8.5`).
