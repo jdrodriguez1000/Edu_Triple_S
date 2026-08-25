@@ -6164,6 +6164,77 @@ falta.** Por eso `P5` exige que cada hueco diga **por qué** lo es, y `P6` que *
 | Sin tocar | los 121 evals del 5b, las 11 casillas, los 33 veredictos, el sobre |
 | Lecciones | `LM.102`, `LM.103` |
 
+
+---
+
+## 🔒 ANTES DE ABRIR EL SOBRE — lo que F.3 tiene que leer primero
+
+*(escrito al cerrar la sesión 111, con F.1 y F.2 ya cerradas)*
+
+**F.3 es la primera sesión que paga de verdad en siete.** Las seis anteriores costaron
+$0,000000 y eso volvió barato equivocarse. Aquí deja de serlo, y por eso estas tres cosas
+quedan escritas **aquí**, donde F.3 va a mirar, y no solo en `PROGRESO.md`.
+
+### 1. 🚨 El candado de disco, y es lo único bloqueante
+
+> **Importancia: alta · Urgencia: BLOQUEANTE para F.3.**
+> **Qué se rompe si se ignora:** una línea del registro se parte **por dentro** mientras dos
+> capas escriben a la vez; la corrida **ya está pagada**; `atribuidor._leer()` revienta con
+> `JSONDecodeError`, y **no hay forma de rehacer esa corrida sin volver a pagarla.**
+
+No es una hipótesis: **mordió el 2026-08-24** y la línea 626 de `registro_pruebas_gratis.jsonl`
+sigue partida. `worker.py` y `orquestador.py` tienen **dos objetos `Lock()` distintos**, y un
+`Lock` solo excluye a quien pide **ese mismo** objeto. Estaba escrito en `compartida.py:363`
+desde la sesión 106, con la etiqueta *«hoy no se pisan»*.
+
+**Hoy no bloquea** porque los dos registros pagados son **dos archivos distintos**. Lo que
+convierte esto en bloqueante es que **F.3 es la primera corrida pagada desde que se sabe**, y
+basta un cambio de rumbo —un tercer módulo que anote, un desvío como el de `presupuesto.py:823`—
+para juntarlos.
+
+📌 El arreglo tiene forma conocida y ya está resuelto en otro sitio del nivel: **un candado por
+ARCHIVO, viviendo junto al archivo**, como hizo `compartida.py` con `_CANDADO_HILOS`. Más una
+prueba que lo vea morder (`LM.13`). Es deuda de **E.1**, y es una sesión.
+
+### 2. ⭐ Lo que F.3 puede ver que nadie ha visto todavía
+
+Dos casillas del catálogo llevan **cero apariciones sobre datos reales**, y no por casualidad:
+**necesitan dos capas corriendo el duelo**, que es exactamente lo que F.3 hace por primera vez.
+
+| Qué | Estado hoy | Por qué F.3 lo cambia |
+|---|---|---|
+| `orquestador` como culpable | **0 veces** en 7 corridas (F.1) | muerde solo si el de abajo entrega bien y arriba se tuerce |
+| `enrutado_torcido` | **HUECO** — sin eval posible (F.2) | quien elige el destino es el modelo: solo se ve pagando |
+
+🚨 **Y si después del duelo siguen en cero, eso también es un hallazgo** — estaba escrito en la
+apuesta 6 de F.1 **antes** de medir, que es la única forma de que no se lea como excusa después.
+
+### 3. 📋 Las deudas vivas, con sus dos marcas
+
+| Deuda | Importancia | Urgencia | Dónde |
+|---|---|---|---|
+| **Candado de disco: dos `Lock()`, un archivo** | alta | **BLOQUEANTE para F.3** | E.1 · `compartida.py:363`, `presupuesto.py:823` |
+| `avisador.py` sale con 1 y **no puede volver a estar verde** | alta | no bloqueante | E.2 · `P8`, `P9`, `P12` cuentan un registro que crece solo |
+| Ningún módulo escribe `entorno` | alta | no bloqueante | E.2 |
+| `orquestador` sin morder sobre datos reales | alta | no bloqueante | **se paga en F.3** |
+| El latido: sin cablear y sin quien lo escuche | media | no bloqueante | E.2 |
+| `numeros_publicados()` ciego a cifras sin separador | baja | no bloqueante | declarada en `P12` de `atribuidor.py` |
+| `profundidad.py:594` con nombre de archivo fijo | baja | no bloqueante | E.1 |
+
+✅ **Cerradas en la sesión 111:** el campo `origen` (deuda de F.1) y **F.2 entera**.
+
+### 4. 🎲 El orden, que no ha fallado en diecisiete sesiones
+
+1. Contar hechos ($0,00) — **antes** de apostar.
+2. Sellar la apuesta con sus modos de fallo **falsables**, y nombrar al sospechoso.
+3. **Commitearla sola**, antes de la primera línea de código.
+4. Escribir el código y medir.
+5. `PROGRESO.md`, `LESSONS.md`, `GUIDE.md` §6.e, y el commit del cierre.
+
+⚠️ En F.3 hay un paso más y es nuevo: **la horquilla del coste se sella antes de pagar**, como se
+hizo en el paso 4 de C.1 ($0,024–$0,030 sellados, $0,026390 medidos). Sin ella, *«costó lo que
+costó»* no se puede desmentir.
+
 ---
 
 ### 🏁 BLOQUE G — Cierre
