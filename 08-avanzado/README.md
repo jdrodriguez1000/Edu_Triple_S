@@ -5571,7 +5571,7 @@ mezcla dos causas opuestas —el worker trajo un dato malo, o el orquestador jun
 datos buenos— y la misma marca significaría dos cosas contrarias. Es el `correct: bool`
 de TEAPP (sesión 83) con una capa más. Hace falta un campo con estados, no un booleano.
 
-⭐ **Lo que NO hay que construir:** los 116 evals deterministas de `evals.py` del 5b
+⭐ **Lo que NO hay que construir:** los **121** evals deterministas de `evals.py` del 5b
 **siguen valiendo enteros**, porque los workers usan las mismas seis herramientas. Ese
 es el hallazgo, no un ahorro: **lo que cambia al subir una capa no es la herramienta,
 es quién decide llamarla.**
@@ -5963,6 +5963,115 @@ decisión del bloque E, no de F.
 | Apuestas | **4 de 4** |
 | Sin tocar | los registros pagados (131 y 405, el portero lo confirma), el juez, las 11 casillas |
 | Lecciones | `LM.100`, `LM.101` |
+
+
+---
+
+#### 🚨 HALLAZGO ENCONTRADO AL CONTAR PARA F.2 — el riesgo de la 106 MORDIÓ, y tiene fecha
+
+> **Importancia: alta · Urgencia: NO bloqueante.**
+> **Qué se rompería si se ignora, y cuándo:** el día que una corrida **pagada** mande los dos
+> módulos al mismo archivo —que es exactamente lo que hace `presupuesto.py:823`—, una línea se
+> parte en el disco, la corrida **ya está pagada**, y `atribuidor._leer()` revienta con
+> `JSONDecodeError` sobre datos que **no se pueden rehacer sin volver a pagar**.
+> **Hoy no bloquea nada** porque los dos registros pagados son **dos archivos distintos**.
+
+`registro_pruebas_gratis.jsonl` tiene **una línea partida**, la **626**, con fecha
+**2026-08-24T19:19:15** — ayer, sesión 110. Empieza a media frase:
+
+```
+{"hora": "...19:19:15", "evento": "llamada_api", "corrida": "c20260824T191915-d0af3e", ...}
+{"hora": "...19:19:15", "evento": "llamada_api", "corrida": "c20260824T191915-588e57", ...}
+"fecha": null}, "faltan": ["moneda", "monto", "pesos", "fecha"], "discrepa": null, ...   <-- 626
+{"hora": "...19:19:15", "evento": "contrato_discrepa", "moneda": "CAD", ...}
+```
+
+Es **la cola de un `worker_fin` cuya cabeza se perdió**, en medio de dos corridas distintas del
+mismo segundo. No es un archivo truncado al final: está partido **por dentro**.
+
+##### 🔑 Y estaba escrito, con nombre y con fecha, en `compartida.py:363`
+
+> *«en `orquestador.py` y en `worker.py` hay **DOS objetos `Lock()` distintos**, uno por módulo.
+> **Hoy no se pisan** porque escriben en dos archivos distintos — pero `presupuesto.py:823`
+> apunta los dos al mismo archivo, y ahí son **dos cerraduras en dos puertas de la misma
+> habitación**. Medido en la 106.»*
+
+**Se pisaron.** El renglón de arriba es esa frase ocurriendo. `_CANDADO_REGISTRO` de `worker.py`
+y `_CANDADO_REGISTRO` de `orquestador.py` son dos objetos, y un `Lock` solo excluye a quien pide
+**ese mismo** objeto.
+
+⭐ **Un candado protege un ARCHIVO, no un módulo** — y `compartida.py` ya lo dice en su propio
+arreglo (`_CANDADO_HILOS` vive junto al archivo). Lo que faltaba no era saberlo: era aplicarlo
+donde escriben los dos módulos de verdad.
+
+📌 **No se arregla hoy y se dice por qué:** es la deuda de **E.1**, no de F, y el arreglo honesto
+—un candado por archivo, más una prueba que lo vea morder— es una sesión entera. Queda con su
+frase de daño escrita arriba, que es lo que la separa de un adjetivo. **Antes de pagar F.3.**
+
+---
+
+#### 🎲 F.2 — LA APUESTA, sellada el **2026-08-25** (sesión 111) **antes de la primera línea de código**
+
+> **Diecisiete sesiones seguidas** con este orden. Lo de abajo se escribió **después de contar**
+> y **antes de tocar nada**. Los cinco hechos son contados, cuestan $0,00 y no contaminan lo
+> apostado.
+
+##### Los cinco hechos contados (no son apuestas)
+
+| # | Dónde | Qué dice |
+|---|---|---|
+| 1 | `05b-proyecto/evals.py`, corrido hoy | **121 casos, 0 fallaron.** ⚠️ El README de este nivel dice **116**: el número quedó viejo. |
+| 2 | Los 14 módulos del nivel 8 | **433 llamadas a `check()`.** El nivel ya está densamente probado — F.2 nace rodeado. |
+| 3 | `grep anotar("…")` sobre todo el nivel | El harness sabe emitir **31 nombres de evento distintos**. |
+| 4 | Los dos registros **pagados** (536 renglones) | Aparecen **10** de esos 31. Los de fallo propio del multi-agente: `sin_trozo` **2**, `contrato_discrepa` **1**, `b5_queja` **2**. |
+| 5 | Esos mismos 536 | De **60** `worker_fin`, **5** con `ok:False`. De **20** `orquestador_fin`, **0**. |
+
+##### 🎲 Las cuatro apuestas
+
+**🎲 1 — F.2 nace en riesgo de ser un duplicado con otro nombre, y lo que la separa NO es el tema:
+es el SUJETO.** Los 433 `check()` prueban **el harness** (*¿el freno corta?*). Un eval de F.2 tiene
+que probar **la conducta del sistema de dos capas ante una entrada** (*¿qué hace el de arriba
+cuando el de abajo devuelve esto?*). Apuesto que al recorrer el catálogo, **5 o más** de los modos
+de falla que F.2 iba a cubrir **ya tienen una prueba que los ve morder** — y que el valor de F.2
+no estará en los casos nuevos sino en **el catálogo con dueño y con hueco**.
+⚠️ **Falsable:** si al terminar están cubiertos **menos de 5**, esta falla.
+
+**🎲 2 — El modo de falla más caro del nivel NO va a poder tener un eval determinista, y es el
+enrutado torcido.** Está medido (sesión 95: el euro al worker del dólar). Apuesto que **no se
+puede escribir un caso determinista que lo PRODUZCA**, porque quien elige el destino es el modelo.
+Un eval determinista solo puede comprobar que **si** llega torcido, `discrepa` lo caza.
+🔑 **F.2 va a medir el DETECTOR, no el DEFECTO** — y esa frase hay que escribirla en el archivo,
+porque si no, una tabla verde de F.2 se leerá como *«el enrutado no se tuerce»*.
+⚠️ **Falsable:** si sale un caso determinista que produce el enrutado torcido sin clavar a mano la
+salida del modelo, esta falla.
+
+**🎲 3 — Va a aparecer al menos un evento que el harness sabe NOMBRAR y nadie comprueba que se
+emita cuando toca.** Son 31 nombres y 10 vistos. Apuesto que **≥1** de los 31 se escribe en algún
+`anotar(...)` sin que ninguna prueba exija que salga en el caso que lo provoca.
+🔑 Sería el `capa` de la sesión 97 otra vez: **un dato que nadie puede contradecir.**
+⚠️ **Falsable:** si los 31 tienen dueño, esta falla.
+
+**🎲 4 — $0,000000, séptima sesión seguida.** Un eval determinista que necesita pagar no es un eval
+determinista. ⚠️ **Falsable:** si hace falta una sola llamada a la API, esta falla.
+
+##### 🕵️ El sospechoso de hoy
+
+**El que escribe el eval es el que decide qué cuenta como «modo de falla propio del
+multi-agente»** — y puede elegir la lista para que salga cubierta. Séptima sesión seguida
+nombrándolo. Dos defensas, en el código:
+
+1. **La lista no sale de mi cabeza:** se saca de los **31 eventos que el harness ya emite**
+   (contados arriba, antes de empezar) y de los modos ya medidos con fecha en este README.
+2. **El catálogo declara los HUECOS, no solo los llenos.** Un modo sin eval se escribe como
+   *sin eval*, no se calla. Y una prueba exige que el catálogo cubra los 31 nombres — si mañana
+   nace un evento nuevo sin fila, se pone roja.
+
+##### 🔒 Lo que NO se toca
+
+- **El sobre del bloque 0.** Lo abre F.3.
+- **Las 11 casillas y los 33 veredictos pagados** (`LM.97`).
+- **Los registros pagados.** Ni una línea.
+- **El candado de disco.** Es de E.1, está arriba con su frase de daño, y **no** es de hoy.
 
 ---
 
