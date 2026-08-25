@@ -956,7 +956,14 @@ def paso5(verboso=True):
 #    que se dijo que se iba a correr.**
 VIGILADOS = ["fan_out", "profundidad", "router", "supervisor", "verificador",
              # entra el día que se le pilla ensuciando el registro pagado.
-             "evals_orquestador"]
+             "evals_orquestador",
+             # 🚨 F.3, sesión 113. Lo cazó ESTE portero, con la prueba 8 en rojo
+             #    y `sucios=[('SIN CLASIFICAR', 0, 'duelo')]`, el día que nació
+             #    el archivo. Es exactamente lo que se le arregló en la 111 y no
+             #    hacía con `evals_orquestador`. Entra VIGILADO y no descartado:
+             #    sus pruebas leen los registros pagados, así que si un día
+             #    escriben en ellos, esto se pone rojo.
+             "duelo"]
 
 # Los que NO se vigilan, con su razón. No es una lista de excusas: es lo que
 # permite distinguir «decidido que no» de «se nos olvidó».

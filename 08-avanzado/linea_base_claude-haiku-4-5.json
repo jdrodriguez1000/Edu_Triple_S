@@ -1,5 +1,5 @@
 {
-  "medido": "2026-08-20T14:19:24+00:00",
+  "medido": "2026-08-25T13:44:03+00:00",
   "contendiente": "A_una_capa",
   "configuracion": {
     "agente": "05b-proyecto/agente.py",
@@ -14,24 +14,24 @@
   "corridas": [
     {
       "corrida": 1,
-      "segundos": 12.67,
-      "usd": 0.022819,
-      "respuesta": "**Resumen de tu dinero en pesos (20 de agosto de 2026):**\n\n- **1.000 USD = $3.053.480 COP** (TRM oficial, datos.gov.co)\n- **1.000 EUR = $3.610.380 COP** (Mercado, open.er-api.com)\n- **1.000 CAD = $2.241.559 COP** (Mercado, open.er-api.com)\n\n**Total: $8.905.419 COP**\n\nEl reporte está guardado en `conversion-usd-eur-cad-2026-08-20.txt`."
+      "segundos": 10.21,
+      "usd": 0.02293,
+      "respuesta": "**Aquí están tus conversiones a pesos hoy:**\n\n- **1.000 USD = 3.056.510 COP** (TRM oficial, 25 ago 2026)\n- **1.000 EUR = 3.549.658 COP** (Mercado, 25 ago 2026)\n- **1.000 CAD = 2.198.941 COP** (Mercado, 25 ago 2026)\n\n**Total: 8.805.109 COP**\n\nTu reporte está guardado como `conversion-usd-eur-cad-a-cop-2026-08-25.txt`."
     },
     {
       "corrida": 2,
-      "segundos": 10.0,
-      "usd": 0.023481,
-      "respuesta": "**Aquí está tu conversión a pesos hoy:**\n\n- **1.000 USD = $3.053.480 COP** (TRM oficial, 20 de agosto de 2026)\n- **1.000 EUR = $3.610.380 COP** (Mercado, 20 de agosto de 2026)\n- **1.000 CAD = $2.241.559 COP** (Mercado, 20 de agosto de 2026)\n\n**Total: $8.905.419 COP**\n\nEl reporte está guardado como `conversion_a_pesos_2026-08-20.txt` con todas las fuentes y fechas."
+      "segundos": 9.67,
+      "usd": 0.022834,
+      "respuesta": "**Aquí están tus conversiones:**\n\n- **1.000 USD** = **3.056.510 COP** (TRM oficial, 25 ago)\n- **1.000 EUR** = **3.549.658 COP** (Tasa de mercado, 25 ago)\n- **1.000 CAD** = **2.198.941 COP** (Tasa de mercado, 25 ago)\n\n**Total: 8.805.109 pesos**\n\nEl reporte está guardado en `conversor-1000-cada-moneda-2026-08-25.txt`."
     },
     {
       "corrida": 3,
-      "segundos": 11.11,
-      "usd": 0.023194,
-      "respuesta": "**Resumen de tu conversión a pesos hoy (20 de agosto de 2026):**\n\n- **1.000 USD = $3.053.480 COP** (TRM oficial - datos.gov.co)\n- **1.000 EUR = $3.610.380 COP** (Mercado - open.er-api.com)\n- **1.000 CAD = $2.241.559 COP** (Mercado - open.er-api.com)\n\n**Total: $8.905.419 COP**\n\nEl reporte se guardó como `conversion_pesos_20ago2026.txt` con todos los detalles de fuentes y fechas."
+      "segundos": 11.66,
+      "usd": 0.023253,
+      "respuesta": "Listo. Aquí están tus conversiones de hoy (25 de agosto):\n\n- **1.000 USD = 3.056.510 COP** — Tasa oficial (TRM de datos.gov.co)\n- **1.000 EUR = 3.549.658 COP** — Tasa de mercado (open.er-api.com)\n- **1.000 CAD = 2.198.941 COP** — Tasa de mercado (open.er-api.com)\n\n**Total: 8.805.109 COP**\n\nEl reporte está guardado como `conversion_divisas_2026-08-25.txt`."
     }
   ],
-  "segundos_mediana": 11.11,
-  "usd_mediana": 0.023194,
-  "usd_total_gastado": 0.069494
+  "segundos_mediana": 10.21,
+  "usd_mediana": 0.02293,
+  "usd_total_gastado": 0.069017
 }

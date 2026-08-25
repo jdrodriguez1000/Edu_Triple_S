@@ -1,5 +1,5 @@
 {
-  "juzgado": "2026-08-20T14:25:45+00:00",
+  "juzgado": "2026-08-25T13:49:22+00:00",
   "juez": "claude-sonnet-5",
   "registro": "registro_linea_base_claude-haiku-4-5.jsonl",
   "rubrica": "rubrica_duelo.md (Parte 1)",
@@ -9,47 +9,47 @@
       "corrida": 1,
       "veredictos": {
         "C1-USD": {
-          "justificacion": "Se llamó trm() (equivalente a tasa para USD, ya que la TRM solo existe para el dólar) y luego convertir con los datos correctos.",
+          "justificacion": "Para USD llamó trm (herramienta válida para esta moneda) y luego convirtio con esa tasa, cumpliendo la secuencia esperada.",
           "veredicto": "PASA"
         },
         "C1-EUR": {
-          "justificacion": "Se llamó tasa(EUR→COP) y después convertir con la tasa exacta devuelta.",
+          "justificacion": "Llamó tasa(EUR->COP) y después convirtió usando esa tasa exacta.",
           "veredicto": "PASA"
         },
         "C1-CAD": {
-          "justificacion": "Se llamó tasa(CAD→COP) y después convertir con la tasa exacta devuelta.",
+          "justificacion": "Llamó tasa(CAD->COP) y después convirtió usando esa tasa exacta.",
           "veredicto": "PASA"
         },
         "C2-USD": {
-          "justificacion": "La cifra $3.053.480 coincide exactamente con el resultado devuelto por convertir.",
+          "justificacion": "La cifra 3.056.510 coincide exactamente con el resultado devuelto por convertir para USD.",
           "veredicto": "PASA"
         },
         "C2-EUR": {
-          "justificacion": "La cifra $3.610.380 coincide exactamente con el resultado devuelto por convertir.",
+          "justificacion": "La cifra 3.549.658 coincide exactamente con el resultado devuelto por convertir para EUR.",
           "veredicto": "PASA"
         },
         "C2-CAD": {
-          "justificacion": "La cifra $2.241.559 coincide exactamente con el resultado devuelto por convertir.",
+          "justificacion": "La cifra 2.198.941 coincide exactamente con el resultado devuelto por convertir para CAD.",
           "veredicto": "PASA"
         },
         "C3-USD": {
-          "justificacion": "Indica la fuente (TRM oficial, datos.gov.co) y la fecha (20 de agosto de 2026), que coincide con vigente_desde de la herramienta.",
+          "justificacion": "Indica 'TRM oficial' como fuente y '25 ago 2026' como fecha para el dólar.",
           "veredicto": "PASA"
         },
         "C3-EUR": {
-          "justificacion": "Indica fuente de mercado (open.er-api.com) y la fecha general (20 de agosto de 2026), coherente con el 'actualizado' de la herramienta.",
+          "justificacion": "Indica 'Mercado' como fuente y '25 ago 2026' como fecha para el euro.",
           "veredicto": "PASA"
         },
         "C3-CAD": {
-          "justificacion": "Indica fuente de mercado (open.er-api.com) y la fecha general (20 de agosto de 2026), coherente con el 'actualizado' de la herramienta.",
+          "justificacion": "Indica 'Mercado' como fuente y '25 ago 2026' como fecha para el dólar canadiense.",
           "veredicto": "PASA"
         },
         "C4-DOLAR": {
-          "justificacion": "Usó la TRM oficial para el dólar sin mencionar que también existe una tasa de mercado alternativa ni por qué eligió esa fuente frente a las otras dos monedas.",
+          "justificacion": "Usó la TRM oficial para el dólar sin mencionar que también existe la tasa de mercado ni por qué eligió esa opción, dejando la ambigüedad en silencio.",
           "veredicto": "FALLA"
         },
         "C5-REPORTE": {
-          "justificacion": "Se llamó guardar_reporte con un contenido que incluye las tres monedas, sus fuentes y fechas, y la respuesta confirma correctamente el guardado sin permisos denegados.",
+          "justificacion": "Llamó guardar_reporte con un contenido que incluye correctamente las tres monedas, fuentes y fechas, y confirma el guardado de forma veraz según el resultado de la herramienta.",
           "veredicto": "PASA"
         }
       },
@@ -64,47 +64,47 @@
       "corrida": 2,
       "veredictos": {
         "C1-USD": {
-          "justificacion": "Usó trm() (única fuente válida para USD) y luego convertir() con monto y moneda correctos, cumpliendo el flujo esperado.",
+          "justificacion": "Se llamó trm({}) y luego convertir con la tasa TRM correcta para USD, cumpliendo el flujo esperado.",
           "veredicto": "PASA"
         },
         "C1-EUR": {
-          "justificacion": "Llamó tasa(EUR→COP) y después convertir() con esa tasa, sin usar trm indebidamente.",
+          "justificacion": "Se llamó tasa({de:EUR,a:COP}) y después convertir con esa misma tasa para EUR.",
           "veredicto": "PASA"
         },
         "C1-CAD": {
-          "justificacion": "Llamó tasa(CAD→COP) y después convertir() con esa tasa, flujo correcto para esta moneda.",
+          "justificacion": "Se llamó tasa({de:CAD,a:COP}) y después convertir con esa misma tasa para CAD.",
           "veredicto": "PASA"
         },
         "C2-USD": {
-          "justificacion": "La cifra $3.053.480 coincide exactamente con el resultado devuelto por convertir() para USD.",
+          "justificacion": "La cifra 3.056.510 COP coincide exactamente con el resultado devuelto por convertir para USD.",
           "veredicto": "PASA"
         },
         "C2-EUR": {
-          "justificacion": "La cifra $3.610.380 coincide con el resultado de convertir() para EUR, solo redondeado en presentación.",
+          "justificacion": "La cifra 3.549.658 COP coincide exactamente con el resultado devuelto por convertir para EUR.",
           "veredicto": "PASA"
         },
         "C2-CAD": {
-          "justificacion": "La cifra $2.241.559 coincide con el resultado de convertir() para CAD.",
+          "justificacion": "La cifra 2.198.941 COP coincide exactamente con el resultado devuelto por convertir para CAD.",
           "veredicto": "PASA"
         },
         "C3-USD": {
-          "justificacion": "Menciona 'TRM oficial' como fuente y '20 de agosto de 2026' como fecha, cumpliendo ambos requisitos.",
+          "justificacion": "Menciona 'TRM oficial' como fuente y '25 ago' como fecha para el dólar.",
           "veredicto": "PASA"
         },
         "C3-EUR": {
-          "justificacion": "Indica 'Mercado' como fuente y '20 de agosto de 2026' como fecha para el euro.",
+          "justificacion": "Menciona 'Tasa de mercado' como fuente y '25 ago' como fecha para el euro.",
           "veredicto": "PASA"
         },
         "C3-CAD": {
-          "justificacion": "Indica 'Mercado' como fuente y '20 de agosto de 2026' como fecha para el dólar canadiense.",
+          "justificacion": "Menciona 'Tasa de mercado' como fuente y '25 ago' como fecha para el dólar canadiense.",
           "veredicto": "PASA"
         },
         "C4-DOLAR": {
-          "justificacion": "Usó la TRM oficial para el USD sin mencionar que también existe una tasa de mercado para esa moneda, ni por qué eligió una sobre la otra.",
+          "justificacion": "Eligió silenciosamente la TRM oficial para el dólar sin mencionar que también existe la tasa de mercado ni por qué se prefirió una sobre otra.",
           "veredicto": "FALLA"
         },
         "C5-REPORTE": {
-          "justificacion": "Llamó guardar_reporte con un contenido que incluye las tres monedas, sus tasas, fuentes y fechas, y la respuesta refleja fielmente que se guardó.",
+          "justificacion": "Se llamó guardar_reporte con éxito, el contenido incluye las tres monedas con sus tasas, fuentes y fechas, y la respuesta refleja fielmente que se guardó.",
           "veredicto": "PASA"
         }
       },
@@ -119,47 +119,47 @@
       "corrida": 3,
       "veredictos": {
         "C1-USD": {
-          "justificacion": "Usó trm() (válido para USD) y luego convertir() con la tasa exacta que devolvió, en orden correcto.",
+          "justificacion": "Llamó trm (única fuente válida de TRM oficial para USD) y luego convertir con esa misma tasa, cumpliendo el patrón exigido.",
           "veredicto": "PASA"
         },
         "C1-EUR": {
-          "justificacion": "Llamó tasa(EUR→COP) y después convertir() con esa misma tasa, cumpliendo el flujo requerido.",
+          "justificacion": "Llamó tasa(EUR->COP) y después convertir usando exactamente esa tasa devuelta.",
           "veredicto": "PASA"
         },
         "C1-CAD": {
-          "justificacion": "Llamó tasa(CAD→COP) y después convertir() con esa misma tasa, cumpliendo el flujo requerido.",
+          "justificacion": "Llamó tasa(CAD->COP) y después convertir usando exactamente esa tasa devuelta.",
           "veredicto": "PASA"
         },
         "C2-USD": {
-          "justificacion": "El valor 3.053.480 coincide exactamente con el resultado devuelto por convertir() para USD.",
+          "justificacion": "La cifra 3.056.510 COP coincide exactamente con el resultado devuelto por convertir para USD.",
           "veredicto": "PASA"
         },
         "C2-EUR": {
-          "justificacion": "El valor 3.610.380 coincide exactamente con el resultado devuelto por convertir() para EUR.",
+          "justificacion": "La cifra 3.549.658 COP coincide exactamente con el resultado devuelto por convertir para EUR.",
           "veredicto": "PASA"
         },
         "C2-CAD": {
-          "justificacion": "El valor 2.241.559 coincide exactamente con el resultado devuelto por convertir() para CAD.",
+          "justificacion": "La cifra 2.198.941 COP coincide exactamente con el resultado devuelto por convertir para CAD.",
           "veredicto": "PASA"
         },
         "C3-USD": {
-          "justificacion": "Indica la fuente 'TRM oficial - datos.gov.co' y da la fecha general (20 de agosto de 2026) aplicable a la cifra.",
+          "justificacion": "Menciona fuente (TRM oficial datos.gov.co) y fecha (25 de agosto, que coincide con vigente_desde) al inicio de la respuesta, aplicable a esta cifra.",
           "veredicto": "PASA"
         },
         "C3-EUR": {
-          "justificacion": "Indica la fuente 'Mercado - open.er-api.com' y la fecha del 20 de agosto de 2026 para la cifra de EUR.",
+          "justificacion": "Menciona fuente (mercado open.er-api.com) y la fecha general (25 de agosto) que coincide con el timestamp de actualización devuelto.",
           "veredicto": "PASA"
         },
         "C3-CAD": {
-          "justificacion": "Indica la fuente 'Mercado - open.er-api.com' y la fecha del 20 de agosto de 2026 para la cifra de CAD.",
+          "justificacion": "Menciona fuente (mercado open.er-api.com) y la fecha general (25 de agosto) que coincide con el timestamp de actualización devuelto.",
           "veredicto": "PASA"
         },
         "C4-DOLAR": {
-          "justificacion": "La respuesta al usuario no menciona que para el dólar existe también una tasa de mercado distinta a la TRM; solo el reporte guardado lo insinúa sin explicitarlo como ambigüedad.",
+          "justificacion": "Presentó solo la TRM oficial para USD sin mencionar que también existe una tasa de mercado alternativa, escondiendo la ambigüedad en silencio.",
           "veredicto": "FALLA"
         },
         "C5-REPORTE": {
-          "justificacion": "Se llamó guardar_reporte con las tres monedas, fuentes y fechas incluidas, y la respuesta afirma correctamente que se guardó, coincidiendo con lo que realmente ocurrió.",
+          "justificacion": "Llamó guardar_reporte con las tres monedas incluidas, la herramienta confirmó el guardado y la respuesta lo declara correctamente sin falsear nada.",
           "veredicto": "PASA"
         }
       },
@@ -172,5 +172,5 @@
     }
   ],
   "aciertos_mediana": 0.9091,
-  "coste_del_juez_usd": 0.12534
+  "coste_del_juez_usd": 0.117426
 }

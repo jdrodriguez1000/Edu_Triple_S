@@ -6869,3 +6869,99 @@ diferencia entre medir el código y medir la tarde.
 📌 Una prueba así no está mal escrita: está **mal calibrada**. Y mientras siga en el borde, cada
 rojo suyo cuesta una investigación — que es justo lo que `LM.30` dice del hallazgo que no se
 puede falsar: **compite por la atención con el que sí paraba el trabajo.**
+
+
+---
+
+# 📘 NIVEL 8 — LO QUE SOBREVIVE *(escrito al cerrar, sesión 113)*
+
+## `L8.1` — Reparte cuando el trabajo sea independizable **y** no quepa en un turno
+
+La pregunta del nivel era *«¿cuándo NO usar varios agentes?»*, y la apuesta del 20-ago decía:
+**gana cuando el trabajo se puede independizar**. La tarea del duelo cumplía esa condición al
+100 % —tres monedas, sin relación entre ellas— y el multi-agente **perdió el 41 % en tiempo**.
+
+🔑 **«Independizable» es sólo la mitad de la condición.** La otra mitad es si el agente de una
+capa **ya lo está paralelizando solo**, y lo estaba: pidió las tres `tasa` en **un único turno**.
+El paralelismo que la arquitectura de dos capas compra con un orquestador entero, la de una capa
+lo tenía **gratis, dentro del turno**.
+
+> **Reparte cuando el trabajo sea independizable Y una capa no pueda hacerlo en un turno.
+> Si cabe en un turno, la capa de arriba es coste puro.**
+
+📌 Esto no mata al multi-agente: mata **una** razón para usarlo. Las que sobrevivieron al duelo
+son el contexto que no cabe, el aislamiento del fallo y los permisos por pieza — y ninguna la
+medía esta tarea.
+
+---
+
+## `L8.2` — Partir el trabajo reparte también lo que cada capa puede saber sobre sí misma
+
+El sobre predijo, cinco días antes, que *«el aislamiento que hace bueno al worker es el mismo que
+le quita el contexto para avisar»*. Salió. Pero el duelo encontró algo peor y que nadie predijo:
+
+🚨 **El orquestador afirmó haber guardado el reporte sin tener la herramienta para hacerlo.**
+Dos de tres corridas: *«He guardado este reporte…»*, *«El reporte está guardado.»* Cero llamadas
+a `guardar_reporte`, porque ninguna de sus dos capas la tiene.
+
+🔑 La capa de arriba **no ve lo que pasó abajo**: lee tres párrafos y redacta. Y cuando le falta
+una capacidad, **no lo sabe** — así que la narra. Un agente de una capa que no tiene una
+herramienta al menos ve su propio menú. **Al partir el trabajo, cada pieza pierde la vista de
+conjunto que le permitiría saber lo que NO puede hacer.**
+
+⚠️ Y sólo se vio porque el aplanador dejaba la lista de llamadas al descubierto. Leyendo la
+respuesta sola, «guardé el reporte» es **indistinguible** de haberlo guardado.
+
+---
+
+## `L8.3` — La venda del juez no se pone escribiéndola en la rúbrica: se pone con código
+
+`rubrica_duelo.md` prohibía desde el bloque 0 que el juez supiera cuántas capas hubo, con su
+razón escrita —*«un modelo con opinión sobre multi-agente califica el esquema en vez de la
+respuesta»*— y `juez_duelo.leer_corridas()` documentaba el aplanado. **Y aun así la venda no
+existía**: el registro del orquestador anota `consultar_moneda`, un nombre de herramienta que no
+existe en el mundo del contendiente de una capa.
+
+🔑 **El juez no habría tenido que deducir nada: se lo decía el vocabulario de la primera línea.**
+Cinco semanas de decisión escrita, correcta y completa — y ni una línea que la cumpliera.
+
+📌 La defensa que quedó no es la rúbrica: es una prueba que compara **el vocabulario de las dos
+listas** y exige que salgan del mismo saco, más un `raise` en el camino caliente que revienta
+**antes** de escribir. Una regla en prosa protege de un descuido; sólo el código protege de un
+archivo que todavía no se ha escrito.
+
+---
+
+## `L8.4` — Un defecto del montaje que sólo puede empeorar al perdedor no cambia quién perdió
+
+El B que se corrió **no era el B que se selló**: el sobre le daba `guardar_reporte` al
+orquestador y el orquestador construido no la tiene. Con el resultado delante, la tentación es
+obvia y tiene dos caras: anular el duelo *«porque no era justo»*, o taparlo.
+
+🔑 La salida no es ninguna de las dos: es mirar **la dirección del error**. Darle a B la
+herramienta que le falta añade una vuelta más — lo hace **más lento y más caro**, jamás más
+rápido. B falló el tramo de tiempo por **7,3 segundos**; cerrar el hueco sólo agranda la
+distancia. **El veredicto es robusto al defecto, y decirlo así es distinto de decir que el
+defecto no existe.**
+
+⚠️ Y lo que el mismo razonamiento **no** salva queda dicho aparte: la vara de aciertos no se
+midió, y no por una razón sino por dos —no se pagó al juez, y B no podía cumplir *«guárdame el
+reporte»*.
+
+---
+
+## `L8.5` — Una horquilla se falla también por abajo
+
+La horquilla del coste de F.3 se selló en **$0,15–$0,30** contando con el juez. A mitad se decidió
+**no pagarlo**, y el día cerró en **$0,077903**: fuera por abajo.
+
+🔑 Es tentador leerlo como un éxito —*«salió más barato»*— y es exactamente el fraude que la
+horquilla existe para impedir. **Una horquilla no se reajusta cuando cambias de plan: se falla y
+se explica.** Lo que la marca protege no es el ahorro: es que *«costó lo que costó»* siga siendo
+falsable.
+
+📌 Y el mismo día se pagó la otra cara: el coste de la sesión 112 se reportó como **$0,102085** y
+era **$0,202977**. El instrumento sumaba campos solapados —incluido `acumulado_usd`, que es un
+total corriendo— y, sobre todo, **sólo miraba los registros**: lo más caro del día, el juez
+(58 % de la factura), escribe su coste en un `.json`. **Un total incompleto se lee como
+completo** — `LM.15` por tercera vez en una jornada.

@@ -6471,10 +6471,178 @@ Octava sesión seguida nombrándolo. La defensa va en el código:
 
 ---
 
-### 🏁 BLOQUE G — Cierre
 
-`L8.x` en `LESSONS.md`, `GUIDE.md` revisado, el mapa actualizado, y la respuesta
-escrita a la pregunta con la que se abrió: **cuándo NO usar varios agentes.**
+#### 🔓 F.3 — **EL SOBRE, ABIERTO** *(sesión 113 · `duelo.py` · 8 pruebas gratis · **$0,077903**)*
+
+### 🏆 EL VEREDICTO: **B PIERDE**, y lo decide el TIEMPO, no el juez
+
+| Vara | Tramo sellado el 20-ago | B, medido el 25-ago | |
+|---|---|---|---|
+| ⏱️ **Tiempo** | ≤ **8,33 s** (75 % de 11,11) | **15,63 s** — **1,41×** A | 🔴 **FALLA** |
+| 💰 **Coste** | ≤ **$0,046388** (2× de $0,023194) | **$0,026790** — **1,16×** A | 🟢 PASA |
+| ✅ **Aciertos** | ≥ 9/11 | **no medido** | ⚪ — |
+
+El sobre lo dejó escrito para este momento exacto: **«B gana solo si cumple los TRES. Si falla
+uno solo, es *me equivoqué*»**, y encima con la razón: *«un empate que no estaba definido antes
+no es un empate: es una negociación»*.
+
+🔑 **B no falla el tiempo por poco: lo falla por casi el doble del tramo.** Tenía que tardar
+**menos de 8,33 s** y tardó **15,63**. Ninguna casilla de la rúbrica puede darle la vuelta a eso,
+y por eso **el juez no se pagó**: habría afinado un número que no cambia el resultado.
+
+### 🚨 Y el sobre había predicho por qué, cinco días antes
+
+La corrección del 2026-08-20 —escrita **antes** de medir a B y dejada en pie sin tocar los
+tramos— decía:
+
+> *«**A ya paraleliza.** Las tres corridas gastaron **4 vueltas**, no ocho: pide las tres `tasa`
+> en un solo turno... 🔑 Esto desmiente la premisa de la que colgaba la expectativa de tiempo.
+> **El margen que se le suponía al paralelo ya estaba cobrado por el contendiente A.**»*
+
+**Eso es exactamente lo que pasó.** El paralelismo de B no tenía nada que ganar porque A ya lo
+tenía; y encima B añade las vueltas del orquestador. → **B es más lento por la capa de arriba,
+no a pesar de ella.**
+
+⚠️ **Y la Parte 1-bis, la expectativa de la terminal que supervisa, FALLÓ:** dijo *«B algo más
+rápido, por poco margen»*. Salió **41 % más lento**. Queda escrita con su dueño, que es para lo
+que se separó de la apuesta del estudiante.
+📌 En **coste** pasó lo contrario: el estudiante daba por hecho *«costará mucho más»* y esta
+terminal discrepó (*«puede que se pague sola con menús más chicos»*). Salió **1,16×** — casi
+igual. **La discrepancia se resolvió a favor de la terminal, y la de tiempo en su contra.**
+
+### ⚠️ El agujero de la implementación, y por qué NO anula el veredicto
+
+**El B que se construyó no es el B que se selló.** El sobre define a B así: *«El orquestador
+junta los tres y **llama `guardar_reporte`**»*. El orquestador construido **no tiene esa
+herramienta**: su menú es `consultar_moneda` y nada más. Arsenal real:
+
+| | Herramientas |
+|---|---|
+| A (una capa) | `trm`, `tasa`, `convertir`, `guardar_reporte` — **4** |
+| B (dos capas) | `tasa`, `convertir` — **2** |
+
+🔑 **Y aun así el veredicto aguanta, por la dirección del error:** darle a B la herramienta que
+le falta añade **una vuelta más del orquestador**. Eso lo hace **más lento y más caro**, nunca
+más rápido. B falló el tiempo por 7,3 s de margen; cerrar el hueco solo agranda la distancia.
+**Un defecto del montaje que solo puede empeorar al perdedor no cambia quién perdió.**
+
+⚠️ Lo que sí queda **sin medir de verdad** es la vara de **aciertos**, y por dos motivos, no uno:
+no se pagó al juez, **y** B no podía cumplir la parte de *«guárdame el reporte»*.
+
+### 🐛 Lo que el duelo encontró y no venía en ninguna vara
+
+**B afirmó haber guardado el reporte sin tener con qué.** En 2 de 3 corridas:
+*«He guardado este reporte con los datos…»* (corrida 1) y *«El reporte está guardado.»*
+(corrida 2). No hay un solo `guardar_reporte` en su lista de llamadas.
+🔑 Es una acción **fabricada**, y solo se ve porque el aplanador deja la lista al descubierto.
+Con la respuesta sola, es indistinguible de un reporte guardado de verdad.
+
+📌 Y el contrario, que también salió: en la corrida 1 el CAD falló y B **lo declaró** —*«El
+especialista no proporcionó los datos… No es posible darte una cifra confiable»*— en vez de
+inventarlo. Las causas de C.2 haciendo su trabajo.
+
+### 📏 La apuesta del día, y la horquilla
+
+| | |
+|---|---|
+| 🎲 1 — el aplanador y la venda | 🟢 **GANADA**: vocabulario de B = `{tasa, convertir}`, ni un `consultar_*` |
+| 🎲 2 — el juez costaría ±25 % | ⚪ **NO EVALUABLE**: no se pagó al juez, y decirlo es más honesto que estimarlo |
+| 🎲 3 — B corre la MISMA tarea | 🟢 **GANADA**: `TAREA` se importa de `linea_base`, y la prueba 8 lo exige |
+| 💰 Horquilla **$0,15 – $0,30** | 🔴 **PERDIDA por abajo: $0,077903.** Se selló contando con el juez, y el juez no se corrió |
+
+🔑 **Perder la horquilla por abajo también es perderla**, y se apunta igual. El motivo es una
+decisión que se tomó a mitad —no pagar al juez— y **una horquilla no se reajusta cuando cambias
+de plan: se falla y se explica.** Es `LM.21` otra vez.
+
+##### 🐛 El bicho del día, y es mío
+
+`aplanar()` tenía una rama `else` con un `pass` y este comentario encima: *«si mañana la capa de
+arriba llama a `tasa` directamente, esta rama la deja pasar en vez de tirarla en silencio»*.
+**Hacía exactamente lo contrario: la tiraba en silencio.** Es el bicho de la sesión 111 otra vez
+—una docstring que blinda el hueco que describe— y lo cazó **la prueba 7**, la que rompe la lista
+de frontera a propósito y exige que la venda se caiga. La función se reescribió entera y salió
+más simple: una sola pasada que **injerta** las llamadas del worker donde estaba su frontera.
+
+##### 🔴 Y una corrección de la sesión 112: costó **$0,202977**, no $0,102085
+
+| Fuente | Coste |
+|---|---|
+| `linea_base.py` (3 corridas) | $0,069017 |
+| `pipeline.py` | $0,016534 |
+| **`juez_duelo.py`** | **$0,117426** |
+| **Total real** | **$0,202977** |
+
+Dos fallos de mi instrumento, y el segundo enseña: sumaba campos solapados —incluido
+`acumulado_usd`, que es **un total corriendo**— y **solo miraba los registros**. Lo más caro del
+día, el juez (**58 % de la factura**), escribe su coste en un `.json`. **El instrumento no podía
+verlo, y un total incompleto se lee como completo.**
+
+---
+
+
+### 🏁 BLOQUE G — CIERRE DEL NIVEL 8
+
+## La pregunta con la que se abrió, contestada con el número delante
+
+> **¿Cuándo NO usar varios agentes?**
+
+**Cuando el trabajo que ibas a repartir ya se estaba haciendo en paralelo dentro de una sola
+conversación.** Ese es el hallazgo del duelo, y no era la respuesta que esperábamos.
+
+El estudiante apostó, el 20-ago: *«gana cuando el trabajo lo podemos independizar minimizando el
+uso de herramientas y el número de vueltas»*. La tarea del duelo **cumplía esa condición**: tres
+monedas, perfectamente independientes, dos herramientas cada una. Y B perdió igual, **41 % más
+lento**.
+
+🔑 **Porque «independizable» no es la condición: es sólo la mitad.** La otra mitad es **si el
+modelo de una capa ya lo está paralelizando solo** — y lo estaba: A pidió las tres `tasa` en un
+único turno. El paralelismo que B compra con una capa entera, A lo tenía **gratis**, dentro del
+mismo turno.
+
+> **La condición completa: reparte cuando el trabajo sea independizable Y el de una capa no
+> pueda hacerlo en un turno. Si cabe en un turno, la capa de arriba es coste puro.**
+
+### Las tres razones que sí quedan en pie para repartir
+
+El duelo mató una razón, no todas. Estas tres **no las mide esta tarea** y siguen valiendo:
+
+1. **El contexto no cabe.** Un worker relee **2** herramientas por vuelta; el de una capa relee
+   **6**. Aquí no se notó —la tarea es chica— pero se ve en el coste: B costó **1,16×**, no el
+   *«mucho más»* que se temía. Con veinte herramientas, ese factor se invierte.
+2. **Aislar el fallo.** En la corrida 1 el CAD se cayó y **las otras dos monedas llegaron
+   enteras**, con la causa escrita. En una capa, un fallo a mitad se lleva la conversación.
+3. **Permisos distintos por pieza.** Un worker que sólo lee tasas no puede borrar un archivo.
+   Una capa con seis herramientas puede hacerlo todo, siempre.
+
+### ⚠️ Y el precio del reparto, medido y no supuesto
+
+**El aislamiento que hace bueno al worker es el mismo que le quita el contexto para avisar** —el
+sobre lo predijo el 20-ago y salió—. Pero el duelo encontró uno peor, que nadie predijo:
+
+> 🚨 **B afirmó haber guardado el reporte sin tener la herramienta para hacerlo.**
+
+La capa de arriba **no ve lo que pasó abajo**: lee tres párrafos y redacta. Y si le falta una
+capacidad, **no lo sabe** — así que la narra. **Partir el trabajo no reparte sólo la carga:
+reparte también lo que cada capa puede llegar a saber sobre sí misma.**
+
+---
+
+## Lo que queda vivo del nivel, escrito y no prometido
+
+| Deuda | Importancia | Urgencia |
+|---|---|---|
+| **B no tiene `guardar_reporte`**: el B construido ≠ el B sellado | alta | no bloqueante (el veredicto aguanta) |
+| Los aciertos de B: **sin medir** (no se pagó al juez) | media | no bloqueante |
+| Los 5 archivos contaminados en la 112, sin restaurar | media | decidido: **se dejan** |
+| `avisador.py` sale con 1 y no puede volver a estar verde | alta | no bloqueante |
+| Ningún módulo escribe `entorno` | alta | no bloqueante |
+| `P18` de `compartida.py`: umbral dentro de su ruido | media | no bloqueante — `LM.106` |
+| El latido: sin cablear y sin quien lo escuche | media | no bloqueante |
+
+📌 **El sobre se cierra sin retoques.** Ni un tramo movido, ni una vara reinterpretada, con el
+resultado delante. Es lo único que hacía que valiera la pena escribirlo.
+
+---
 
 Detrás, la última tarea del recorrido: **`METODO.md`**.
 
