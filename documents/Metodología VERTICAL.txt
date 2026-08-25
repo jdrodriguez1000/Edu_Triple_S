@@ -1,0 +1,794 @@
+Metodología VERTICAL — Desarrollo Incremental y Trazable de Software
+Metodología VERTICAL
+Un enfoque para transformar necesidades de negocio en software validado mediante prototipado, especificación incremental, Vertical Slices, construcción iterativa y trazabilidad completa.
+
+1. Propósito de la metodología
+La Metodología VERTICAL busca reducir el riesgo de construir software que no sea utilizado, que no resuelva correctamente el problema planteado o que requiera grandes inversiones antes de descubrir errores funcionales.
+La metodología se fundamenta en cinco principios:
+1. Entender antes de construir.
+2. Validar antes de invertir.
+3. Construir incrementalmente.
+4. Entregar valor mediante Vertical Slices.
+5. Mantener trazabilidad desde la necesidad hasta la prueba.
+La metodología no busca eliminar la incertidumbre antes de comenzar a construir. Busca reducirla progresivamente en el momento en que sea más económico hacerlo.
+2. Principio rector
+No se debe construir aquello que todavía no se entiende suficientemente bien.
+
+Esto no significa que todo deba estar completamente especificado antes de comenzar el desarrollo.
+Por el contrario:
+Se define lo suficiente para comenzar, se construye, se aprende y se profundiza la definición a medida que el producto evoluciona.
+
+3. Visión general
+El ciclo completo de la metodología es:
+NECESIDAD
+    ↓
+DESCUBRIMIENTO
+    ↓
+ACTORES E INTERESADOS
+    ↓
+HIPÓTESIS
+    ↓
+PROTOTIPO INICIAL
+    ↓
+VALIDACIÓN
+    │
+    ├── NO EXITOSO → REPLANTEAR
+    │
+    └── EXITOSO
+          ↓
+     PRODUCT BASELINE
+          ↓
+         WSLT
+          ↓
+        GRTH-01
+          ↓
+        GRTH-02
+          ↓
+         ...
+          ↓
+         MVP
+          ↓
+     EVALUACIÓN MVP
+          │
+          ├── NO ADOPCIÓN → APRENDER / REPLANTEAR
+          │
+          └── ADOPCIÓN
+                ↓
+               EVOL
+                ↓
+          EVOL-01 / EVOL-02 / ...
+                ↓
+          Producto evolucionado
+4. Fase 1 — Descubrimiento
+El proyecto comienza con una etapa de descubrimiento con la empresa propietaria de la aplicación.
+El objetivo no es comenzar a definir pantallas o funcionalidades.
+El objetivo es entender:
+- Por qué existe la necesidad.
+- Para qué se necesita la aplicación.
+- Qué problema se quiere resolver.
+- Quién tiene el problema.
+- Quién utilizará la solución.
+- Qué resultado espera obtener la empresa.
+- Qué procesos existen actualmente.
+- Qué restricciones existen.
+- Qué sistemas actuales participan.
+- Qué interesados deben ser consultados.
+5. Identificación de actores
+Durante el descubrimiento se identifican los actores potenciales de la aplicación.
+La taxonomía utilizada es:
+5.1. Actor Generador
+Es quien realiza la acción principal que origina el propósito de la aplicación.
+Si el Generador no existe o no utiliza la aplicación, no existe razón suficiente para construirla.
+
+Ejemplo:
+El cliente que solicita la recogida de material reciclable.
+5.2. Actor Coordinador
+Es quien recibe y organiza el trabajo generado por el Actor Generador.
+Su función principal es coordinar, ordenar, distribuir y gestionar las actividades que se originan en la aplicación.
+Ejemplo:
+El analista de logística que organiza las solicitudes de recogida.
+5.3. Actor Ejecutor
+Es quien ejecuta físicamente o directamente el trabajo generado por la aplicación.
+Ejemplo:
+El conductor o recolector que realiza la recogida.
+5.4. Actor Administrador de Plataforma
+Es quien administra técnicamente la plataforma y garantiza su correcto funcionamiento desde la perspectiva tecnológica y operativa.
+Puede pertenecer a la empresa propietaria o ser un tercero.
+5.5. Actor Supervisor
+Es quien consume información de la aplicación desde una perspectiva de supervisión y gestión.
+Su objetivo es conocer el comportamiento de la operación y evaluar resultados.
+Ejemplos:
+- gerente;
+- gerente de operaciones;
+- responsable de área.
+5.6. Actor Invitado
+Es un usuario con acceso limitado, normalmente temporal o condicionado, a determinada información de la aplicación.
+Ejemplos:
+- socios;
+- directivos de otra área;
+- terceros autorizados.
+5.7. Actor Integrador
+Es un sistema, servicio o componente externo que intercambia información con la aplicación.
+No necesariamente es una persona.
+Ejemplos:
+- ERP;
+- sistema contable;
+- plataforma de facturación;
+- sistema de mapas;
+- servicio de notificaciones;
+- API externa.
+6. Los actores son potenciales, no obligatorios
+La existencia de un actor en la taxonomía no significa que necesariamente deba existir en el producto.
+Una aplicación puede comenzar únicamente con:
+Generador
+y posteriormente incorporar:
+Coordinador
+Ejecutor
+Supervisor
+Administrador
+Integrador
+La incorporación de nuevos actores ocurre cuando existe una necesidad real y justificada.
+7. Identificación de interesados
+Además de los actores que utilizarán la aplicación, se identifican los interesados del proyecto.
+Un interesado puede:
+- tomar decisiones;
+- financiar el proyecto;
+- definir políticas;
+- aportar conocimiento;
+- aprobar resultados;
+- verse afectado por la solución;
+- representar a usuarios;
+- aportar restricciones legales o técnicas.
+Los interesados no necesariamente utilizan directamente la aplicación.
+8. Fase 2 — Prototipo Inicial
+Una vez comprendido el problema, se construye un Prototipo Inicial.
+Su objetivo es validar la hipótesis fundamental del producto.
+Principio
+El Prototipo Inicial se concentra en el Actor Generador.
+
+La razón es que el Generador representa la condición fundamental de existencia de la aplicación.
+9. Características del Prototipo Inicial
+El prototipo debe ser:
+- rápido;
+- económico;
+- descartable;
+- funcionalmente enfocado;
+- suficientemente realista para permitir interacción;
+- construido alrededor del camino feliz.
+Normalmente puede ser:
+- HTML cliqueable;
+- mockup;
+- simulación;
+- prototipo interactivo.
+No debe considerarse software productivo.
+10. Qué busca validar el Prototipo Inicial
+Busca determinar si:
+- el usuario entiende la solución;
+- el flujo resulta natural;
+- la solución resuelve la necesidad;
+- el usuario está dispuesto a utilizarla;
+- las principales funcionalidades tienen sentido;
+- el camino feliz es viable;
+- existen problemas funcionales importantes.
+11. Evaluación del Prototipo
+El prototipo debe ser evaluado principalmente con posibles o actuales usuarios Generadores.
+La empresa propietaria de la aplicación participa en el proceso, pero debe evitar influir en las respuestas de los usuarios.
+La evaluación debe buscar evidencia observable y no solamente opiniones.
+Se recomienda:
+- entregar tareas concretas;
+- permitir que el usuario interactúe por sí mismo;
+- evitar explicar cómo debe utilizar el prototipo;
+- registrar dificultades;
+- registrar observaciones;
+- registrar comentarios espontáneos;
+- identificar comportamientos inesperados.
+12. Éxito del Prototipo Inicial
+El prototipo se considera exitoso cuando existe evidencia suficiente para concluir que:
+1. El problema identificado es relevante.
+2. La solución propuesta es comprensible.
+3. El Actor Generador puede utilizar el flujo principal.
+4. La solución satisface razonablemente la necesidad.
+5. No existen problemas funcionales fundamentales que impidan continuar.
+6. Existe suficiente confianza para realizar la inversión del MVP.
+El éxito del prototipo no significa que el producto esté completamente definido.
+Significa:
+Existe suficiente evidencia para justificar la construcción del MVP.
+
+13. Fase 3 — Product Baseline
+Una vez validado el Prototipo Inicial, se construye una Baseline del Producto.
+No se pretende crear una documentación exhaustiva.
+Se crea únicamente la información necesaria para comenzar la construcción de manera controlada.
+La Baseline está compuesta principalmente por:
+PRD
+BDD
+SPEC
+ARCHIT
+ADR
+14. PRD — Product Requirements Document
+El PRD define la perspectiva del producto.
+La Baseline puede incluir:
+- propósito;
+- problema;
+- objetivos;
+- alcance inicial;
+- propuesta de valor;
+- actores;
+- necesidades;
+- restricciones;
+- criterios generales de éxito.
+El PRD evolucionará durante la construcción.
+15. BDD — Behavior Driven Development
+BDD define el comportamiento esperado de la solución.
+Se utilizan principalmente:
+- Features;
+- Scenarios;
+- reglas de negocio;
+- comportamiento esperado.
+Ejemplo:
+Feature: Solicitar recogida
+
+Scenario: Solicitud de recogida exitosa
+
+Given el Generador se encuentra autenticado
+When solicita una recogida válida
+Then la aplicación registra la solicitud
+BDD también evoluciona incrementalmente.
+16. SPEC — Project Specification
+SPEC contiene las especificaciones necesarias para construir la solución.
+Puede incluir:
+- funcionalidades;
+- reglas;
+- datos;
+- interfaces;
+- validaciones;
+- requisitos funcionales;
+- requisitos no funcionales;
+- restricciones;
+- integraciones.
+No es necesario especificar desde el inicio funcionalidades que todavía no serán construidas.
+17. ARCHIT — Architecture
+ARCHIT define la arquitectura de la solución.
+La arquitectura se desarrolla en dos niveles:
+Arquitectura Base
+Define:
+- principios arquitectónicos;
+- componentes principales;
+- límites;
+- tecnologías;
+- integraciones conocidas;
+- seguridad;
+- despliegue;
+- atributos de calidad relevantes.
+Arquitectura Incremental
+Se amplía a medida que las Vertical Slices introducen nuevas necesidades.
+18. ADR — Architecture Decision Records
+Las decisiones arquitectónicas importantes se registran mediante ADR.
+Cada ADR puede registrar:
+- contexto;
+- problema;
+- alternativas;
+- decisión;
+- consecuencias.
+Esto permite conservar la razón detrás de las decisiones arquitectónicas.
+19. Documentación incremental
+PRD, BDD, SPEC y ARCHIT no se consideran documentos que deban terminarse antes de programar.
+Son artefactos vivos.
+La regla es:
+Definir suficientemente el futuro inmediato y no especular innecesariamente sobre el futuro lejano.
+
+Por tanto:
+Baseline
+   ↓
+WSLT
+   ↓
+GRTH
+   ↓
+Nueva información
+   ↓
+Actualización de PRD / BDD / SPEC / ARCHIT
+   ↓
+Nueva Vertical Slice
+20. Fase 4 — WSLT
+WSLT — Walking Skeleton
+Es la Iteración 0.
+Su objetivo principal es comprobar que existe un camino técnico de extremo a extremo.
+Debe demostrar que los principales elementos de la solución están conectados.
+Por ejemplo:
+Usuario
+   ↓
+Frontend
+   ↓
+Backend
+   ↓
+Base de datos
+   ↓
+Respuesta
+La WSLT no busca entregar el MVP.
+Busca demostrar que:
+La arquitectura propuesta puede sostener el desarrollo del producto.
+
+21. Fase 5 — GRTH
+Después de WSLT comienza el crecimiento progresivo hacia el MVP.
+Las iteraciones de crecimiento se denominan:
+GRTH — Growth
+
+Puede existir una o múltiples iteraciones GRTH.
+WSLT
+  ↓
+GRTH-01
+  ↓
+GRTH-02
+  ↓
+GRTH-03
+  ↓
+MVP
+Cada GRTH incorpora nuevas capacidades hasta alcanzar el alcance definido para el MVP.
+22. Vertical Slices
+La construcción se realiza mediante Vertical Slices.
+Una Vertical Slice es:
+Una unidad incremental de construcción que entrega una capacidad funcional completa o significativamente utilizable, atravesando de extremo a extremo las capas necesarias del sistema.
+
+Una Vertical Slice puede contener:
+- una Feature;
+- varias Features relacionadas;
+- parte de una Feature grande.
+Una Feature también puede requerir varias Vertical Slices.
+Por lo tanto:
+Vertical Slice y Feature no son sinónimos.
+
+23. Relación entre Feature y Vertical Slice
+Ejemplo:
+Feature
+"Programar recogida recurrente"
+       │
+       ├── VS-01 Crear recurrencia
+       ├── VS-02 Modificar recurrencia
+       ├── VS-03 Cancelar recurrencia
+       └── VS-04 Gestionar excepciones
+También puede ocurrir:
+VS-01
+"Solicitar recogida"
+       │
+       ├── Feature: Seleccionar material
+       ├── Feature: Indicar ubicación
+       └── Feature: Seleccionar fecha
+24. Tareas
+Una vez definida una Vertical Slice, se construye su plan de trabajo mediante tareas.
+Las tareas deben ser:
+- pequeñas;
+- específicas;
+- verificables;
+- claramente delimitadas;
+- trazables a la Vertical Slice.
+Ejemplo:
+VS-01 Crear solicitud
+
+T-001 Crear entidad Solicitud
+T-002 Crear tabla Solicitudes
+T-003 Crear API de creación
+T-004 Crear formulario de material
+T-005 Crear formulario de ubicación
+T-006 Implementar validación
+T-007 Implementar confirmación
+T-008 Crear pruebas
+La tarea debe ser lo suficientemente pequeña para que su estado pueda determinarse claramente.
+25. Trazabilidad
+La trazabilidad es un principio fundamental de la metodología.
+Toda unidad de construcción debe poder relacionarse con una razón funcional o de negocio.
+La cadena principal es:
+NECESIDAD
+    ↓
+FEATURE
+    ↓
+SCENARIO
+    ↓
+VERTICAL SLICE
+    ↓
+TASK
+    ↓
+IMPLEMENTACIÓN
+    ↓
+PRUEBA
+26. Trazabilidad bidireccional
+La trazabilidad debe funcionar en ambas direcciones.
+Hacia adelante
+Necesidad
+   ↓
+Feature
+   ↓
+Scenario
+   ↓
+Vertical Slice
+   ↓
+Task
+   ↓
+Código
+   ↓
+Prueba
+Permite responder:
+¿Cómo se implementó esta necesidad?
+
+Hacia atrás
+Prueba
+   ↓
+Código
+   ↓
+Task
+   ↓
+Vertical Slice
+   ↓
+Scenario
+   ↓
+Feature
+   ↓
+Necesidad
+Permite responder:
+¿Por qué estamos construyendo esto?
+
+27. Identificadores
+Se recomienda utilizar identificadores únicos.
+Ejemplo:
+N-001   Necesidad
+F-001   Feature
+S-001   Scenario
+VS-001  Vertical Slice
+T-001   Task
+TC-001  Test Case
+ADR-001 Decisión arquitectónica
+Las relaciones pueden representarse:
+N-001
+  ↓
+F-001
+  ↓
+S-001
+  ↓
+VS-001
+  ↓
+T-001
+  ↓
+TC-001
+28. Regla de trazabilidad
+Nada debería construirse sin una razón trazable.
+
+Si aparece una tarea que no puede relacionarse con una Vertical Slice, Scenario, Feature o necesidad, debe cuestionarse su inclusión.
+Esto ayuda a controlar:
+- scope creep;
+- funcionalidades innecesarias;
+- tareas huérfanas;
+- trabajo no justificado;
+- desviaciones del MVP.
+29. Prototipo de Evolución
+Durante GRTH o EVOL pueden aparecer nuevas necesidades.
+No todas requieren prototipado.
+El criterio para prototipar es:
+Nivel de incertidumbre × impacto de equivocarse.
+
+El Prototipo de Evolución se utiliza cuando existe suficiente incertidumbre funcional o riesgo para justificar una validación antes de construir.
+30. Cuándo utilizar Prototipo de Evolución
+Puede utilizarse cuando:
+- aparece una nueva funcionalidad con comportamiento desconocido;
+- existen varias alternativas funcionales;
+- cambia significativamente el comportamiento del usuario;
+- existe alto riesgo de rechazo;
+- la funcionalidad es crítica;
+- se incorpora un nuevo actor;
+- existe interacción entre varios actores;
+- existe incertidumbre importante sobre el flujo.
+Puede utilizarse para:
+- Generador;
+- Coordinador;
+- Ejecutor;
+- Supervisor;
+- Administrador;
+- Integrador.
+31. Cuándo NO utilizarlo
+No necesariamente se requiere para:
+- cambios simples;
+- cambios visuales menores;
+- modificaciones evidentes;
+- funcionalidades previamente validadas;
+- cambios de bajo riesgo;
+- correcciones claramente definidas.
+La metodología no busca convertir el prototipado en burocracia.
+32. Principio de proporcionalidad
+El esfuerzo de prototipado debe ser proporcional a la incertidumbre y al costo de equivocarse.
+
+Por tanto, un Prototipo de Evolución puede ser:
+- un boceto;
+- wireframe;
+- HTML;
+- simulación;
+- mockup;
+- prototipo interactivo.
+No tiene que tener la misma profundidad del Prototipo Inicial.
+33. EVOL — Evolución
+Una vez alcanzado el MVP, el producto entra en la etapa de evolución.
+MVP
+ ↓
+EVOL-01
+ ↓
+EVOL-02
+ ↓
+EVOL-03
+ ↓
+...
+Las iteraciones EVOL pueden incorporar:
+- nuevas funcionalidades del Generador;
+- funcionalidades del Coordinador;
+- funcionalidades del Ejecutor;
+- funcionalidades del Supervisor;
+- funcionalidades del Administrador;
+- Integradores;
+- mejoras;
+- automatizaciones;
+- nuevas capacidades de negocio.
+34. Incorporación de otros actores
+El MVP puede funcionar únicamente con el Actor Generador.
+Los otros actores pueden continuar utilizando inicialmente los procesos existentes.
+Por ejemplo:
+Generador
+    ↓
+APLICACIÓN MVP
+    ↓
+Información
+    ↓
+Excel / Google Sheets / Software existente
+    ↓
+Coordinador
+No es obligatorio construir desde el MVP una aplicación completa para todos los actores.
+Esto permite concentrar la inversión inicial en validar la adopción del Generador.
+35. Evaluación del MVP
+El éxito del Prototipo Inicial no garantiza el éxito del MVP.
+El MVP debe evaluarse en condiciones reales de uso.
+Debe determinarse si:
+- los usuarios realmente lo utilizan;
+- existe adopción;
+- resuelve la necesidad;
+- el comportamiento esperado ocurre;
+- el usuario obtiene valor;
+- la empresa obtiene el beneficio esperado.
+36. Dos resultados posibles del MVP
+MVP exitoso
+Los usuarios adoptan la solución y existe evidencia de valor.
+MVP
+ ↓
+Adopción
+ ↓
+Valor
+ ↓
+EVOL
+MVP no exitoso
+Los usuarios no adoptan la solución o no se obtiene el valor esperado.
+MVP
+ ↓
+No adopción / bajo valor
+ ↓
+Aprendizaje
+ ↓
+Replanteamiento
+Esto permite limitar la inversión en una solución que probablemente no será utilizada.
+37. EVOL y crecimiento del producto
+El propósito de EVOL es permitir que la aplicación crezca progresivamente.
+Esto entrega dos beneficios importantes a los usuarios:
+1. Ven crecer la aplicación
+Los usuarios observan que el producto evoluciona progresivamente.
+2. Ven reflejadas sus necesidades
+Los usuarios perciben que las nuevas capacidades responden a necesidades que ellos mismos han planteado.
+Esto favorece:
+- adopción;
+- confianza;
+- participación;
+- retroalimentación;
+- apropiación del producto.
+38. El producto no necesita una "versión final"
+La metodología evita tratar el producto como algo que necesariamente llega a una única versión definitiva.
+Las iteraciones EVOL pueden continuar mientras exista:
+- valor;
+- necesidad;
+- oportunidad;
+- inversión justificada.
+Por lo tanto, no es necesario establecer una iteración denominada FINAL.
+El producto puede continuar evolucionando:
+MVP
+ ↓
+EVOL-01
+ ↓
+EVOL-02
+ ↓
+EVOL-03
+ ↓
+EVOL-04
+ ↓
+...
+Si se necesita identificar una versión determinada como objetivo contractual o de negocio, puede utilizarse una denominación específica como:
+- Release;
+- Milestone;
+- Version;
+- Product Baseline.
+Pero conceptualmente sigue siendo parte de EVOL.
+39. Relación completa de artefactos
+La metodología utiliza diferentes artefactos según el momento:
+DESCUBRIMIENTO
+│
+├── Registro de necesidades
+├── Actores
+├── Interesados
+└── Hipótesis
+        │
+        ▼
+PROTOTIPO
+│
+└── Prototipo Inicial
+        │
+        ▼
+PRODUCT BASELINE
+│
+├── PRD
+├── BDD
+├── SPEC
+├── ARCHIT
+└── ADR
+        │
+        ▼
+CONSTRUCCIÓN
+│
+├── WSLT
+├── GRTH
+│   ├── Vertical Slices
+│   └── Tasks
+│
+└── MVP
+        │
+        ▼
+EVALUACIÓN MVP
+        │
+        ▼
+EVOL
+│
+├── Prototipos de Evolución
+├── Nuevas Features
+├── Nuevos Scenarios
+├── Nuevas Vertical Slices
+└── Nuevas Tasks
+40. Filosofía de documentación
+La metodología evita dos extremos.
+Extremo 1 — Sin documentación
+Idea
+ ↓
+Código
+Riesgo:
+- decisiones implícitas;
+- pérdida de conocimiento;
+- poca trazabilidad;
+- dificultad para mantener el producto.
+Extremo 2 — Documentación exhaustiva antes de construir
+Idea
+ ↓
+PRD completo
+ ↓
+BDD completo
+ ↓
+SPEC completo
+ ↓
+ARCHIT completo
+ ↓
+Código
+Riesgo:
+- inversión prematura;
+- documentación obsoleta;
+- especificaciones basadas en supuestos;
+- poca capacidad de aprendizaje.
+La metodología VERTICAL
+Necesidad
+ ↓
+Entender
+ ↓
+Validar
+ ↓
+Definir suficiente
+ ↓
+Construir
+ ↓
+Aprender
+ ↓
+Definir más
+ ↓
+Construir más
+41. Principios fundamentales de la Metodología VERTICAL
+Principio 1 — Validar antes de invertir
+El Prototipo Inicial debe reducir el riesgo antes de iniciar el desarrollo del MVP.
+Principio 2 — Construir lo mínimo necesario
+El MVP debe concentrarse en las capacidades mínimas necesarias para el Actor Generador.
+Principio 3 — No construir todo para todos
+Los otros actores se incorporan progresivamente cuando exista una necesidad justificada.
+Principio 4 — Especificar incrementalmente
+PRD, BDD, SPEC y ARCHIT evolucionan junto con el producto.
+Principio 5 — La arquitectura también aprende
+WSLT y las Vertical Slices permiten validar y evolucionar las decisiones arquitectónicas.
+Principio 6 — Prototipar cuando exista incertidumbre
+No toda funcionalidad necesita un prototipo.
+Principio 7 — Construir mediante Vertical Slices
+Cada incremento debe entregar una capacidad funcional trazable.
+Principio 8 — Dividir el trabajo en tareas pequeñas
+Las Vertical Slices se descomponen en tareas específicas, verificables y trazables.
+Principio 9 — Mantener trazabilidad
+Toda construcción debe poder relacionarse con una necesidad, Feature, Scenario y Vertical Slice.
+Principio 10 — Evaluar el MVP
+El prototipo exitoso autoriza a construir el MVP, pero la adopción del MVP determina si vale la pena continuar evolucionándolo.
+42. El ciclo completo
+La Metodología VERTICAL puede resumirse así:
+                  NECESIDAD
+                      │
+                      ▼
+                DESCUBRIMIENTO
+                      │
+                      ▼
+                   ACTORES
+                      │
+                      ▼
+                  HIPÓTESIS
+                      │
+                      ▼
+              PROTOTIPO INICIAL
+                      │
+                      ▼
+                 VALIDACIÓN
+                      │
+              ┌───────┴───────┐
+              │               │
+           FALLA            ÉXITO
+              │               │
+              ▼               ▼
+        REPLANTEAR        BASELINE
+                              │
+                              ▼
+                           WSLT
+                              │
+                              ▼
+                           GRTH
+                              │
+                       ┌──────┴──────┐
+                       ▼             ▼
+                 PROTOTIPO       CONSTRUIR
+                 EVOLUCIÓN       DIRECTAMENTE
+                       │             │
+                       └──────┬──────┘
+                              ▼
+                       VERTICAL SLICE
+                              │
+                              ▼
+                           TASKS
+                              │
+                              ▼
+                       IMPLEMENTACIÓN
+                              │
+                              ▼
+                            TEST
+                              │
+                              ▼
+                            MVP
+                              │
+                              ▼
+                         ADOPCIÓN
+                              │
+                    ┌─────────┴─────────┐
+                    │                   │
+                  FALLA               ÉXITO
+                    │                   │
+                    ▼                   ▼
+              APRENDER /              EVOL
+              REPLANTEAR                │
+                                        ▼
+                                NUEVA NECESIDAD
+                                        │
+                                        ▼
+                              PROTOTIPO EVOLUCIÓN
+                                        │
+                                        ▼
+                                     EVOL...
+43. Definición resumida
+La Metodología VERTICAL es un enfoque incremental y trazable para desarrollar software que comienza con la comprensión de una necesidad, valida la hipótesis mediante un Prototipo Inicial, establece una documentación base suficiente para construir, desarrolla el producto mediante WSLT, GRTH y Vertical Slices, descompone cada incremento en tareas pequeñas, mantiene trazabilidad desde la necesidad hasta las pruebas y utiliza Prototipos de Evolución cuando la incertidumbre lo justifica.
+
+Su objetivo final no es simplemente construir software.
+Es:
+Construir progresivamente el software correcto, reduciendo el costo de equivocarse y manteniendo evidencia de por qué cada parte del producto existe.
