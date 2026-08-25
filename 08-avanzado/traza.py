@@ -946,6 +946,34 @@ def paso5(verboso=True):
 # 8) EL PORTERO — ninguna prueba gratis puede escribir en el registro pagado
 # ---------------------------------------------------------------------------
 
+# 📎 SESIÓN 111 — LA LISTA SUBE A CONSTANTE, Y NO ES COSMÉTICA.
+#    La prueba 8 llevaba clavado `len(corridos) == 5`. Al entrar un módulo
+#    sexto se puso roja **sin que nada estuviera mal**, que es el mismo defecto
+#    que tiene hoy `avisador.py`: una prueba que compara contra un número
+#    escrito a mano caduca el día que el sistema crece.
+# 🔑 Con la lista aquí arriba, el portero y su prueba miran EL MISMO dato, y el
+#    invariante deja de ser un número para ser una frase: **se corrió todo lo
+#    que se dijo que se iba a correr.**
+VIGILADOS = ["fan_out", "profundidad", "router", "supervisor", "verificador",
+             # entra el día que se le pilla ensuciando el registro pagado.
+             "evals_orquestador"]
+
+# Los que NO se vigilan, con su razón. No es una lista de excusas: es lo que
+# permite distinguir «decidido que no» de «se nos olvidó».
+NO_VIGILADOS = {
+    "traza": "es este archivo: se estaría corriendo a sí mismo",
+    "disparador": "lanza procesos y tarda minutos; su registro es propio",
+    "compartida": "escribe en su propio archivo compartido, no en estos",
+    "skills_compartidas": "no toca los registros del duelo",
+    "avisador": "solo LEE registros; no anota",
+    "atribuidor": "solo LEE registros; una prueba propia le impide anotar",
+    "modelos": "sus pruebas no arrancan capas",
+    "presupuesto": "desvía su propio registro y lo comprueba él mismo",
+    "recursion": "desvía su propio registro",
+    "fallos": "desvía su propio registro",
+}
+
+
 def portero(verboso=True):
     """Corre las pruebas gratis de TODO el nivel y exige que los registros
     reales no crezcan ni una línea.
@@ -957,10 +985,22 @@ def portero(verboso=True):
 
     🔑 Y ESTE ES EL ARREGLO DE VERDAD, NO EL `with` DE ALLÁ.
        Desviar el registro en `profundidad.py` arregla UN archivo. El portero
-       arregla la CLASE: cualquier prueba de cualquier módulo —incluidos los que
-       todavía no existen— que escriba en el registro real, pone esto rojo.
-       Es la lección de la sesión 49 de TEAPP: el arreglo va en el origen, y
-       encima se le pone un portero sobre los datos enteros.
+       arregla la CLASE: cualquier prueba de los módulos que vigila que escriba
+       en el registro real pone esto rojo. Es la lección de la sesión 49 de
+       TEAPP: el arreglo va en el origen, y encima se le pone un portero sobre
+       los datos enteros.
+
+    🚨 CORRECCIÓN DE LA SESIÓN 111, Y ESTA DOCSTRING DECÍA UNA MENTIRA.
+       Decía *«cualquier prueba de cualquier módulo —incluidos los que todavía
+       no existen—»*. **Falso, y se demostró el día que se corrigió:**
+       `evals_orquestador.py`, nacido esa mañana, escribió tres `sin_trozo` en
+       el registro pagado y **este portero se quedó verde**, porque su lista
+       decía cinco nombres y ese archivo no estaba en ella.
+
+    🔑 **Un portero que vigila una LISTA no vigila una clase: vigila esa lista,
+       y una lista se queda vieja el día siguiente.** Lo que sí escala es que
+       el portero se queje cuando aparece un módulo con pruebas que nadie
+       clasificó — y eso es `NO_VIGILADOS` y la comprobación de abajo.
 
     📌 Y se corre a ciegas a propósito: no le importa QUÉ prueba ensució, solo
        que alguien lo hizo. Un portero que necesita saber a quién vigilar solo
@@ -969,7 +1009,13 @@ def portero(verboso=True):
     import importlib
 
     # La convención del nivel: cada módulo con pruebas gratis expone `_pruebas`.
-    nombres = ["fan_out", "profundidad", "router", "supervisor", "verificador"]
+    nombres = VIGILADOS
+
+    # 🚨 LOS QUE NO SE VIGILAN, CON SU RAZÓN ESCRITA. No es una lista de
+    #    excusas: es lo que permite que la comprobación de más abajo distinga
+    #    «decidido que no» de «se nos olvidó». Sin ella, un módulo nuevo se cuela
+    #    en silencio, que es exactamente lo que pasó el 2026-08-25.
+    no_vigilados = NO_VIGILADOS
     antes = {r: r.stat().st_size for r in REGISTROS}
     lineas_antes = {r: sum(1 for _ in open(r, encoding="utf-8")) for r in REGISTROS}
 
@@ -984,6 +1030,17 @@ def portero(verboso=True):
         with contextlib.redirect_stdout(buf):
             fn()
         corridos.append(nombre)
+
+    # 🚨 LA COMPROBACIÓN QUE FALTABA: ¿hay algún módulo con pruebas que nadie
+    #    haya clasificado? Se lee el código fuente, no se importa nada — no
+    #    hace falta correrlo para saber que existe.
+    huerfanos = []
+    for f in sorted(AQUI.glob("*.py")):
+        mod = f.stem
+        if "def _pruebas" not in f.read_text(encoding="utf-8"):
+            continue
+        if mod not in nombres and mod not in no_vigilados:
+            huerfanos.append(mod)
 
     sucios = []
     for r in REGISTROS:
@@ -1005,9 +1062,14 @@ def portero(verboso=True):
                 print(f"  🚨 {nombre}: {a} → {b} líneas. UNA PRUEBA ESCRIBIÓ AQUÍ.")
         else:
             print("  ✅ ninguno creció. El registro pagado sigue siendo solo pagado.")
+        if huerfanos:
+            print(f"  🚨 MÓDULOS CON PRUEBAS Y SIN CLASIFICAR: {', '.join(huerfanos)}")
+            print("     No se sabe si ensucian: nadie los corre ni los descarta.")
+        else:
+            print("  ✅ todo módulo con `_pruebas` está vigilado o descartado con razón.")
         print("=" * 72)
 
-    return sucios, corridos
+    return sucios + [("SIN CLASIFICAR", 0, m) for m in huerfanos], corridos
 
 
 # ---------------------------------------------------------------------------
@@ -1105,7 +1167,8 @@ def _pruebas():
     # 8) Y con el arreglo puesto, el mismo portero está verde sobre los reales.
     sucios, corridos = portero(verboso=False)
     check("8. y con el desvío puesto, el registro real no crece ni una línea",
-          not sucios and len(corridos) == 5, f"corridos={corridos}, sucios={sucios}")
+          not sucios and set(corridos) == set(VIGILADOS),
+          f"corridos={corridos}, sucios={sucios}, vigilados={VIGILADOS}")
 
     # --- C.1 · PASO 2: el parentesco ---------------------------------------
     import contexto

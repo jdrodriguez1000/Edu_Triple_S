@@ -6073,6 +6073,97 @@ nombrándolo. Dos defensas, en el código:
 - **Los registros pagados.** Ni una línea.
 - **El candado de disco.** Es de E.1, está arriba con su frase de daño, y **no** es de hoy.
 
+
+#### 📊 F.2 — LO QUE SALIÓ *(sesión 111 · `evals_orquestador.py` · **10 evals + 12 pruebas** · **$0,000000**)*
+
+##### 🎲 Las cuatro apuestas
+
+**🟢 1 — GANADA, y define lo que F.2 acabó siendo.** De los modos de falla del catálogo, **5 ya
+tenían dueño en otro archivo** (`recursion.py` 28, `fallos.py` 27, `traza.py` 47, `atribuidor.py`
+34, más `worker.py`) y **no se duplicó ni uno**. El valor de F.2 **no está en los casos nuevos**:
+está en el **catálogo con dueño y con hueco**. El nivel ya tenía **433 `check()`** — el trabajo no
+era escribir el 434.
+
+**🟢 2 — GANADA, y es la advertencia que va en la cabecera del archivo.** El enrutado torcido **no
+puede tener un eval determinista**: quien elige el destino es el modelo. F.2 mide **el DETECTOR,
+no el DEFECTO** → `LM.103`. Por eso queda escrito, antes de la tabla: *diez verdes significan
+«cuando se tuerce, no pasa de aquí», NO «no se tuerce»*.
+
+**🟢 3 — GANADA, con margen enorme.** Se apostó *«≥1 evento que el harness sabe nombrar y nadie
+comprueba»*. Salieron **31 nombres de evento** y el cruce automático dio entre **17 y 24 sin
+prueba que los nombre**, según cómo de estrecho se ponga el criterio. 📌 Y se dicen los **dos**
+números a propósito: el instrumento es un `grep` sobre texto (`LM.99`), así que da una horquilla,
+no un dato. → `P4` cierra la clase: **todo evento está reclamado por un modo o descartado con la
+razón escrita**, y uno nuevo sin clasificar pone la prueba roja.
+
+**🟢 4 — GANADA. $0,000000, séptima sesión seguida.** Y demostrado, no prometido: `_ClienteTrampa`
+revienta si un caso llama al modelo, y **`P7` lo ve morder**.
+
+##### 🐛 EL BICHO DEL DÍA ES MÍO, Y ES `LM.20` POR QUINTA VEZ EN ESTE NIVEL
+
+`evals_orquestador.py` **escribió tres `sin_trozo` en el registro PAGADO** — un archivo cuya
+cabecera promete no tocarlo.
+
+El mecanismo cabe en una línea: `correr_evals()` desviaba el registro y **devolvía la ruta
+temporal**. Una prueba de más abajo reutilizó esa ruta creyendo que seguía enchufada, y no lo
+estaba: `correr_evals` **restaura en su `finally`**.
+
+🔑 **Un `tmp` que sigue existiendo como variable después de que su montaje se deshizo parece
+válido:** no da error, no avisa, y apunta a un archivo real que ya nadie mira.
+
+→ Muerto en el **origen**, no con un recordatorio: existe `desviar()`, un `with` que es **la única
+forma de obtener la ruta**, y `correr_evals` ya **no devuelve la ruta sino los eventos**. Lo que no
+debe salir del `with`, no sale.
+
+📌 Las 3 líneas se retiraron **con la medición al lado**: 134 → 131, y los otros siete eventos con
+el mismo recuento antes y después. **Ninguna era `llamada_api`**: no entró dinero inventado.
+
+##### 🚨 Y LO GORDO NO ES EL BICHO: EL PORTERO DE LA 97 NO LO CAZÓ, Y SU DOCSTRING DECÍA QUE SÍ
+
+> *«El portero arregla la CLASE: cualquier prueba de **cualquier módulo —incluidos los que todavía
+> no existen—**…»*
+
+**Falso.** El portero recorre una **lista de cinco nombres**, y `evals_orquestador.py` no estaba
+en ella. Escribió en el registro pagado y **el portero se quedó verde**.
+
+🔑 **Un portero que vigila una LISTA no vigila una clase: vigila esa lista, y una lista se queda
+vieja al día siguiente.** Y la docstring **blindaba** el hueco: quien la leyera se iba tranquilo.
+→ `LM.102`.
+
+**El arreglo, y se ve morder sobre el caso real:** el portero ahora se queja de lo que **no
+reconoce** — cualquier módulo con `_pruebas` que no esté ni vigilado ni descartado-con-razón. Con
+la lista de ayer, esa comprobación devuelve `['evals_orquestador']`.
+
+📌 Hacen falta **las dos listas**: sin la de descartados, *«no vigilado»* y *«se nos olvidó»* se
+ven igual. **Una excepción escrita es una decisión; una implícita es un agujero.**
+
+⚠️ Y de rebote apareció el mismo defecto un piso más abajo: la prueba 8 de `traza.py` comparaba
+contra `len(corridos) == 5` y **se puso roja sin que nada estuviera mal**. Es lo que hoy le pasa a
+`avisador.py`. → La lista subió a `VIGILADOS`, constante del módulo, y el invariante dejó de ser
+un número: **se corrió todo lo que se dijo que se iba a correr.**
+
+##### 📋 El catálogo, en una línea
+
+**19 modos**: **10** con eval propio aquí, **5** medidos en otro archivo y **no duplicados**, y
+**4 HUECOS declarados con su motivo** — `enrutado_torcido` y `orquestador_no_publica` (los mide
+F.3, pagando), `aislamiento` (lo califica el juez, no hay conducta que exigir) y
+`registro_partido` (deuda de E.1: su arreglo es un candado, no un eval).
+
+⭐ **Un catálogo que solo lista lo cubierto siempre está completo: se completa borrando lo que
+falta.** Por eso `P5` exige que cada hueco diga **por qué** lo es, y `P6` que **haya** huecos.
+
+##### Lo que queda escrito
+
+| | |
+|---|---|
+| Archivos | `evals_orquestador.py` (nuevo) · `traza.py` (el portero y su prueba 8) |
+| Pruebas | **10 evals + 12 pruebas**, todas verdes · `P9` ve morder **9 de 9** mutaciones |
+| Coste | **$0,000000** — séptima sesión seguida |
+| Apuestas | **4 de 4** |
+| Arreglos | el registro pagado, limpio (134 → 131, medido) · el portero ya no vigila una lista a ciegas |
+| Sin tocar | los 121 evals del 5b, las 11 casillas, los 33 veredictos, el sobre |
+| Lecciones | `LM.102`, `LM.103` |
+
 ---
 
 ### 🏁 BLOQUE G — Cierre

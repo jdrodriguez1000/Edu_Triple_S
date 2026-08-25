@@ -6708,3 +6708,73 @@ línea que lo escribiría.** Si no aparece, el estado sobra o el enunciado está
 
 ⭐ Y cambia lo que hay que hacer al abrir una deuda vieja: **el primer paso no es implementarla,
 es volver a medir si sigue siendo verdad.**
+
+### LM.102 — Un portero que vigila una LISTA no vigila una clase: vigila esa lista, y una lista se queda vieja
+
+*(sesión 111 · nivel 8 · F.2)*
+
+El portero nació en la sesión 97 con una frase escrita en su propia docstring:
+
+> *«El portero arregla la CLASE: cualquier prueba de **cualquier módulo —incluidos los que
+> todavía no existen—** que escriba en el registro real, pone esto rojo.»*
+
+Era falso, y se demostró el día que se corrigió. `evals_orquestador.py`, escrito esa misma
+mañana, escribió **tres `sin_trozo` en el registro pagado** — y el portero **se quedó verde**,
+porque su lista decía cinco nombres y ese archivo no estaba en ella.
+
+🔑 **La frase describía la ambición del arreglo, no el arreglo.** Un bucle sobre cinco cadenas
+no puede alcanzar a un archivo que no existía cuando se escribieron las cinco. Y lo peor es que
+la docstring **blindaba** el hueco: quien la leyera se iba tranquilo.
+
+⭐ Es `LM.67` en otro sitio — *«un “a propósito” se lee como si alguien lo hubiera medido»*—,
+solo que aquí el disfraz no era un motivo: era **una promesa de cobertura**.
+
+##### Lo que sí escala
+
+No es enumerar mejor: es que el portero **se queje de lo que no reconoce**. La comprobación que
+faltaba se lee del código fuente y cabe en tres líneas: *¿hay algún módulo que expone `_pruebas`
+y no está ni en la lista de vigilados ni en la de descartados-con-razón?* Con la lista de ayer,
+esa comprobación devuelve `['evals_orquestador']` — **muerde sobre el caso real, no sobre uno
+inventado**.
+
+📌 Y las dos listas hacen falta, no solo la primera: sin la de descartados, «no vigilado» y «se
+nos olvidó» se ven exactamente igual. **Una excepción escrita es una decisión; una excepción
+implícita es un agujero.**
+
+⚠️ Y de rebote apareció el mismo defecto un piso más abajo: la prueba 8 comparaba contra
+`len(corridos) == 5`. Al entrar el sexto módulo **se puso roja sin que nada estuviera mal**. Es
+el defecto que hoy tiene `avisador.py` con sus *1520 líneas*. → La lista subió a constante, y el
+invariante dejó de ser un número para ser una frase: **se corrió todo lo que se dijo que se iba
+a correr.**
+
+---
+
+### LM.103 — Un eval mide el DETECTOR o mide el DEFECTO, y confundirlos convierte una tabla verde en una mentira cómoda
+
+*(sesión 111 · nivel 8 · F.2)*
+
+El modo de falla más caro del nivel 8 está medido y tiene fecha: en la sesión 95 el orquestador
+mandó *«Convierte 400 EUR»* al worker del **dólar**.
+
+Al escribir F.2 quedó claro que **ese modo no puede tener un eval determinista**, y el motivo no
+es de esfuerzo: **quien elige el destino es el modelo**. Un caso que clava la salida del modelo a
+mano ya no mide al modelo — mide mi mano.
+
+Lo que sí se puede escribir es: *si llega torcido, ¿el harness lo caza?* Y eso es **otra cosa**:
+
+| | qué pregunta | quién la puede contestar |
+|---|---|---|
+| **el detector** | ¿cuando pasa, se caza? | un eval determinista, $0,00 |
+| **el defecto** | ¿pasa? | una corrida pagada, con el modelo dentro |
+
+🔑 **Diez casos en verde significan «cuando se tuerce, no pasa de aquí». NO significan «no se
+tuerce».** La segunda frase es enormemente más grande que la primera, y es la que un humano lee
+por defecto al ver una tabla de `ok`.
+
+⭐ Por eso la advertencia va **en la cabecera del archivo, antes de la tabla**, y no en una nota
+al pie. Una salvedad que se lee después de la conclusión llega tarde: la conclusión ya se formó.
+
+📌 Y la consecuencia práctica es un catálogo, no más casos: **el trabajo de F.2 no fue escribir el
+caso 434** —el nivel ya tenía 433 `check()`— **sino decir de quién es cada modo de falla y cuáles
+no tienen dueño**. Un catálogo que solo lista lo cubierto siempre está completo: se completa
+borrando lo que falta.
