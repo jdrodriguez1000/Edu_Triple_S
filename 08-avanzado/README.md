@@ -6384,6 +6384,93 @@ costó»* no se puede desmentir.
 
 ---
 
+
+#### 🎲 F.3 — LA APUESTA, sellada el **2026-08-25** (sesión 113) **antes de la primera línea de código y ANTES DE ABRIR EL SOBRE**
+
+⚠️ **El reparto que hace que esto no sea redundante.** Quién gana el duelo **ya está apostado**
+en el sobre del bloque 0, y al sellar esto **el sobre sigue cerrado**. Las apuestas de hoy son
+sobre **la mecánica**: cómo se construye el contendiente B sin romper la venda, y qué cuesta.
+Apostar aquí quién gana sería reescribir el sobre con la ventaja de cinco semanas.
+
+##### Lo que se contó ANTES de apostar (leído del código y del disco, $0,00)
+
+| # | Qué se contó | Cuánto salió |
+|---|---|---|
+| 1 | La tarea de A (`linea_base.TAREA`) vs `orquestador.TAREA_DEMO` | **NO son la misma**: a la demo le falta *«y guárdame el reporte»* |
+| 2 | `herramienta` que anota el ORQUESTADOR | `consultar_moneda` (39), `consultar_region` (6) — **los workers disfrazados de herramienta** |
+| 3 | `herramienta` que anotan los WORKERS | `tasa` (64), `convertir` (61), `guardar_reporte` (5) — las de verdad |
+| 4 | `herramienta` que vio el juez en A | `tasa`, `convertir`, `guardar_reporte` |
+| 5 | `duelo_inicio` en los registros del orquestador | **0** — el contendiente B no tiene corredor |
+| 6 | Topes | A: **12** vueltas · B: **8** del orquestador × **5** de cada worker |
+| 7 | Coste medido de una corrida del orquestador | mediana **$0,021724** · la peor **$0,030903** |
+| 8 | Coste del juez sobre A (3 corridas) | **$0,117426** — **5×** lo que cuestan las corridas |
+
+##### 🚨 EL HALLAZGO QUE CAMBIA EL TRABAJO DEL DÍA: LA VENDA SE ROMPE SOLA
+
+La Parte 0 de `rubrica_duelo.md` manda, textual: *«`tasa(de="EUR", a="COP")` es la misma llamada
+la haga el agente de una capa o el worker del euro»*, y prohíbe que el juez sepa cuántas capas
+hubo — porque *«un modelo con opinión sobre multi-agente califica el esquema en vez de la
+respuesta»*.
+
+Pero el registro del orquestador anota `consultar_moneda(...)`, **un nombre de herramienta que
+no existe en el mundo de A**. Si a F.3 se le entrega ese registro tal cual, el juez no tiene que
+deducir nada: **se lo dice el vocabulario en la primera línea**, y el duelo queda decidido antes
+de aplicar un solo criterio.
+
+🔑 **Por eso el trabajo de F.3 no es correr el duelo: es escribir el APLANADOR.** Y no es
+«juntar los dos registros»: hay que **tirar** las llamadas que son la frontera entre capas y
+quedarse con las herramientas de verdad, que viven en el registro de los workers.
+
+📌 `juez_duelo.leer_corridas()` ya lo anticipaba en su docstring desde el bloque 0: *«APLANADA:
+se guarda QUÉ se llamó y QUÉ devolvió. NO se guarda quién la pidió»*. La decisión estaba tomada
+hace cinco semanas; **lo que faltaba era la pieza que la cumple.**
+
+##### 🎲 Las tres apuestas
+
+**🎲 1 — El aplanador es LA pieza, y B enseñará MENOS llamadas de las que hizo.**
+Al tirar `consultar_moneda`/`consultar_region`, la lista de B queda en las herramientas reales
+—unas 7, como A— aunque B haya hecho ~13 llamadas al modelo.
+⚠️ **Falsable:** si la lista que ve el juez contiene **un solo** `consultar_*`, la venda está
+rota y esta apuesta falla.
+
+**🎲 2 — El juez costará dentro de un ±25 % de los $0,117426 que costó sobre A**, porque verá
+una lista comparable en tamaño y vocabulario.
+⚠️ **Falsable:** cualquier cifra fuera de **$0,088 – $0,147**.
+
+**🎲 3 — B tiene que correr `linea_base.TAREA`, no `TAREA_DEMO`.**
+Correr B con la demo le quita una herramienta (`guardar_reporte`) y **le regala el duelo**: es
+una tarea más fácil comparada contra la difícil.
+⚠️ **Falsable:** si al cerrar B corrió con `TAREA_DEMO`, esta falla y **el duelo no vale**.
+
+##### 💰 La horquilla del coste, sellada ANTES de pagar
+
+**$0,15 – $0,30.** (3 corridas de B a mediana $0,022 ≈ $0,065 · el juez ≈ $0,12 · margen.)
+⚠️ **Falsable:** cualquier cifra fuera de la horquilla.
+📌 Es el paso nuevo de F.3, y la 112 demostró para qué sirve: su horquilla decía $0,000000, y por
+eso un despiste de $0,10 quedó registrado como **apuesta perdida** y no como anécdota.
+
+##### 🕵️ El sospechoso de hoy
+
+**El que escribe el aplanador es el mismo que decide qué llamada es «frontera» y cuál es
+«herramienta».** Tirar de más deja a B más limpio de lo que fue; tirar de menos rompe la venda.
+Octava sesión seguida nombrándolo. La defensa va en el código:
+
+1. Una prueba que compare **el vocabulario de las dos listas** —la de A y la de B— y exija que
+   salgan del mismo conjunto de herramientas.
+2. Una prueba que cuente las llamadas tiradas y exija que **todas** sean de frontera: si se cae
+   una `tasa` por el camino, se pone roja.
+
+##### 🔒 Lo que NO se toca
+
+- **El sobre del bloque 0 sigue cerrado mientras se sella esto.** Se abre después.
+- **La línea base de A no se vuelve a correr.** Ya está medida y ya costó.
+- ⚠️ **Y va declarado, no callado: el contendiente A de este duelo es la versión del 25-ago**,
+  la que se rehízo por el error de la sesión 112 y que se decidió **no restaurar**. Difiere de la
+  sellada el 20-ago en un **0,7 %** en coste, menos que la dispersión dentro del propio set.
+  Queda escrito aquí para que el veredicto no tenga que explicarlo después.
+
+---
+
 ### 🏁 BLOQUE G — Cierre
 
 `L8.x` en `LESSONS.md`, `GUIDE.md` revisado, el mapa actualizado, y la respuesta
