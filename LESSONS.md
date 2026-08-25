@@ -6847,6 +6847,22 @@ qué artefacto sellado se lleva por delante, además de lo que cuesta.
 `worker.py` exige `--pagar` desde el bloque A y encima te enseña la mediana antes de dejarte
 pulsar. Tres archivos del mismo nivel, de la misma carpeta, no lo alcanzaron.
 
+> ✏️ **CORREGIDA AL CERRAR LA SESIÓN 113, y la corrección la empeora.** Arriba se dice que
+> *«ningún freno del nivel lo vio»*. **Falso.** `GUIDE.md` §6.e tenía una tabla con los tres
+> archivos, marcados 🔲, y al lado de `linea_base.py` la frase *«corre el duelo y **sobrescribe
+> su medición**»*. La advertencia existía, era **correcta y completa**, y nombraba exactamente lo
+> que iba a pasar.
+>
+> 🔑 **Y esa tabla nació, en la sesión 101, de que una lista incompleta no había avisado.** Se
+> completó. Y once sesiones después **falló otra vez, ya completa.** Porque el fallo nunca fue el
+> contenido de la lista: es que **una advertencia sólo protege al que la lee ANTES**, y nadie
+> consulta una tabla antes de un comando que lleva cien veces saliendo gratis.
+>
+> ⚠️ **La prosa no es un freno: es una nota sobre un freno que debería existir.** Por eso el
+> arreglo de la 112 no fue ampliar la tabla —ya estaba bien— sino `exigir_pagar()` en el código y
+> un segundo portero que se queja solo. **Documentar un riesgo se siente como haberlo mitigado, y
+> es la sensación lo que hace daño.**
+
 ---
 
 ## `LM.106` — Un umbral dentro de su propia banda de ruido es una moneda al aire con nombre de prueba

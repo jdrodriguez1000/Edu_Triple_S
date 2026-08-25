@@ -1003,9 +1003,9 @@ el 2026-08-21, la lista decía DOS, y esa misma tarde se arreglaron dos:**
 |---|---|
 | `08-avanzado/worker.py` | ✅ **arreglado (sesión 101)** — en pelado informa; paga con `--pagar` |
 | `08-avanzado/orquestador.py` | ✅ **arreglado (sesión 101)** — igual |
-| `08-avanzado/pipeline.py` | 🔲 corre los tres eslabones — **paga** |
-| `08-avanzado/linea_base.py` | 🔲 corre el duelo y **sobrescribe su medición** |
-| `08-avanzado/juez_duelo.py` | 🔲 **llama al modelo Y sobrescribe** `veredictos_*.json` — las dos caras a la vez |
+| `08-avanzado/pipeline.py` | ✅ **arreglado (sesión 112)** — en pelado avisa con su precio medido; paga con `--pagar` |
+| `08-avanzado/linea_base.py` | ✅ **arreglado (sesión 112)** — y su aviso dice **qué artefacto sellado se lleva por delante**, no solo lo que cuesta |
+| `08-avanzado/juez_duelo.py` | ✅ **arreglado (sesión 112)** — avisa de las dos caras: lo que cuesta y los veredictos sellados que pisa |
 | `08-avanzado/aislamiento.py` | ✅ **cumple**: en pelado corre la Parte 1, que es gratis (`count_tokens`). ⚠️ Tarda ~2 min y la Parte 2 paga ~$0,015, con `--contaminacion` |
 | `08-avanzado/contexto.py` | ✅ no tiene `__main__`: en pelado no hace nada |
 | `08-avanzado/recursion.py` | ✅ **molde**: en pelado corre los 7 experimentos a $0,00; `--pruebas` para la suite |
@@ -1015,6 +1015,7 @@ el 2026-08-21, la lista decía DOS, y esa misma tarde se arreglaron dos:**
 | `08-avanzado/disparador.py` | ✅ **molde** (sesión 108): **no tiene modo de pago ni lo tendrá.** En pelado corre sus 67 pruebas y las cuatro tablas · `--informe` solo las tablas, todo a $0,00. ⚠️ Lanza `python` de verdad como procesos hijos (`--disparo`, `--candado`, `--turno`, `--atomico`): el trabajo que corren es **falso** y no toca la API. 📌 El informe del escalón 2 tarda ~2 min porque una fila mide un trabajo de 35 s con una espera de 60 s — es tiempo, no dinero |
 | `08-avanzado/avisador.py` | ✅ **molde** (sesión 109): **no tiene modo de pago ni lo tendrá.** En pelado corre sus 38 pruebas y las seis tablas · `--informe` solo las tablas, todo a $0,00. 🔑 **Y es el primero del nivel que sale con código 1 si alguna prueba se pone roja** — es su propio escalón 5. ⚠️ Lee los ocho `registro_*.jsonl` del nivel **sin modificarlos**, y el escalón 5 escribe una copia temporal `_medicion_*.py` **dentro de la carpeta del nivel** que borra en un `finally`. 📌 Tarda ~9 s medidos: las copias arrancan `python` de verdad, pero con su suite sustituida por un fallo forzado y sus informes por `pass`. 🚨 **SESIÓN 111 — HOY SALE CON 1 Y NO ES CULPA DE QUIEN LO CORRA:** `P8`, `P9` y `P12` llevan clavados los números de la 109 (*1520 líneas, 163 avisos*) y los cuentan sobre `registro_pruebas_gratis.jsonl`, que está en `.gitignore` y **crece cada vez que alguien corre las pruebas gratis**. Es una prueba que **no puede volver a estar verde nunca**. Alta, no bloqueante — y el daño no es el rojo: **una suite siempre roja enseña a no mirar el rojo** |
 | `08-avanzado/evals_orquestador.py` | ✅ **molde** (sesión 111): **no tiene modo de pago, y una trampa lo IMPIDE.** En pelado corre sus **10 evals + 12 pruebas** · `--catalogo` solo la tabla, todo a $0,00. 🔒 `_ClienteTrampa` revienta si un caso llama al modelo y **`P7` lo ve morder**; el registro se desvía con `desviar()`, que es la **única** forma de obtener la ruta — nació de un bicho del mismo día (`LM.20` por quinta vez: tres líneas en el registro pagado). 🚨 **`P9` es la que vale: rompe la conducta de cada caso y exige que ESE caso se ponga rojo** — 9 de 9 muerden. ⚠️ Mide el **DETECTOR, no el DEFECTO** (`LM.103`): verde aquí NO significa que el enrutado no se tuerza. Sale con código 1 si algo falla. 📌 Corre en ~2 s |
+| `08-avanzado/duelo.py` | ✅ **molde** (sesión 113): en pelado avisa y no paga · `--pruebas` corre sus **8 comprobaciones a $0,00**, y lo hace **sobre las 7 corridas ya pagadas** del bloque C — probar el aplanador con datos inventados habría sido `LM.104` en directo. 🔒 `--pagar` corre el contendiente B (~$0,078 las 3 corridas). 🚨 Su **prueba 7 rompe la lista de frontera a propósito** y exige que la venda del juez se caiga: sin ella el aplanador puede estar vacío y parecer correcto |
 | `08-avanzado/atribuidor.py` | ✅ **molde** (sesión 110): **no tiene modo de pago, y una prueba lo IMPIDE.** En pelado corre sus **34** comprobaciones y las cinco tablas · `--informe` solo las tablas, todo a $0,00. 🔒 **`P22` lee este mismo archivo y se pone roja si aparece una llamada al modelo** — la apuesta 1 de F.1 dejaría de ser cierta en silencio sin ella; `P23` la obliga a morder. 📎 **Sesión 111**: `P27`-`P32` cierran la deuda de `origen` — la ausencia del campo sale `no_comprobable` y **nunca** verde. Sale con código 1 si alguna prueba falla. ⚠️ Lee `registro_workers_*.jsonl`, `registro_orquestador_*.jsonl` y `veredictos_*.json` **sin modificarlos**. 📌 Corre en ~1 s: no lanza procesos ni espera a nadie |
 
 📌 **Los dos arreglados llevan el aviso con un precio MEDIDO, leído de su propio
@@ -1032,6 +1033,26 @@ que la leyó buscó su archivo en la lista y no estaba.
 🔑 **Una advertencia con lista incompleta no avisa a medias: tranquiliza.** El
 que mira la lista y no encuentra su archivo concluye que el suyo es de los
 seguros. **Es peor que no tener lista.**
+
+---
+
+🚨 **SESIÓN 112 — Y AHORA LA OTRA MITAD, QUE ES PEOR: LA LISTA ESTABA COMPLETA Y
+CORRECTA, Y NO SIRVIÓ DE NADA.**
+Los tres archivos que cobraron ese día —`pipeline.py`, `linea_base.py` y
+`juez_duelo.py`— estaban **los tres en esta tabla**, marcados 🔲, con la frase
+*«sobrescribe su medición»* al lado del que rehizo la línea base del duelo.
+Se corrieron igual, en un barrido de `python <modulo>.py` sobre los 22 módulos
+del nivel, para comprobar que un arreglo no había roto nada. **Coste: $0,202977.**
+
+🔑 **La lección de arriba decía que el fallo era la lista incompleta. Esta dice
+que completarla no era el arreglo.** Una advertencia sólo protege al que la lee
+ANTES, y nadie consulta una tabla antes de un comando que lleva cien veces
+saliendo gratis. **La prosa no es un freno: es una nota sobre un freno que
+debería existir.**
+→ Por eso la 112 no amplió esta tabla: puso `compartida.exigir_pagar()` en el
+  código y un segundo portero, `traza.portero_del_dinero()`, que exige que todo
+  módulo capaz de cobrar tenga freno **o razón escrita**. La tabla se queda como
+  mapa para humanos; **el que para la mano es el código.**
 
 📌 **`modelos.py` (sesión 104) entró en esta lista EL MISMO DÍA en que se escribió,
 y no la semana siguiente.** Es la primera vez que pasa. Las dos veces anteriores la
