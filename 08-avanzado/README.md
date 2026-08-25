@@ -5812,6 +5812,72 @@ siempre el primer archivo que los contiene.**
 
 ---
 
+#### 🎲 F.1 · LA DEUDA — LA APUESTA, sellada el **2026-08-25** (sesión 111) **antes de la primera línea de código**
+
+La deuda que se cierra hoy, tal como quedó anotada ayer:
+
+> 📎 *Falta un campo `origen` en `worker_inicio` que diga si el encargo lo escribió el
+> modelo o el harness. Alta, no bloqueante — sin él no se puede distinguir un enrutado
+> torcido de un experimento.*
+
+##### Lo que se contó ANTES de apostar (leído del código y del disco, $0,00)
+
+| # | Qué se contó | Cuánto salió |
+|---|---|---|
+| 1 | Quién escribe el texto del encargo | `orquestador.py:402` — **lo arma Python**: `f"Convierte {monto} {moneda} a pesos colombianos."` |
+| 2 | El único sitio donde ese texto se sustituye | `orquestador.py:415-417`, el override `encargos` de C.2 (`ENCARGOS_DESIGUALES`) |
+| 3 | Qué aporta el modelo de arriba | `input_schema` de `orquestador.py:182-194`: **`monto` y `moneda`, y nada más** |
+| 4 | Líneas `worker_inicio` ya en disco | **172** · con campo `origen`: **0** — y no se reescriben (`LM.65`) |
+| 5 | Sitios que llaman a `correr_worker` | **17**, y la mayoría clavan el encargo a mano: son experimentos |
+
+##### 🎲 Las cuatro apuestas
+
+**🎲 1 — `origen` NO va a poder valer «modelo», y la deuda estaba MAL ENUNCIADA.**
+La deuda pide distinguir *«si el encargo lo escribió el modelo o el harness»*. Apuesto que
+con el código de hoy **el harness lo escribe SIEMPRE** y la rama que pondría `origen="modelo"`
+no se puede escribir sin inventarla. Lo que el modelo elige no es el encargo: es **el destino**
+(`moneda`, `monto`). Los valores serán `plantilla` y `experimento`.
+⚠️ **Falsable:** si al cerrar existe una rama que escribe `origen="modelo"`, esta falla.
+
+**🎲 2 — El escalón 3 va a EMPEORAR sobre datos reales, y eso ES el arreglo funcionando.**
+Hoy el cruce salta en **3 corridas** y el informe corrige **a mano** que no fue el orquestador.
+Apuesto que con el campo puesto esas mismas 3 pasan a **`no_comprobable`** —**no** a
+`experimento`—, porque las líneas viejas no lo llevan y no se van a reescribir. El recuento de
+culpables cazados **baja de 3 a 0** y el de no comprobables **sube a 3**.
+⚠️ **Falsable:** cualquier otro par de números la tumba.
+
+**🎲 3 — Se puede ver MORDER por $0,000000, sin una sola llamada a la API.**
+`origen` se decide en el orquestador **antes** de llamar al worker, así que un doble en lugar
+de `correr_worker` basta para grabar las dos ramas. Sexta sesión seguida a cero.
+⚠️ **Falsable:** si para verlo morder hace falta pagar una corrida real, esta falla.
+
+**🎲 4 — Añadir el campo NO cierra la deuda: hace falta un tercer estado en el LECTOR.**
+El escritor tiene dos valores; el lector tiene **tres** casos, porque existe la **ausencia**.
+Apuesto que la tentación —y el bicho, si nadie mira— es tratar *«sin `origen`»* como
+`plantilla`, que es el valor cómodo. Eso sería **`LM.98` otra vez**: un dato **ausente** leído
+como una **declaración**.
+⚠️ **Falsable:** si el arreglo final trata la ausencia como si fuera un valor, esta falla.
+
+##### 🕵️ El sospechoso de hoy
+
+**El que escribe `origen=` es el mismo que decide qué significa cada valor Y el mismo que
+elige las torceduras con que se prueba.** Sexta sesión seguida nombrándolo.
+Dos defensas, y las dos en el código, no en la intención:
+
+1. Una prueba que exige que **la ausencia salga `no_comprobable` y NO verde**.
+2. Una prueba que pasa **el mismo encargo torcido dos veces**, cambiando solo `origen`, y
+   exige **culpables distintos**. Si el campo no cambia nada, se pone roja.
+
+##### 🔒 Lo que NO se toca
+
+- **Los registros ya grabados.** Ni una línea. `LM.65`: reescribirlos borraría la evidencia
+  de que el campo faltaba.
+- **El juez ciego, su venda y los 33 veredictos pagados.**
+- **El sobre del bloque 0.** Sigue cerrado; lo abre F.3.
+
+
+---
+
 ### 🏁 BLOQUE G — Cierre
 
 `L8.x` en `LESSONS.md`, `GUIDE.md` revisado, el mapa actualizado, y la respuesta
